@@ -1,0 +1,26 @@
+{
+    "name": "stark",
+    "displayName": "stark-lang",
+    "description": "Stark Language Colorizer",
+    "version": "0.0.1",
+    "publisher": "xoofx",
+    "engines": {
+        "vscode": "^1.5.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "stark",
+            "aliases": ["Stark", "stark"],
+            "extensions": [".sk"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "stark",
+            "scopeName": "source.stark",
+            "path": "./syntaxes/stark.tmLanguage"
+        }]
+    }
+}

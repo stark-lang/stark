@@ -1,0 +1,2488 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+---
+name: Stark
+scopeName: source.stark
+fileTypes: [sk]
+uuid: 582789B5-991D-49E1-8E39-54327B3DBDFF
+
+patterns:
+- include: '#preprocessor'
+- include: '#comment'
+- include: '#directives'
+- include: '#declarations'
+- include: '#script-top-level'
+
+repository:
+  directives:
+    patterns:
+    - include: '#extern-alias-directive'
+    - include: '#import-directive'
+    - include: '#attribute-section'
+    - include: '#punctuation-semicolon'
+
+  declarations:
+    patterns:
+    - include: '#namespace-declaration'
+    - include: '#type-declarations'
+    - include: '#punctuation-semicolon'
+
+  script-top-level:
+    patterns:
+    - include: '#func-declaration'
+    - include: '#statement'
+    - include: '#punctuation-semicolon'
+
+  type-declarations:
+    patterns:
+    - include: '#preprocessor'
+    - include: '#comment'
+    - include: '#storage-modifier'
+    - include: '#class-declaration'
+    - include: '#delegate-declaration'
+    - include: '#enum-declaration'
+    - include: '#interface-declaration'
+    - include: '#struct-declaration'
+    - include: '#attribute-section'
+    - include: '#punctuation-semicolon'
+
+  class-or-struct-members:
+    patterns:
+    - include: '#preprocessor'
+    - include: '#comment'
+    - include: '#storage-modifier'
+    - include: '#type-declarations'
+    - include: '#field-declaration'
+    - include: '#variable-initializer'
+    - include: '#constructor-declaration'
+    - include: '#destructor-declaration'
+    - include: '#operator-declaration'
+    - include: '#conversion-operator-declaration'
+    - include: '#func-declaration'
+    - include: '#attribute-section'
+    - include: '#punctuation-semicolon'
+
+  interface-members:
+    patterns:
+    - include: '#preprocessor'
+    - include: '#comment'
+    - include: '#interface-storage-modifier'
+    - include: '#func-declaration'
+    - include: '#attribute-section'
+    - include: '#punctuation-semicolon'
+
+  statement:
+    patterns:
+    - include: '#preprocessor'
+    - include: '#comment'
+    - include: '#while-statement'
+    - include: '#do-statement'
+    - include: '#for-statement'
+    - include: '#foreach-statement'
+    - include: '#if-statement'
+    - include: '#else-statement'
+    - include: '#switch-statement'
+    - include: '#goto-statement'
+    - include: '#return-statement'
+    - include: '#break-or-continue-statement'
+    - include: '#throw-statement'
+    - include: '#yield-statement'
+    - include: '#await-statement'
+    - include: '#try-statement'
+    - include: '#checked-unchecked-statement'
+    - include: '#lock-statement'
+    - include: '#using-statement'
+    - include: '#labeled-statement'
+    - include: '#local-declaration'
+    - include: '#block'
+    - include: '#expression'
+    - include: '#punctuation-semicolon'
+
+  expression:
+    patterns:
+    - include: '#preprocessor'
+    - include: '#comment'
+    - include: '#checked-unchecked-expression'
+    - include: '#typeof-or-default-expression'
+    - include: '#nameof-expression'
+    - include: '#throw-expression'
+    - include: '#interpolated-string'
+    - include: '#verbatim-interpolated-string'
+    - include: '#this-or-base-expression'
+    - include: '#conditional-operator'
+    - include: '#expression-operators'
+    - include: '#await-expression'
+    - include: '#query-expression'
+    - include: '#as-expression'
+    - include: '#is-expression'
+    - include: '#anonymous-method-expression'
+    - include: '#object-creation-expression'
+    - include: '#array-creation-expression'
+    - include: '#anonymous-object-creation-expression'
+    - include: '#invocation-expression'
+    - include: '#member-access-expression'
+    - include: '#element-access-expression'
+    - include: '#cast-expression'
+    - include: '#literal'
+    - include: '#parenthesized-expression'
+    - include: '#tuple-deconstruction-assignment'
+    - include: '#identifier'
+
+  extern-alias-directive:
+    begin: \s*(extern)\b\s*(alias)\b\s*(@?[_[:alpha:]][_[:alnum:]]*)
+    beginCaptures:
+      '1': { name: keyword.other.extern.sk }
+      '2': { name: keyword.other.alias.sk }
+      '3': { name: variable.other.alias.sk }
+    end: (?=[;|\n])
+
+  import-directive:
+    patterns:
+    - begin: \b(import)\b\s+(static)\s+
+      beginCaptures:
+        '1': { name: keyword.other.import.sk }
+        '2': { name: keyword.other.static.sk }
+      end: (?=[;\n])
+      patterns:
+      - include: '#type'
+    - begin: \b(import)\s+(?=(@?[_[:alpha:]][_[:alnum:]]*)\s*=)
+      beginCaptures:
+        '1': { name: keyword.other.import.sk }
+        '2': { name: entity.name.type.alias.sk }
+      end: (?=[;\n])
+      patterns:
+      - include: '#comment'
+      - include: '#type'
+      - include: '#operator-assignment'
+    - begin: \b(import)\s*
+      beginCaptures:
+        '1': { name: keyword.other.import.sk }
+      end: (?=[;\n])
+      patterns:
+      - include: '#comment'
+      - name: entity.name.type.namespace.sk
+        match: '@?[_[:alpha:]][_[:alnum:]]*'
+      - include: '#operator-assignment'
+
+  attribute-section:
+    begin: (@)(assembly|module|field|event|method|param|property|return|type)?(\:)?
+    beginCaptures:
+      '1': { name: punctuation.other.at.sk }
+      '2': { name: keyword.other.attribute-specifier.sk }
+      '3': { name: punctuation.separator.colon.sk }
+    end: (?=\)|[[:space:]])
+    endCaptures:
+      '1': { name: punctuation.squarebracket.close.sk }
+    patterns:
+    - include: '#comment'
+    - include: '#type-name'
+    - include: '#attribute-arguments'
+
+  attribute-arguments:
+    begin: (\()
+    beginCaptures:
+      '1': { name: punctuation.parenthesis.open.sk }
+    end: (\))
+    endCaptures:
+      '1': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#attribute-named-argument'
+    - include: '#expression'
+    - include: '#punctuation-comma'
+
+  attribute-named-argument:
+    begin: (@?[_[:alpha:]][_[:alnum:]]*)\s*(?==)
+    beginCaptures:
+      '1': { name: entity.name.variable.property.sk }
+    end: (?=(,|\)))
+    patterns:
+    - include: '#operator-assignment'
+    - include: '#expression'
+
+  namespace-declaration:
+    begin: \b(namespace)\s+
+    beginCaptures:
+      '1': { name: keyword.other.namespace.sk }
+    end: (?<=\})
+    patterns:
+    - include: '#comment'
+    - name: entity.name.type.namespace.sk
+      match: '@?[_[:alpha:]][_[:alnum:]]*'
+    - include: '#punctuation-accessor'
+    - begin: \{
+      beginCaptures:
+        '0': { name: punctuation.curlybrace.open.sk }
+      end: \}
+      endCaptures:
+        '0': { name: punctuation.curlybrace.close.sk }
+      patterns:
+      - include: '#declarations'
+      - include: '#import-directive'
+      - include: '#punctuation-semicolon'
+
+  storage-modifier:
+    name: 'storage.modifier.sk'
+    match: (?<!\.)\b(new|public|protected|internal|private|abstract|virtual|override|sealed|static|partial|readonly|volatile|const|extern|async|unsafe|ref)\b
+
+  interface-storage-modifier:
+    name: 'storage.modifier.sk'
+    match: (?<!\.)\b(readonly|static)\b
+
+  class-declaration:
+    begin: (?=\bclass\b)
+    end: (?<=\})
+    patterns:
+    - begin: |-
+        (?x)
+        \b(class)\b\s+
+        (@?[_[:alpha:]][_[:alnum:]]*)\s*
+      beginCaptures:
+        '1': { name: keyword.other.class.sk }
+        '2': { name: entity.name.type.class.sk }
+      end: (?=\{)
+      patterns:
+      - include: '#comment'
+      - include: '#type-parameter-list'
+      - include: '#base-types'
+      - include: '#generic-constraints'
+    - begin: \{
+      beginCaptures:
+        '0': { name: punctuation.curlybrace.open.sk }
+      end: \}
+      endCaptures:
+        '0': { name: punctuation.curlybrace.close.sk }
+      patterns:
+      - include: '#class-or-struct-members'
+    - include: '#preprocessor'
+    - include: '#comment'
+
+  delegate-declaration:
+    begin: |-
+      (?x)
+      (?:\b(delegate)\b)\s+
+      (?<type-name>
+        (?:
+          (?:ref\s+(?:readonly\s+)?)?   # ref return
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )\s+
+      (\g<identifier>)\s*
+      (<([^<>]+)>)?\s*
+      (?=\()
+    beginCaptures:
+      '1': { name: keyword.other.delegate.sk }
+      '2':
+        patterns:
+        - include: '#type'
+      # '3': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '4': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '6': ?<tuple> is a sub-expression. It's final value is not considered.
+      '7': { name: entity.name.type.delegate.sk }
+      '8':
+        patterns:
+        - include: '#type-parameter-list'
+    end: (?=[;\n])
+    patterns:
+    - include: '#comment'
+    - include: '#parenthesized-parameter-list'
+    - include: '#generic-constraints'
+
+  enum-declaration:
+    begin: (?=\benum\b)
+    end: (?<=\})
+    patterns:
+    - begin: (?=enum)
+      end: (?=\{)
+      patterns:
+      - include: '#comment'
+      - match: (enum)\s+(@?[_[:alpha:]][_[:alnum:]]*)
+        captures:
+          '1': { name: keyword.other.enum.sk }
+          '2': { name: entity.name.type.enum.sk }
+      - begin: ':'
+        beginCaptures:
+          '0': { name: punctuation.separator.colon.sk }
+        end: (?=\{)
+        patterns:
+        - include: '#type'
+    - begin: \{
+      beginCaptures:
+        '0': { name: punctuation.curlybrace.open.sk }
+      end: \}
+      endCaptures:
+        '0': { name: punctuation.curlybrace.close.sk }
+      patterns:
+      - include: '#preprocessor'
+      - include: '#comment'
+      - include: '#attribute-section'
+      - include: '#punctuation-comma'
+      - begin: '@?[_[:alpha:]][_[:alnum:]]*'
+        beginCaptures:
+          '0': { name: entity.name.variable.enum-member.sk }
+        end: (?=(,|\}))
+        patterns:
+        - include: '#comment'
+        - include: '#variable-initializer'
+    - include: '#preprocessor'
+    - include: '#comment'
+
+  interface-declaration:
+    begin: (?=\binterface\b)
+    end: (?<=\})
+    patterns:
+    - begin: |-
+        (?x)
+        (interface)\b\s+
+        (@?[_[:alpha:]][_[:alnum:]]*)
+      beginCaptures:
+        '1': { name: keyword.other.interface.sk }
+        '2': { name: entity.name.type.interface.sk }
+      end: (?=\{)
+      patterns:
+      - include: '#comment'
+      - include: '#type-parameter-list'
+      - include: '#base-types'
+      - include: '#generic-constraints'
+    - begin: \{
+      beginCaptures:
+        '0': { name: punctuation.curlybrace.open.sk }
+      end: \}
+      endCaptures:
+        '0': { name: punctuation.curlybrace.close.sk }
+      patterns:
+      - include: '#interface-members'
+    - include: '#preprocessor'
+    - include: '#comment'
+
+  struct-declaration:
+    begin: (?=\bstruct\b)
+    end: (?<=\})
+    patterns:
+    - begin: |-
+        (?x)
+        (struct)\b\s+
+        (@?[_[:alpha:]][_[:alnum:]]*)
+      beginCaptures:
+        '1': { name: keyword.other.struct.sk }
+        '2': { name: entity.name.type.struct.sk }
+      end: (?=\{)
+      patterns:
+      - include: '#comment'
+      - include: '#type-parameter-list'
+      - include: '#base-types'
+      - include: '#generic-constraints'
+    - begin: \{
+      beginCaptures:
+        '0': { name: punctuation.curlybrace.open.sk }
+      end: \}
+      endCaptures:
+        '0': { name: punctuation.curlybrace.close.sk }
+      patterns:
+      - include: '#class-or-struct-members'
+    - include: '#preprocessor'
+    - include: '#comment'
+
+  type-parameter-list:
+    begin: \<
+    beginCaptures:
+      '0': { name: punctuation.definition.typeparameters.begin.sk }
+    end: \>
+    endCaptures:
+      '0': { name: punctuation.definition.typeparameters.end.sk }
+    patterns:
+    - match: \b(in|out)\b
+      captures:
+        '1': { name: storage.modifier.sk }
+    - match: (@?[_[:alpha:]][_[:alnum:]]*)\b
+      captures:
+        '1': { name: entity.name.type.type-parameter.sk }
+    - include: '#comment'
+    - include: '#punctuation-comma'
+    - include: '#attribute-section'
+
+  base-types:
+    begin: ':'
+    beginCaptures:
+      '0': { name: punctuation.separator.colon.sk }
+    end: (?=\{|where)
+    patterns:
+    - include: '#type'
+    - include: '#punctuation-comma'
+    - include: '#preprocessor'
+
+  generic-constraints:
+    begin: (where)\s+(@?[_[:alpha:]][_[:alnum:]]*)\s*(:)
+    beginCaptures:
+      '1': { name: keyword.other.where.sk }
+      '2': { name: storage.type.sk }
+      '3': { name: punctuation.separator.colon.sk }
+    end: (?=\{|where|;|=>)
+    patterns:
+    - name: keyword.other.class.sk
+      match: \bclass\b
+    - name: keyword.other.struct.sk
+      match: \bstruct\b
+    - match: (new)\s*(\()\s*(\))
+      captures:
+        '1': { name: keyword.other.new.sk }
+        '2': { name: punctuation.parenthesis.open.sk }
+        '3': { name: punctuation.parenthesis.close.sk }
+    - include: '#type'
+    - include: '#punctuation-comma'
+    - include: '#generic-constraints'
+
+  field-declaration:
+    patterns:
+    - include: '#variable-declaration'
+
+  property-accessors:
+    begin: \{
+    beginCaptures:
+      '0': { name: punctuation.curlybrace.open.sk }
+    end: \}
+    endCaptures:
+      '0': { name: punctuation.curlybrace.close.sk }
+    patterns:
+    - name: storage.modifier.sk
+      match: \b(private|protected|internal)\b
+    - name: keyword.other.get.sk
+      match: \b(get)\b
+    - name: keyword.other.set.sk
+      match: \b(set)\b
+    - include: '#comment'
+    - include: '#attribute-section'
+    - include: '#expression-body'
+    - include: '#block'
+    - include: '#punctuation-semicolon'
+
+  event-accessors:
+    begin: \{
+    beginCaptures:
+      '0': { name: punctuation.curlybrace.open.sk }
+    end: \}
+    endCaptures:
+      '0': { name: punctuation.curlybrace.close.sk }
+    patterns:
+    - name: keyword.other.add.sk
+      match: \b(add)\b
+    - name: keyword.other.remove.sk
+      match: \b(remove)\b
+    - include: '#comment'
+    - include: '#attribute-section'
+    - include: '#expression-body'
+    - include: '#block'
+    - include: '#punctuation-semicolon'
+
+  func-declaration:
+    patterns:
+    - begin: \b(func)\s+(operator)\b
+      beginCaptures:
+       '1': { name: keyword.other.func.sk }
+       '2': { name: keyword.other.operator-decl.sk }
+      end: (?<=\})|(?=[;\n][[:space:]]*(?!\{))
+      patterns:
+      # indexer-declaration
+      - begin: (?=\[)
+        end: (?<=\})|(?=[;\n][[:space:]]*(?!\{))
+        patterns:
+        - include: '#bracketed-parameter-list'
+        - include: '#func-return-type'
+        - include: '#property-accessors'
+        - include: '#expression-body'        
+    - begin: \b(func)\b
+      beginCaptures:
+        '1': { name: keyword.other.func.sk }
+      end: (?<=\})|(?=[;\n])    
+      patterns:
+      - include: '#method-name'
+      - include: '#comment'
+      # property-declaration
+      - begin: (?=->)
+        end:  (?<=\})|(?=[;\n][[:space:]]*(?!\{))
+        patterns:
+          - include: '#func-return-type'
+          - include: '#property-accessors'
+          - include: '#expression-body'
+          - include: '#variable-initializer'
+      # regular function declaration
+      - begin: (?=\()
+        end: (?<=\})|(?=[;\n][[:space:]]*(?!\{))
+        patterns:
+          - include: '#type-parameter-list'
+          - include: '#parenthesized-parameter-list'
+          - include: '#generic-constraints'
+          - include: '#func-return-type'
+          - include: '#expression-body'
+          - include: '#block'
+        
+  method-name:
+    name: meta.name.cs
+    patterns:
+    - include: '#type-name'
+    - include: '#type-arguments'
+
+  func-return-type:
+    patterns:
+    - match: (->)
+      captures:
+        '1': { name: punctuation.separator.arrow.sk }
+    - include: '#type'  
+
+  func-return-type2:
+    begin: (->)
+    beginCaptures:
+      '1': { name: punctuation.separator.arrow.sk }
+    end: (?<=\})|(?=[;\n][[:space:]]*(?!\{))
+    patterns:
+      - include: '#type'  
+
+
+  constructor-declaration:
+    begin: (?=@?[_[:alpha:]][_[:alnum:]]*\s*\()
+    end: (?<=\})|(?=[;\n])
+    patterns:
+    - match: (@?[_[:alpha:]][_[:alnum:]]*)\b
+      captures:
+        '1': { name: entity.name.function.sk }
+    - begin: (:)
+      beginCaptures:
+        '1': { name: punctuation.separator.colon.sk }
+      end: (?=\{|=>)
+      patterns:
+      - include: '#constructor-initializer'
+    - include: '#parenthesized-parameter-list'
+    - include: '#preprocessor'
+    - include: '#comment'
+    - include: '#expression-body'
+    - include: '#block'
+
+  constructor-initializer:
+    begin: \b(?:(base)|(this))\b\s*(?=\()
+    beginCaptures:
+      '1': { name: keyword.other.base.sk }
+      '2': { name: keyword.other.this.sk }
+    end: (?<=\))
+    patterns:
+    - include: "#argument-list"
+
+  destructor-declaration:
+    begin: (~)(@?[_[:alpha:]][_[:alnum:]]*)\s*(?=\()
+    beginCaptures:
+      '1': { name: punctuation.tilde.sk }
+      '2': { name: entity.name.function.sk }
+    end: (?<=\})|(?=[;\n])
+    patterns:
+    - include: '#comment'
+    - include: '#parenthesized-parameter-list'
+    - include: '#expression-body'
+    - include: '#block'
+
+  operator-declaration:
+    begin: |-
+      (?x)
+      (?<type-name>
+        (?:
+          (?:ref\s+(?:readonly\s+)?)?   # ref return
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )\s*
+      (?<operator-keyword>(?:\b(?:operator)))\s*
+      (?<operator>(?:\+|-|\*|/|%|&|\||\^|\<\<|\>\>|==|!=|\>|\<|\>=|\<=|!|~|\+\+|--|true|false))\s*
+      (?=\()
+    beginCaptures:
+      '1':
+        patterns:
+        - include: '#type'
+      # '2': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '3': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '4': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<tuple> is a sub-expression. It's final value is not considered.
+      '6': { name: keyword.other.operator-decl.sk }
+      '7': { name: entity.name.function.sk }
+    end: (?<=\})|(?=[;\n])
+    patterns:
+    - include: '#comment'
+    - include: '#parenthesized-parameter-list'
+    - include: '#expression-body'
+    - include: '#block'
+
+  conversion-operator-declaration:
+    begin: |-
+      (?x)
+      (?<explicit-or-implicit-keyword>(?:\b(?:explicit|implicit)))\s*
+      (?<operator-keyword>(?:\b(?:operator)))\s*
+      (?<type-name>
+        (?:
+          (?:ref\s+(?:readonly\s+)?)?   # ref return
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )\s*
+      (?=\()
+    beginCaptures:
+      '1':
+        patterns:
+        - match: \b(explicit)\b
+          captures:
+            '1': { name: keyword.other.explicit.sk }
+        - match: \b(implicit)\b
+          captures:
+            '1': { name: keyword.other.implicit.sk }
+      '2': { name: keyword.other.operator-decl.sk }
+      '3':
+        patterns:
+        - include: '#type'
+    end: (?<=\})|(?=[;\n])
+    patterns:
+    - include: '#comment'
+    - include: '#parenthesized-parameter-list'
+    - include: '#expression-body'
+    - include: '#block'
+
+  block:
+    begin: \{
+    beginCaptures:
+      '0': { name: punctuation.curlybrace.open.sk }
+    end: \}
+    endCaptures:
+      '0': { name: punctuation.curlybrace.close.sk }
+    patterns:
+    - include: '#statement'
+
+  variable-initializer:
+    begin: (=)
+    beginCaptures:
+      '1': { name: keyword.operator.assignment.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#ref-modifier'
+    - include: '#expression'
+
+  expression-body:
+    begin: =>
+    beginCaptures:
+      '0': { name: keyword.operator.arrow.sk }
+    end: (?=[,\);\n}])
+    patterns:
+    - include: '#ref-modifier'
+    - include: '#expression'
+
+  goto-statement:
+    begin: (?<!\.)\b(goto)\b
+    beginCaptures:
+      '1': { name: keyword.control.goto.sk }
+    end: (?=[;\n])
+    patterns:
+    - begin: \b(case)\b
+      beginCaptures:
+        '1': { name: keyword.control.case.sk }
+      end: (?=[;\n])
+      patterns:
+      - include: '#expression'
+    - match: \b(default)\b
+      captures:
+        '1': { name: keyword.control.default.sk }
+    - name: entity.name.label.sk
+      match: '@?[_[:alpha:]][_[:alnum:]]*'
+
+  return-statement:
+    begin: (?<!\.)\b(return)\b
+    beginCaptures:
+      '1': { name: keyword.control.flow.return.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#ref-modifier'
+    - include: '#expression'
+
+  break-or-continue-statement:
+    match: (?<!\.)\b(?:(break)|(continue))\b
+    captures:
+      '1': { name: keyword.control.flow.break.sk }
+      '2': { name: keyword.control.flow.continue.sk }
+
+  throw-statement:
+    begin: (?<!\.)\b(throw)\b
+    beginCaptures:
+      '1': { name: keyword.control.flow.throw.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#expression'
+
+  yield-statement:
+    patterns:
+    - include: '#yield-return-statement'
+    - include: '#yield-break-statement'
+
+  yield-return-statement:
+    begin: (?<!\.)\b(yield)\b\s*\b(return)\b
+    beginCaptures:
+      '1': { name: keyword.control.flow.yield.sk }
+      '2': { name: keyword.control.flow.return.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#expression'
+
+  yield-break-statement:
+    match: (?<!\.)\b(yield)\b\s*\b(break)\b
+    captures:
+      '1': { name: keyword.control.flow.yield.sk }
+      '2': { name: keyword.control.flow.break.sk }
+
+  # Technically, there isn't an "await statement" in the C# grammar. However, including one here makes it easier to handle
+  # the scenario where an await-expression will be match by local-declaration first. (e.g. await x;)
+  await-statement:
+    begin: (?<!\.)\b(await)\b
+    beginCaptures:
+      '1': { name: keyword.other.await.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#expression'
+
+  if-statement:
+    begin: (?<!\.)\b(if)\b
+    beginCaptures:
+      '1': { name: keyword.control.conditional.if.sk }
+    end: (?<=\})
+    patterns:
+      - include: '#expression'
+      - include: '#block'
+
+  else-statement:
+    begin: (?<!\.)\b(else)\b
+    beginCaptures:
+      '1': { name: keyword.control.conditional.else.sk }
+    end: (?<=\})
+    patterns:
+      - include: '#if-statement'
+      - include: '#block'
+
+  switch-statement:
+    begin: (?<!\.)\b(switch)\b\s*(?=\()
+    beginCaptures:
+      '1': { name: keyword.control.switch.sk }
+    end: (?<=\})
+    patterns:
+    - begin: \(
+      beginCaptures:
+        '0': { name: punctuation.parenthesis.open.sk }
+      end: \)
+      endCaptures:
+        '0': { name: punctuation.parenthesis.close.sk }
+      patterns:
+      - include: '#expression'
+    - begin: \{
+      beginCaptures:
+        '0': { name: punctuation.curlybrace.open.sk }
+      end: \}
+      endCaptures:
+        '0': { name: punctuation.curlybrace.close.sk }
+      patterns:
+      - include: '#switch-label'
+      - include: '#statement'
+
+  switch-label:
+    patterns:
+    - begin: (?<!\.)\b(case)\b\s+
+      beginCaptures:
+        '1': { name: keyword.control.case.sk }
+      end: ':'
+      endCaptures:
+        '0': { name: punctuation.separator.colon.sk }
+      patterns:
+      - include: '#expression'
+    - match: (?<!\.)\b(default)\b\s*(:)
+      captures:
+        '1': { name: keyword.control.default.sk }
+        '2': { name: punctuation.separator.colon.sk }
+
+  do-statement:
+    begin: (?<!\.)\b(do)\b
+    beginCaptures:
+      '1': { name: keyword.control.loop.do.sk }
+    end: (?=[;\n]})
+    patterns:
+    - include: '#statement'
+
+  while-statement:
+    begin: (?<!\.)\b(while)\b
+    beginCaptures:
+      '1': { name: keyword.control.loop.while.sk }
+    end: (?<=\})
+    patterns:
+      - include: '#expression'
+      - include: '#block'
+
+  for-statement:
+    begin: (?<!\.)\b(for)\b\s*(?=\()
+    beginCaptures:
+      '1': { name: keyword.control.loop.for.sk }
+    end: (?<=\})|(?=[;\n])
+    patterns:
+    - begin: \(
+      beginCaptures:
+        '0': { name: punctuation.parenthesis.open.sk }
+      end: \)
+      endCaptures:
+        '0': { name: punctuation.parenthesis.close.sk }
+      patterns:
+      - include: '#variable-declaration'
+      - include: '#expression'
+      - include: '#punctuation-comma'
+      - include: '#punctuation-semicolon'
+    - include: '#statement'
+
+  foreach-statement:
+    begin: (?<!\.)\b(foreach)\b
+    beginCaptures:
+      '1': { name: keyword.control.loop.foreach.sk }
+    end: (?<=\})
+    patterns:
+      - match: |-
+          (?x)
+          ([_[:alpha:]][_[:alnum:]]*)\s+
+          \b(in)\b
+        captures:
+          '1': { name: entity.name.variable.local.sk }
+          '2': { name: keyword.control.loop.in.sk }
+      - match: |-
+           (?x) # match foreach (var (x, y) in ...)
+           (?<tuple>\((?:[^\(\)]|\g<tuple>)+\))\s+
+           \b(in)\b
+        captures:
+          '1':
+            patterns:
+            - include: '#tuple-declaration-deconstruction-element-list'
+          '2': { name: keyword.control.loop.in.sk }
+      - include: '#expression'
+      - include: '#block'
+
+  try-statement:
+    patterns:
+    - include: '#try-block'
+    - include: '#catch-clause'
+    - include: '#finally-clause'
+
+  try-block:
+    begin: (?<!\.)\b(try)\b
+    beginCaptures:
+      '1': { name: keyword.control.try.sk }
+    end: (?<=\})
+    patterns:
+    - include: '#comment'
+    - include: '#block'
+
+  finally-clause:
+    begin: (?<!\.)\b(finally)\b
+    beginCaptures:
+      '1': { name: keyword.control.try.finally.sk }
+    end: (?<=\})
+    patterns:
+    - include: '#comment'
+    - include: '#block'
+
+  catch-clause:
+    begin: (?<!\.)\b(catch)\b
+    beginCaptures:
+        '1': { name: keyword.control.try.catch.sk }
+    end: (?<=\})
+    patterns:
+    - begin: \(
+      beginCaptures:
+        '0': { name: punctuation.parenthesis.open.sk }
+      end: \)
+      endCaptures:
+        '0': { name: punctuation.parenthesis.close.sk }
+      patterns:
+      - match: |-
+          (?x)
+          (?<type-name>
+            (?:
+              (?:
+                (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+                (?<name-and-type-args> # identifier + type arguments (if any)
+                  \g<identifier>\s*
+                  (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+                )
+                (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+                (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+              )
+              (?:\s*\?\s*)? # nullable suffix?
+              (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+            )
+          )\s*
+          (?:(\g<identifier>)\b)?
+        captures:
+          '1':
+            patterns:
+            - include: '#type'
+          # '2': ?<identifier> is a sub-expression. It's final value is not considered.
+          # '3': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+          # '4': ?<type-args> is a sub-expression. It's final value is not considered.
+          # '5': ?<tuple> is a sub-expression. It's final value is not considered.
+          '6': { name: entity.name.variable.local.sk }
+    - include: '#when-clause'
+    - include: '#comment'
+    - include: '#block'
+
+  when-clause:
+    begin: (?<!\.)\b(when)\b\s*(\()
+    beginCaptures:
+      '1': { name: keyword.control.try.when.sk }
+      '2': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#expression'
+    - include: '#comment'
+
+  checked-unchecked-statement:
+    begin: (?<!\.)\b(?:(checked)|(unchecked))\b\s*(?!\()
+    beginCaptures:
+      '1': { name: keyword.other.checked.sk }
+      '2': { name: keyword.other.unchecked.sk }
+    end: (?<=\})
+    patterns:
+    - include: '#block'
+    - include: '#comment'
+
+  lock-statement:
+    begin: (?<!\.)\b(lock)\b\s*(?=\()
+    beginCaptures:
+      '1': { name: keyword.other.lock.sk }
+    end: (?<=\})|(?=[;\n])
+    patterns:
+    - begin: \(
+      beginCaptures:
+        '0': { name: punctuation.parenthesis.open.sk }
+      end: \)
+      endCaptures:
+        '0': { name: punctuation.parenthesis.close.sk }
+      patterns:
+      - include: '#expression'
+    - include: '#statement'
+
+  using-statement:
+    begin: (?<!\.)\b(using)\b\s*(?=\()
+    beginCaptures:
+      '1': { name: keyword.other.using.sk }
+    end: (?=\;|})
+    patterns:
+    - begin: \(
+      beginCaptures:
+        '0': { name: punctuation.parenthesis.open.sk }
+      end: \)
+      endCaptures:
+        '0': { name: punctuation.parenthesis.close.sk }
+      patterns:
+      - include: '#variable-declaration'
+      - include: '#expression'
+    - include: '#statement'
+
+  labeled-statement:
+    match: '(@?[_[:alpha:]][_[:alnum:]]*)\s*(:)'
+    captures:
+      '1': { name: entity.name.label.sk }
+      '2': { name: punctuation.separator.colon.sk }
+
+  local-declaration:
+    patterns:
+    - include: '#variable-declaration'
+    - include: '#const-declaration'
+    - include: '#local-tuple-var-deconstruction'
+
+  variable-declaration:
+    begin: \b(var)\b\s+
+    beginCaptures:
+      '1': { name: keyword.other.var.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#identifier' 
+    - include: '#variable-optional-type'
+    - include: '#comment'
+    - include: '#variable-initializer'
+
+  const-declaration:
+    begin: \b(const)\b\s+
+    beginCaptures:
+      '1': { name: keyword.other.const.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#identifier' 
+    - include: '#variable-optional-type'
+    - include: '#comment'
+    - include: '#variable-initializer'
+
+  variable-optional-type:
+    begin: '\s*(:)\s*'
+    beginCaptures:
+      '1': { name: punctuation.separator.colon.sk }
+    end: (?=[=;\n])    
+    patterns:
+    - include: '#type'
+
+  local-constant-declaration:
+    begin: |-
+      (?x)
+      (?<const-keyword>\b(?:const)\b)\s*
+      (?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )\s+
+      (\g<identifier>)\s*
+      (?=,|;|=)
+    beginCaptures:
+      '1': { name: storage.modifier.sk }
+      '2':
+        patterns:
+        - include: '#type'
+      # '3': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '4': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '6': ?<tuple> is a sub-expression. It's final value is not considered.
+      '7': { name: entity.name.variable.local.sk }
+    end: (?=[;\n])
+    patterns:
+    - name: entity.name.variable.local.sk
+      match: '@?[_[:alpha:]][_[:alnum:]]*'
+    - include: '#punctuation-comma'
+    - include: '#comment'
+    - include: '#variable-initializer'
+
+  local-tuple-var-deconstruction:
+    begin: |-
+      (?x) # e.g. var (x, y) = GetPoint();
+      (?:\b(var)\b\s*)
+      (?<tuple>\((?:[^\(\)]|\g<tuple>)+\))\s*
+      (?=[;\n])
+    beginCaptures:
+      '1': { name: keyword.other.var.sk }
+      '2':
+        patterns:
+        - include: '#tuple-declaration-deconstruction-element-list'
+    end: (?=[;\n])
+    patterns:
+    - include: '#comment'
+    - include: '#variable-initializer'
+
+  tuple-deconstruction-assignment:
+    match: |-
+      (?x)
+      (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))\s*
+      (?!=>|==)(?==)
+    captures:
+      '1':
+        patterns:
+        - include: '#tuple-deconstruction-element-list'
+
+  tuple-declaration-deconstruction-element-list:
+    begin: \(
+    beginCaptures:
+      '0': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#comment'
+    - include: '#tuple-declaration-deconstruction-element-list'
+    - include: '#declaration-expression-tuple'
+    - include: '#punctuation-comma'
+    - match: |-
+        (?x) # e.g. x
+        (@?[_[:alpha:]][_[:alnum:]]*)\b\s*
+        (?=[,)])
+      captures:
+        '1': { name: entity.name.variable.tuple-element.sk }
+
+  tuple-deconstruction-element-list:
+    begin: \(
+    beginCaptures:
+      '0': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#comment'
+    - include: '#tuple-deconstruction-element-list'
+    - include: '#declaration-expression-tuple'
+    - include: '#punctuation-comma'
+    - match: |-
+        (?x) # e.g. x
+        (@?[_[:alpha:]][_[:alnum:]]*)\b\s*
+        (?=[,)])
+      captures:
+        '1': { name: variable.other.readwrite.sk }
+
+  declaration-expression-local:
+    match: |-
+      (?x) # e.g. int x OR var x
+      (?:
+        \b(var)\b|
+        (?<type-name>
+          (?:
+            (?:
+              (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+              (?<name-and-type-args> # identifier + type arguments (if any)
+                \g<identifier>\s*
+                (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+              )
+              (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+              (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+            )
+            (?:\s*\?\s*)? # nullable suffix?
+            (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+          )
+        )
+      )\s+
+      (\g<identifier>)\b\s*
+      (?=[,)\]])
+    captures:
+      '1': { name: keyword.other.var.sk }
+      '2':
+        patterns:
+        - include: '#type'
+      # '3': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '4': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '6': ?<tuple> is a sub-expression. It's final value is not considered.
+      '7': { name: entity.name.variable.local.sk }
+
+  declaration-expression-tuple:
+    match: |-
+      (?x) # e.g. int x OR var x
+      (?:
+        \b(var)\b|
+        (?<type-name>
+          (?:
+            (?:
+              (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+              (?<name-and-type-args> # identifier + type arguments (if any)
+                \g<identifier>\s*
+                (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+              )
+              (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+              (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+            )
+            (?:\s*\?\s*)? # nullable suffix?
+            (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+          )
+        )
+      )\s+
+      (\g<identifier>)\b\s*
+      (?=[,)])
+    captures:
+      '1': { name: keyword.other.var.sk }
+      '2':
+        patterns:
+        - include: '#type'
+      # '3': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '4': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '6': ?<tuple> is a sub-expression. It's final value is not considered.
+      '7': { name: entity.name.variable.tuple-element.sk }
+
+  checked-unchecked-expression:
+    begin: (?<!\.)\b(?:(checked)|(unchecked))\b\s*(\()
+    beginCaptures:
+      '1': { name: keyword.other.checked.sk }
+      '2': { name: keyword.other.unchecked.sk }
+      '3': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#expression'
+
+  typeof-or-default-expression:
+    begin: (?<!\.)\b(?:(typeof)|(default))\b\s*(\()
+    beginCaptures:
+      '1': { name: keyword.other.typeof.sk }
+      '2': { name: keyword.other.default.sk }
+      '3': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#type'
+
+  nameof-expression:
+    begin: (?<!\.)\b(nameof)\b\s*(\()
+    beginCaptures:
+      '1': { name: keyword.other.nameof.sk }
+      '2': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#expression'
+
+  throw-expression:
+    match: (?<!\.)\b(throw)\b
+    captures:
+      '1': { name: keyword.control.flow.throw.sk }
+
+  interpolated-string:
+    name: string.quoted.double.sk
+    begin: '\$"'
+    beginCaptures:
+      '0': { name: punctuation.definition.string.begin.sk }
+    end: (")|((?:[^\\\n])$)
+    endCaptures:
+      '1': { name: punctuation.definition.string.end.sk }
+      '2': { name: invalid.illegal.newline.sk }
+    patterns:
+    - include: '#string-character-escape'
+    - include: '#interpolation'
+
+  verbatim-interpolated-string:
+    name: string.quoted.double.sk
+    begin: '\$@"'
+    beginCaptures:
+      '0': { name: punctuation.definition.string.begin.sk }
+    end: '"(?=[^"])'
+    endCaptures:
+      '0': { name: punctuation.definition.string.end.sk }
+    patterns:
+    - include: '#verbatim-string-character-escape'
+    - include: '#interpolation'
+
+  interpolation:
+    name: meta.interpolation.sk
+    begin: (?<=[^\{])((?:\{\{)*)(\{)(?=[^\{])
+    beginCaptures:
+      '1': { name: string.quoted.double.sk }
+      '2': { name: punctuation.definition.interpolation.begin.sk }
+    end: \}
+    endCaptures:
+      '0': { name: punctuation.definition.interpolation.end.sk }
+    patterns:
+    - include: '#expression'
+
+  literal:
+    patterns:
+    - include: '#boolean-literal'
+    - include: '#null-literal'
+    - include: '#numeric-literal'
+    - include: '#char-literal'
+    - include: '#string-literal'
+    - include: '#verbatim-string-literal'
+    - include: '#tuple-literal'
+
+  boolean-literal:
+    patterns:
+    - name: constant.language.boolean.true.sk
+      match: (?<!\.)\btrue\b
+    - name: constant.language.boolean.false.sk
+      match: (?<!\.)\bfalse\b
+  null-literal:
+    name: constant.language.null.sk
+    match: (?<!\.)\bnull\b
+
+  numeric-literal:
+    patterns:
+    # C# grammar: 0x hex-digits integer-type-suffix[opt] OR 0X hex-digits integer-type-suffix[opt]
+    - name: constant.numeric.hex.sk
+      match: \b0(x|X)[0-9a-fA-F_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b
+    # C# grammar: 0b binary-digits integer-type-suffix[opt] OR 0B binary-digits integer-type-suffix[opt]
+    - name: constant.numeric.binary.sk
+      match: \b0(b|B)[01_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b
+    # C# grammar: decimal-digits . decimal-digits exponent-part[opt] real-type-suffix[opt] OR . decimal-digits exponent-part[opt] real-type-suffix[opt]
+    - name: constant.numeric.decimal.sk
+      match: \b([0-9_]+)?\.[0-9_]+((e|E)[0-9]+)?(F|f|D|d|M|m)?\b
+    #  C# grammar: decimal-digits exponent-part real-type-suffix[opt]
+    - name: constant.numeric.decimal.sk
+      match: \b[0-9_]+(e|E)[0-9_]+(F|f|D|d|M|m)?\b
+    # C# grammar: decimal-digits real-type-suffix
+    - name: constant.numeric.decimal.sk
+      match: \b[0-9_]+(F|f|D|d|M|m)\b
+    # C# grammar: decimal-digits integer-type-suffix[opt]
+    - name: constant.numeric.decimal.sk
+      match: \b[0-9_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b
+
+  char-literal:
+    name: string.quoted.single.sk
+    begin: "'"
+    beginCaptures:
+      '0': { name: punctuation.definition.char.begin.sk }
+    end: (\')|((?:[^\\\n])$)
+    endCaptures:
+      '1': { name: punctuation.definition.char.end.sk }
+      '2': { name: invalid.illegal.newline.sk }
+    patterns:
+    - include: '#char-character-escape'
+
+  char-character-escape:
+    name: constant.character.escape.sk
+    match: \\(['"\\0abfnrtv]|x[0-9a-fA-F]{1,4}|u[0-9a-fA-F]{4})
+
+  string-literal:
+    name: string.quoted.double.sk
+    begin: '(?<!@)"'
+    beginCaptures:
+      '0': { name: punctuation.definition.string.begin.sk }
+    end: (")|((?:[^\\\n])$)
+    endCaptures:
+      '1': { name: punctuation.definition.string.end.sk }
+      '2': { name: invalid.illegal.newline.sk }
+    patterns:
+    - include: '#string-character-escape'
+
+  string-character-escape:
+    name: constant.character.escape.sk
+    match: \\(['"\\0abfnrtv]|x[0-9a-fA-F]{1,4}|U[0-9a-fA-F]{8}|u[0-9a-fA-F]{4})
+
+  verbatim-string-literal:
+    name: string.quoted.double.sk
+    begin: '@"'
+    beginCaptures:
+      '0': { name: punctuation.definition.string.begin.sk }
+    end: '"(?=[^"])'
+    endCaptures:
+      '0': { name: punctuation.definition.string.end.sk }
+    patterns:
+    - include: '#verbatim-string-character-escape'
+
+  verbatim-string-character-escape:
+    name: constant.character.escape.sk
+    match: '""'
+
+  tuple-literal:
+    begin: (\()(?=.*[:,])
+    beginCaptures:
+      '1': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#comment'
+    - include: '#tuple-literal-element'
+    - include: '#punctuation-comma'
+
+  tuple-literal-element:
+    begin: |-
+      (?x)
+      (?:(@?[_[:alpha:]][_[:alnum:]]*)\s*(:)\s*)?
+      (?![,)])
+    beginCaptures:
+      '0': { name: entity.name.variable.tuple-element.sk }
+      '1': { name: punctuation.separator.colon.sk }
+    end: (?=[,)])
+    patterns:
+    - include: '#expression'
+
+  expression-operators:
+    patterns:
+    - name: keyword.operator.assignment.compound.sk
+      match: \*=|/=|%=|\+=|-=
+    - name: keyword.operator.assignment.compound.bitwise.sk
+      match: \&=|\^=|<<=|>>=|\|=
+    - name: keyword.operator.bitwise.shift.sk
+      match: <<|>>
+    - name: keyword.operator.comparison.sk
+      match: ==|!=
+    - name: keyword.operator.relational.sk
+      match: <=|>=|<|>
+    - name: keyword.operator.logical.sk
+      match: \!|&&|\|\|
+    - name: keyword.operator.bitwise.sk
+      match: \&|~|\^|\|
+    - name: keyword.operator.assignment.sk
+      match: \=
+    - name: keyword.operator.decrement.sk
+      match: --
+    - name: keyword.operator.increment.sk
+      match: \+\+
+    - name: keyword.operator.arithmetic.sk
+      match: '%|\*|/|-|\+'
+    - name: keyword.operator.null-coalescing.sk
+      match: \?\?
+
+  conditional-operator:
+    # Only match ? if:
+    # 1. There isn't a preceding or trailing ? (null-coalescing operator)
+    # 2. There isn't a trailing . or [ (null-conditional operator)
+    begin: (?<!\?)\?(?!\?|\.|\[)
+    beginCaptures:
+      '0': { name: keyword.operator.conditional.question-mark.sk }
+    end: ':'
+    endCaptures:
+      '0': { name: keyword.operator.conditional.colon.sk }
+    patterns:
+    - include: '#expression'
+
+  await-expression:
+    name: keyword.other.await.sk
+    match: (?!\.)\b(await)\b
+
+  parenthesized-expression:
+    begin: \(
+    beginCaptures:
+      '0': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#expression'
+
+  initializer-expression:
+    begin: \{
+    beginCaptures:
+      '0': { name: punctuation.curlybrace.open.sk }
+    end: \}
+    endCaptures:
+      '0': { name: punctuation.curlybrace.close.sk }
+    patterns:
+    - include: '#expression'
+    - include: '#punctuation-comma'
+
+  identifier:
+    name: variable.other.readwrite.sk
+    match: '@?[_[:alpha:]][_[:alnum:]]*'
+
+  cast-expression:
+    match: |-
+      (?x)
+      (\()\s*
+      (?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )\s*
+      (\))(?=\s*@?[_[:alnum:]\(])
+    captures:
+      '1': { name: punctuation.parenthesis.open.sk }
+      '2':
+        patterns:
+        - include: '#type'
+      # '3': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '4': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '6': ?<tuple> is a sub-expression. It's final value is not considered.
+      '7': { name: punctuation.parenthesis.close.sk }
+
+  as-expression:
+    match: |-
+      (?x)
+      (?<!\.)\b(as)\b\s*
+      (?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )?
+    captures:
+      '1': { name: keyword.other.as.sk }
+      '2':
+        patterns:
+        - include: '#type'
+
+  is-expression:
+    match: |-
+      (?x)
+      (?<!\.)\b(is)\b\s*
+      (?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )?
+    captures:
+      '1': { name: keyword.other.is.sk }
+      '2':
+        patterns:
+        - include: '#type'
+
+  this-or-base-expression:
+    match: \b(?:(base)|(this))\b
+    captures:
+      '1': { name: keyword.other.base.sk }
+      '2': { name: keyword.other.this.sk }
+
+  invocation-expression:
+    begin: |-
+      (?x)
+      (?:(\?)\s*)?                                     # preceding null-conditional operator?
+      (?:(\.)\s*)?                                     # preceding dot?
+      (@?[_[:alpha:]][_[:alnum:]]*)\s*                   # method name
+      (?<type-args>\s*<([^<>]|\g<type-args>)+>\s*)?\s* # type arguments
+      (?=\()                                           # open paren of argument list
+    beginCaptures:
+      '1': { name: keyword.operator.null-conditional.sk }
+      '2': { name: punctuation.accessor.sk }
+      '3': { name: entity.name.function.sk }
+      '4':
+        patterns:
+        - include: '#type-arguments'
+    end: (?<=\))
+    patterns:
+    - include: '#argument-list'
+
+  element-access-expression:
+    begin: |-
+      (?x)
+      (?:(\?)\s*)?                        # preceding null-conditional operator?
+      (?:(\.)\s*)?                        # preceding dot?
+      (?:(@?[_[:alpha:]][_[:alnum:]]*)\s*)? # property name
+      (?:(\?)\s*)?                        # null-conditional operator?
+      (?=\[)                              # open bracket of argument list
+    beginCaptures:
+      '1': { name: keyword.operator.null-conditional.sk }
+      '2': { name: punctuation.accessor.sk }
+      '3': { name: variable.other.object.property.sk }
+      '4': { name: keyword.operator.null-conditional.sk }
+    end: (?<=\])(?!\s*\[)
+    patterns:
+    - include: '#bracketed-argument-list'
+
+  member-access-expression:
+    patterns:
+      # An identifier with no type parameters and a dot to the left should
+      # be treated as a property, so long as it isn't followed by a ( or [.
+    - match: |-
+        (?x)
+        (?:(\?)\s*)?                   # preceding null-conditional operator?
+        (\.)\s*                        # preceding dot
+        (@?[_[:alpha:]][_[:alnum:]]*)\s* # property name
+        (?![_[:alnum:]]|\(|(\?)?\[|<)  # next character is not alpha-numeric, nor a (, [, or <. Also, test for ?[
+      captures:
+        '1': { name: keyword.operator.null-conditional.sk }
+        '2': { name: punctuation.accessor.sk }
+        '3': { name: variable.other.object.property.sk }
+      # An identifier with type parameters should be treated as an object,
+      # regardless of whether there is a dot to the left.
+    - match: |-
+        (?x)
+        (\.)?\s*
+        (@?[_[:alpha:]][_[:alnum:]]*)
+        (?<type-params>\s*<([^<>]|\g<type-params>)+>\s*)
+        (?=
+          (\s*\?)?
+          \s*\.\s*@?[_[:alpha:]][_[:alnum:]]*
+        )
+      captures:
+        '1': { name: punctuation.accessor.sk }
+        '2': { name: variable.other.object.sk }
+        '3':
+          patterns:
+          - include: '#type-arguments'
+      # An identifier with no type parameters (and no dot to the left per the
+      # matches above) should be treated as an object.
+    - match: |-
+        (?x)
+        (@?[_[:alpha:]][_[:alnum:]]*)
+        (?=
+          (\s*\?)?
+          \s*\.\s*@?[_[:alpha:]][_[:alnum:]]*
+        )
+      captures:
+        '1': { name: variable.other.object.sk }
+
+  object-creation-expression:
+    patterns:
+    - include: '#object-creation-expression-with-parameters'
+    - include: '#object-creation-expression-with-no-parameters'
+
+  object-creation-expression-with-parameters:
+    begin: \b(new)\b
+    beginCaptures:
+      '1': { name: keyword.other.new.sk }
+    end: (?<=\))
+    patterns:
+    - include: '#argument-list'
+
+  object-creation-expression-with-no-parameters:
+    match: |-
+      (?x)
+      (new)\s+
+      (?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )\s*
+      (?=\{|$)
+    captures:
+      '1': { name: keyword.other.new.sk }
+      '2':
+        patterns:
+        - include: '#type'
+
+  array-creation-expression:
+    begin: |-
+      (?x)
+      \b(new|stackalloc)\b\s*
+      (?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )?\s*
+      (?=\[)
+    beginCaptures:
+      '1': { name: keyword.other.new.sk }
+      '2':
+        patterns:
+        - include: '#type'
+    end: (?<=\])
+    patterns:
+    - include: '#bracketed-argument-list'
+
+  anonymous-object-creation-expression:
+    begin: \b(new)\b\s*(?=\{|$)
+    beginCaptures:
+      '1': { name: keyword.other.new.sk }
+    end: (?<=\})
+    patterns:
+    - include: '#initializer-expression'
+
+  bracketed-parameter-list:
+    begin: (?=(\[))
+    beginCaptures:
+      '1': { name: punctuation.squarebracket.open.sk }
+    end: (?=(\]))
+    endCaptures:
+      '1': { name: punctuation.squarebracket.close.sk }
+    patterns:
+    # Note: We have to be careful here to skip the [. Otherwise, attributes will conflict.
+    - begin: (?<=\[)
+      end: (?=\])
+      patterns:
+      - include: '#comment'
+      - include: '#attribute-section'
+      - include: '#parameter'
+      - include: '#punctuation-comma'
+      - include: '#variable-initializer'
+
+  parenthesized-parameter-list:
+    begin: (\()
+    beginCaptures:
+      '0': { name: punctuation.parenthesis.open.sk }
+    end: (\))
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#comment'
+    - include: '#attribute-section'
+    - include: '#parameter'
+    - include: '#punctuation-comma'
+    - include: '#variable-initializer'
+
+  parameter:
+    begin: ([_[:alpha:]][_[:alnum:]]*)\s*(:)
+    captures:
+      '1': { name: entity.name.variable.parameter.sk }
+      '2': { name: punctuation.separator.colon.sk }
+    end: (?=(,|\)|\]))      
+    patterns:
+      - include: '#type'
+
+  argument-list:
+    begin: \(
+    beginCaptures:
+      '0': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#named-argument'
+    - include: '#argument'
+    - include: '#punctuation-comma'
+
+  bracketed-argument-list:
+    begin: \[
+    beginCaptures:
+      '0': { name: punctuation.squarebracket.open.sk }
+    end: \]
+    endCaptures:
+      '0': { name: punctuation.squarebracket.close.sk }
+    patterns:
+    - include: '#named-argument'
+    - include: '#argument'
+    - include: '#punctuation-comma'
+
+  named-argument:
+    begin: (@?[_[:alpha:]][_[:alnum:]]*)\s*(:)
+    beginCaptures:
+      '1': { name: entity.name.variable.parameter.sk }
+      '2': { name: punctuation.separator.colon.sk }
+    end: (?=(,|\)|\]))
+    patterns:
+    - include: '#argument'
+
+  argument:
+    patterns:
+    - name: storage.modifier.sk
+      match: \b(ref|out|in)\b
+    - include: '#declaration-expression-local'
+    - include: '#expression'
+
+  query-expression:
+    begin: |-
+      (?x)
+      \b(from)\b\s*
+      (?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )?
+      \s+(\g<identifier>)\b\s*
+      \b(in)\b\s*
+    beginCaptures:
+      '1': { name: keyword.query.from.sk }
+      '2':
+        patterns:
+        - include: '#type'
+      # '3': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '4': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '6': ?<tuple> is a sub-expression. It's final value is not considered.
+      '7': { name: entity.name.variable.range-variable.sk }
+      '8': { name: keyword.query.in.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#query-body'
+    - include: '#expression'
+
+  query-body:
+    patterns:
+    - include: '#let-clause'
+    - include: '#where-clause'
+    - include: '#join-clause'
+    - include: '#orderby-clause'
+    - include: '#select-clause'
+    - include: '#group-clause'
+
+  let-clause:
+    begin: |-
+      (?x)
+      \b(let)\b\s*
+      (@?[_[:alpha:]][_[:alnum:]]*)\b\s*
+      (=)\s*
+    beginCaptures:
+      '1': { name: keyword.query.let.sk }
+      '2': { name: entity.name.variable.range-variable.sk }
+      '3': { name: keyword.operator.assignment.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#query-body'
+    - include: '#expression'
+
+  where-clause:
+    begin: |-
+      (?x)
+      \b(where)\b\s*
+    beginCaptures:
+      '1': { name: keyword.query.where.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#query-body'
+    - include: '#expression'
+
+  join-clause:
+    begin: |-
+      (?x)
+      \b(join)\b\s*
+      (?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )?
+      \s+(\g<identifier>)\b\s*
+      \b(in)\b\s*
+    beginCaptures:
+      '1': { name: keyword.query.join.sk }
+      '2':
+        patterns:
+        - include: '#type'
+      # '3': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '4': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '6': ?<tuple> is a sub-expression. It's final value is not considered.
+      '7': { name: entity.name.variable.range-variable.sk }
+      '8': { name: keyword.query.in.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#join-on'
+    - include: '#join-equals'
+    - include: '#join-into'
+    - include: '#query-body'
+    - include: '#expression'
+
+  join-on:
+    match: \b(on)\b\s*
+    captures:
+      '1': { name: keyword.query.on.sk }
+
+  join-equals:
+    match: \b(equals)\b\s*
+    captures:
+      '1': { name: keyword.query.equals.sk }
+
+  join-into:
+    match: |-
+      (?x)
+      \b(into)\b\s*
+      (@?[_[:alpha:]][_[:alnum:]]*)\b\s*
+    captures:
+      '1': { name: keyword.query.into.sk }
+      '2': { name: entity.name.variable.range-variable.sk }
+
+  orderby-clause:
+    begin: \b(orderby)\b\s*
+    beginCaptures:
+      '1': { name: keyword.query.orderby.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#ordering-direction'
+    - include: '#query-body'
+    - include: '#expression'
+    - include: '#punctuation-comma'
+
+  ordering-direction:
+    match: \b(?:(ascending)|(descending))\b
+    captures:
+      '1': { name: keyword.query.ascending.sk }
+      '2': { name: keyword.query.descending.sk }
+
+  select-clause:
+    begin: \b(select)\b\s*
+    beginCaptures:
+      '1': { name: keyword.query.select.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#query-body'
+    - include: '#expression'
+
+  group-clause:
+    begin: \b(group)\b\s*
+    beginCaptures:
+      '1': { name: keyword.query.group.sk }
+    end: (?=[;\n])
+    patterns:
+    - include: '#group-by'
+    - include: '#group-into'
+    - include: '#query-body'
+    - include: '#expression'
+
+  group-by:
+    match: \b(by)\b\s*
+    captures:
+      '1': { name: keyword.query.by.sk }
+
+  group-into:
+    match: |-
+      (?x)
+      \b(into)\b\s*
+      (@?[_[:alpha:]][_[:alnum:]]*)\b\s*
+    captures:
+      '1': { name: keyword.query.into.sk }
+      '2': { name: entity.name.variable.range-variable.sk }
+
+  anonymous-method-expression:
+    patterns:
+    - begin: |-
+        (?x)
+        (?:\b(async)\b\s*)?
+        (@?[_[:alpha:]][_[:alnum:]]*)\b\s*
+        (=>)
+      beginCaptures:
+        '1': { name: storage.modifier.sk }
+        '2': { name: entity.name.variable.parameter.sk }
+        '3': { name: keyword.operator.arrow.sk }
+      end: (?=\)|;|}|,)
+      patterns:
+      - include: '#block'
+      - include: '#ref-modifier'
+      - include: '#expression'
+    - begin: |-
+        (?x)
+        (?:\b(async)\b\s*)?
+        (\(.*?\))\s*
+        (=>)
+      beginCaptures:
+        '1': { name: storage.modifier.sk }
+        '2':
+          patterns:
+          - include: '#lambda-parameter-list'
+        '3': { name: keyword.operator.arrow.sk }
+      end: (?=\)|;|}|,)
+      patterns:
+      - include: '#block'
+      - include: '#ref-modifier'
+      - include: '#expression'
+    - begin: |-
+        (?x)
+        (?:\b(async)\b\s*)?
+        (?:\b(delegate)\b\s*)
+      beginCaptures:
+        '1': { name: storage.modifier.sk }
+        '2': { name: keyword.other.delegate.sk }
+      end: (?=\)|;|}|,)
+      patterns:
+      - include: '#parenthesized-parameter-list'
+      - include: '#block'
+      - include: '#expression'
+
+  lambda-parameter-list:
+    begin: \(
+    beginCaptures:
+      '0': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#comment'
+    - include: '#attribute-section'
+    - include: '#lambda-parameter'
+    - include: '#punctuation-comma'
+
+  lambda-parameter:
+    match: |-
+      (?x)
+      (?:\b(ref|out|in)\b)?\s*
+      (?:(?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )\s+)?
+      (\g<identifier>)\b\s*
+      (?=[,)])
+    captures:
+      '1': { name: storage.modifier.sk }
+      '2':
+        patterns:
+        - include: '#type'
+      # '3': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '4': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '6': ?<tuple> is a sub-expression. It's final value is not considered.
+      '7': { name: entity.name.variable.parameter.sk }
+
+  type:
+    name: meta.type.sk
+    patterns:
+    - include: '#comment'
+    - include: '#ref-modifier'
+    - include: '#readonly-modifier'
+    - include: '#type-array-prefix'
+    - include: '#tuple-type'
+    - include: '#pointer-type'
+    - include: '#type-builtin'    
+    - include: '#type-name'
+    - include: '#type-arguments'
+    - include: '#type-nullable-suffix'
+
+  pointer-type:
+    begin: \*+
+    beginCaptures:
+      '0': { name: punctuation.other.multiple.sk }
+    end: (?=[~\*])
+    patterns:
+    - include: '#type-builtin'    
+    - include: '#type-name'
+    - include: '#type-arguments'
+    - include: '#type-nullable-suffix'
+
+  ref-modifier:
+    name: storage.modifier.sk
+    match: \b(ref)\b
+
+  readonly-modifier:
+    name: storage.modifier.sk
+    match: \b(readonly)\b
+
+  tuple-type:
+    begin: \(
+    beginCaptures:
+      '0': { name: punctuation.parenthesis.open.sk }
+    end: \)
+    endCaptures:
+      '0': { name: punctuation.parenthesis.close.sk }
+    patterns:
+    - include: '#tuple-element'
+    - include: '#punctuation-comma'
+
+  tuple-element:
+    match: |-
+      (?x)
+      (?<type-name>
+        (?:
+          (?:
+            (?:(?<identifier>@?[_[:alpha:]][_[:alnum:]]*)\s*\:\:\s*)? # alias-qualification
+            (?<name-and-type-args> # identifier + type arguments (if any)
+              \g<identifier>\s*
+              (?<type-args>\s*<(?:[^<>]|\g<type-args>)+>\s*)?
+            )
+            (?:\s*\.\s*\g<name-and-type-args>)* | # Are there any more names being dotted into?
+            (?<tuple>\s*\((?:[^\(\)]|\g<tuple>)+\))
+          )
+          (?:\s*\?\s*)? # nullable suffix?
+          (?:\s*\[(?:\s*,\s*)*\]\s*)* # array suffix?
+        )
+      )
+      (?:(?<tuple-name>\g<identifier>)\b)?
+    captures:
+      '1':
+        patterns:
+        - include: '#type'
+      # '2': ?<identifier> is a sub-expression. It's final value is not considered.
+      # '3': ?<name-and-type-args> is a sub-expression. It's final value is not considered.
+      # '4': ?<type-args> is a sub-expression. It's final value is not considered.
+      # '5': ?<tuple> is a sub-expression. It's final value is not considered.
+      '6': { name: entity.name.variable.tuple-element.sk }
+
+  type-builtin:  
+    match: \b(bool|byte|int8|uint8|int16|uint16|int32|uint32|int64|uint64|int|uint|float32|float64|object|string)\b
+    captures:
+      '1': { name: keyword.type.sk }
+
+  type-name:
+    patterns:
+    - match: (@?[_[:alpha:]][_[:alnum:]]*)\s*(\:\:)
+      captures:
+        '1': { name: entity.name.type.alias.sk }
+        '2': { name: punctuation.separator.coloncolon.sk }
+    - match: (@?[_[:alpha:]][_[:alnum:]]*)\s*(\.)
+      captures:
+        '1': { name: entity.name.type.alias.sk }
+        '2': { name: punctuation.accessor.sk }
+    - match: (\.)\s*(@?[_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: punctuation.accessor.sk }
+        '2': { name: entity.name.type.alias.sk }
+    - name: entity.name.type.alias.sk
+      match: '@?[_[:alpha:]][_[:alnum:]]*'
+
+  type-arguments:
+    begin: '<'
+    beginCaptures:
+      '0': { name: punctuation.definition.typeparameters.begin.sk }
+    end: '>'
+    endCaptures:
+      '0': { name: punctuation.definition.typeparameters.end.sk }
+    patterns:
+    - include: '#comment'
+    - include: '#type'
+    - include: '#punctuation-comma'
+
+  type-array-prefix:
+    begin: \[
+    beginCaptures:
+      '0': { name: punctuation.squarebracket.open.sk }
+    end: \]
+    endCaptures:
+      '0': { name: punctuation.squarebracket.close.sk }
+
+  type-nullable-suffix:
+    match: '\?'
+    captures:
+      '0': { name: punctuation.separator.question-mark.sk }
+
+  operator-assignment:
+    name: keyword.operator.assignment.sk
+    match: (?<!=|!)(=)(?!=)
+
+  punctuation-comma:
+    name: punctuation.separator.comma.sk
+    match: ','
+
+  punctuation-semicolon:
+    name: punctuation.terminator.statement.sk
+    match: ;
+
+  punctuation-accessor:
+    name: punctuation.accessor.sk
+    match: \.
+
+  preprocessor:
+    name: meta.preprocessor.sk
+    begin: ^\s*(\#)\s*
+    beginCaptures:
+      '1': { name: punctuation.separator.hash.sk }
+    end: (?<=$)
+    patterns:
+    - include: '#comment'
+    - include: '#preprocessor-define-or-undef'
+    - include: '#preprocessor-if-or-elif'
+    - include: '#preprocessor-else-or-endif'
+    - include: '#preprocessor-warning-or-error'
+    - include: '#preprocessor-region'
+    - include: '#preprocessor-endregion'
+    - include: '#preprocessor-load'
+    - include: '#preprocessor-r'
+    - include: '#preprocessor-line'
+    - include: '#preprocessor-pragma-warning'
+    - include: '#preprocessor-pragma-checksum'
+
+  preprocessor-define-or-undef:
+    match: \b(?:(define)|(undef))\b\s*\b([_[:alpha:]][_[:alnum:]]*)\b
+    captures:
+      '1': { name: keyword.preprocessor.define.sk }
+      '2': { name: keyword.preprocessor.undef.sk }
+      '3': { name: entity.name.variable.preprocessor.symbol.sk }
+
+  preprocessor-if-or-elif:
+    begin: \b(?:(if)|(elif))\b
+    beginCaptures:
+      '1': { name: keyword.preprocessor.if.sk }
+      '2': { name: keyword.preprocessor.elif.sk }
+    end: (?=$)
+    patterns:
+    - include: '#comment'
+    - include: '#preprocessor-expression'
+
+  preprocessor-else-or-endif:
+    match: \b(?:(else)|(endif))\b
+    captures:
+      '1': { name: keyword.preprocessor.else.sk }
+      '2': { name: keyword.preprocessor.endif.sk }
+
+  preprocessor-warning-or-error:
+    match: \b(?:(warning)|(error))\b\s*(.*)(?=$)
+    captures:
+      '1': { name: keyword.preprocessor.warning.sk }
+      '2': { name: keyword.preprocessor.error.sk }
+      '3': { name: string.unquoted.preprocessor.message.sk }
+
+  preprocessor-load:
+    begin: \b(load)\b
+    beginCaptures:
+      '1': { name: keyword.preprocessor.load.sk }
+    end: (?=$)
+    patterns:
+    - match: \"[^"]*\"
+      captures:
+        '0': { name: string.quoted.double.sk }
+
+  preprocessor-r:
+    begin: \b(r)\b
+    beginCaptures:
+      '1': { name: keyword.preprocessor.r.sk }
+    end: (?=$)
+    patterns:
+    - match: \"[^"]*\"
+      captures:
+        '0': { name: string.quoted.double.sk }
+
+  preprocessor-region:
+    match: \b(region)\b\s*(.*)(?=$)
+    captures:
+      '1': { name: keyword.preprocessor.region.sk }
+      '2': { name: string.unquoted.preprocessor.message.sk }
+
+  preprocessor-endregion:
+    match: \b(endregion)\b
+    captures:
+      '1': { name: keyword.preprocessor.endregion.sk }
+
+  preprocessor-line:
+    begin: \b(line)\b
+    beginCaptures:
+      '1': { name: keyword.preprocessor.line.sk }
+    end: (?=$)
+    patterns:
+    - match: \b(?:(default|hidden))
+      captures:
+        '1': { name: keyword.preprocessor.default.sk }
+        '2': { name: keyword.preprocessor.hidden.sk }
+    - match: '[0-9]+'
+      captures:
+        '0': { name: constant.numeric.decimal.sk }
+    - match: \"[^"]*\"
+      captures:
+        '0': { name: string.quoted.double.sk }
+
+  preprocessor-pragma-warning:
+    match: \b(pragma)\b\s*\b(warning)\b\s*\b(?:(disable)|(restore))\b(\s*[0-9]+(?:\s*,\s*[0-9]+)?)?
+    captures:
+      '1': { name: keyword.preprocessor.pragma.sk }
+      '2': { name: keyword.preprocessor.warning.sk }
+      '3': { name: keyword.preprocessor.disable.sk }
+      '4': { name: keyword.preprocessor.restore.sk }
+      '5':
+        patterns:
+        - match: '[0-9]+'
+          captures:
+            '0': { name: constant.numeric.decimal.sk }
+        - include: '#punctuation-comma'
+
+  preprocessor-pragma-checksum:
+    match: \b(pragma)\b\s*\b(checksum)\b\s*(\"[^"]*\")\s*(\"[^"]*\")\s*(\"[^"]*\")
+    captures:
+      '1': { name: keyword.preprocessor.pragma.sk }
+      '2': { name: keyword.preprocessor.checksum.sk }
+      '3': { name: string.quoted.double.sk }
+      '4': { name: string.quoted.double.sk }
+      '5': { name: string.quoted.double.sk }
+
+  preprocessor-expression:
+    patterns:
+    - begin: \(
+      beginCaptures:
+        '0': { name: punctuation.parenthesis.open.sk }
+      end: \)
+      endCaptures:
+        '0': { name: punctuation.parenthesis.close.sk }
+      patterns:
+      - include: '#preprocessor-expression'
+    - match: \b(?:(true)|(false)|([_[:alpha:]][_[:alnum:]]*))\b
+      captures:
+        '1': { name: constant.language.boolean.true.sk }
+        '2': { name: constant.language.boolean.false.sk }
+        '3': { name: entity.name.variable.preprocessor.symbol.sk }
+    - match: (==|!=)|(\!|&&|\|\|)
+      captures:
+        '1': { name: keyword.operator.comparison.sk }
+        '2': { name: keyword.operator.logical.sk }
+
+  comment:
+    patterns:
+    - name: comment.block.sk
+      begin: /\*
+      beginCaptures:
+        '0': { name: punctuation.definition.comment.sk }
+      end: \*/
+      endCaptures:
+        '0': { name: punctuation.definition.comment.sk }
+    - begin: (^\s+)?(?=//)
+      beginCaptures:
+        '1': { name: punctuation.whitespace.comment.leading.sk }
+      end: (?=$)
+      patterns:
+      - name: comment.block.documentation.sk
+        begin: (?<!/)///(?!/)
+        beginCaptures:
+          '0': { name: punctuation.definition.comment.sk }
+        end: (?=$)
+        patterns:
+        - include: '#xml-doc-comment'
+      - name: comment.line.double-slash.sk
+        begin: (?<!/)//(?:(?!/)|(?=//))
+        beginCaptures:
+          '0': { name: punctuation.definition.comment.sk }
+        end: (?=$)
+
+  xml-doc-comment:
+    patterns:
+    - include: '#xml-comment'
+    - include: '#xml-character-entity'
+    - include: '#xml-cdata'
+    - include: '#xml-tag'
+
+  xml-tag:
+    name: meta.tag.sk
+    begin: |-
+      (?x)
+      (</?)
+      (
+        (?:
+          ([-_[:alnum:]]+)
+          (:)
+        )?
+        ([-_[:alnum:]]+)
+      )
+    beginCaptures:
+      '1': { name: punctuation.definition.tag.sk }
+      '2': { name: entity.name.tag.sk }
+      '3': { name: entity.name.tag.namespace.sk }
+      '4': { name: punctuation.separator.colon.sk }
+      '5': { name: entity.name.tag.localname.sk }
+    end: (/?>)
+    endCaptures:
+      '1': { name: punctuation.definition.tag.sk }
+    patterns:
+    - include: '#xml-attribute'
+
+  xml-attribute:
+    patterns:
+    - match: |-
+        (?x)
+        (?:^|\s+)
+        (
+          (?:
+            ([-_[:alnum:]]+)
+            (:)
+          )?
+          ([-_[:alnum:]]+)
+        )
+        (=)
+      captures:
+        '1': { name: entity.other.attribute-name.sk }
+        '2': { name: entity.other.attribute-name.namespace.sk }
+        '3': { name: punctuation.separator.colon.sk }
+        '4': { name: entity.other.attribute-name.localname.sk }
+        '5': { name: punctuation.separator.equals.sk }
+    - include: '#xml-string'
+
+  xml-cdata:
+    name: string.unquoted.cdata.sk
+    begin: <!\[CDATA\[
+    beginCaptures:
+      '0': { name: punctuation.definition.string.begin.sk }
+    end: \]\]>
+    endCaptures:
+      '0': { name: punctuation.definition.string.end.sk }
+
+  xml-string:
+    patterns:
+    - name: string.quoted.single.sk
+      begin: \'
+      beginCaptures:
+        '0': { name: punctuation.definition.string.begin.sk }
+      end: \'
+      endCaptures:
+        '0': { name: punctuation.definition.string.end.sk }
+      patterns:
+      - include: '#xml-character-entity'
+    - name: string.quoted.double.sk
+      begin: \"
+      beginCaptures:
+        '0': { name: punctuation.definition.string.begin.sk }
+      end: \"
+      endCaptures:
+        '0': { name: punctuation.definition.string.end.sk }
+      patterns:
+      - include: '#xml-character-entity'
+
+  xml-character-entity:
+    patterns:
+    - name: constant.character.entity.sk
+      match: |-
+        (?x)
+        (&)
+        (
+          (?:[[:alpha:]:_][[:alnum:]:_.-]*)|
+          (?:\#[[:digit:]]+)|
+          (?:\#x[[:xdigit:]]+)
+        )
+        (;)
+      captures:
+        '1': { name: punctuation.definition.constant.sk }
+        '3': { name: punctuation.definition.constant.sk }
+    - name: invalid.illegal.bad-ampersand.sk
+      match: '&'
+
+  xml-comment:
+    name: comment.block.sk
+    begin: <!--
+    beginCaptures:
+      '0': { name: punctuation.definition.comment.sk }
+    end: -->
+    endCaptures:
+      '0': { name: punctuation.definition.comment.sk }
