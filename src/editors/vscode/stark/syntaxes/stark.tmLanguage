@@ -20,6 +20,10 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#extension-declaration</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#control-keywords</string>
       </dict>
       <dict>
@@ -32,11 +36,43 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#vector-types</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#visibility-modifiers</string>
       </dict>
       <dict>
         <key>include</key>
-        <string>#type-declarations</string>
+        <string>#attribute-declaration</string>
+      </dict>
+      <dict>
+        <key>include</key>
+        <string>#import-declaration</string>
+      </dict>
+      <dict>
+        <key>include</key>
+        <string>#namespace-declaration</string>
+      </dict>
+      <dict>
+        <key>include</key>
+        <string>#module-declaration</string>
+      </dict>
+      <dict>
+        <key>include</key>
+        <string>#func-declaration</string>
+      </dict>
+      <dict>
+        <key>include</key>
+        <string>#invoke-declaration</string>
+      </dict>
+      <dict>
+        <key>include</key>
+        <string>#type-declaration</string>
+      </dict>
+      <dict>
+        <key>include</key>
+        <string>#inherit-declarations</string>
       </dict>
       <dict>
         <key>include</key>
@@ -62,46 +98,414 @@
           </dict>
         </dict>
       </dict>
+      <key>vector-types</key>
+      <dict>
+        <key>match</key>
+        <string>\b(f64x2|f32x4|i64x2|i32x4|i16x8|i8x16|u64x2|u32x4|u16x8|u8x16)\b</string>
+        <key>captures</key>
+        <dict>
+          <key>1</key>
+          <dict>
+            <key>name</key>
+            <string>keyword.type.sk</string>
+          </dict>
+        </dict>
+      </dict>
       <key>visibility-modifiers</key>
       <dict>
         <key>name</key>
         <string>storage.modifier.sk</string>
         <key>match</key>
-        <string>(?&lt;!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readonly|transient|static|unsafe|virtual|volatile)\b</string>
+        <string>(?&lt;!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readonly|transient|static|unsafe|virtual|sealed)\b</string>
       </dict>
-      <key>type-declarations</key>
+      <key>module-declaration</key>
       <dict>
         <key>patterns</key>
         <array>
           <dict>
-            <key>name</key>
-            <string>keyword.other.class.sk</string>
             <key>match</key>
-            <string>\bclass\b</string>
+            <string>\b(module)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.module.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.module.sk</string>
+              </dict>
+            </dict>
+          </dict>
+        </array>
+      </dict>
+      <key>attribute-declaration</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>(@)\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>markup.underline.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>patterns</key>
+                <array>
+                  <dict>
+                    <key>match</key>
+                    <string>[_[:alpha:]][_[:alnum:]]*</string>
+                    <key>name</key>
+                    <string>entity.name.type.attribute.sk</string>
+                  </dict>
+                </array>
+              </dict>
+            </dict>
+          </dict>
+        </array>
+      </dict>
+      <key>import-declaration</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>\b(import)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.import.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>patterns</key>
+                <array>
+                  <dict>
+                    <key>match</key>
+                    <string>[_[:alpha:]][_[:alnum:]]*</string>
+                    <key>name</key>
+                    <string>entity.name.type.import.sk</string>
+                  </dict>
+                </array>
+              </dict>
+            </dict>
           </dict>
           <dict>
-            <key>name</key>
-            <string>keyword.other.struct.sk</string>
             <key>match</key>
-            <string>\bstruct\b</string>
+            <string>\b(import)\b</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.import.sk</string>
+              </dict>
+            </dict>
+          </dict>
+        </array>
+      </dict>
+      <key>namespace-declaration</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>\b(namespace)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.namespace.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>patterns</key>
+                <array>
+                  <dict>
+                    <key>match</key>
+                    <string>[_[:alpha:]][_[:alnum:]]*</string>
+                    <key>name</key>
+                    <string>entity.name.type.namespace.sk</string>
+                  </dict>
+                </array>
+              </dict>
+            </dict>
           </dict>
           <dict>
-            <key>name</key>
-            <string>keyword.other.trait.sk</string>
             <key>match</key>
-            <string>\binterface\b</string>
+            <string>\b(namespace)\b</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.namespace.sk</string>
+              </dict>
+            </dict>
+          </dict>
+        </array>
+      </dict>
+      <key>type-declaration</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>\b(class)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.class.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.class.sk</string>
+              </dict>
+            </dict>
           </dict>
           <dict>
-            <key>name</key>
-            <string>keyword.other.enum.sk</string>
             <key>match</key>
-            <string>\benum\b</string>
+            <string>\b(struct)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.struct.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.struct.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
+            <string>\b(interface)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.interface.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.interface.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
+            <string>\b(enum)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.enum.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.enum.sk</string>
+              </dict>
+            </dict>
           </dict>
           <dict>
             <key>name</key>
             <string>keyword.other.union.sk</string>
             <key>match</key>
-            <string>\bunion\b</string>
+            <string>\b(union)\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.struct.sk</string>
+            <key>match</key>
+            <string>\b(struct)\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.class.sk</string>
+            <key>match</key>
+            <string>\b(class)\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.interface.sk</string>
+            <key>match</key>
+            <string>\b(interface)\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.enum.sk</string>
+            <key>match</key>
+            <string>\b(enum)\b</string>
+          </dict>
+        </array>
+      </dict>
+      <key>extension-declaration</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>\b(extension)\b\s*([_[:alpha:]][_[:alnum:]]*)\s*(?:&lt;[^&gt;]*&gt;)?\s*\b(for)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.extension.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.extension.sk</string>
+              </dict>
+              <key>3</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.for.sk</string>
+              </dict>
+              <key>4</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.class.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
+            <string>\b(extension)\b</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.extension.sk</string>
+              </dict>
+            </dict>
+          </dict>
+        </array>
+      </dict>
+      <key>inherit-declarations</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>\b(extends)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.extends.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.class.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
+            <string>\b(implements)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.implements.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.interface.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.extends.sk</string>
+            <key>match</key>
+            <string>\b(extends)\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.implements.sk</string>
+            <key>match</key>
+            <string>\b(implements)\b</string>
+          </dict>
+        </array>
+      </dict>
+      <key>func-declaration</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>\b(func)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.func.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.function.cs</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.func.sk</string>
+            <key>match</key>
+            <string>\bfunc\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>entity.name.function.sk</string>
+            <key>match</key>
+            <string>\bconstructor\b</string>
+          </dict>
+        </array>
+      </dict>
+      <key>invoke-declaration</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>([_[:alpha:]][_[:alnum:]]*)(?:\s*\()</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.function.cs</string>
+              </dict>
+            </dict>
           </dict>
         </array>
       </dict>
@@ -219,9 +623,9 @@
           </dict>
           <dict>
             <key>name</key>
-            <string>entity.name.function.sk</string>
+            <string>constant.language.class.null.sk</string>
             <key>match</key>
-            <string>\bconstructor\b</string>
+            <string>\bnull\b</string>
           </dict>
         </array>
       </dict>
@@ -230,7 +634,7 @@
         <key>name</key>
         <string>keyword.type.sk</string>
         <key>match</key>
-        <string>\b(alias|as|await|base|default|extends|fatal|func|get|implements|import|is|let|match|namespace|module|operator|out|params|ref|requires|set|sizeof|this|throws|typeof|value|var|where)\b</string>
+        <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|out|params|ref|requires|set|sizeof|this|throws|typeof|value|var|where)\b</string>
       </dict>
       <key>comment</key>
       <dict>
@@ -290,13 +694,6 @@
                 </dict>
                 <key>end</key>
                 <string>(?=$)</string>
-                <key>patterns</key>
-                <array>
-                  <dict>
-                    <key>include</key>
-                    <string>#xml-doc-comment</string>
-                  </dict>
-                </array>
               </dict>
               <dict>
                 <key>name</key>
@@ -348,37 +745,37 @@
             <key>name</key>
             <string>constant.numeric.hex.sk</string>
             <key>match</key>
-            <string>\b0(x|X)[0-9a-fA-F_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b</string>
+            <string>\b0(x|X)[0-9a-fA-F_]+(i8|i16|i32|i64|u8|u16|u32|u64)?\b</string>
           </dict>
           <dict>
             <key>name</key>
             <string>constant.numeric.binary.sk</string>
             <key>match</key>
-            <string>\b0(b|B)[01_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b</string>
+            <string>\b0(b|B)[01_]+(i8|i16|i32|i64|u8|u16|u32|u64)?\b</string>
           </dict>
           <dict>
             <key>name</key>
             <string>constant.numeric.decimal.sk</string>
             <key>match</key>
-            <string>\b([0-9_]+)?\.[0-9_]+((e|E)[0-9]+)?(F|f|D|d|M|m)?\b</string>
+            <string>\b([0-9_]+)?\.[0-9_]+((e|E)[0-9]+)?(f32|64)?\b</string>
           </dict>
           <dict>
             <key>name</key>
             <string>constant.numeric.decimal.sk</string>
             <key>match</key>
-            <string>\b[0-9_]+(e|E)[0-9_]+(F|f|D|d|M|m)?\b</string>
+            <string>\b[0-9_]+(e|E)[0-9_]+(f32|f64)?\b</string>
           </dict>
           <dict>
             <key>name</key>
             <string>constant.numeric.decimal.sk</string>
             <key>match</key>
-            <string>\b[0-9_]+(F|f|D|d|M|m)\b</string>
+            <string>\b[0-9_]+(f32|f64)\b</string>
           </dict>
           <dict>
             <key>name</key>
             <string>constant.numeric.decimal.sk</string>
             <key>match</key>
-            <string>\b[0-9_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b</string>
+            <string>\b[0-9_]+(i8|i16|i32|i64|u8|u16|u32|u64)?\b</string>
           </dict>
         </array>
       </dict>
@@ -437,7 +834,7 @@
           <key>0</key>
           <dict>
             <key>name</key>
-            <string>punctuation.definition.skring.begin.sk</string>
+            <string>punctuation.definition.string.begin.sk</string>
           </dict>
         </dict>
         <key>end</key>
@@ -447,7 +844,7 @@
           <key>1</key>
           <dict>
             <key>name</key>
-            <string>punctuation.definition.skring.end.sk</string>
+            <string>punctuation.definition.string.end.sk</string>
           </dict>
           <key>2</key>
           <dict>
@@ -475,23 +872,23 @@
         <key>name</key>
         <string>string.quoted.double.sk</string>
         <key>begin</key>
-        <string>@"</string>
+        <string>`"</string>
         <key>beginCaptures</key>
         <dict>
           <key>0</key>
           <dict>
             <key>name</key>
-            <string>punctuation.definition.skring.begin.sk</string>
+            <string>punctuation.definition.string.begin.sk</string>
           </dict>
         </dict>
         <key>end</key>
-        <string>"(?=[^"])</string>
+        <string>"`</string>
         <key>endCaptures</key>
         <dict>
           <key>0</key>
           <dict>
             <key>name</key>
-            <string>punctuation.definition.skring.end.sk</string>
+            <string>punctuation.definition.string.end.sk</string>
           </dict>
         </dict>
         <key>patterns</key>

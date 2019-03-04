@@ -1,0 +1,13 @@
+{
+  "iconDefinitions": {
+	  "_stark_file": {
+				"iconPath": "./file_type_stark.svg"
+			}
+	},
+	"fileExtensions": {
+		"sk": "_stark_file"
+	},
+	"languageIds": {
+		"Stark": "_stark_file"
+	}
+}

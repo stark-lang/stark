@@ -6,11 +6,20 @@ uuid: 582789B5-991D-49E1-8E39-54327B3DBDFF
 
 patterns:
 - include: '#comment'
+- include: '#extension-declaration'
 - include: '#control-keywords'
 - include: '#keywords'
 - include: '#builtin-types'
+- include: '#vector-types'
 - include: '#visibility-modifiers'
-- include: '#type-declarations'
+- include: '#attribute-declaration'
+- include: '#import-declaration'
+- include: '#namespace-declaration'
+- include: '#module-declaration'
+- include: '#func-declaration'
+- include: '#invoke-declaration'
+- include: '#type-declaration'
+- include: '#inherit-declarations'
 - include: '#keywords'
 - include: '#literals'
 
@@ -19,21 +28,120 @@ repository:
     match: \b(bool|rune|f64|f32|i64|i32|i16|i8|u64|u32|u16|u8|int|uint|object|string)\b
     captures:
       '1': {name: keyword.type.sk}
+  vector-types:
+    match: \b(f64x2|f32x4|i64x2|i32x4|i16x8|i8x16|u64x2|u32x4|u16x8|u8x16)\b
+    captures:
+      '1': {name: keyword.type.sk}
   visibility-modifiers:
     name: storage.modifier.sk
-    match: (?<!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readonly|transient|static|unsafe|virtual|volatile)\b
-  type-declarations:
+    match: (?<!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readonly|transient|static|unsafe|virtual|sealed)\b
+  module-declaration:
     patterns:
-    - name: keyword.other.class.sk
-      match: \bclass\b
-    - name: keyword.other.struct.sk
-      match: \bstruct\b
-    - name: keyword.other.trait.sk
-      match: \binterface\b
-    - name: keyword.other.enum.sk
-      match: \benum\b
+    - match: \b(module)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.module.sk }      
+        '2': { name: entity.name.type.module.sk }      
+  attribute-declaration:
+    patterns:
+    - match: '(@)\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)'
+      captures:
+        '1': { name: markup.underline.sk }      
+        '2': 
+             patterns: 
+             - match: '[_[:alpha:]][_[:alnum:]]*'
+               name: entity.name.type.attribute.sk     
+  import-declaration:
+    patterns:
+    - match: '\b(import)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)'
+      captures:
+        '1': { name: keyword.other.import.sk }      
+        '2': 
+             patterns: 
+             - match: '[_[:alpha:]][_[:alnum:]]*'
+               name: entity.name.type.import.sk     
+    - match: '\b(import)\b'
+      captures:
+        '1': { name: keyword.other.import.sk }      
+  namespace-declaration:
+    patterns:
+    - match: '\b(namespace)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)'
+      captures:
+        '1': { name: keyword.other.namespace.sk }      
+        '2': 
+             patterns: 
+             - match: '[_[:alpha:]][_[:alnum:]]*'
+               name: entity.name.type.namespace.sk     
+    - match: '\b(namespace)\b'
+      captures:
+        '1': { name: keyword.other.namespace.sk }      
+  type-declaration:
+    patterns:
+    - match: \b(class)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.class.sk }      
+        '2': { name: entity.name.type.class.sk }      
+    - match: \b(struct)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.struct.sk }      
+        '2': { name: entity.name.type.struct.sk }      
+    - match: \b(interface)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.interface.sk }      
+        '2': { name: entity.name.type.interface.sk }      
+    - match: \b(enum)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.enum.sk }      
+        '2': { name: entity.name.type.enum.sk }      
     - name: keyword.other.union.sk
-      match: \bunion\b
+      match: \b(union)\b
+    - name: keyword.other.struct.sk
+      match: \b(struct)\b
+    - name: keyword.other.class.sk
+      match: \b(class)\b
+    - name: keyword.other.interface.sk
+      match: \b(interface)\b
+    - name: keyword.other.enum.sk
+      match: \b(enum)\b
+  extension-declaration:
+    patterns:
+    - match: \b(extension)\b\s*([_[:alpha:]][_[:alnum:]]*)\s*(?:<[^>]*>)?\s*\b(for)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.extension.sk }      
+        '2': { name: entity.name.type.extension.sk }      
+        '3': { name: keyword.other.for.sk }      
+        '4': { name: entity.name.type.class.sk }      
+    - match: \b(extension)\b
+      captures:
+        '1': { name: keyword.other.extension.sk }      
+  inherit-declarations:
+    patterns:
+    - match: \b(extends)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.extends.sk }      
+        '2': { name: entity.name.type.class.sk }      
+    - match: \b(implements)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.implements.sk }      
+        '2': { name: entity.name.type.interface.sk }      
+    - name: keyword.other.extends.sk
+      match: \b(extends)\b
+    - name: keyword.other.implements.sk
+      match: \b(implements)\b
+  func-declaration:
+    patterns:
+    - match: \b(func)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.func.sk }      
+        '2': { name: entity.name.function.cs  }      
+    - name: keyword.other.func.sk
+      match: \bfunc\b
+    - name: entity.name.function.sk
+      match: \bconstructor\b
+  invoke-declaration:
+    patterns:
+    - match: '([_[:alpha:]][_[:alnum:]]*)(?:\s*\()'
+      captures:
+        '1': { name: entity.name.function.cs  }      
   control-keywords:
     patterns:
       - name: keyword.control.conditional.if.sk
@@ -72,12 +180,11 @@ repository:
         match: \btrue\b
       - name: constant.language.boolean.false.sk
         match: \bfalse\b
-      - name: entity.name.function.sk
-        match: \bconstructor\b
-
+      - name: constant.language.class.null.sk
+        match: \bnull\b
   keywords:
     name: keyword.type.sk
-    match: \b(alias|as|await|base|default|extends|fatal|func|get|implements|import|is|let|match|namespace|module|operator|out|params|ref|requires|set|sizeof|this|throws|typeof|value|var|where)\b
+    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|out|params|ref|requires|set|sizeof|this|throws|typeof|value|var|where)\b
   comment:
     patterns:
     - name: comment.block.sk
@@ -97,8 +204,6 @@ repository:
         beginCaptures:
           '0': {name: punctuation.definition.comment.sk}
         end: (?=$)
-        patterns:
-        - include: '#xml-doc-comment'
       - name: comment.line.double-slash.sk
         begin: (?<!/)//(?!/)
         beginCaptures:
@@ -114,17 +219,17 @@ repository:
   numeric-literal:
     patterns:
     - name: constant.numeric.hex.sk
-      match: \b0(x|X)[0-9a-fA-F_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b
+      match: \b0(x|X)[0-9a-fA-F_]+(i8|i16|i32|i64|u8|u16|u32|u64)?\b
     - name: constant.numeric.binary.sk
-      match: \b0(b|B)[01_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b
+      match: \b0(b|B)[01_]+(i8|i16|i32|i64|u8|u16|u32|u64)?\b
     - name: constant.numeric.decimal.sk
-      match: \b([0-9_]+)?\.[0-9_]+((e|E)[0-9]+)?(F|f|D|d|M|m)?\b
+      match: \b([0-9_]+)?\.[0-9_]+((e|E)[0-9]+)?(f32|64)?\b
     - name: constant.numeric.decimal.sk
-      match: \b[0-9_]+(e|E)[0-9_]+(F|f|D|d|M|m)?\b
+      match: \b[0-9_]+(e|E)[0-9_]+(f32|f64)?\b
     - name: constant.numeric.decimal.sk
-      match: \b[0-9_]+(F|f|D|d|M|m)\b
+      match: \b[0-9_]+(f32|f64)\b
     - name: constant.numeric.decimal.sk
-      match: \b[0-9_]+(U|u|L|l|UL|Ul|uL|ul|LU|Lu|lU|lu)?\b
+      match: \b[0-9_]+(i8|i16|i32|i64|u8|u16|u32|u64)?\b
  
   char-literal:
     name: string.quoted.single.sk
@@ -146,10 +251,10 @@ repository:
     name: string.quoted.double.sk
     begin: (?<!@)"
     beginCaptures:
-      '0': {name: punctuation.definition.skring.begin.sk}
+      '0': {name: punctuation.definition.string.begin.sk}
     end: (")|((?:[^\\\n])$)
     endCaptures:
-      '1': {name: punctuation.definition.skring.end.sk}
+      '1': {name: punctuation.definition.string.end.sk}
       '2': {name: invalid.illegal.newline.sk}
     patterns:
     - include: '#string-character-escape'
@@ -160,11 +265,11 @@ repository:
 
   verbatim-string-literal:
     name: string.quoted.double.sk
-    begin: '@"'
+    begin: '`"'
     beginCaptures:
-      '0': {name: punctuation.definition.skring.begin.sk}
-    end: '"(?=[^"])'
+      '0': {name: punctuation.definition.string.begin.sk}
+    end: '"`'
     endCaptures:
-      '0': {name: punctuation.definition.skring.end.sk}
+      '0': {name: punctuation.definition.string.end.sk}
     patterns:
     - include: '#verbatim-string-character-escape'
