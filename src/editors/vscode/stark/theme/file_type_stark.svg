@@ -9,7 +9,6 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    viewBox="0 0 32 32"
    version="1.1"
-   class="icon"
    id="svg3856"
    sodipodi:docname="file_type_stark.svg"
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)">
@@ -81,12 +80,28 @@
        y="55.215893" /></text>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:32px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#0086ab;fill-opacity:1;stroke:none"
-     x="-0.2455498"
-     y="26.106804"
-     id="text4687"><tspan
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:27.52899933px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#0086ab;fill-opacity:1;stroke:none;stroke-width:0.86028123"
+     x="1.4138545"
+     y="25.4359"
+     id="text4687"
+     transform="scale(1.0219624,0.97850957)"><tspan
        sodipodi:role="line"
        id="tspan4685"
-       x="-0.2455498"
-       y="26.106804">sk</tspan></text>
+       x="1.4138545"
+       y="25.4359"
+       style="stroke-width:0.86028123">sk</tspan></text>
+  <rect
+     style="fill:#0086ab;fill-opacity:1"
+     id="rect4689"
+     width="27.354252"
+     height="2.6519389"
+     x="2.4063883"
+     y="26.254133" />
+  <rect
+     y="26.254133"
+     x="2.4063883"
+     height="2.6519389"
+     width="27.354252"
+     id="rect4691"
+     style="fill:#0086ab;fill-opacity:1" />
 </svg>

@@ -485,7 +485,7 @@
           </dict>
           <dict>
             <key>name</key>
-            <string>entity.name.function.sk</string>
+            <string>keyword.other.constructor.sk</string>
             <key>match</key>
             <string>\bconstructor\b</string>
           </dict>
