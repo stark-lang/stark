@@ -1,0 +1,12 @@
+[submodule "ext/stark-dnSpy"]
+	path = ext/stark-dnSpy
+	url = https://github.com/stark-lang/stark-dnSpy.git
+	branch = stark
+[submodule "ext/stark-dnlib"]
+	path = ext/stark-dnlib
+	url = https://github.com/stark-lang/stark-dnlib.git
+	branch = stark
+[submodule "ext/stark-roslyn"]
+	path = ext/stark-roslyn
+	url = https://github.com/stark-lang/stark-roslyn.git
+	branch = stark
