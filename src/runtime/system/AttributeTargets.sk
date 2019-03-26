@@ -1,0 +1,25 @@
+namespace system
+{
+    @Flags
+    public enum AttributeTargets
+    {
+        ASSEMBLY = 0x0001
+        MODULE = 0x0002
+        CLASS = 0x0004
+        STRUCT = 0x0008
+        ENUM = 0x0010
+        CONSTRUCTOR = 0x0020
+        FUNC = 0x0040
+        FUNC_PROPERTY = 0x0080
+        FIELD = 0x0100
+        INTERFACE = 0x0400
+        PARAMETER = 0x0800
+        FUNC_PTR = 0x1000
+        RETURN = 0x2000
+        GENERIC_PARAMETER = 0x4000
+
+        ALL = ASSEMBLY | MODULE | CLASS | STRUCT | ENUM | CONSTRUCTOR |
+                        FUNC | FUNC_PROPERTY | FIELD | INTERFACE | PARAMETER |
+                        FUNC_PTR | RETURN | GENERIC_PARAMETER
+    }
+}

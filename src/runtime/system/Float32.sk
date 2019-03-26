@@ -1,0 +1,9 @@
+namespace system
+{
+    public struct Float32
+    {
+#pragma warning disable CS0169
+        private var _value : f32
+#pragma warning restore
+    }
+}

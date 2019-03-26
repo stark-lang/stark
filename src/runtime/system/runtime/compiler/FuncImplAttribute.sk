@@ -1,0 +1,33 @@
+namespace system.runtime.compiler
+{    
+    public enum FuncImplOptions
+    {
+        NO_INLINING = 0x0008
+        NO_OPTIMIZATION = 0x0040
+        AGGRESSIVE_INLINING = 0x0100
+        INTERNAL_CALL = 0x1000
+        INTRINSIC = 0x3000 // combined with INTERNCAL_CALL
+    }
+
+    @AttributeUsage(AttributeTargets.FUNC | AttributeTargets.CONSTRUCTOR, inherited = false)
+    public sealed class FuncImplAttribute extends Attribute
+    {
+        private var _val : FuncImplOptions
+
+        public constructor()
+        {
+        }
+
+        public constructor(func_impl_options: FuncImplOptions)
+        {
+            _val = func_impl_options
+        }
+
+        public constructor(value: u16)
+        {
+            _val = value as FuncImplOptions
+        }
+
+        public func value -> FuncImplOptions => _val
+    }
+}

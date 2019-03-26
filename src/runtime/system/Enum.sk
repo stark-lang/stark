@@ -1,0 +1,6 @@
+namespace system
+{
+    public abstract struct Enum
+    {
+    }
+}

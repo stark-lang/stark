@@ -1,0 +1,36 @@
+namespace system
+{
+    @AttributeUsage(AttributeTargets.CLASS, inherited = true)
+    public sealed class AttributeUsageAttribute extends Attribute
+    {
+        private var _targets : AttributeTargets = AttributeTargets.ALL
+        private var _multiple : bool = false
+        private var _inherited : bool = true
+
+        public constructor(targets: AttributeTargets)
+        {
+            _targets = targets
+        }
+
+        internal constructor(targets: AttributeTargets, multiple: bool, inherited: bool)
+        {
+            _targets = targets
+            _multiple = multiple
+            _inherited = inherited
+        }
+               
+        public func targets -> AttributeTargets => _targets
+
+        public func multiple -> bool
+        {
+            get => _multiple
+            set => _multiple = value
+        }
+
+        public func inherited -> bool
+        {
+            get => _inherited
+            set => _inherited = value
+        }
+    }
+}

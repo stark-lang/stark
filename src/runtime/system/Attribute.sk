@@ -1,0 +1,7 @@
+namespace system
+{
+    public abstract partial class Attribute
+    {
+        protected constructor() { }
+    }
+}

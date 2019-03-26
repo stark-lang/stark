@@ -1,0 +1,10 @@
+namespace system
+{
+    @AttributeUsage(AttributeTargets.ENUM, inherited = false)
+    public class FlagsAttribute extends Attribute
+    {
+        public constructor()
+        {
+        }
+    }
+}

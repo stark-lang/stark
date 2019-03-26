@@ -1,0 +1,6 @@
+namespace system
+{
+    public struct Void
+    {
+    }
+}
