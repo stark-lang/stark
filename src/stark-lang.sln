@@ -71,11 +71,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarkDeployment", "..\ext\s
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VSCode", "VSCode", "{AE6914DF-1159-44EE-A5CF-95C7FD742528}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarkCompilerServer", "StarkCompilerServer\StarkCompilerServer.csproj", "{64137F91-71CE-443E-8792-47D77F6BFF24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarkCompilerServer", "compiler\StarkCompilerServer\StarkCompilerServer.csproj", "{64137F91-71CE-443E-8792-47D77F6BFF24}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{28D92114-2D56-4761-97F3-9879FEEB9172}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ergon.Core", "Ergon.Core\Ergon.Core.csproj", "{402D8D88-3115-452F-8256-DCC5F5E23021}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ergon.Core", "compiler\Ergon.Core\Ergon.Core.csproj", "{402D8D88-3115-452F-8256-DCC5F5E23021}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StarkPlatform.CodeAnalysis.Workspaces.Ergon", "..\ext\stark-roslyn\src\Workspaces\Core\Ergon\StarkPlatform.CodeAnalysis.Workspaces.Ergon.csproj", "{DB0397F7-E09A-4C93-BEC3-688E36B8F005}"
 EndProject
