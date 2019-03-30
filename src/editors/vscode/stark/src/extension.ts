@@ -14,11 +14,8 @@ import { Trace } from 'vscode-jsonrpc';
 export function activate(context: ExtensionContext) {
     // The server is implemented in node
     // let serverExe = 'dotnet';
-    let serverExe = 'C:/Code/stark/stark-lang/src/StarkCompilerServer/bin/Debug/netcoreapp2.2/StarkCompilerServer.dll';
+    let serverExe = path.join(context.asAbsolutePath("."), '..', '..', '..', 'compiler/StarkCompilerServer/bin/Debug/netcoreapp2.2/StarkCompilerServer.dll');
     let dotnetExe = 'dotnet.exe';
-    // let serverExe = context.asAbsolutePath('D:/Development/Omnisharp/omnisharp-roslyn/artifacts/publish/OmniSharp.Stdio/win7-x64/OmniSharp.exe');
-    // The debug options for the server
-    // let debugOptions = { execArgv: ['-lsp', '-d' };
 
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
