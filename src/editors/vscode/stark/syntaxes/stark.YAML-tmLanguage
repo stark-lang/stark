@@ -129,6 +129,10 @@ repository:
       match: \b(implements)\b
   func-declaration:
     patterns:
+    - match: \b(func)\b\s*(operator)\b
+      captures:
+        '1': { name: keyword.other.func.sk }      
+        '2': { name: keyword.other.operator.sk }      
     - match: \b(func)\b\s*([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.func.sk }      
@@ -172,8 +176,6 @@ repository:
         match: \bswitch\b
       - name: keyword.control.flow.case.sk
         match: \bcase\b
-      - name: keyword.control.flow.in.sk
-        match: \bin\b
       - name: keyword.control.flow.with.sk
         match: \bwith\b
       - name: constant.language.boolean.true.sk
@@ -184,7 +186,7 @@ repository:
         match: \bnull\b
   keywords:
     name: keyword.type.sk
-    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|out|params|ref|requires|set|sizeof|this|throws|typeof|value|var|where)\b
+    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b
   comment:
     patterns:
     - name: comment.block.sk
