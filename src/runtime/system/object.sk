@@ -1,6 +1,6 @@
 namespace system
 {
-    public class Object
+    public abstract class Object
     {
         public constructor()
         {

@@ -10,7 +10,7 @@ namespace system.runtime.compiler
     }
 
     @AttributeUsage(AttributeTargets.FUNC | AttributeTargets.CONSTRUCTOR, inherited = false)
-    public sealed class FuncImplAttribute extends Attribute
+    public class FuncImplAttribute extends Attribute
     {
         private var _val : FuncImplOptions
 

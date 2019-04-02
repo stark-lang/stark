@@ -1,7 +1,7 @@
 namespace system
 {
     @AttributeUsage(AttributeTargets.CLASS, inherited = true)
-    public sealed class AttributeUsageAttribute extends Attribute
+    public class AttributeUsageAttribute extends Attribute
     {
         private var _targets : AttributeTargets = AttributeTargets.ALL
         private var _multiple : bool = false

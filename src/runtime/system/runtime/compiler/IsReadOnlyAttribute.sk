@@ -1,6 +1,6 @@
 namespace system.runtime.compiler
 {    
-    public sealed class IsReadOnlyAttribute extends Attribute
+    public class IsReadOnlyAttribute extends Attribute
     {
         public constructor()
         {
