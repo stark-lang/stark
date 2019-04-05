@@ -1,0 +1,10 @@
+namespace system.runtime.annotations
+{
+    @AttributeUsage(AttributeTargets.PARAMETER, inherited = false)
+    public class InAttribute extends Attribute
+    {
+        public constructor()
+        {
+        }
+    }
+}

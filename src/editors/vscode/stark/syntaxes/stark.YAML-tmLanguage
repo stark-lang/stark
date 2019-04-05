@@ -13,6 +13,7 @@ patterns:
 - include: '#vector-types'
 - include: '#visibility-modifiers'
 - include: '#attribute-declaration'
+- include: '#inline-il'
 - include: '#import-declaration'
 - include: '#namespace-declaration'
 - include: '#module-declaration'
@@ -50,6 +51,11 @@ repository:
              patterns: 
              - match: '[_[:alpha:]][_[:alnum:]]*'
                name: entity.name.type.attribute.sk     
+  inline-il:
+    patterns:
+    - match: '(#il)\b'
+      captures:
+        '1': { name: markup.underline.sk }      
   import-declaration:
     patterns:
     - match: '\b(import)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)'

@@ -1,4 +1,4 @@
-namespace system.runtime.compiler
+namespace system.runtime.annotations
 {    
     public class IsReadOnlyAttribute extends Attribute
     {

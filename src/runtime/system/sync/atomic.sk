@@ -1,6 +1,6 @@
 import system.runtime.compiler
 
-namespace system.threading
+namespace system.sync
 {
     public enum MemoryOrder
     {
@@ -14,6 +14,7 @@ namespace system.threading
 
     public module atomic
     {
+
         @FuncImpl(FuncImplOptions.INTRINSIC)
         public extern static func load(data: ref int, 
                                        order: MemoryOrder = MemoryOrder.SEQUENTIAL_CONSISTENT) -> int

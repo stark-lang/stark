@@ -48,6 +48,10 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#inline-il</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#import-declaration</string>
       </dict>
       <dict>
@@ -166,6 +170,24 @@
                     <string>entity.name.type.attribute.sk</string>
                   </dict>
                 </array>
+              </dict>
+            </dict>
+          </dict>
+        </array>
+      </dict>
+      <key>inline-il</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>(#il)\b</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>markup.underline.sk</string>
               </dict>
             </dict>
           </dict>
