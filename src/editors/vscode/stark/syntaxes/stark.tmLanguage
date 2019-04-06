@@ -40,15 +40,15 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#inline-il</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#visibility-modifiers</string>
       </dict>
       <dict>
         <key>include</key>
         <string>#attribute-declaration</string>
-      </dict>
-      <dict>
-        <key>include</key>
-        <string>#inline-il</string>
       </dict>
       <dict>
         <key>include</key>
@@ -181,13 +181,18 @@
         <array>
           <dict>
             <key>match</key>
-            <string>(#il)\b</string>
+            <string>\b(unsafe)\s+(il)\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
               <dict>
                 <key>name</key>
-                <string>markup.underline.sk</string>
+                <string>keyword.other.unsafe.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.il.sk</string>
               </dict>
             </dict>
           </dict>

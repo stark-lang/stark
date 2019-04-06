@@ -11,9 +11,9 @@ patterns:
 - include: '#keywords'
 - include: '#builtin-types'
 - include: '#vector-types'
+- include: '#inline-il'
 - include: '#visibility-modifiers'
 - include: '#attribute-declaration'
-- include: '#inline-il'
 - include: '#import-declaration'
 - include: '#namespace-declaration'
 - include: '#module-declaration'
@@ -53,9 +53,10 @@ repository:
                name: entity.name.type.attribute.sk     
   inline-il:
     patterns:
-    - match: '(#il)\b'
+    - match: '\b(unsafe)\s+(il)\b'
       captures:
-        '1': { name: markup.underline.sk }      
+        '1': { name: keyword.other.unsafe.sk }      
+        '2': { name: keyword.other.il.sk }      
   import-declaration:
     patterns:
     - match: '\b(import)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)'
