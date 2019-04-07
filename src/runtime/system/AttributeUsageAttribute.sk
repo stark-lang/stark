@@ -1,18 +1,13 @@
 namespace system
 {
-    @AttributeUsage(AttributeTargets.CLASS, inherited = true)
+    @AttributeUsage(AttributeTargets.CLASS, inherited:  true)
     public class AttributeUsageAttribute extends Attribute
     {
-        private var _targets : AttributeTargets = AttributeTargets.ALL
-        private var _multiple : bool = false
-        private var _inherited : bool = true
+        private let _targets : AttributeTargets
+        private let _multiple : bool
+        private let _inherited : bool
 
-        public constructor(targets: AttributeTargets)
-        {
-            _targets = targets
-        }
-
-        internal constructor(targets: AttributeTargets, multiple: bool, inherited: bool)
+        public constructor(targets: AttributeTargets, multiple: bool = false, inherited: bool = false)
         {
             _targets = targets
             _multiple = multiple
@@ -21,16 +16,8 @@ namespace system
                
         public func targets -> AttributeTargets => _targets
 
-        public func multiple -> bool
-        {
-            get => _multiple
-            set => _multiple = value
-        }
+        public func multiple -> bool { get => _multiple }
 
-        public func inherited -> bool
-        {
-            get => _inherited
-            set => _inherited = value
-        }
+        public func inherited -> bool { get => _inherited }
     }
 }

@@ -1,6 +1,6 @@
 namespace system.runtime.annotations
 {
-    @AttributeUsage(AttributeTargets.PARAMETER, inherited = false)
+    @AttributeUsage(AttributeTargets.PARAMETER)
     public class InAttribute extends Attribute
     {
         public constructor()

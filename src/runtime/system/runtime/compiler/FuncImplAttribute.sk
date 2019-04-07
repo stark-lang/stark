@@ -8,10 +8,10 @@ namespace system.runtime.compiler
         INTERNAL_CALL = 0x1000
     }
 
-    @AttributeUsage(AttributeTargets.FUNC | AttributeTargets.CONSTRUCTOR, inherited = false)
+    @AttributeUsage(AttributeTargets.FUNC | AttributeTargets.CONSTRUCTOR)
     public class FuncImplAttribute extends Attribute
     {
-        private var _val : FuncImplOptions
+        private let _val : FuncImplOptions
 
         public constructor()
         {

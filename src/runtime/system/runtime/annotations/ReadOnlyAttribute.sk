@@ -1,5 +1,6 @@
 namespace system.runtime.annotations
 {    
+    @AttributeUsage(AttributeTargets.FUNC)
     public class ReadOnlyAttribute extends Attribute
     {
         public constructor()
