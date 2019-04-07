@@ -6,7 +6,6 @@ namespace system.runtime.compiler
         NO_OPTIMIZATION = 0x0040
         AGGRESSIVE_INLINING = 0x0100
         INTERNAL_CALL = 0x1000
-        INTRINSIC = 0x3000 // combined with INTERNCAL_CALL
     }
 
     @AttributeUsage(AttributeTargets.FUNC | AttributeTargets.CONSTRUCTOR, inherited = false)

@@ -1,6 +1,6 @@
 namespace system.runtime.annotations
 {    
-    public class IsReadOnlyAttribute extends Attribute
+    public class ReadOnlyAttribute extends Attribute
     {
         public constructor()
         {

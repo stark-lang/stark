@@ -1,0 +1,10 @@
+namespace system.runtime.annotations
+{
+    @AttributeUsage(AttributeTargets.FUNC, inherited = false)
+    internal class IntrinsicAttribute extends Attribute
+    {
+        public constructor()
+        {
+        }
+    }
+}

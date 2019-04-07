@@ -1,3 +1,4 @@
+import system.runtime.annotations
 import system.runtime.compiler
 
 namespace system.sync
@@ -12,24 +13,36 @@ namespace system.sync
         SEQUENTIAL_CONSISTENT
     }
 
+
+    public interface IOption<T>
+    {
+        func has_value -> bool { readonly get }
+
+        func value -> T { readonly get } 
+    }
+
     public module atomic
     {
 
-        @FuncImpl(FuncImplOptions.INTRINSIC)
+        @FuncImpl(FuncImplOptions.INTERNAL_CALL)
+        @Intrinsic
         public extern static func load(data: ref int, 
                                        order: MemoryOrder = MemoryOrder.SEQUENTIAL_CONSISTENT) -> int
 
-        @FuncImpl(FuncImplOptions.INTRINSIC)
+        @FuncImpl(FuncImplOptions.INTERNAL_CALL)
+        @Intrinsic
         public extern static func store(data: ref int, 
                                         value_to_store: int, 
                                         order: MemoryOrder = MemoryOrder.SEQUENTIAL_CONSISTENT)
 
-        @FuncImpl(FuncImplOptions.INTRINSIC)
+        @FuncImpl(FuncImplOptions.INTERNAL_CALL)
+        @Intrinsic
         public extern static func exchange(data: ref int, 
                                            value_to_exchange: int, 
                                            order: MemoryOrder = MemoryOrder.SEQUENTIAL_CONSISTENT) -> int
 
-        @FuncImpl(FuncImplOptions.INTRINSIC)
+        @FuncImpl(FuncImplOptions.INTERNAL_CALL)
+        @Intrinsic
         public extern static func compare_exchange(data: ref int, 
                                                    value_to_exchange: int, 
                                                    value_to_compare: int, 
