@@ -13,10 +13,6 @@ namespace system.runtime.compiler
     {
         private let _val : FuncImplOptions
 
-        public constructor()
-        {
-        }
-
         public constructor(func_impl_options: FuncImplOptions)
         {
             _val = func_impl_options
