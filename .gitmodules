@@ -10,3 +10,7 @@
 	path = ext/stark-roslyn
 	url = https://github.com/stark-lang/stark-roslyn.git
 	branch = stark
+[submodule "ext/stark-corefx"]
+	path = ext/stark-corefx
+	url = https://github.com/stark-lang/stark-corefx.git
+	branch = stark
