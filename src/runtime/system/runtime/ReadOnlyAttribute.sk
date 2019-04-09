@@ -1,7 +1,7 @@
-namespace system.runtime.annotations
-{
+namespace system.runtime
+{    
     @AttributeUsage(AttributeTargets.FUNC)
-    internal class IntrinsicAttribute extends Attribute
+    public class ReadOnlyAttribute extends Attribute
     {
         public constructor()
         {

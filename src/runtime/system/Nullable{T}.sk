@@ -1,0 +1,44 @@
+namespace system
+{
+    public interface IOption<T>
+    {
+        //constructor(value: T)
+        func has_value -> bool { get }
+        func value -> T { get }
+    }
+
+    public abstract struct Nullable<T>
+    {
+        public func has_value -> bool  => true
+
+        public func value -> T => default
+    }
+
+    public struct OptionStruct<T> implements IOption<T> // where T : is struct // TODO: failing
+    {
+        private var _has_value: bool
+        private var _value : T
+
+        public constructor(value: T)
+        {
+            _value = value
+            _has_value = true
+        }
+
+        public func has_value -> bool => _has_value
+        public func value -> T => _value
+    }
+
+    public struct OptionClass<T> implements IOption<T> where T : is class
+    {
+        private var _value : T
+
+        public constructor(value: T)
+        {
+            _value = value
+        }
+
+        public func has_value -> bool => _value != null
+        public func value -> T => _value
+    }
+}

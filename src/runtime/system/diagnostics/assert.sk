@@ -1,0 +1,14 @@
+import system.runtime
+
+namespace system {
+    public partial module diagnostics
+    {
+        @FuncImpl(FuncImplOptions.INTERNAL_CALL)
+        public static extern func abort()
+
+        public static func assert(condition: bool)
+        {
+            throw new Exception();
+        }
+    }
+}

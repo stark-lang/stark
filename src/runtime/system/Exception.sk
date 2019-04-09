@@ -1,0 +1,24 @@
+namespace system
+{
+    public virtual class Exception
+    {
+        public constructor()
+        {
+        }
+
+        public constructor(message: string)
+        {
+            this.message = message;
+        }
+
+        public constructor(message: string, inner_exception: Exception)
+        {
+            this.message = message;
+            this.inner_exception = inner_exception;
+        }
+
+        public func message -> ?string { get }
+
+        public func inner_exception -> ?Exception { get }
+    }
+}

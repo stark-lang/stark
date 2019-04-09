@@ -1,4 +1,4 @@
-namespace system.runtime.annotations
+namespace system.runtime
 {
     @AttributeUsage(AttributeTargets.PARAMETER)
     public class InAttribute extends Attribute
