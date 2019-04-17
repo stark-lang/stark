@@ -1,0 +1,12 @@
+public module inline_il
+{
+    public static func get_value() -> int
+    {
+        var x : int
+        unsafe il {
+            sizeof system.Int
+            stloc x
+        }
+        return 1
+    }
+}

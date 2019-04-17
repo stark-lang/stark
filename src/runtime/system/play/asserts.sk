@@ -1,0 +1,27 @@
+import system.runtime
+
+module asserts
+{
+    private static var val : bool
+
+    public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition))  conditionAsText: string = null )
+    {
+        var result = if condition then 1 else 2
+        
+        if condition then 
+        {
+
+        }
+        else
+        {
+
+        }
+    }
+
+    public static func yoyoyo -> int => if val then 1 else 2
+
+    public static func use_assert(value: i32)
+    {
+        assert(1 == 2)
+    }
+}

@@ -1,0 +1,23 @@
+module if_expr
+{
+    public static func check(condition: bool) -> i32 
+    {
+        // if expression
+        var result = if condition then 1 else 2
+
+        while condition {
+
+        }
+
+        // if statement
+        if condition then {
+            result++
+        } else {
+            result++
+        }
+
+        return result
+    }
+
+    public static func check_inline(condition: bool) -> i32 => if condition then 1 else 2
+}

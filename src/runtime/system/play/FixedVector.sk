@@ -1,0 +1,19 @@
+namespace system
+{
+    public class Toto<tSize> where tSize : is const int
+    {
+        //const y : int = tSize
+
+        public func get_value() -> int
+        {
+            const x : int = tSize
+            var z : int
+            unsafe il
+            {
+                sizeof tSize
+                stloc z
+            }
+            return tSize + x + 1
+        }
+    }
+}

@@ -1,0 +1,91 @@
+namespace system
+{
+    public interface IArray<T>
+    {
+        // size is readonly
+        func size -> int { readonly get }
+
+        /// indexer #1: regular indexer, readonly get
+        func operator [index: int] -> T 
+            requires index >= 0 && index < size  // contract
+        { 
+            readonly get             
+            set
+        }
+
+        /// ref indexer #2, not readonly
+        func operator [index: int] -> ref T 
+            requires index >= 0 && index < size
+        { 
+            get 
+        }
+
+        // in indexer #3, readonly
+        func operator [index: int] -> in T
+            requires index >= 0 && index < size
+        {            
+            readonly get 
+        }
+    }
+/*
+    public class Array<T> implements IArray<T>
+    {
+        private let _size : int
+        private var _firstElement: T
+
+        // size is readonly
+        public func size -> int { readonly get => _size }
+
+        /// indexer #1: regular indexer, readonly get
+        public func operator [index: int] -> T { 
+            readonly get => _firstElement
+            set => _firstElement = value
+        }
+
+        /// ref indexer #2, not readonly
+        public func operator [index: int] -> ref T { 
+            get => ref _firstElement
+        }
+
+        // in indexer #3, readonly
+        public func operator [index: int] -> in T { 
+            readonly get => in _firstElement
+        }
+    }
+
+    public struct Slice<T> implements IArray<T>
+    {
+        private let _array : Array<T>
+        private let _offset : int
+        private let _size : int
+
+        public constructor(array: Array<T>, offset: int, size: int)
+        {
+            _array = array
+            _offset = offset
+            _size = size
+        }
+
+        public func size -> int { readonly get => _size }
+
+        /// indexer #1: regular indexer, readonly get
+        public func operator [index: int] -> T { 
+            readonly get => _array[index]
+            set {
+                _array[index] = value
+            }
+        }
+
+        /// ref indexer #2, not readonly
+        public func operator [index: int] -> ref T { 
+            get => ref _array[index]
+        }
+
+        // in indexer #3, readonly
+        public func operator [index: int] -> in T { 
+            readonly get => in _array[index]
+        }
+    }
+*/
+}
+

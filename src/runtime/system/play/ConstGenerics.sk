@@ -1,0 +1,22 @@
+public abstract class Processor {
+    public abstract func calculate() -> int
+}
+
+public class Processor<tSize> extends Processor where tSize : is const int
+{
+    public override func calculate() -> int
+    {
+        // tSize is a const as well
+        const x : int = tSize
+        return tSize + x + 1
+    }
+}
+
+public module factory
+{
+    public static func CreateProcessor5() -> Processor
+    {
+        // Create a fixed instance of Processor with 5
+        return new Processor<5>()
+    }
+} 

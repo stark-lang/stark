@@ -1,0 +1,66 @@
+import system
+
+module checked_exceptions
+{
+    // throwing an exception without declaring throws on the method is not allowed
+    public static func throw_my_exception_invalid() {
+        throw new MyException()
+    }
+
+    // Valid (throws declared)
+    public static func throw_my_exception() throws MyException {
+        throw new MyException()
+    }
+
+    // Calling a method that throws without `try method()` is invalid
+    public static func call_a_method_which_throws_invalid() {
+        throw_my_exception()
+    }
+
+    // Valid (try with method throwing an exception)
+    public static func try_a_method_which_throws() throws Exception {
+        try throw_my_exception()
+    }
+
+    // Catching an exception does not require throws on method
+    public static func try_a_method_which_throws_but_is_caught() {
+        try {
+            try throw_my_exception()
+        } catch (MyException ex) {          
+            // We don't rethrow  
+        }
+    }
+
+    // Catching an invalid exception
+    public static func try_a_method_which_throws_with_invalid_catch_invalid() {
+        try {
+            try throw_my_exception()
+        } catch (MyException2 ex) { // This exception is not catched because not thrown, this is an error
+        }
+    }
+
+    public interface IMyProcess
+    {
+        func process() throws MyException2
+    }
+
+    public class MyProcess implements IMyProcess
+    {
+        // override of IMyProcess.process, but we we are not throwing an exception
+        public func process() 
+        {
+            try {
+                throw new MyException()
+            } catch 
+            {
+
+            }
+        }
+    }
+    
+
+    public class MyException extends Exception {}
+
+    public class MyException2 extends Exception {}
+}
+

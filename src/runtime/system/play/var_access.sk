@@ -1,0 +1,45 @@
+public class Tata
+{   
+    let _toto : Toto
+    public constructor()
+    {
+        _toto = new Toto()
+    }
+}
+
+public struct Toto
+{
+}
+
+/*
+public class VarAccess {
+    private let _member1 : int
+    private var _member2 : int
+
+    // let member can't be reassigned
+    public func modify_member_error(index: int) => _member1 = index
+
+    // var member can be assigned
+    public func modify_member_ok(index: int) => _member2 = index
+
+    // parameter can't be reassigned
+    public static func modify_param_error(index: int) -> int {
+        index++
+        return index
+    }
+
+    // let local can't be assigned
+    public static func modify_local_error(index: int) -> int {
+        let local = index + 1
+        local++
+        return local
+    }
+
+    // var local can be assigned
+    public static func modify_local_ok(index: int) -> int {
+        var local = index + 1
+        local++
+        return local
+    }
+}
+*/
