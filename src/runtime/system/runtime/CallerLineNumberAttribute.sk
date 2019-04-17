@@ -1,0 +1,10 @@
+namespace system.runtime
+{
+    @AttributeUsage(AttributeTargets.PARAMETER)
+    public class CallerLineNumberAttribute extends Attribute
+    {
+        public constructor()
+        {
+        }
+    }
+}

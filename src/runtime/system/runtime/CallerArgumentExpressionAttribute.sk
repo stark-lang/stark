@@ -1,0 +1,12 @@
+﻿namespace system.runtime
+{
+    @AttributeUsage(AttributeTargets.PARAMETER)
+    public class CallerArgumentExpressionAttribute extends Attribute 
+    {
+        public constructor(parameter_name: string) {
+            this.parameter_name = parameter_name
+        }
+
+        public func parameter_name -> string { get }
+    }
+}
