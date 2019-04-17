@@ -157,6 +157,8 @@ repository:
     patterns:
       - name: keyword.control.conditional.if.sk
         match: \bif\b
+      - name: keyword.control.conditional.then.sk
+        match: \bthen\b
       - name: keyword.control.conditional.else.sk
         match: \belse\b
       - name: keyword.control.loop.do.sk

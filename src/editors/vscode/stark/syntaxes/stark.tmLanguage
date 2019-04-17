@@ -565,6 +565,12 @@
           </dict>
           <dict>
             <key>name</key>
+            <string>keyword.control.conditional.then.sk</string>
+            <key>match</key>
+            <string>\bthen\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
             <string>keyword.control.conditional.else.sk</string>
             <key>match</key>
             <string>\belse\b</string>
