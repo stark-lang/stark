@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <ItemGroup Label="Project References">
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis\StarkPlatform.CodeAnalysis.csproj" />
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis.Stark\StarkPlatform.CodeAnalysis.Stark.csproj" />
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis.Workspaces\StarkPlatform.CodeAnalysis.Workspaces.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="CSharpWorkspaceResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CSharpWorkspaceResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="CSharpWorkspaceResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CSharpWorkspaceResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

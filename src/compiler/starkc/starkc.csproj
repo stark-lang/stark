@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <ItemGroup Label="Project References">
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis\StarkPlatform.CodeAnalysis.csproj" />
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis.Stark\StarkPlatform.CodeAnalysis.Stark.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.DiaSymReader.Native" Version="1.7.0" />
+    <PackageReference Include="System.IO.Pipes.AccessControl" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="..\Shared\CommandLine\CommandLine.projitems" Label="Shared" />
+</Project>

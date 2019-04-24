@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CSharpSyntaxGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "Syntax.xml C:\\Code\\stark\\stark\\ext\\stark-roslyn\\src\\Compilers\\Stark\\Portable\\Generated\\"
+    }
+  }
+}

@@ -1,0 +1,76 @@
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using System.Collections.Immutable;
+using System.Diagnostics;
+using StarkPlatform.CodeAnalysis.Stark.Symbols;
+using StarkPlatform.CodeAnalysis.Stark.Syntax;
+using StarkPlatform.CodeAnalysis.PooledObjects;
+using StarkPlatform.CodeAnalysis.Text;
+
+namespace StarkPlatform.CodeAnalysis.Stark
+{
+    /// <summary>
+    /// The dynamic operation factories below return this struct so that the caller
+    /// have the option of separating the call-site initialization from its invocation.
+    /// 
+    /// Most callers just call <see cref="ToExpression"/> to get the combo but some (object and array initializers) 
+    /// hoist all call-site initialization code and emit multiple invocations of the same site.
+    /// </summary>
+    internal struct LoweredDynamicOperation
+    {
+        private readonly SyntheticBoundNodeFactory _factory;
+        private readonly TypeSymbol _resultType;
+        private readonly ImmutableArray<LocalSymbol> _temps;
+        public readonly BoundExpression SiteInitialization;
+        public readonly BoundExpression SiteInvocation;
+
+        public LoweredDynamicOperation(SyntheticBoundNodeFactory factory, BoundExpression siteInitialization, BoundExpression siteInvocation, TypeSymbol resultType, ImmutableArray<LocalSymbol> temps)
+        {
+            _factory = factory;
+            _resultType = resultType;
+            _temps = temps;
+            this.SiteInitialization = siteInitialization;
+            this.SiteInvocation = siteInvocation;
+        }
+
+        public static LoweredDynamicOperation Bad(
+            BoundExpression loweredReceiver,
+            ImmutableArray<BoundExpression> loweredArguments,
+            BoundExpression loweredRight,
+            TypeSymbol resultType)
+        {
+            var children = ArrayBuilder<BoundExpression>.GetInstance();
+            children.AddOptional(loweredReceiver);
+            children.AddRange(loweredArguments);
+            children.AddOptional(loweredRight);
+
+            return LoweredDynamicOperation.Bad(resultType, children.ToImmutableAndFree());
+        }
+
+        public static LoweredDynamicOperation Bad(TypeSymbol resultType, ImmutableArray<BoundExpression> children)
+        {
+            Debug.Assert(children.Length > 0);
+            var bad = new BoundBadExpression(children[0].Syntax, LookupResultKind.Empty, ImmutableArray<Symbol>.Empty, children, resultType);
+            return new LoweredDynamicOperation(null, null, bad, resultType, default(ImmutableArray<LocalSymbol>));
+        }
+
+        public BoundExpression ToExpression()
+        {
+            if (_factory == null)
+            {
+                Debug.Assert(SiteInitialization == null && SiteInvocation is BoundBadExpression && _temps.IsDefaultOrEmpty);
+                return SiteInvocation;
+            }
+
+            // TODO (tomat): we might be able to use SiteInvocation.Type instead of resultType once we stop using GetLoweredType
+            if (_temps.IsDefaultOrEmpty)
+            {
+                return _factory.Sequence(new[] { SiteInitialization }, SiteInvocation, _resultType);
+            }
+            else
+            {
+                return new BoundSequence(_factory.Syntax, _temps, ImmutableArray.Create(SiteInitialization), SiteInvocation, _resultType) { WasCompilerGenerated = true };
+            }
+        }
+    }
+}

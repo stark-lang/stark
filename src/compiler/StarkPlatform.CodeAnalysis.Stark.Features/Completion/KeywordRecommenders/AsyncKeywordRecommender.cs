@@ -1,0 +1,44 @@
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using System.Threading;
+using StarkPlatform.CodeAnalysis.Stark.Extensions;
+using StarkPlatform.CodeAnalysis.Stark.Extensions.ContextQuery;
+using StarkPlatform.CodeAnalysis.Stark.Utilities;
+
+namespace StarkPlatform.CodeAnalysis.Stark.Completion.KeywordRecommenders
+{
+    internal class AsyncKeywordRecommender : AbstractSyntacticSingleKeywordRecommender
+    {
+        public AsyncKeywordRecommender() :
+            base(SyntaxKind.AsyncKeyword, isValidInPreprocessorContext: false)
+        {
+        }
+
+        protected override bool IsValidContext(int position, CSharpSyntaxContext context, CancellationToken cancellationToken)
+        {
+            if (context.IsAnyExpressionContext)
+            {
+                return true;
+            }
+
+            if (context.TargetToken.IsKindOrHasMatchingText(SyntaxKind.PartialKeyword))
+            {
+                return false;
+            }
+
+            return InMemberDeclarationContext(position, context, cancellationToken)
+                || context.SyntaxTree.IsLocalFunctionDeclarationContext(position, cancellationToken);
+        }
+
+        private static bool InMemberDeclarationContext(int position, CSharpSyntaxContext context, CancellationToken cancellationToken)
+        {
+            return context.IsGlobalStatementContext
+                || context.SyntaxTree.IsGlobalMemberDeclarationContext(position, SyntaxKindSet.AllGlobalMemberModifiers, cancellationToken)
+                || context.IsMemberDeclarationContext(
+                    validModifiers: SyntaxKindSet.AllMemberModifiers,
+                    validTypeDeclarations: SyntaxKindSet.ClassStructTypeDeclarations,
+                    canBePartial: true,
+                    cancellationToken: cancellationToken);
+        }
+    }
+}

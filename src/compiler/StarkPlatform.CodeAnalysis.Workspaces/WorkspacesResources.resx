@@ -1,0 +1,819 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="An_error_occurred_while_reading_the_specified_configuration_file_colon_0" xml:space="preserve">
+    <value>An error occurred while reading the specified configuration file: {0}</value>
+  </data>
+  <data name="Symbol_0_is_not_from_source" xml:space="preserve">
+    <value>Symbol "{0}" is not from source.</value>
+  </data>
+  <data name="Documentation_comment_id_must_start_with_E_F_M_N_P_or_T" xml:space="preserve">
+    <value>Documentation comment id must start with E, F, M, N, P or T</value>
+  </data>
+  <data name="Cycle_detected_in_extensions" xml:space="preserve">
+    <value>Cycle detected in extensions</value>
+  </data>
+  <data name="Destination_type_must_be_a_0_but_given_one_is_1" xml:space="preserve">
+    <value>Destination type must be a {0}, but given one is {1}.</value>
+  </data>
+  <data name="Destination_type_must_be_a_0_or_a_1_but_given_one_is_2" xml:space="preserve">
+    <value>Destination type must be a {0} or a {1}, but given one is {2}.</value>
+  </data>
+  <data name="Destination_type_must_be_a_0_1_or_2_but_given_one_is_3" xml:space="preserve">
+    <value>Destination type must be a {0}, {1} or {2}, but given one is {3}.</value>
+  </data>
+  <data name="Could_not_find_location_to_generation_symbol_into" xml:space="preserve">
+    <value>Could not find location to generation symbol into.</value>
+  </data>
+  <data name="No_location_provided_to_add_statements_to" xml:space="preserve">
+    <value>No location provided to add statements to.</value>
+  </data>
+  <data name="Destination_location_was_not_in_source" xml:space="preserve">
+    <value>Destination location was not in source.</value>
+  </data>
+  <data name="Destination_location_was_from_a_different_tree" xml:space="preserve">
+    <value>Destination location was from a different tree.</value>
+  </data>
+  <data name="Node_is_of_the_wrong_type" xml:space="preserve">
+    <value>Node is of the wrong type.</value>
+  </data>
+  <data name="Location_must_be_null_or_from_source" xml:space="preserve">
+    <value>Location must be null or from source.</value>
+  </data>
+  <data name="Duplicate_source_file_0_in_project_1" xml:space="preserve">
+    <value>Duplicate source file '{0}' in project '{1}'</value>
+  </data>
+  <data name="Removing_projects_is_not_supported" xml:space="preserve">
+    <value>Removing projects is not supported.</value>
+  </data>
+  <data name="Adding_projects_is_not_supported" xml:space="preserve">
+    <value>Adding projects is not supported.</value>
+  </data>
+  <data name="Workspace_is_not_empty" xml:space="preserve">
+    <value>Workspace is not empty.</value>
+  </data>
+  <data name="_0_is_not_part_of_the_workspace" xml:space="preserve">
+    <value>'{0}' is not part of the workspace.</value>
+  </data>
+  <data name="_0_is_already_part_of_the_workspace" xml:space="preserve">
+    <value>'{0}' is already part of the workspace.</value>
+  </data>
+  <data name="_0_is_not_referenced" xml:space="preserve">
+    <value>'{0}' is not referenced.</value>
+  </data>
+  <data name="_0_is_already_referenced" xml:space="preserve">
+    <value>'{0}' is already referenced.</value>
+  </data>
+  <data name="Adding_project_reference_from_0_to_1_will_cause_a_circular_reference" xml:space="preserve">
+    <value>Adding project reference from '{0}' to '{1}' will cause a circular reference.</value>
+  </data>
+  <data name="Metadata_is_not_referenced" xml:space="preserve">
+    <value>Metadata is not referenced.</value>
+  </data>
+  <data name="Metadata_is_already_referenced" xml:space="preserve">
+    <value>Metadata is already referenced.</value>
+  </data>
+  <data name="_0_is_not_present" xml:space="preserve">
+    <value>{0} is not present.</value>
+  </data>
+  <data name="_0_is_already_present" xml:space="preserve">
+    <value>{0} is already present.</value>
+  </data>
+  <data name="The_specified_document_is_not_a_version_of_this_document" xml:space="preserve">
+    <value>The specified document is not a version of this document.</value>
+  </data>
+  <data name="The_language_0_is_not_supported" xml:space="preserve">
+    <value>The language '{0}' is not supported.</value>
+  </data>
+  <data name="The_solution_already_contains_the_specified_project" xml:space="preserve">
+    <value>The solution already contains the specified project.</value>
+  </data>
+  <data name="The_solution_does_not_contain_the_specified_project" xml:space="preserve">
+    <value>The solution does not contain the specified project.</value>
+  </data>
+  <data name="The_project_already_references_the_target_project" xml:space="preserve">
+    <value>The project already references the target project.</value>
+  </data>
+  <data name="The_project_already_transitively_references_the_target_project" xml:space="preserve">
+    <value>The project already transitively references the target project.</value>
+  </data>
+  <data name="The_solution_already_contains_the_specified_document" xml:space="preserve">
+    <value>The solution already contains the specified document.</value>
+  </data>
+  <data name="The_solution_does_not_contain_the_specified_document" xml:space="preserve">
+    <value>The solution does not contain the specified document.</value>
+  </data>
+  <data name="Temporary_storage_cannot_be_written_more_than_once" xml:space="preserve">
+    <value>Temporary storage cannot be written more than once.</value>
+  </data>
+  <data name="_0_is_not_open" xml:space="preserve">
+    <value>'{0}' is not open.</value>
+  </data>
+  <data name="A_language_name_cannot_be_specified_for_this_option" xml:space="preserve">
+    <value>A language name cannot be specified for this option.</value>
+  </data>
+  <data name="A_language_name_must_be_specified_for_this_option" xml:space="preserve">
+    <value>A language name must be specified for this option.</value>
+  </data>
+  <data name="File_was_externally_modified_colon_0" xml:space="preserve">
+    <value>File was externally modified: {0}.</value>
+  </data>
+  <data name="Unrecognized_language_name" xml:space="preserve">
+    <value>Unrecognized language name.</value>
+  </data>
+  <data name="Can_t_resolve_metadata_reference_colon_0" xml:space="preserve">
+    <value>Can't resolve metadata reference: '{0}'.</value>
+  </data>
+  <data name="Can_t_resolve_analyzer_reference_colon_0" xml:space="preserve">
+    <value>Can't resolve analyzer reference: '{0}'.</value>
+  </data>
+  <data name="Invalid_project_block_expected_after_Project" xml:space="preserve">
+    <value>Invalid project block, expected "=" after Project.</value>
+  </data>
+  <data name="Invalid_project_block_expected_after_project_name" xml:space="preserve">
+    <value>Invalid project block, expected "," after project name.</value>
+  </data>
+  <data name="Invalid_project_block_expected_after_project_path" xml:space="preserve">
+    <value>Invalid project block, expected "," after project path.</value>
+  </data>
+  <data name="Expected_0" xml:space="preserve">
+    <value>Expected {0}.</value>
+  </data>
+  <data name="_0_must_be_a_non_null_and_non_empty_string" xml:space="preserve">
+    <value>"{0}" must be a non-null and non-empty string.</value>
+  </data>
+  <data name="Expected_header_colon_0" xml:space="preserve">
+    <value>Expected header: "{0}".</value>
+  </data>
+  <data name="Expected_end_of_file" xml:space="preserve">
+    <value>Expected end-of-file.</value>
+  </data>
+  <data name="Expected_0_line" xml:space="preserve">
+    <value>Expected {0} line.</value>
+  </data>
+  <data name="This_submission_already_references_another_submission_project" xml:space="preserve">
+    <value>This submission already references another submission project.</value>
+  </data>
+  <data name="_0_still_contains_open_documents" xml:space="preserve">
+    <value>{0} still contains open documents.</value>
+  </data>
+  <data name="_0_is_still_open" xml:space="preserve">
+    <value>{0} is still open.</value>
+  </data>
+  <data name="An_element_with_the_same_key_but_a_different_value_already_exists" xml:space="preserve">
+    <value>An element with the same key but a different value already exists.</value>
+  </data>
+  <data name="Arrays_with_more_than_one_dimension_cannot_be_serialized" xml:space="preserve">
+    <value>Arrays with more than one dimension cannot be serialized.</value>
+  </data>
+  <data name="Value_too_large_to_be_represented_as_a_30_bit_unsigned_integer" xml:space="preserve">
+    <value>Value too large to be represented as a 30 bit unsigned integer.</value>
+  </data>
+  <data name="Specified_path_must_be_absolute" xml:space="preserve">
+    <value>Specified path must be absolute.</value>
+  </data>
+  <data name="Cast_is_redundant" xml:space="preserve">
+    <value>Cast is redundant.</value>
+  </data>
+  <data name="Name_can_be_simplified" xml:space="preserve">
+    <value>Name can be simplified.</value>
+  </data>
+  <data name="Unknown_identifier" xml:space="preserve">
+    <value>Unknown identifier.</value>
+  </data>
+  <data name="Cannot_generate_code_for_unsupported_operator_0" xml:space="preserve">
+    <value>Cannot generate code for unsupported operator '{0}'</value>
+  </data>
+  <data name="Invalid_number_of_parameters_for_binary_operator" xml:space="preserve">
+    <value>Invalid number of parameters for binary operator.</value>
+  </data>
+  <data name="Invalid_number_of_parameters_for_unary_operator" xml:space="preserve">
+    <value>Invalid number of parameters for unary operator.</value>
+  </data>
+  <data name="Absolute_path_expected" xml:space="preserve">
+    <value>Absolute path expected.</value>
+  </data>
+  <data name="Cannot_open_project_0_because_the_file_extension_1_is_not_associated_with_a_language" xml:space="preserve">
+    <value>Cannot open project '{0}' because the file extension '{1}' is not associated with a language.</value>
+  </data>
+  <data name="Cannot_open_project_0_because_the_language_1_is_not_supported" xml:space="preserve">
+    <value>Cannot open project '{0}' because the language '{1}' is not supported.</value>
+  </data>
+  <data name="Invalid_project_file_path_colon_0" xml:space="preserve">
+    <value>Invalid project file path: '{0}'</value>
+  </data>
+  <data name="Invalid_solution_file_path_colon_0" xml:space="preserve">
+    <value>Invalid solution file path: '{0}'</value>
+  </data>
+  <data name="Project_file_not_found_colon_0" xml:space="preserve">
+    <value>Project file not found: '{0}'</value>
+  </data>
+  <data name="Solution_file_not_found_colon_0" xml:space="preserve">
+    <value>Solution file not found: '{0}'</value>
+  </data>
+  <data name="Unmerged_change_from_project_0" xml:space="preserve">
+    <value>Unmerged change from project '{0}'</value>
+  </data>
+  <data name="Added_colon" xml:space="preserve">
+    <value>Added:</value>
+  </data>
+  <data name="Fix_all_0" xml:space="preserve">
+    <value>Fix all '{0}'</value>
+  </data>
+  <data name="Fix_all_0_in_1" xml:space="preserve">
+    <value>Fix all '{0}' in '{1}'</value>
+  </data>
+  <data name="Fix_all_0_in_Solution" xml:space="preserve">
+    <value>Fix all '{0}' in Solution</value>
+  </data>
+  <data name="After_colon" xml:space="preserve">
+    <value>After:</value>
+  </data>
+  <data name="Before_colon" xml:space="preserve">
+    <value>Before:</value>
+  </data>
+  <data name="Removed_colon" xml:space="preserve">
+    <value>Removed:</value>
+  </data>
+  <data name="Invalid_CodePage_value_colon_0" xml:space="preserve">
+    <value>Invalid CodePage value: {0}</value>
+  </data>
+  <data name="Adding_additional_documents_is_not_supported" xml:space="preserve">
+    <value>Adding additional documents is not supported.</value>
+  </data>
+  <data name="Adding_analyzer_references_is_not_supported" xml:space="preserve">
+    <value>Adding analyzer references is not supported.</value>
+  </data>
+  <data name="Adding_documents_is_not_supported" xml:space="preserve">
+    <value>Adding documents is not supported.</value>
+  </data>
+  <data name="Adding_metadata_references_is_not_supported" xml:space="preserve">
+    <value>Adding metadata references is not supported.</value>
+  </data>
+  <data name="Adding_project_references_is_not_supported" xml:space="preserve">
+    <value>Adding project references is not supported.</value>
+  </data>
+  <data name="Changing_additional_documents_is_not_supported" xml:space="preserve">
+    <value>Changing additional documents is not supported.</value>
+  </data>
+  <data name="Changing_documents_is_not_supported" xml:space="preserve">
+    <value>Changing documents is not supported.</value>
+  </data>
+  <data name="Changing_project_properties_is_not_supported" xml:space="preserve">
+    <value>Changing project properties is not supported.</value>
+  </data>
+  <data name="Removing_additional_documents_is_not_supported" xml:space="preserve">
+    <value>Removing additional documents is not supported.</value>
+  </data>
+  <data name="Removing_analyzer_references_is_not_supported" xml:space="preserve">
+    <value>Removing analyzer references is not supported.</value>
+  </data>
+  <data name="Removing_documents_is_not_supported" xml:space="preserve">
+    <value>Removing documents is not supported.</value>
+  </data>
+  <data name="Removing_metadata_references_is_not_supported" xml:space="preserve">
+    <value>Removing metadata references is not supported.</value>
+  </data>
+  <data name="Removing_project_references_is_not_supported" xml:space="preserve">
+    <value>Removing project references is not supported.</value>
+  </data>
+  <data name="Service_of_type_0_is_required_to_accomplish_the_task_but_is_not_available_from_the_workspace" xml:space="preserve">
+    <value>Service of type '{0}' is required to accomplish the task but is not available from the workspace.</value>
+  </data>
+  <data name="Supplied_diagnostic_cannot_be_null" xml:space="preserve">
+    <value>Supplied diagnostic cannot be null.</value>
+  </data>
+  <data name="At_least_one_diagnostic_must_be_supplied" xml:space="preserve">
+    <value>At least one diagnostic must be supplied.</value>
+  </data>
+  <data name="Diagnostic_must_have_span_0" xml:space="preserve">
+    <value>Diagnostic must have span '{0}'</value>
+  </data>
+  <data name="Cannot_deserialize_type_0" xml:space="preserve">
+    <value>Cannot deserialize type '{0}'.</value>
+  </data>
+  <data name="Cannot_serialize_type_0" xml:space="preserve">
+    <value>Cannot serialize type '{0}'.</value>
+  </data>
+  <data name="The_type_0_is_not_understood_by_the_serialization_binder" xml:space="preserve">
+    <value>The type '{0}' is not understood by the serialization binder.</value>
+  </data>
+  <data name="Label_for_node_0_is_invalid_it_must_be_within_bracket_0_1" xml:space="preserve">
+    <value>Label for node '{0}' is invalid, it must be within [0, {1}).</value>
+  </data>
+  <data name="Matching_nodes_0_and_1_must_have_the_same_label" xml:space="preserve">
+    <value>Matching nodes '{0}' and '{1}' must have the same label.</value>
+  </data>
+  <data name="Node_0_must_be_contained_in_the_new_tree" xml:space="preserve">
+    <value>Node '{0}' must be contained in the new tree.</value>
+  </data>
+  <data name="Node_0_must_be_contained_in_the_old_tree" xml:space="preserve">
+    <value>Node '{0}' must be contained in the old tree.</value>
+  </data>
+  <data name="The_member_0_is_not_declared_within_the_declaration_of_the_symbol" xml:space="preserve">
+    <value>The member '{0}' is not declared within the declaration of the symbol.</value>
+  </data>
+  <data name="The_position_is_not_within_the_symbol_s_declaration" xml:space="preserve">
+    <value>The position is not within the symbol's declaration</value>
+  </data>
+  <data name="The_symbol_0_cannot_be_located_within_the_current_solution" xml:space="preserve">
+    <value>The symbol '{0}' cannot be located within the current solution.</value>
+  </data>
+  <data name="Changing_compilation_options_is_not_supported" xml:space="preserve">
+    <value>Changing compilation options is not supported.</value>
+  </data>
+  <data name="Changing_parse_options_is_not_supported" xml:space="preserve">
+    <value>Changing parse options is not supported.</value>
+  </data>
+  <data name="The_node_is_not_part_of_the_tree" xml:space="preserve">
+    <value>The node is not part of the tree.</value>
+  </data>
+  <data name="This_workspace_does_not_support_opening_and_closing_documents" xml:space="preserve">
+    <value>This workspace does not support opening and closing documents.</value>
+  </data>
+  <data name="Usage_colon" xml:space="preserve">
+    <value>Usage:</value>
+  </data>
+  <data name="Exceptions_colon" xml:space="preserve">
+    <value>Exceptions:</value>
+  </data>
+  <data name="_0_returned_an_uninitialized_ImmutableArray" xml:space="preserve">
+    <value>'{0}' returned an uninitialized ImmutableArray</value>
+  </data>
+  <data name="Failure" xml:space="preserve">
+    <value>Failure</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Populate_switch" xml:space="preserve">
+    <value>Populate switch</value>
+  </data>
+  <data name="Member_access_should_be_qualified" xml:space="preserve">
+    <value>Member access should be qualified.</value>
+  </data>
+  <data name="Add_braces_to_0_statement" xml:space="preserve">
+    <value>Add braces to '{0}' statement.</value>
+  </data>
+  <data name="Options_did_not_come_from_Workspace" xml:space="preserve">
+    <value>Options did not come from Workspace</value>
+  </data>
+  <data name="Enable" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="Enable_and_ignore_future_errors" xml:space="preserve">
+    <value>Enable and ignore future errors</value>
+  </data>
+  <data name="_0_encountered_an_error_and_has_been_disabled" xml:space="preserve">
+    <value>'{0}' encountered an error and has been disabled.</value>
+  </data>
+  <data name="Show_Stack_Trace" xml:space="preserve">
+    <value>Show Stack Trace</value>
+  </data>
+  <data name="Stream_is_too_long" xml:space="preserve">
+    <value>Stream is too long.</value>
+  </data>
+  <data name="Deserialization_reader_for_0_read_incorrect_number_of_values" xml:space="preserve">
+    <value>Deserialization reader for '{0}' read incorrect number of values.</value>
+  </data>
+  <data name="Pascal_Case" xml:space="preserve">
+    <value>Pascal Case</value>
+  </data>
+  <data name="Abstract_Method" xml:space="preserve">
+    <value>Abstract Method</value>
+    <comment>{locked: abstract}{locked: method} These are keywords (unless the order of words or capitalization should be handled differently)</comment>
+  </data>
+  <data name="Async_Method" xml:space="preserve">
+    <value>Async Method</value>
+    <comment>{locked: async}{locked: method} These are keywords (unless the order of words or capitalization should be handled differently)</comment>
+  </data>
+  <data name="Begins_with_I" xml:space="preserve">
+    <value>Begins with I</value>
+    <comment>{locked:I}</comment>
+  </data>
+  <data name="Class" xml:space="preserve">
+    <value>Class</value>
+    <comment>{locked} unless the capitalization should be handled differently</comment>
+  </data>
+  <data name="Delegate" xml:space="preserve">
+    <value>Delegate</value>
+    <comment>{locked} unless the capitalization should be handled differently</comment>
+  </data>
+  <data name="Enum" xml:space="preserve">
+    <value>Enum</value>
+    <comment>{locked} unless the capitalization should be handled differently</comment>
+  </data>
+  <data name="Event" xml:space="preserve">
+    <value>Event</value>
+    <comment>{locked} unless the capitalization should be handled differently</comment>
+  </data>
+  <data name="Interface" xml:space="preserve">
+    <value>Interface</value>
+    <comment>{locked} unless the capitalization should be handled differently</comment>
+  </data>
+  <data name="Non_Field_Members" xml:space="preserve">
+    <value>Non-Field Members</value>
+    <comment>{locked:field}</comment>
+  </data>
+  <data name="Private_Method" xml:space="preserve">
+    <value>Private Method</value>
+    <comment>{locked: private}{locked: method} These are keywords (unless the order of words or capitalization should be handled differently)</comment>
+  </data>
+  <data name="Private_or_Internal_Field" xml:space="preserve">
+    <value>Private or Internal Field</value>
+    <comment>{locked: private}{locked: internal}{locked:field}</comment>
+  </data>
+  <data name="Private_or_Internal_Static_Field" xml:space="preserve">
+    <value>Private or Internal Static Field</value>
+    <comment>{locked: private}{locked: internal}{locked:static}{locked:field}</comment>
+  </data>
+  <data name="Property" xml:space="preserve">
+    <value>Property</value>
+    <comment>{locked} unless the capitalization should be handled differently</comment>
+  </data>
+  <data name="Public_or_Protected_Field" xml:space="preserve">
+    <value>Public or Protected Field</value>
+    <comment>{locked: public}{locked: protected}{locked:field}</comment>
+  </data>
+  <data name="Static_Field" xml:space="preserve">
+    <value>Static Field</value>
+    <comment>{locked:static}{locked:field} (unless the capitalization should be handled differently)</comment>
+  </data>
+  <data name="Static_Method" xml:space="preserve">
+    <value>Static Method</value>
+    <comment>{locked: static}{locked: method} These are keywords (unless the order of words or capitalization should be handled differently)</comment>
+  </data>
+  <data name="Struct" xml:space="preserve">
+    <value>Struct</value>
+    <comment>{locked} unless the capitalization should be handled differently</comment>
+  </data>
+  <data name="Types" xml:space="preserve">
+    <value>Types</value>
+    <comment>{locked:types} unless the capitalization should be handled differently</comment>
+  </data>
+  <data name="Method" xml:space="preserve">
+    <value>Method</value>
+    <comment>{locked:method} unless the capitalization should be handled differently</comment>
+  </data>
+  <data name="Missing_prefix_colon_0" xml:space="preserve">
+    <value>Missing prefix: '{0}'</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Missing_suffix_colon_0" xml:space="preserve">
+    <value>Missing suffix: '{0}'</value>
+  </data>
+  <data name="These_non_leading_words_must_begin_with_an_upper_case_letter_colon_0" xml:space="preserve">
+    <value>These non-leading words must begin with an upper case letter: {0}</value>
+  </data>
+  <data name="Suggestion" xml:space="preserve">
+    <value>Suggestion</value>
+  </data>
+  <data name="These_non_leading_words_must_begin_with_a_lowercase_letter_colon_0" xml:space="preserve">
+    <value>These non-leading words must begin with a lowercase letter: {0}</value>
+  </data>
+  <data name="These_words_cannot_contain_lower_case_characters_colon_0" xml:space="preserve">
+    <value>These words cannot contain lower case characters: {0}</value>
+  </data>
+  <data name="These_words_cannot_contain_upper_case_characters_colon_0" xml:space="preserve">
+    <value>These words cannot contain upper case characters: {0}</value>
+  </data>
+  <data name="These_words_must_begin_with_upper_case_characters_colon_0" xml:space="preserve">
+    <value>These words must begin with upper case characters: {0}</value>
+  </data>
+  <data name="The_first_word_0_must_begin_with_an_upper_case_character" xml:space="preserve">
+    <value>The first word, '{0}', must begin with an upper case character</value>
+  </data>
+  <data name="The_first_word_0_must_begin_with_a_lower_case_character" xml:space="preserve">
+    <value>The first word, '{0}', must begin with a lower case character</value>
+  </data>
+  <data name="File_0_size_of_1_exceeds_maximum_allowed_size_of_2" xml:space="preserve">
+    <value>File '{0}' size of {1} exceeds maximum allowed size of {2}</value>
+  </data>
+  <data name="Changing_document_property_is_not_supported" xml:space="preserve">
+    <value>Changing document properties is not supported</value>
+  </data>
+  <data name="Variables_captured_colon" xml:space="preserve">
+    <value>Variables captured:</value>
+  </data>
+  <data name="Alternation_conditions_cannot_be_comments" xml:space="preserve">
+    <value>Alternation conditions cannot be comments</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: a|(?#b)</comment>
+  </data>
+  <data name="Alternation_conditions_do_not_capture_and_cannot_be_named" xml:space="preserve">
+    <value>Alternation conditions do not capture and cannot be named</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (?(?'x'))</comment>
+  </data>
+  <data name="A_subtraction_must_be_the_last_element_in_a_character_class" xml:space="preserve">
+    <value>A subtraction must be the last element in a character class</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: [a-[b]-c]</comment>
+  </data>
+  <data name="Cannot_include_class_0_in_character_range" xml:space="preserve">
+    <value>Cannot include class \{0} in character range</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: [a-\w]. {0} is the invalid class (\w here)</comment>
+  </data>
+  <data name="Capture_group_numbers_must_be_less_than_or_equal_to_Int32_MaxValue" xml:space="preserve">
+    <value>Capture group numbers must be less than or equal to Int32.MaxValue</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: a{2147483648}</comment>
+  </data>
+  <data name="Capture_number_cannot_be_zero" xml:space="preserve">
+    <value>Capture number cannot be zero</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (?&lt;0&gt;a)</comment>
+  </data>
+  <data name="Illegal_backslash_at_end_of_pattern" xml:space="preserve">
+    <value>Illegal \ at end of pattern</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \</comment>
+  </data>
+  <data name="Illegal_x_y_with_x_less_than_y" xml:space="preserve">
+    <value>Illegal {x,y} with x &gt; y</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: a{1,0}</comment>
+  </data>
+  <data name="Incomplete_character_escape" xml:space="preserve">
+    <value>Incomplete \p{X} character escape</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \p{ Cc }</comment>
+  </data>
+  <data name="Insufficient_hexadecimal_digits" xml:space="preserve">
+    <value>Insufficient hexadecimal digits</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \x</comment>
+  </data>
+  <data name="Invalid_group_name_Group_names_must_begin_with_a_word_character" xml:space="preserve">
+    <value>Invalid group name: Group names must begin with a word character</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (?&lt;a &gt;a)</comment>
+  </data>
+  <data name="Malformed" xml:space="preserve">
+    <value>malformed</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (?(0</comment>
+  </data>
+  <data name="Malformed_character_escape" xml:space="preserve">
+    <value>Malformed \p{X} character escape</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \p {Cc}</comment>
+  </data>
+  <data name="Malformed_named_back_reference" xml:space="preserve">
+    <value>Malformed \k&lt;...&gt; named back reference</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \k'</comment>
+  </data>
+  <data name="Missing_control_character" xml:space="preserve">
+    <value>Missing control character</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \c</comment>
+  </data>
+  <data name="Nested_quantifier_0" xml:space="preserve">
+    <value>Nested quantifier {0}</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: a**. In this case {0} will be '*', the extra unnecessary quantifier.</comment>
+  </data>
+  <data name="Not_enough_close_parens" xml:space="preserve">
+    <value>Not enough )'s</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (a</comment>
+  </data>
+  <data name="Quantifier_x_y_following_nothing" xml:space="preserve">
+    <value>Quantifier {x,y} following nothing</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: *</comment>
+  </data>
+  <data name="Reference_to_undefined_group" xml:space="preserve">
+    <value>reference to undefined group</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (?(1))</comment>
+  </data>
+  <data name="Reference_to_undefined_group_name_0" xml:space="preserve">
+    <value>Reference to undefined group name {0}</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \k&lt;a&gt;. Here, {0} will be the name of the undefined group ('a')</comment>
+  </data>
+  <data name="Reference_to_undefined_group_number_0" xml:space="preserve">
+    <value>Reference to undefined group number {0}</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (?&lt;-1&gt;). Here, {0} will be the number of the undefined group ('1')</comment>
+  </data>
+  <data name="Too_many_bars_in_conditional_grouping" xml:space="preserve">
+    <value>Too many | in (?()|)</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (?(0)a|b|)</comment>
+  </data>
+  <data name="Too_many_close_parens" xml:space="preserve">
+    <value>Too many )'s</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: )</comment>
+  </data>
+  <data name="Unknown_property" xml:space="preserve">
+    <value>Unknown property</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \p{}</comment>
+  </data>
+  <data name="Unknown_property_0" xml:space="preserve">
+    <value>Unknown property '{0}'</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \p{xxx}. Here, {0} will be the name of the unknown property ('xxx')</comment>
+  </data>
+  <data name="Unrecognized_control_character" xml:space="preserve">
+    <value>Unrecognized control character</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: [\c]</comment>
+  </data>
+  <data name="Unrecognized_escape_sequence_0" xml:space="preserve">
+    <value>Unrecognized escape sequence \{0}</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: \m. Here, {0} will be the unrecognized character ('m')</comment>
+  </data>
+  <data name="Unrecognized_grouping_construct" xml:space="preserve">
+    <value>Unrecognized grouping construct</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (?&lt;</comment>
+  </data>
+  <data name="Unterminated_character_class_set" xml:space="preserve">
+    <value>Unterminated [] set</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: [</comment>
+  </data>
+  <data name="Unterminated_regex_comment" xml:space="preserve">
+    <value>Unterminated (?#...) comment</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: (?#</comment>
+  </data>
+  <data name="x_y_range_in_reverse_order" xml:space="preserve">
+    <value>[x-y] range in reverse order</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. Example: [b-a]</comment>
+  </data>
+  <data name="Regex_issue_0" xml:space="preserve">
+    <value>Regex issue: {0}</value>
+    <comment>This is an error message shown to the user when they write an invalid Regular Expression. {0} will be the actual text of one of the above Regular Expression errors.</comment>
+  </data>
+  <data name="Refactoring_Only" xml:space="preserve">
+    <value>Refactoring Only</value>
+  </data>
+  <data name="Remove_the_line_below_if_you_want_to_inherit_dot_editorconfig_settings_from_higher_directories" xml:space="preserve">
+    <value>Remove the line below if you want to inherit .editorconfig settings from higher directories</value>
+  </data>
+  <data name="Core_EditorConfig_Options" xml:space="preserve">
+    <value>Core EditorConfig Options</value>
+  </data>
+  <data name="Stark_files" xml:space="preserve">
+    <value>Stark files</value>
+  </data>
+  <data name="dot_NET_Coding_Conventions" xml:space="preserve">
+    <value>.NET Coding Conventions</value>
+  </data>
+  <data name="Expression_level_preferences" xml:space="preserve">
+    <value>Expression-level preferences</value>
+  </data>
+  <data name="Field_preferences" xml:space="preserve">
+    <value>Field preferences</value>
+  </data>
+  <data name="Indentation_and_spacing" xml:space="preserve">
+    <value>Indentation and spacing</value>
+  </data>
+  <data name="Language_keywords_vs_BCL_types_preferences" xml:space="preserve">
+    <value>Language keywords vs BCL types preferences</value>
+  </data>
+  <data name="Modifier_preferences" xml:space="preserve">
+    <value>Modifier preferences</value>
+  </data>
+  <data name="New_line_preferences" xml:space="preserve">
+    <value>New line preferences</value>
+  </data>
+  <data name="Organize_usings" xml:space="preserve">
+    <value>Organize usings</value>
+  </data>
+  <data name="Parentheses_preferences" xml:space="preserve">
+    <value>Parentheses preferences</value>
+  </data>
+  <data name="this_dot_and_Me_dot_preferences" xml:space="preserve">
+    <value>this. and Me. preferences</value>
+  </data>
+  <data name="Visual_Basic_files" xml:space="preserve">
+    <value>Visual Basic files</value>
+  </data>
+  <data name="Changing_document_0_is_not_supported" xml:space="preserve">
+    <value>Changing document '{0}' is not supported.</value>
+  </data>
+  <data name="ValueUsageInfo_NameOnly" xml:space="preserve">
+    <value>NameOnly</value>
+  </data>
+  <data name="ValueUsageInfo_Read" xml:space="preserve">
+    <value>Read</value>
+  </data>
+  <data name="ValueUsageInfo_Reference" xml:space="preserve">
+    <value>Reference</value>
+  </data>
+  <data name="ValueUsageInfo_Write" xml:space="preserve">
+    <value>Write</value>
+  </data>
+  <data name="Parameter_preferences" xml:space="preserve">
+    <value>Parameter preferences</value>
+  </data>
+  <data name="Prefix_0_does_not_match_expected_prefix_1" xml:space="preserve">
+    <value>Prefix '{0}' does not match expected prefix '{1}'</value>
+  </data>
+  <data name="Prefix_0_is_not_expected" xml:space="preserve">
+    <value>Prefix '{0}' is not expected</value>
+  </data>
+  <data name="DateTimeKind_must_be_Utc" xml:space="preserve">
+    <value>DateTimeKind must be Utc</value>
+  </data>
+</root>

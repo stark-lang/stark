@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <ItemGroup Label="Project References">
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis\StarkPlatform.CodeAnalysis.csproj" />
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis.Stark\StarkPlatform.CodeAnalysis.Stark.csproj" />
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis.Workspaces\StarkPlatform.CodeAnalysis.Workspaces.csproj" />
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis.Stark.Workspaces\StarkPlatform.CodeAnalysis.Stark.Workspaces.csproj" />
+    <ProjectReference Include="..\StarkPlatform.CodeAnalysis.Features\StarkPlatform.CodeAnalysis.Features.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\StarkPlatform.CodeAnalysis.Stark\Syntax\LambdaUtilities.cs">
+      <Link>InternalUtilities\LambdaUtilities.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="CSharpFeaturesResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CSharpFeaturesResources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="CSharpFeaturesResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>CSharpFeaturesResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="2.2.0" PrivateAssets="all" />
+  </ItemGroup>
+  <Import Project="..\Shared\CSharpAnalyzerDriver\CSharpAnalyzerDriver.projitems" Label="Shared" />
+</Project>

@@ -1,0 +1,56 @@
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using StarkPlatform.CodeAnalysis;
+using StarkPlatform.CodeAnalysis.Collections;
+using StarkPlatform.CodeAnalysis.Emit;
+using StarkPlatform.CodeAnalysis.PooledObjects;
+using System.Text;
+
+namespace StarkPlatform.Cci
+{
+    internal static class ITypeReferenceExtensions
+    {
+        internal static void GetConsolidatedTypeArguments(this ITypeReference typeReference, ArrayBuilder<ITypeReference> consolidatedTypeArguments, EmitContext context)
+        {
+            INestedTypeReference nestedTypeReference = typeReference.AsNestedTypeReference;
+            nestedTypeReference?.GetContainingType(context).GetConsolidatedTypeArguments(consolidatedTypeArguments, context);
+
+            IGenericTypeInstanceReference genTypeInstance = typeReference.AsGenericTypeInstanceReference;
+            if (genTypeInstance != null)
+            {
+                consolidatedTypeArguments.AddRange(genTypeInstance.GetGenericArguments(context));
+            }
+        }
+
+        internal static ITypeReference GetUninstantiatedGenericType(this ITypeReference typeReference, EmitContext context)
+        {
+            IGenericTypeInstanceReference genericTypeInstanceReference = typeReference.AsGenericTypeInstanceReference;
+            if (genericTypeInstanceReference != null)
+            {
+                return genericTypeInstanceReference.GetGenericType(context);
+            }
+
+            ISpecializedNestedTypeReference specializedNestedType = typeReference.AsSpecializedNestedTypeReference;
+            if (specializedNestedType != null)
+            {
+                return specializedNestedType.GetUnspecializedVersion(context);
+            }
+
+            return typeReference;
+        }
+
+        internal static bool IsTypeSpecification(this ITypeReference typeReference)
+        {
+            if (typeReference is IExtendedTypeReference) return true;
+
+            INestedTypeReference nestedTypeReference = typeReference.AsNestedTypeReference;
+            if (nestedTypeReference != null)
+            {
+                return nestedTypeReference.AsSpecializedNestedTypeReference != null ||
+                    nestedTypeReference.AsGenericTypeInstanceReference != null;
+            }
+
+            return typeReference.AsNamespaceTypeReference == null;
+        }
+    }
+}

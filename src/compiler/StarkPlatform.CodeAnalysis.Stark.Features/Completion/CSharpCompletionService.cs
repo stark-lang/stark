@@ -1,0 +1,103 @@
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using System.Collections.Immutable;
+using System.Composition;
+using System.Threading;
+using StarkPlatform.CodeAnalysis.Completion;
+using StarkPlatform.CodeAnalysis.Stark.Completion.Providers;
+using StarkPlatform.CodeAnalysis.Stark.Completion.SuggestionMode;
+using StarkPlatform.CodeAnalysis.Host;
+using StarkPlatform.CodeAnalysis.Host.Mef;
+using StarkPlatform.CodeAnalysis.Text;
+
+namespace StarkPlatform.CodeAnalysis.Stark.Completion
+{
+    [ExportLanguageServiceFactory(typeof(CompletionService), LanguageNames.Stark), Shared]
+    internal class CSharpCompletionServiceFactory : ILanguageServiceFactory
+    {
+        public ILanguageService CreateLanguageService(HostLanguageServices languageServices)
+        {
+            return new CSharpCompletionService(languageServices.WorkspaceServices.Workspace);
+        }
+    }
+
+    internal class CSharpCompletionService : CommonCompletionService
+    {
+        private readonly ImmutableArray<CompletionProvider> _defaultCompletionProviders =
+            ImmutableArray.Create<CompletionProvider>(
+                new AttributeNamedParameterCompletionProvider(),
+                new NamedParameterCompletionProvider(),
+                new KeywordCompletionProvider(),
+                new SymbolCompletionProvider(),
+                new ExplicitInterfaceMemberCompletionProvider(),
+                new ExplicitInterfaceTypeCompletionProvider(),
+                new ObjectCreationCompletionProvider(),
+                new ObjectInitializerCompletionProvider(),
+                new SpeculativeTCompletionProvider(),
+                new CSharpSuggestionModeCompletionProvider(),
+                new EnumAndCompletionListTagCompletionProvider(),
+                new CrefCompletionProvider(),
+                new SnippetCompletionProvider(),
+                new ExternAliasCompletionProvider(),
+                new OverrideCompletionProvider(),
+                new PartialMethodCompletionProvider(),
+                new PartialTypeCompletionProvider(),
+                new XmlDocCommentCompletionProvider(),
+                new TupleNameCompletionProvider(),
+                new DeclarationNameCompletionProvider(),
+                new InternalsVisibleToCompletionProvider(),
+                new PropertySubpatternCompletionProvider()
+            );
+
+        private readonly Workspace _workspace;
+
+        public CSharpCompletionService(
+            Workspace workspace, ImmutableArray<CompletionProvider>? exclusiveProviders = null)
+            : base(workspace, exclusiveProviders)
+        {
+            _workspace = workspace;
+        }
+
+        public override string Language => LanguageNames.Stark;
+
+        protected override ImmutableArray<CompletionProvider> GetBuiltInProviders()
+        {
+            return _defaultCompletionProviders;
+        }
+
+        public override TextSpan GetDefaultCompletionListSpan(SourceText text, int caretPosition)
+        {
+            return CompletionUtilities.GetCompletionItemSpan(text, caretPosition);
+        }
+
+        private CompletionRules _latestRules = CompletionRules.Default;
+
+        public override CompletionRules GetRules()
+        {
+            var options = _workspace.Options;
+
+            var enterRule = options.GetOption(CompletionOptions.EnterKeyBehavior, LanguageNames.Stark);
+            var snippetRule = options.GetOption(CompletionOptions.SnippetsBehavior, LanguageNames.Stark);
+
+            // Although EnterKeyBehavior is a per-language setting, the meaning of an unset setting (Default) differs between C# and VB
+            // In C# the default means Never to maintain previous behavior
+            if (enterRule == EnterKeyRule.Default)
+            {
+                enterRule = EnterKeyRule.Never;
+            }
+
+            if (snippetRule == SnippetsRule.Default)
+            {
+                snippetRule = SnippetsRule.AlwaysInclude;
+            }
+
+            // use interlocked + stored rules to reduce # of times this gets created when option is different than default
+            var newRules = _latestRules.WithDefaultEnterKeyRule(enterRule)
+                                       .WithSnippetsRule(snippetRule);
+
+            Interlocked.Exchange(ref _latestRules, newRules);
+
+            return newRules;
+        }
+    }
+}
