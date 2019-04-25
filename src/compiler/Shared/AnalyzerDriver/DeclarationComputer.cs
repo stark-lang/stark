@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using Roslyn.Utilities;
 
-namespace StarkPlatform.CodeAnalysis
+namespace StarkPlatform.Compiler
 {
     internal class DeclarationComputer
     {

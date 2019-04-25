@@ -3,7 +3,7 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
 
-namespace StarkPlatform.CodeAnalysis
+namespace StarkPlatform.Compiler
 {
     /// <summary>
     /// Struct containing information about a source declaration.

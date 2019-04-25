@@ -6,10 +6,10 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using StarkPlatform.CodeAnalysis.CodeFixes;
-using StarkPlatform.CodeAnalysis.Shared.Utilities;
+using StarkPlatform.Compiler.CodeFixes;
+using StarkPlatform.Compiler.Shared.Utilities;
 
-namespace StarkPlatform.CodeAnalysis.CodeStyle
+namespace StarkPlatform.Compiler.CodeStyle
 {
     internal static class FixAllContextHelper
     {

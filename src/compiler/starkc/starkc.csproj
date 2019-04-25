@@ -5,8 +5,8 @@
     <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup Label="Project References">
-    <ProjectReference Include="..\StarkPlatform.CodeAnalysis\StarkPlatform.CodeAnalysis.csproj" />
-    <ProjectReference Include="..\StarkPlatform.CodeAnalysis.Stark\StarkPlatform.CodeAnalysis.Stark.csproj" />
+    <ProjectReference Include="..\StarkPlatform.Compiler\StarkPlatform.Compiler.csproj" />
+    <ProjectReference Include="..\StarkPlatform.Compiler.Stark\StarkPlatform.Compiler.Stark.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.DiaSymReader.Native" Version="1.7.0" />

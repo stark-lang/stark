@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace StarkPlatform.CodeAnalysis.CommandLine
+namespace StarkPlatform.Compiler.CommandLine
 {
     /// <summary>
     /// This trace listener is useful in environments where we don't want a dialog but instead want

@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace StarkPlatform.CodeAnalysis
+namespace StarkPlatform.Compiler
 {
     internal class CoreClrAnalyzerAssemblyLoader : AnalyzerAssemblyLoader
     {

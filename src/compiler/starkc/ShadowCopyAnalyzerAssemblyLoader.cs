@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 // The ShadowCopyAnalyzerAssemblyLoader derives from DesktopAnalyzerAssemblyLoader (NET472) OR CoreClrAnalyzerAssemblyLoader (NETCOREAPP2_1)
 #if NET472 || NETCOREAPP2_1
 
-namespace StarkPlatform.CodeAnalysis
+namespace StarkPlatform.Compiler
 {
     internal sealed class ShadowCopyAnalyzerAssemblyLoader :
 #if NET472

@@ -2,9 +2,9 @@
 
 using System;
 using System.IO;
-using StarkPlatform.CodeAnalysis.CommandLine;
+using StarkPlatform.Compiler.CommandLine;
 
-namespace StarkPlatform.CodeAnalysis.Stark.CommandLine
+namespace StarkPlatform.Compiler.Stark.CommandLine
 {
     public class Program
     {

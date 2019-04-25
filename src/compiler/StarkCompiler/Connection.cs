@@ -7,9 +7,9 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using StarkPlatform.CodeAnalysis.CommandLine;
+using StarkPlatform.Compiler.CommandLine;
 
-namespace StarkPlatform.CodeAnalysis.CompilerServer
+namespace StarkPlatform.Compiler.CompilerServer
 {
     internal struct ConnectionData
     {

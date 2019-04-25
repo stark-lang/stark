@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
-using StarkPlatform.CodeAnalysis;
+using StarkPlatform.Compiler;
 using System;
 using System.IO;
 using System.Text;
 
-namespace StarkPlatform.CodeAnalysis.CommandLine
+namespace StarkPlatform.Compiler.CommandLine
 {
     internal static class ConsoleUtil
     {

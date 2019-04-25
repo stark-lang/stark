@@ -2,9 +2,9 @@
 
 using System;
 using System.Runtime.InteropServices;
-using StarkPlatform.CodeAnalysis.CommandLine;
+using StarkPlatform.Compiler.CommandLine;
 
-namespace StarkPlatform.CodeAnalysis.CompilerServer
+namespace StarkPlatform.Compiler.CompilerServer
 {
     /// <summary>
     /// Uses p/invoke to gain access to information about how much memory this process is using

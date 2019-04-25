@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Update="CSharpResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CSharpResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BoundTree\BoundNodes.xml" />
+    <None Include="Syntax\Syntax.xml" />
+    <None Include="UseSiteDiagnosticsCheckEnforcer\BaseLine.txt" />
+    <None Include="UseSiteDiagnosticsCheckEnforcer\Run.bat" />
+    <None Include="FlowAnalysis\Flow Analysis Design.docx" />
+    <None Include="Symbols\PublicSymbolTable.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="CSharpResources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CSharpResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\StarkPlatform.Compiler\StarkPlatform.Compiler.csproj" />
+  </ItemGroup>
+  <Import Project="..\Shared\CSharpAnalyzerDriver\CSharpAnalyzerDriver.projitems" Label="Shared" />
+</Project>

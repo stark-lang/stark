@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace StarkPlatform.CodeAnalysis.CommandLine
+namespace StarkPlatform.Compiler.CommandLine
 {
     internal class DesktopBuildClient : BuildClient
     {

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Roslyn.Utilities;
 
-namespace StarkPlatform.CodeAnalysis.Diagnostics
+namespace StarkPlatform.Compiler.Diagnostics
 {
     internal static class AnalyzerExceptionDescriptionBuilder
     {

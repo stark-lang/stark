@@ -163,7 +163,7 @@ namespace BoundTreeGenerator
             WriteUsing("System.Runtime.CompilerServices");
             WriteUsing("System.Threading");
             WriteUsing("System.Text");
-            WriteUsing("StarkPlatform.CodeAnalysis.Collections");
+            WriteUsing("StarkPlatform.Compiler.Collections");
             WriteUsing("Roslyn.Utilities");
 
             Blank();
@@ -195,19 +195,19 @@ namespace BoundTreeGenerator
             switch (_targetLang)
             {
                 case TargetLanguage.CSharp:
-                    WriteLine("using StarkPlatform.CodeAnalysis.Text;");
-                    WriteLine("using StarkPlatform.CodeAnalysis.Stark.Symbols;");
-                    WriteLine("using StarkPlatform.CodeAnalysis.Stark.Syntax;");
+                    WriteLine("using StarkPlatform.Compiler.Text;");
+                    WriteLine("using StarkPlatform.Compiler.Stark.Symbols;");
+                    WriteLine("using StarkPlatform.Compiler.Stark.Syntax;");
                     Blank();
-                    WriteLine("namespace StarkPlatform.CodeAnalysis.Stark");
+                    WriteLine("namespace StarkPlatform.Compiler.Stark");
                     Brace();
                     break;
                 case TargetLanguage.VB:
-                    WriteLine("Imports StarkPlatform.CodeAnalysis.Text");
-                    WriteLine("Imports StarkPlatform.CodeAnalysis.VisualBasic.Symbols");
-                    WriteLine("Imports StarkPlatform.CodeAnalysis.VisualBasic.Syntax");
+                    WriteLine("Imports StarkPlatform.Compiler.Text");
+                    WriteLine("Imports StarkPlatform.Compiler.VisualBasic.Symbols");
+                    WriteLine("Imports StarkPlatform.Compiler.VisualBasic.Syntax");
                     Blank();
-                    WriteLine("Namespace StarkPlatform.CodeAnalysis.VisualBasic");
+                    WriteLine("Namespace StarkPlatform.Compiler.VisualBasic");
                     Indent();
                     break;
                 default:

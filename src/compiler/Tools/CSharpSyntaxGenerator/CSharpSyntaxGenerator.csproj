@@ -8,7 +8,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="..\..\StarkPlatform.CodeAnalysis.Stark\Syntax\Syntax.xml">
+    <Content Include="..\..\StarkPlatform.Compiler.Stark\Syntax\Syntax.xml">
       <Link>Syntax.xml</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StarkPlatform.CodeAnalysis.CompilerServer
+namespace StarkPlatform.Compiler.CompilerServer
 {
     internal interface IDiagnosticListener
     {

@@ -1,0 +1,5 @@
+    .get instance class StarkPlatform.Compiler.Stark.Symbols.NamedTypeSymbol StarkPlatform.Compiler.Stark.Symbols.TypeSymbol::get_BaseType()
+    .get instance valuetype [System.Collections.Immutable]System.Collections.Immutable.ImmutableArray`1<class StarkPlatform.Compiler.Stark.Symbols.NamedTypeSymbol> StarkPlatform.Compiler.Stark.Symbols.TypeSymbol::get_Interfaces()
+    .get instance valuetype [System.Collections.Immutable]System.Collections.Immutable.ImmutableArray`1<class StarkPlatform.Compiler.Stark.Symbols.NamedTypeSymbol> StarkPlatform.Compiler.Stark.Symbols.TypeSymbol::get_AllInterfaces()
+    .get instance valuetype [System.Collections.Immutable]System.Collections.Immutable.ImmutableArray`1<class StarkPlatform.Compiler.Stark.Symbols.TypeSymbol> StarkPlatform.Compiler.Stark.Symbols.NamedTypeSymbol::get_TypeArguments()
+    .get instance valuetype [System.Collections.Immutable]System.Collections.Immutable.ImmutableArray`1<class StarkPlatform.Compiler.Stark.Symbols.TypeSymbol> StarkPlatform.Compiler.Stark.Symbols.TypeParameterSymbol::get_ConstraintTypes()

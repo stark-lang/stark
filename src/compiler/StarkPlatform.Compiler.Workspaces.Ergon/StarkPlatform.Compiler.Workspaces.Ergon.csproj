@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);WORKSPACE_ERGON</DefineConstants>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ergon.Core\Ergon.Core.csproj" />
+    <ProjectReference Include="..\StarkPlatform.Compiler\StarkPlatform.Compiler.csproj" />
+    <ProjectReference Include="..\StarkPlatform.Compiler.Workspaces\StarkPlatform.Compiler.Workspaces.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="WorkspaceErgonResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>WorkspaceErgonResources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="WorkspaceErgonResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>WorkspaceErgonResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

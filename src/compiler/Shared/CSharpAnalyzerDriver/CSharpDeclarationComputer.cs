@@ -5,12 +5,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
-using StarkPlatform.CodeAnalysis.Stark.Syntax;
-using StarkPlatform.CodeAnalysis.PooledObjects;
-using StarkPlatform.CodeAnalysis.Text;
+using StarkPlatform.Compiler.Stark.Syntax;
+using StarkPlatform.Compiler.PooledObjects;
+using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
 
-namespace StarkPlatform.CodeAnalysis.Stark
+namespace StarkPlatform.Compiler.Stark
 {
     internal class CSharpDeclarationComputer : DeclarationComputer
     {

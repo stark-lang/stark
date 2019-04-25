@@ -4,7 +4,7 @@ using System;
 using System.Collections.Immutable;
 using System.IO;
 
-namespace StarkPlatform.CodeAnalysis.CompilerServer
+namespace StarkPlatform.Compiler.CompilerServer
 {
     internal sealed class DesktopCompilerServerHost : CompilerServerHost
     {

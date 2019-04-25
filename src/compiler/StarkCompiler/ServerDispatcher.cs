@@ -10,9 +10,9 @@ using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Globalization;
-using StarkPlatform.CodeAnalysis.CommandLine;
+using StarkPlatform.Compiler.CommandLine;
 
-namespace StarkPlatform.CodeAnalysis.CompilerServer
+namespace StarkPlatform.Compiler.CompilerServer
 {
     internal interface IClientConnectionHost
     {

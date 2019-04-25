@@ -34,7 +34,7 @@ namespace CSharpSyntaxGenerator
             _writer.WriteLine("using System.Linq;");
             _writer.WriteLine("using System.Threading;");
             _writer.WriteLine();
-            _writer.WriteLine("namespace StarkPlatform.CodeAnalysis.Stark");
+            _writer.WriteLine("namespace StarkPlatform.Compiler.Stark");
             _writer.WriteLine("{");
 
             this.WriteTypes();

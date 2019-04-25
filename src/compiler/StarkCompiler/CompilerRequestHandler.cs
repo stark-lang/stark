@@ -9,11 +9,11 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using StarkPlatform.CodeAnalysis.CommandLine;
+using StarkPlatform.Compiler.CommandLine;
 
-using static StarkPlatform.CodeAnalysis.CommandLine.CompilerServerLogger;
+using static StarkPlatform.Compiler.CommandLine.CompilerServerLogger;
 
-namespace StarkPlatform.CodeAnalysis.CompilerServer
+namespace StarkPlatform.Compiler.CompilerServer
 {
     internal struct RunRequest
     {

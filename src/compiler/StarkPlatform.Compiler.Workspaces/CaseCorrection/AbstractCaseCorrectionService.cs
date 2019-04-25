@@ -1,0 +1,58 @@
+﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
+
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using StarkPlatform.Compiler.Internal.Log;
+using StarkPlatform.Compiler.Shared;
+using StarkPlatform.Compiler.Shared.Extensions;
+using StarkPlatform.Compiler.Text;
+
+namespace StarkPlatform.Compiler.CaseCorrection
+{
+    internal abstract partial class AbstractCaseCorrectionService : ICaseCorrectionService
+    {
+        protected abstract void AddReplacements(SemanticModel semanticModel, SyntaxNode root, ImmutableArray<TextSpan> spans, Workspace workspace, ConcurrentDictionary<SyntaxToken, SyntaxToken> replacements, CancellationToken cancellationToken);
+
+        public async Task<Document> CaseCorrectAsync(Document document, ImmutableArray<TextSpan> spans, CancellationToken cancellationToken)
+        {
+            if (!spans.Any())
+            {
+                return document;
+            }
+
+            var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var semanticModel = await document.GetSemanticModelForSpanAsync(spans.Collapse(), cancellationToken).ConfigureAwait(false);
+
+            var newRoot = CaseCorrect(semanticModel, root, spans, document.Project.Solution.Workspace, cancellationToken);
+            return (root == newRoot) ? document : document.WithSyntaxRoot(newRoot);
+        }
+
+        public SyntaxNode CaseCorrect(SyntaxNode root, ImmutableArray<TextSpan> spans, Workspace workspace, CancellationToken cancellationToken)
+        {
+            return CaseCorrect(null, root, spans, workspace, cancellationToken);
+        }
+
+        private SyntaxNode CaseCorrect(SemanticModel semanticModel, SyntaxNode root, ImmutableArray<TextSpan> spans, Workspace workspace, CancellationToken cancellationToken)
+        {
+            using (Logger.LogBlock(FunctionId.CaseCorrection_CaseCorrect, cancellationToken))
+            {
+                var normalizedSpanCollection = new NormalizedTextSpanCollection(spans);
+                var replacements = new ConcurrentDictionary<SyntaxToken, SyntaxToken>();
+
+                using (Logger.LogBlock(FunctionId.CaseCorrection_AddReplacements, cancellationToken))
+                {
+                    AddReplacements(semanticModel, root, normalizedSpanCollection.ToImmutableArray(), workspace, replacements, cancellationToken);
+                }
+
+                using (Logger.LogBlock(FunctionId.CaseCorrection_ReplaceTokens, cancellationToken))
+                {
+                    return root.ReplaceTokens(replacements.Keys, (oldToken, _) => replacements[oldToken]);
+                }
+            }
+        }
+    }
+}

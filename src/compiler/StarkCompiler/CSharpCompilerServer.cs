@@ -6,9 +6,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using StarkPlatform.CodeAnalysis.Stark;
+using StarkPlatform.Compiler.Stark;
 
-namespace StarkPlatform.CodeAnalysis.CompilerServer
+namespace StarkPlatform.Compiler.CompilerServer
 {
     internal sealed class CSharpCompilerServer : CSharpCompiler
     {

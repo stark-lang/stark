@@ -5,11 +5,11 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection.Stark.PortableExecutable;
-using StarkPlatform.CodeAnalysis.InternalUtilities;
-using StarkPlatform.CodeAnalysis.PooledObjects;
+using StarkPlatform.Compiler.InternalUtilities;
+using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
 
-namespace StarkPlatform.CodeAnalysis.CompilerServer
+namespace StarkPlatform.Compiler.CompilerServer
 {
     internal class MetadataAndSymbolCache
     {

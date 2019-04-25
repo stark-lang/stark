@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+  </PropertyGroup>
+  <ItemGroup Label="Project References">
+    <ProjectReference Include="..\StarkPlatform.Compiler\StarkPlatform.Compiler.csproj" />
+    <ProjectReference Include="..\StarkPlatform.Compiler.Stark\StarkPlatform.Compiler.Stark.csproj" />
+    <ProjectReference Include="..\StarkPlatform.Compiler.Workspaces\StarkPlatform.Compiler.Workspaces.csproj" />
+    <ProjectReference Include="..\StarkPlatform.Compiler.Stark.Workspaces\StarkPlatform.Compiler.Stark.Workspaces.csproj" />
+    <ProjectReference Include="..\StarkPlatform.Compiler.Features\StarkPlatform.Compiler.Features.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\StarkPlatform.Compiler.Stark\Syntax\LambdaUtilities.cs">
+      <Link>InternalUtilities\LambdaUtilities.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="CSharpFeaturesResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CSharpFeaturesResources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="CSharpFeaturesResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>CSharpFeaturesResources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Humanizer.Core" Version="2.2.0" PrivateAssets="all" />
+  </ItemGroup>
+  <Import Project="..\Shared\CSharpAnalyzerDriver\CSharpAnalyzerDriver.projitems" Label="Shared" />
+</Project>

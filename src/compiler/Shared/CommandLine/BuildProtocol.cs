@@ -11,8 +11,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static StarkPlatform.CodeAnalysis.CommandLine.BuildProtocolConstants;
-using static StarkPlatform.CodeAnalysis.CommandLine.CompilerServerLogger;
+using static StarkPlatform.Compiler.CommandLine.BuildProtocolConstants;
+using static StarkPlatform.Compiler.CommandLine.CompilerServerLogger;
 
 // This file describes data structures about the protocol from client program to server that is 
 // used. The basic protocol is this.
@@ -23,7 +23,7 @@ using static StarkPlatform.CodeAnalysis.CommandLine.CompilerServerLogger;
 // it handles the request, sends a response (described by Response class) back to the client, then
 // disconnects the pipe and ends the thread.
 
-namespace StarkPlatform.CodeAnalysis.CommandLine
+namespace StarkPlatform.Compiler.CommandLine
 {
     /// <summary>
     /// Represents a request from the client. A request is as follows.
