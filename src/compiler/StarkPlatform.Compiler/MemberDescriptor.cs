@@ -4,7 +4,7 @@ using Roslyn.Utilities;
 using System;
 using System.Collections.Immutable;
 using System.IO;
-using System.Reflection.Stark.Metadata;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.RuntimeMembers
 {

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection.Stark.Metadata;
 using System.Runtime.InteropServices;
 using StarkPlatform.Cci;
 using StarkPlatform.Compiler.Stark.Emit;
@@ -12,6 +11,7 @@ using StarkPlatform.Compiler.Stark.Symbols.Metadata.PE;
 using StarkPlatform.Compiler.Emit;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {

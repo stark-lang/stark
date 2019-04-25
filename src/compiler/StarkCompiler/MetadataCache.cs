@@ -4,10 +4,10 @@ using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.Stark.PortableExecutable;
 using StarkPlatform.Compiler.InternalUtilities;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler.CompilerServer
 {

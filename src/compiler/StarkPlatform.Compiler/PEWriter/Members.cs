@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler;
 using StarkPlatform.Compiler.CodeGen;
 using StarkPlatform.Compiler.Debugging;
 using StarkPlatform.Compiler.Emit;
+using StarkPlatform.Reflection.Metadata;
 using EmitContext = StarkPlatform.Compiler.Emit.EmitContext;
 
 namespace StarkPlatform.Cci

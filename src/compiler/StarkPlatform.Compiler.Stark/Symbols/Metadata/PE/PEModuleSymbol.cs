@@ -8,13 +8,13 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.Stark.Symbols.Retargeting;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
-using System.Reflection.Stark.PortableExecutable;
 using System.Reflection;
-using System.Reflection.Stark;
+using StarkPlatform.Reflection;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 {

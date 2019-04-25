@@ -6,11 +6,11 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Stark;
-using System.Reflection.Stark.Metadata;
 using System.Security.Cryptography;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {

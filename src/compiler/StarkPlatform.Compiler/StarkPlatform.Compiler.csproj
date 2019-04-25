@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\System.Reflection.Stark.Metadata\StarkPlatform.Reflection.Metadata.csproj" />
+    <ProjectReference Include="..\StarkPlatform.Reflection.Metadata\StarkPlatform.Reflection.Metadata.csproj" />
   </ItemGroup>
   <Import Project="..\Shared\AnalyzerDriver\AnalyzerDriver.projitems" Label="Shared" />
   <Import Project="..\Shared\StarkPlatform.Compiler.Debugging\StarkPlatform.Compiler.Debugging.projitems" Label="Shared" />

@@ -7,9 +7,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.Metadata.Ecma335;
-using System.Reflection.Stark.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -18,6 +15,9 @@ using StarkPlatform.Compiler.Emit;
 using static StarkPlatform.Compiler.SigningUtilities;
 using EmitContext = StarkPlatform.Compiler.Emit.EmitContext;
 using Microsoft.DiaSymReader;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.Metadata.Ecma335;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Cci
 {

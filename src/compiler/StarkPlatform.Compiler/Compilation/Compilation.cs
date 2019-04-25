@@ -9,9 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.Metadata.Ecma335;
-using System.Reflection.Stark.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -24,6 +21,9 @@ using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Symbols;
 using Microsoft.DiaSymReader;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.Metadata.Ecma335;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler
 {

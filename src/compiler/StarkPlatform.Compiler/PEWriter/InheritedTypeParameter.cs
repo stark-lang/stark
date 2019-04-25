@@ -2,9 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection.Stark.Metadata;
 using Roslyn.Utilities;
 using StarkPlatform.Compiler;
+using StarkPlatform.Reflection.Metadata;
 using EmitContext = StarkPlatform.Compiler.Emit.EmitContext;
 
 namespace StarkPlatform.Cci

@@ -5,12 +5,12 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using StarkPlatform.Cci;
 using StarkPlatform.Compiler.Interop;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {

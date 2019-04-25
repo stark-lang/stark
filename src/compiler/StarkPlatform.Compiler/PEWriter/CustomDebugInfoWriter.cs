@@ -4,13 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.Metadata.Ecma335;
 using StarkPlatform.Compiler;
 using StarkPlatform.Compiler.Debugging;
 using StarkPlatform.Compiler.Emit;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Cci
 {

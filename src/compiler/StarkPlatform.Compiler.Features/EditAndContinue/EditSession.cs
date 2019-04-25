@@ -7,8 +7,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.Metadata.Ecma335;
 using System.Threading;
 using System.Threading.Tasks;
 using StarkPlatform.Compiler.Emit;
@@ -17,6 +15,8 @@ using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Text;
 using StarkPlatform.Compiler.Shared.Extensions;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.Metadata.Ecma335;
 
 namespace StarkPlatform.Compiler.EditAndContinue
 {

@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
 using Roslyn.Utilities;
 
 namespace StarkPlatform.Compiler

@@ -7,10 +7,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.PortableExecutable;
 using System.Threading;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler.Diagnostics
 {

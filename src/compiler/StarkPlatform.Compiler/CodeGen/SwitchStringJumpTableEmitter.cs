@@ -2,8 +2,8 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.Emit;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.CodeGen
 {

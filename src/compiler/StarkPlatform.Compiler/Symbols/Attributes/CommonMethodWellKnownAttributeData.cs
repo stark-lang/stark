@@ -2,9 +2,9 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using System.Reflection.Stark;
 using System.Runtime.CompilerServices;
 using StarkPlatform.Compiler.Text;
+using StarkPlatform.Reflection;
 using Cci = StarkPlatform.Cci;
 
 namespace StarkPlatform.Compiler

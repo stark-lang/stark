@@ -4,9 +4,9 @@ using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler;
+using StarkPlatform.Reflection.Metadata;
 
 namespace Roslyn.Utilities
 {

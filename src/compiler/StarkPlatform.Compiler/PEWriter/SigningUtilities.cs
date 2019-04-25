@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
 using System.Security.Cryptography;
 using StarkPlatform.Compiler;
 using StarkPlatform.Compiler.Emit;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {

@@ -6,9 +6,9 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using System.IO;
 using System.Reflection;
-using System.Reflection.Stark.PortableExecutable;
 using StarkPlatform.Compiler.InternalUtilities;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler
 {

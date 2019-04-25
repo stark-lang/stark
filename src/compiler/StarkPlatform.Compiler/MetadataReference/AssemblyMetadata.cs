@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.PortableExecutable;
 using System.Threading;
 using System.Diagnostics;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler
 {

@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.CodeGen;
 using StarkPlatform.Compiler.Stark.Symbols;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 using static StarkPlatform.Compiler.Stark.Binder;
 
 namespace StarkPlatform.Compiler.Stark.CodeGen

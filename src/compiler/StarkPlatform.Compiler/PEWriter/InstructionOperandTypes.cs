@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Reflection.Emit;
-using System.Reflection.Stark.Metadata;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Cci
 {

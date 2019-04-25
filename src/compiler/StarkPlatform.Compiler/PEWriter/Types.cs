@@ -2,9 +2,9 @@
 
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Reflection.Stark.Metadata;
 using System.Runtime.InteropServices;
 using StarkPlatform.Compiler;
+using StarkPlatform.Reflection.Metadata;
 using EmitContext = StarkPlatform.Compiler.Emit.EmitContext;
 
 namespace StarkPlatform.Cci

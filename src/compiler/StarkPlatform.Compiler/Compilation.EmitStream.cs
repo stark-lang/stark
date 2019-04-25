@@ -3,9 +3,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.Stark.PortableExecutable;
 using StarkPlatform.Compiler.Interop;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler
 {

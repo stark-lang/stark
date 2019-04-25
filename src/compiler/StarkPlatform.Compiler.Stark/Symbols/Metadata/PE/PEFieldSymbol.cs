@@ -6,13 +6,13 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
 using System.Runtime.InteropServices;
 using System.Threading;
 using StarkPlatform.Compiler.Stark.DocumentationComments;
 using StarkPlatform.Compiler.Stark.Emit;
 using Roslyn.Utilities;
 using System.Linq;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 {

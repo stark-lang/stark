@@ -7,15 +7,15 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Stark;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.Metadata.Ecma335;
-using System.Reflection.Stark.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.Metadata.Ecma335;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler
 {

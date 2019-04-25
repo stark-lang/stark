@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.CodeGen;
 using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 using static StarkPlatform.Compiler.Stark.Binder;
 
 namespace StarkPlatform.Compiler.Stark.CodeGen

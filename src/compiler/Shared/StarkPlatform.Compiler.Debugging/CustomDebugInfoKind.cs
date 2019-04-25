@@ -42,13 +42,13 @@
 
         /// <summary>
         /// C# and VB. Encodes EnC local variable slot map.
-        /// See https://github.com/dotnet/corefx/blob/master/src/System.Reflection.Stark.Metadata/specs/PortablePdb-Metadata.md#EditAndContinueLocalSlotMap.
+        /// See https://github.com/dotnet/corefx/blob/master/src/StarkPlatform.Reflection.Metadata/specs/PortablePdb-Metadata.md#EditAndContinueLocalSlotMap.
         /// </summary>
         EditAndContinueLocalSlotMap = 6,
 
         /// <summary>
         /// C# and VB. Encodes EnC lambda map.
-        /// See https://github.com/dotnet/corefx/blob/master/src/System.Reflection.Stark.Metadata/specs/PortablePdb-Metadata.md#EditAndContinueLambdaAndClosureMap.
+        /// See https://github.com/dotnet/corefx/blob/master/src/StarkPlatform.Reflection.Metadata/specs/PortablePdb-Metadata.md#EditAndContinueLambdaAndClosureMap.
         /// </summary>
         EditAndContinueLambdaMap = 7,
 

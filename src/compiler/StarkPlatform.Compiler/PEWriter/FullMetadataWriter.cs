@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.Metadata.Ecma335;
 using System.Threading;
 using StarkPlatform.Compiler;
 using StarkPlatform.Compiler.Emit;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.Metadata.Ecma335;
 using EmitContext = StarkPlatform.Compiler.Emit.EmitContext;
 
 namespace StarkPlatform.Cci

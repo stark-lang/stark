@@ -7,9 +7,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Reflection.Stark.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {

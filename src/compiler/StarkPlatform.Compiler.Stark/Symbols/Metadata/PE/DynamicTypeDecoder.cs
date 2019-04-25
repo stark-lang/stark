@@ -4,9 +4,9 @@ using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.PooledObjects;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 {

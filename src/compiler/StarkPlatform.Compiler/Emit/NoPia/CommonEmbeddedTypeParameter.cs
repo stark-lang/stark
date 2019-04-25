@@ -3,7 +3,7 @@
 using Roslyn.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Reflection.Stark.Metadata;
+using StarkPlatform.Reflection.Metadata;
 using Cci = StarkPlatform.Cci;
 
 namespace StarkPlatform.Compiler.Emit.NoPia

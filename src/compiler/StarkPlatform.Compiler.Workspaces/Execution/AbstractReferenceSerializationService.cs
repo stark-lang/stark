@@ -6,8 +6,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.PortableExecutable;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -16,6 +14,8 @@ using StarkPlatform.Compiler.Diagnostics;
 using StarkPlatform.Compiler.Host;
 using StarkPlatform.Compiler.Serialization;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler.Execution
 {

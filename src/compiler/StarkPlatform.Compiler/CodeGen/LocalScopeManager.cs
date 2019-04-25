@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.Debugging;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 using Cci = StarkPlatform.Cci;
 
 namespace StarkPlatform.Compiler.CodeGen

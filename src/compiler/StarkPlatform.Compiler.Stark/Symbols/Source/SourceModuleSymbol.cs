@@ -5,13 +5,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection.Stark.PortableExecutable;
 using System.Runtime.InteropServices;
 using System.Threading;
 using StarkPlatform.Compiler.Stark.Emit;
 using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {

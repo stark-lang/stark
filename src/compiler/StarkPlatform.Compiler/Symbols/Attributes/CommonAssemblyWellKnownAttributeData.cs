@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 using StarkPlatform.Compiler.Text;
 using System.Collections.Generic;
-using System.Reflection.Stark;
+using StarkPlatform.Reflection;
 
 namespace StarkPlatform.Compiler
 {

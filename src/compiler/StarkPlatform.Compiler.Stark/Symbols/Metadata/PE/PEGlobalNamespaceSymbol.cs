@@ -7,8 +7,8 @@ using Roslyn.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
 using System;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 {

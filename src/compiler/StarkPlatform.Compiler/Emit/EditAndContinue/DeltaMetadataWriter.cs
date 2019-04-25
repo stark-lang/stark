@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.Metadata.Ecma335;
 using System.Threading;
 using StarkPlatform.Cci;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.Metadata.Ecma335;
 
 namespace StarkPlatform.Compiler.Emit
 {

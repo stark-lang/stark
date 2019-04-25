@@ -1,7 +1,7 @@
-﻿using System.Reflection.Stark.Metadata;
-using StarkPlatform.Cci;
+﻿using StarkPlatform.Cci;
 using StarkPlatform.Compiler.Emit;
 using StarkPlatform.Compiler.Stark.Emit;
+using StarkPlatform.Reflection.Metadata;
 using PrimitiveTypeCode = StarkPlatform.Cci.PrimitiveTypeCode;
 
 namespace StarkPlatform.Compiler.Stark.Symbols

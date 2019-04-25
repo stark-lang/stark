@@ -5,9 +5,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.CodeGen;
 using StarkPlatform.Compiler.PooledObjects;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Emit
 {

@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.CodeGen;
 using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.Stark.Symbols.Metadata.PE;
 using StarkPlatform.Compiler.Emit;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Emit
 {

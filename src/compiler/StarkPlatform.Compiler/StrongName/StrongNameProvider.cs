@@ -4,10 +4,10 @@ using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.Stark.Metadata;
 using System.Security.Cryptography;
 using StarkPlatform.Cci;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {

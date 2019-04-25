@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using StarkPlatform.Compiler.CodeGen;
@@ -22,6 +21,7 @@ using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Symbols;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 using static StarkPlatform.Compiler.Stark.Binder;
 
 namespace StarkPlatform.Compiler.Stark

@@ -6,9 +6,9 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
-using System.Reflection.Stark.PortableExecutable;
 using StarkPlatform.Compiler;
+using StarkPlatform.Reflection.Metadata;
+using StarkPlatform.Reflection.PortableExecutable;
 
 namespace Roslyn.Utilities
 {

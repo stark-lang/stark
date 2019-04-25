@@ -8,12 +8,12 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Reflection;
-using System.Reflection.Stark;
 using StarkPlatform.Compiler.CodeGen;
 using StarkPlatform.Compiler.Collections;
 using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {

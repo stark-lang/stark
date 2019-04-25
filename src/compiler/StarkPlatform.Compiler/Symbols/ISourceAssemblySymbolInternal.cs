@@ -2,7 +2,7 @@
 
 using System;
 using System.Reflection;
-using System.Reflection.Stark;
+using StarkPlatform.Reflection;
 
 namespace StarkPlatform.Compiler
 {

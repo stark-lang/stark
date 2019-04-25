@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection;
-using System.Reflection.Stark;
 using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.Emit;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection;
 
 namespace StarkPlatform.Compiler.Stark.Emit
 {

@@ -7,8 +7,8 @@ using StarkPlatform.Compiler.Emit;
 using System.Reflection;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection.Stark;
 using System.Security.Cryptography;
+using StarkPlatform.Reflection;
 
 namespace StarkPlatform.Compiler
 {

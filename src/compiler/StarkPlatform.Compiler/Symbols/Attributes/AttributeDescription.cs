@@ -2,8 +2,8 @@
 
 using System.Diagnostics;
 using StarkPlatform.Compiler.Text;
-using System.Reflection.Stark.Metadata;
 using System.Collections.Immutable;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {

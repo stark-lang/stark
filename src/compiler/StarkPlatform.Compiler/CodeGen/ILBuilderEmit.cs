@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection.Stark.Metadata;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 using static System.Linq.ImmutableArrayExtensions;
 
 namespace StarkPlatform.Compiler.CodeGen

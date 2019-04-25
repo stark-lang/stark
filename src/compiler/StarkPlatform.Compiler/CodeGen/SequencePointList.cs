@@ -178,7 +178,7 @@ namespace StarkPlatform.Compiler.CodeGen
 
                             // Trim column number if necessary.
                             // Column must be in range [0, 0xffff) and end column must be greater than start column if on the same line.
-                            // The Portable PDB specifies 0x10000, but System.Reflection.Stark.Metadata reader has an off-by-one error.
+                            // The Portable PDB specifies 0x10000, but StarkPlatform.Reflection.Metadata reader has an off-by-one error.
                             // Windows PDBs allow the same range.
                             const int MaxColumn = ushort.MaxValue - 1;
 

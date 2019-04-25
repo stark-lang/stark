@@ -2,8 +2,8 @@
 
 using System;
 using System.Reflection;
-using System.Reflection.Stark.Metadata.Ecma335;
 using Microsoft.DiaSymReader;
+using StarkPlatform.Reflection.Metadata.Ecma335;
 
 namespace StarkPlatform.Cci
 {

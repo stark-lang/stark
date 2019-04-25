@@ -2,8 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection.Stark.Metadata;
 using System.Security.Cryptography;
+using StarkPlatform.Reflection.Metadata;
 
 namespace Roslyn.Utilities
 {

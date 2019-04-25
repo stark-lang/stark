@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using StarkPlatform.Compiler.Collections;
@@ -15,6 +14,7 @@ using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Serialization;
 using StarkPlatform.Compiler.Utilities;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.FindSymbols
 {

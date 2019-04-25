@@ -8,13 +8,13 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
 using System.Threading;
 using StarkPlatform.Compiler.Stark.DocumentationComments;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
 using StarkPlatform.Compiler.Stark.Emit;
 using StarkPlatform.Compiler.Collections;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 {

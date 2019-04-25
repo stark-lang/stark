@@ -2,10 +2,10 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.Emit;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Emit
 {

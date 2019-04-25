@@ -4,10 +4,10 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.Debugging;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.CodeGen
 {

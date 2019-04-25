@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Roslyn.Utilities;
 using StarkPlatform.Compiler.Emit;
 using StarkPlatform.Compiler.Collections;
 using StarkPlatform.Compiler.PooledObjects;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.CodeGen
 {

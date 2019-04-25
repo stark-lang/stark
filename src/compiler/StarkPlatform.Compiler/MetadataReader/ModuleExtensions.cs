@@ -3,7 +3,7 @@
 using System;
 using System.Globalization;
 using System.Reflection;
-using System.Reflection.Stark.Metadata;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {

@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.CodeGen;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Symbols;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Emit
 {

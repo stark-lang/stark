@@ -4,9 +4,9 @@ using System;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Reflection;
-using System.Reflection.Stark;
-using System.Reflection.Stark.Metadata;
 using StarkPlatform.Compiler.PooledObjects;
+using StarkPlatform.Reflection;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {
