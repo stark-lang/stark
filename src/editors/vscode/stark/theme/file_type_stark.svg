@@ -40,8 +40,8 @@
      id="namedview3858"
      showgrid="false"
      inkscape:zoom="20.362466"
-     inkscape:cx="42.392573"
-     inkscape:cy="28.02497"
+     inkscape:cx="4.8329655"
+     inkscape:cy="32.873724"
      inkscape:window-x="474"
      inkscape:window-y="70"
      inkscape:window-maximized="0"
@@ -80,28 +80,66 @@
        y="55.215893" /></text>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:27.52899933px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#0086ab;fill-opacity:1;stroke:none;stroke-width:0.86028123"
-     x="1.4138545"
-     y="25.4359"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:24.86218452px;line-height:1.25;font-family:Arial;-inkscape-font-specification:Arial;letter-spacing:0px;word-spacing:0px;fill:#0086ab;fill-opacity:1;stroke:none;stroke-width:0.77694327"
+     x="1.3049617"
+     y="24.528536"
      id="text4687"
-     transform="scale(1.0219624,0.97850957)"><tspan
+     transform="scale(0.99109719,1.0089828)"><tspan
        sodipodi:role="line"
        id="tspan4685"
-       x="1.4138545"
-       y="25.4359"
-       style="stroke-width:0.86028123">sk</tspan></text>
+       x="1.3049617"
+       y="24.528536"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Fira Code';-inkscape-font-specification:'Fira Code Bold';stroke-width:0.77694327">s</tspan></text>
   <rect
-     style="fill:#0086ab;fill-opacity:1"
+     style="fill:#0086ab;fill-opacity:1;stroke-width:0.78975433"
      id="rect4689"
-     width="27.354252"
-     height="2.6519389"
-     x="2.4063883"
-     y="26.254133" />
-  <rect
-     y="26.254133"
-     x="2.4063883"
-     height="2.6519389"
-     width="27.354252"
-     id="rect4691"
-     style="fill:#0086ab;fill-opacity:1" />
+     width="27.501581"
+     height="1.6451849"
+     x="2.4554982"
+     y="26.91712" />
+  <g
+     id="g4537"
+     transform="matrix(1.005386,0,0,0.62037057,0.03614917,10.629826)">
+    <rect
+       style="fill:#0086ab;fill-opacity:1"
+       id="rect4691"
+       width="27.354252"
+       height="2.6519389"
+       x="2.4063883"
+       y="26.254133" />
+  </g>
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:29.87145805px;line-height:1.25;font-family:'Fira Code';-inkscape-font-specification:'Fira Code';letter-spacing:0px;word-spacing:0px;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:0.93348306"
+     x="13.024876"
+     y="24.993555"
+     id="text831"
+     transform="scale(0.99091018,1.0091732)"><tspan
+       sodipodi:role="line"
+       id="tspan829"
+       x="13.024876"
+       y="24.993555"
+       style="stroke-width:0.93348306">k</tspan></text>
+  <g
+     id="g4541"
+     transform="matrix(1.005386,0,0,0.62037057,0.03614917,10.629826)">
+    <rect
+       y="26.254133"
+       x="2.4063883"
+       height="2.6519389"
+       width="27.354252"
+       id="rect4539"
+       style="fill:#0086ab;fill-opacity:1" />
+  </g>
+  <g
+     id="g4545"
+     transform="matrix(1.005386,0,0,0.62037057,0.03614917,10.629826)">
+    <rect
+       style="fill:#0086ab;fill-opacity:1"
+       id="rect4543"
+       width="27.354252"
+       height="2.6519389"
+       x="2.4063883"
+       y="26.254133" />
+  </g>
 </svg>

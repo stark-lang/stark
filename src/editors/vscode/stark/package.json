@@ -25,14 +25,7 @@
             "language": "stark",
             "scopeName": "source.stark",
             "path": "./syntaxes/stark.tmLanguage"
-        }],
-        "iconThemes": [
-            {
-                "id": "stark-icons",
-                "label": "Stark Icons",
-                "path": "./theme/icon-theme.json"
-            }
-        ]
+        }]
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
