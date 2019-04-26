@@ -558,7 +558,7 @@ namespace StarkPlatform.Compiler
 
             "system.runtime.compiler.TupleElementNamesAttribute",
 
-            "Microsoft.Compiler.Runtime.Instrumentation",
+            "Microsoft.CodeAnalysis.Runtime.Instrumentation",
 
             "system.runtime.compiler.NullableAttribute",
             "system.runtime.compiler.ReferenceAssemblyAttribute",
@@ -575,7 +575,7 @@ namespace StarkPlatform.Compiler
             "Microsoft.VisualBasic.Conversion",
             "system.runtime.compiler.NonNullTypesAttribute",
             "system.AttributeTargets",
-            "Microsoft.Compiler.EmbeddedAttribute",
+            "Microsoft.CodeAnalysis.EmbeddedAttribute",
             "system.runtime.compiler.ITuple",
 
             "system.Index",
