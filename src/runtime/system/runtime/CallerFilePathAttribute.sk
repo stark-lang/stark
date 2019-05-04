@@ -1,4 +1,4 @@
-namespace system.runtime
+namespace core.runtime
 {
     @AttributeUsage(AttributeTargets.PARAMETER)
     public class CallerFilePathAttribute extends Attribute

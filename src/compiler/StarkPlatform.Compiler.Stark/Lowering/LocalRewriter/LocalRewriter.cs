@@ -550,8 +550,8 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             TypeSymbol rawIndexType = node.Indices[0].Type;
-            if (!(TypeSymbol.Equals(rawIndexType, _compilation.GetWellKnownType(WellKnownType.system_Index), TypeCompareKind.ConsiderEverything) ||
-                  TypeSymbol.Equals(rawIndexType, _compilation.GetWellKnownType(WellKnownType.system_Range), TypeCompareKind.ConsiderEverything)))
+            if (!(TypeSymbol.Equals(rawIndexType, _compilation.GetWellKnownType(WellKnownType.core_Index), TypeCompareKind.ConsiderEverything) ||
+                  TypeSymbol.Equals(rawIndexType, _compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything)))
             {
                 return base.VisitArrayAccess(node);
             }
@@ -570,7 +570,7 @@ namespace StarkPlatform.Compiler.Stark
             var indexFromEndSymbol = (PropertySymbol)F.WellKnownMember(WellKnownMember.System_Index__FromEnd);
 
             BoundExpression resultExpr;
-            if (TypeSymbol.Equals(indexType, _compilation.GetWellKnownType(WellKnownType.system_Index), TypeCompareKind.ConsiderEverything))
+            if (TypeSymbol.Equals(indexType, _compilation.GetWellKnownType(WellKnownType.core_Index), TypeCompareKind.ConsiderEverything))
             {
 
                 // array[Index] is translated to:
@@ -596,7 +596,7 @@ namespace StarkPlatform.Compiler.Stark
                             indexValueExpr,
                             node.Type))));
             }
-            else if (TypeSymbol.Equals(indexType, _compilation.GetWellKnownType(WellKnownType.system_Range), TypeCompareKind.ConsiderEverything))
+            else if (TypeSymbol.Equals(indexType, _compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything))
             {
                 // array[Range] is translated to:
                 // var start = range.Start.FromEnd ? array.Length - range.Start.Value : range.Start.Value;

@@ -25,7 +25,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 if ((object)_ExpressionType == null)
                 {
-                    _ExpressionType = _bound.WellKnownType(WellKnownType.system_Linq_Expressions_Expression);
+                    _ExpressionType = _bound.WellKnownType(WellKnownType.core_Linq_Expressions_Expression);
                 }
                 return _ExpressionType;
             }
@@ -38,7 +38,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 if ((object)_ParameterExpressionType == null)
                 {
-                    _ParameterExpressionType = _bound.WellKnownType(WellKnownType.system_Linq_Expressions_ParameterExpression);
+                    _ParameterExpressionType = _bound.WellKnownType(WellKnownType.core_Linq_Expressions_ParameterExpression);
                 }
                 return _ParameterExpressionType;
             }
@@ -51,7 +51,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 if ((object)_ElementInitType == null)
                 {
-                    _ElementInitType = _bound.WellKnownType(WellKnownType.system_Linq_Expressions_ElementInit);
+                    _ElementInitType = _bound.WellKnownType(WellKnownType.core_Linq_Expressions_ElementInit);
                 }
                 return _ElementInitType;
             }
@@ -65,7 +65,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 if ((object)_MemberBindingType == null)
                 {
-                    _MemberBindingType = _bound.WellKnownType(WellKnownType.system_Linq_Expressions_MemberBinding);
+                    _MemberBindingType = _bound.WellKnownType(WellKnownType.core_Linq_Expressions_MemberBinding);
                 }
                 return _MemberBindingType;
             }
@@ -84,7 +84,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 if ((object)_MemberInfoType == null)
                 {
-                    _MemberInfoType = _bound.WellKnownType(WellKnownType.system_Reflection_MemberInfo);
+                    _MemberInfoType = _bound.WellKnownType(WellKnownType.core_Reflection_MemberInfo);
                 }
                 return _MemberInfoType;
             }

@@ -1426,7 +1426,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 return false;
             }
-            if ((object)namedType == compilation.GetWellKnownType(WellKnownType.system_Threading_Tasks_Task))
+            if ((object)namedType == compilation.GetWellKnownType(WellKnownType.core_Threading_Tasks_Task))
             {
                 return true;
             }
@@ -1445,7 +1445,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 return false;
             }
-            if ((object)namedType.ConstructedFrom == compilation.GetWellKnownType(WellKnownType.system_Threading_Tasks_Task_T))
+            if ((object)namedType.ConstructedFrom == compilation.GetWellKnownType(WellKnownType.core_Threading_Tasks_Task_T))
             {
                 return true;
             }
@@ -1461,7 +1461,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 return false;
             }
 
-            return (object)namedType.ConstructedFrom == compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerable_T);
+            return (object)namedType.ConstructedFrom == compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerable_T);
         }
 
         internal static bool IsIAsyncEnumeratorType(this TypeSymbol type, CSharpCompilation compilation)
@@ -1472,7 +1472,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 return false;
             }
 
-            return (object)namedType.ConstructedFrom == compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerator_T);
+            return (object)namedType.ConstructedFrom == compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerator_T);
         }
 
         /// <summary>
@@ -1602,8 +1602,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 Debug.Assert(arity < 2);
                 var taskType = compilation.GetWellKnownType(
                     arity == 0 ?
-                    WellKnownType.system_Threading_Tasks_Task :
-                    WellKnownType.system_Threading_Tasks_Task_T);
+                    WellKnownType.core_Threading_Tasks_Task :
+                    WellKnownType.core_Threading_Tasks_Task_T);
                 if (taskType.TypeKind == TypeKind.Error)
                 {
                     // Skip if Task types are not available.
@@ -1700,7 +1700,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
 
             var systemNamespace = runtimeNamespace.ContainingNamespace;
-            if (systemNamespace?.Name != "system")
+            if (systemNamespace?.Name != "core")
             {
                 return false;
             }

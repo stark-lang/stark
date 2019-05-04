@@ -1,6 +1,6 @@
-import system.runtime
+import core.runtime
 
-namespace system {
+namespace core {
     public partial module diagnostics
     {
         @FuncImpl(FuncImplOptions.INTERNAL_CALL)

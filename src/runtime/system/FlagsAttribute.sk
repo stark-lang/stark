@@ -1,4 +1,4 @@
-namespace system
+namespace core
 {
     @AttributeUsage(AttributeTargets.ENUM, inherited: false)
     public class FlagsAttribute extends Attribute

@@ -141,7 +141,7 @@ namespace StarkPlatform.Compiler.SymbolDisplay
                     {
                         var containingSymbol = type.ContainingSymbol;
                         if (containingSymbol.Kind == SymbolKind.Namespace &&
-                            containingSymbol.Name == "system" &&
+                            containingSymbol.Name == "core" &&
                             ((INamespaceSymbol)containingSymbol.ContainingSymbol).IsGlobalNamespace)
                         {
                             return true;

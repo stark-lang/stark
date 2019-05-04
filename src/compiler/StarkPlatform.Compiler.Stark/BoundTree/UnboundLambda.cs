@@ -230,7 +230,7 @@ namespace StarkPlatform.Compiler.Stark
                 // or infer type Task if delegate type not available.
                 var resultType = (object)taskType != null && taskType.Arity == 0 ?
                     taskType :
-                    compilation.GetWellKnownType(WellKnownType.system_Threading_Tasks_Task);
+                    compilation.GetWellKnownType(WellKnownType.core_Threading_Tasks_Task);
                 return TypeSymbolWithAnnotations.Create(resultType);
             }
 
@@ -245,7 +245,7 @@ namespace StarkPlatform.Compiler.Stark
             // or infer type Task<T> if delegate type not available.
             var taskTypeT = (object)taskType != null && taskType.Arity == 1 ?
                 taskType :
-                compilation.GetWellKnownType(WellKnownType.system_Threading_Tasks_Task_T);
+                compilation.GetWellKnownType(WellKnownType.core_Threading_Tasks_Task_T);
             return TypeSymbolWithAnnotations.Create(taskTypeT.Construct(ImmutableArray.Create(bestResultType)));
         }
 

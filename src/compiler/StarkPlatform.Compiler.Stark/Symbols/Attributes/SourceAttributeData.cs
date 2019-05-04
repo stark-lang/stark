@@ -383,7 +383,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         /// <returns>System.Type type symbol.</returns>
         internal virtual TypeSymbol GetSystemType(Symbol targetSymbol)
         {
-            return targetSymbol.DeclaringCompilation.GetWellKnownType(WellKnownType.system_Type);
+            return targetSymbol.DeclaringCompilation.GetWellKnownType(WellKnownType.core_Type);
         }
     }
 }

@@ -628,7 +628,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             CSharpCompilationOptions compilationOptions = compilation.Options;
             if (!compilationOptions.OutputKind.IsNetModule())
             {
-                TypeSymbol compilationRelaxationsAttribute = compilation.GetWellKnownType(WellKnownType.system_runtime_compiler_CompilationRelaxationsAttribute);
+                TypeSymbol compilationRelaxationsAttribute = compilation.GetWellKnownType(WellKnownType.core_runtime_compiler_CompilationRelaxationsAttribute);
                 Debug.Assert((object)compilationRelaxationsAttribute != null, "GetWellKnownType unexpectedly returned null");
                 if (!(compilationRelaxationsAttribute is MissingMetadataTypeSymbol))
                 {
@@ -637,7 +637,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                         WellKnownMember.System_Runtime_CompilerServices_CompilationRelaxationsAttribute__ctorInt32, diagnostics, NoLocation.Singleton);
                 }
 
-                TypeSymbol runtimeCompatibilityAttribute = compilation.GetWellKnownType(WellKnownType.system_runtime_compiler_RuntimeCompatibilityAttribute);
+                TypeSymbol runtimeCompatibilityAttribute = compilation.GetWellKnownType(WellKnownType.core_runtime_compiler_RuntimeCompatibilityAttribute);
                 Debug.Assert((object)runtimeCompatibilityAttribute != null, "GetWellKnownType unexpectedly returned null");
                 if (!(runtimeCompatibilityAttribute is MissingMetadataTypeSymbol))
                 {
@@ -670,7 +670,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 return;
             }
 
-            TypeSymbol unverifiableCodeAttribute = compilation.GetWellKnownType(WellKnownType.system_Security_UnverifiableCodeAttribute);
+            TypeSymbol unverifiableCodeAttribute = compilation.GetWellKnownType(WellKnownType.core_Security_UnverifiableCodeAttribute);
             Debug.Assert((object)unverifiableCodeAttribute != null, "GetWellKnownType unexpectedly returned null");
             if (unverifiableCodeAttribute is MissingMetadataTypeSymbol)
             {
@@ -683,14 +683,14 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 WellKnownMember.System_Security_UnverifiableCodeAttribute__ctor, diagnostics, NoLocation.Singleton);
 
 
-            TypeSymbol securityPermissionAttribute = compilation.GetWellKnownType(WellKnownType.system_Security_Permissions_SecurityPermissionAttribute);
+            TypeSymbol securityPermissionAttribute = compilation.GetWellKnownType(WellKnownType.core_Security_Permissions_SecurityPermissionAttribute);
             Debug.Assert((object)securityPermissionAttribute != null, "GetWellKnownType unexpectedly returned null");
             if (securityPermissionAttribute is MissingMetadataTypeSymbol)
             {
                 return;
             }
 
-            TypeSymbol securityAction = compilation.GetWellKnownType(WellKnownType.system_Security_Permissions_SecurityAction);
+            TypeSymbol securityAction = compilation.GetWellKnownType(WellKnownType.core_Security_Permissions_SecurityAction);
             Debug.Assert((object)securityAction != null, "GetWellKnownType unexpectedly returned null");
             if (securityAction is MissingMetadataTypeSymbol)
             {
@@ -1624,10 +1624,10 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             if (_compilation.Options.AllowUnsafe)
             {
                 // NOTE: GlobalAttrBind::EmitCompilerGeneratedAttrs skips attribute if the well-known types aren't available.
-                if (!(_compilation.GetWellKnownType(WellKnownType.system_Security_UnverifiableCodeAttribute) is MissingMetadataTypeSymbol) &&
-                    !(_compilation.GetWellKnownType(WellKnownType.system_Security_Permissions_SecurityPermissionAttribute) is MissingMetadataTypeSymbol))
+                if (!(_compilation.GetWellKnownType(WellKnownType.core_Security_UnverifiableCodeAttribute) is MissingMetadataTypeSymbol) &&
+                    !(_compilation.GetWellKnownType(WellKnownType.core_Security_Permissions_SecurityPermissionAttribute) is MissingMetadataTypeSymbol))
                 {
-                    var securityActionType = _compilation.GetWellKnownType(WellKnownType.system_Security_Permissions_SecurityAction);
+                    var securityActionType = _compilation.GetWellKnownType(WellKnownType.core_Security_Permissions_SecurityAction);
                     if (!(securityActionType is MissingMetadataTypeSymbol))
                     {
                         var fieldRequestMinimum = (FieldSymbol)_compilation.GetWellKnownTypeMember(WellKnownMember.System_Security_Permissions_SecurityAction__RequestMinimum);
@@ -1766,7 +1766,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 // Synthesize attribute: [CompilationRelaxationsAttribute(CompilationRelaxations.NoStringInterning)]
 
                 // NOTE: GlobalAttrBind::EmitCompilerGeneratedAttrs skips attribute if the well-known types aren't available.
-                if (!(_compilation.GetWellKnownType(WellKnownType.system_runtime_compiler_CompilationRelaxationsAttribute) is MissingMetadataTypeSymbol))
+                if (!(_compilation.GetWellKnownType(WellKnownType.core_runtime_compiler_CompilationRelaxationsAttribute) is MissingMetadataTypeSymbol))
                 {
                     var int32Type = _compilation.GetSpecialType(SpecialType.System_Int32);
                     Debug.Assert(!int32Type.HasUseSiteError,
@@ -1786,7 +1786,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 // Synthesize attribute: [RuntimeCompatibilityAttribute(WrapNonExceptionThrows = true)]
 
                 // NOTE: GlobalAttrBind::EmitCompilerGeneratedAttrs skips attribute if the well-known types aren't available.
-                if (!(_compilation.GetWellKnownType(WellKnownType.system_runtime_compiler_RuntimeCompatibilityAttribute) is MissingMetadataTypeSymbol))
+                if (!(_compilation.GetWellKnownType(WellKnownType.core_runtime_compiler_RuntimeCompatibilityAttribute) is MissingMetadataTypeSymbol))
                 {
                     var boolType = _compilation.GetSpecialType(SpecialType.System_Boolean);
                     Debug.Assert(!boolType.HasUseSiteError, "Use site errors should have been checked ahead of time (type bool).");

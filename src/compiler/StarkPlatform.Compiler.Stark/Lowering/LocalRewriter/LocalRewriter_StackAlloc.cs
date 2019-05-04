@@ -39,7 +39,7 @@ namespace StarkPlatform.Compiler.Stark
                 var stackSize = RewriteStackAllocCountToSize(rewrittenCount, elementType);
                 return new BoundConvertedStackAllocExpression(stackAllocNode.Syntax, elementType, stackSize, initializerOpt, stackAllocNode.Type);
             }
-            else if (TypeSymbol.Equals(type.OriginalDefinition, _compilation.GetWellKnownType(WellKnownType.system_Span_T), TypeCompareKind.ConsiderEverything2))
+            else if (TypeSymbol.Equals(type.OriginalDefinition, _compilation.GetWellKnownType(WellKnownType.core_Span_T), TypeCompareKind.ConsiderEverything2))
             {
                 var spanType = (NamedTypeSymbol)stackAllocNode.Type;
                 var sideEffects = ArrayBuilder<BoundExpression>.GetInstance();

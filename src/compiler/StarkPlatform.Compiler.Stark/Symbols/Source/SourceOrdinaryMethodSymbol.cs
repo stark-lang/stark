@@ -355,7 +355,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 }
                 else if (_refKind == RefKind.RefReadOnly)
                 {
-                    var modifierType = withTypeParamsBinder.GetWellKnownType(WellKnownType.system_runtime_InAttribute, diagnostics, syntax.ReturnType);
+                    var modifierType = withTypeParamsBinder.GetWellKnownType(WellKnownType.core_runtime_InAttribute, diagnostics, syntax.ReturnType);
 
                     _lazyRefCustomModifiers = ImmutableArray.Create(CSharpCustomModifier.CreateRequired(modifierType));
                 }
@@ -567,7 +567,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                         
                         if (throwCount == 0)
                         {
-                            results.Add(withTypeParametersBinder.Compilation.GetWellKnownType(WellKnownType.system_Exception));
+                            results.Add(withTypeParametersBinder.Compilation.GetWellKnownType(WellKnownType.core_Exception));
                         }
                         else
                         {

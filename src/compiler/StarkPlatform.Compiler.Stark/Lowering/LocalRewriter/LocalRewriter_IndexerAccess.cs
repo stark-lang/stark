@@ -95,7 +95,7 @@ namespace StarkPlatform.Compiler.Stark
                 var indexFromEndSymbol = (PropertySymbol)F.WellKnownMember(WellKnownMember.System_Index__FromEnd);
 
                 var argType = rewrittenArguments[0].Type;
-                if (TypeSymbol.Equals(argType, _compilation.GetWellKnownType(WellKnownType.system_Index), TypeCompareKind.ConsiderEverything2))
+                if (TypeSymbol.Equals(argType, _compilation.GetWellKnownType(WellKnownType.core_Index), TypeCompareKind.ConsiderEverything2))
                 {
                     // string[Index] is rewritten as:
                     // index.FromEnd ? s[s.Length - index.Value] : s[index.Value];
@@ -120,7 +120,7 @@ namespace StarkPlatform.Compiler.Stark
                             F.Indexer(stringLocal, node.Indexer, indexValueExpr),
                             F.SpecialType(SpecialType.System_Char)));
                 }
-                else if (TypeSymbol.Equals(argType, _compilation.GetWellKnownType(WellKnownType.system_Range), TypeCompareKind.ConsiderEverything2))
+                else if (TypeSymbol.Equals(argType, _compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything2))
                 {
                     // string[Range] is translated to:
                     // var start = range.Start.FromEnd ? array.Length - range.Start.Value : range.Start.Value;

@@ -1615,7 +1615,7 @@ done:
             // type will not have been created. In this case, omit the attribute.
             if (moduleBuilder.CompilationState.TryGetStateMachineType(this, out NamedTypeSymbol stateMachineType))
             {
-                var arg = new TypedConstant(compilation.GetWellKnownType(WellKnownType.system_Type),
+                var arg = new TypedConstant(compilation.GetWellKnownType(WellKnownType.core_Type),
                     TypedConstantKind.Type, stateMachineType.GetUnboundGenericTypeOrSelf());
 
                 if (isAsync && isIterator)

@@ -407,7 +407,7 @@ namespace StarkPlatform.Compiler.Stark
                         if (boundAccess.Indices.Length == 1 &&
                             TypeSymbol.Equals(
                                 boundAccess.Indices[0].Type,
-                                Compilation.GetWellKnownType(WellKnownType.system_Range),
+                                Compilation.GetWellKnownType(WellKnownType.core_Range),
                                 TypeCompareKind.ConsiderEverything))
                         {
                             // Range indexer is an rvalue

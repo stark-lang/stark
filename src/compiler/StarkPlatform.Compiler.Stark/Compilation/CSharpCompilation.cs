@@ -1640,8 +1640,8 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             // Early bail so we only even check things that are System.Threading.Tasks.Task(<T>)
-            if (!(TypeSymbol.Equals(namedType.ConstructedFrom, GetWellKnownType(WellKnownType.system_Threading_Tasks_Task), TypeCompareKind.ConsiderEverything2) ||
-                  TypeSymbol.Equals(namedType.ConstructedFrom, GetWellKnownType(WellKnownType.system_Threading_Tasks_Task_T), TypeCompareKind.ConsiderEverything2)))
+            if (!(TypeSymbol.Equals(namedType.ConstructedFrom, GetWellKnownType(WellKnownType.core_Threading_Tasks_Task), TypeCompareKind.ConsiderEverything2) ||
+                  TypeSymbol.Equals(namedType.ConstructedFrom, GetWellKnownType(WellKnownType.core_Threading_Tasks_Task_T), TypeCompareKind.ConsiderEverything2)))
             {
                 return false;
             }

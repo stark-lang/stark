@@ -1,4 +1,4 @@
-import system.runtime
+import core.runtime
 
 module asserts
 {

@@ -79,10 +79,10 @@ namespace StarkPlatform.Compiler.Stark
                 boundTemp = _factory.StoreToTemp(rewrittenReceiverOpt, out tempAssignment);
             }
 
-            NamedTypeSymbol tokenType = _factory.WellKnownType(WellKnownType.system_runtime_WindowsRuntime_EventRegistrationToken);
-            NamedTypeSymbol marshalType = _factory.WellKnownType(WellKnownType.system_runtime_WindowsRuntime_WindowsRuntimeMarshal);
+            NamedTypeSymbol tokenType = _factory.WellKnownType(WellKnownType.core_runtime_WindowsRuntime_EventRegistrationToken);
+            NamedTypeSymbol marshalType = _factory.WellKnownType(WellKnownType.core_runtime_WindowsRuntime_WindowsRuntimeMarshal);
 
-            NamedTypeSymbol actionType = _factory.WellKnownType(WellKnownType.system_Action_T).Construct(tokenType);
+            NamedTypeSymbol actionType = _factory.WellKnownType(WellKnownType.core_Action_T).Construct(tokenType);
 
             TypeSymbol eventType = eventSymbol.Type.TypeSymbol;
 
@@ -123,7 +123,7 @@ namespace StarkPlatform.Compiler.Stark
             }
             else
             {
-                NamedTypeSymbol func2Type = _factory.WellKnownType(WellKnownType.system_Func_T2).Construct(eventType, tokenType);
+                NamedTypeSymbol func2Type = _factory.WellKnownType(WellKnownType.core_Func_T2).Construct(eventType, tokenType);
 
                 BoundDelegateCreationExpression addDelegate = new BoundDelegateCreationExpression(
                     syntax: syntax,

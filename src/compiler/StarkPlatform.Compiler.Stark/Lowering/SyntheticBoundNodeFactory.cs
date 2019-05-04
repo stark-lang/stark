@@ -991,7 +991,7 @@ namespace StarkPlatform.Compiler.Stark
 
         public BoundStatement ThrowNull()
         {
-            return Throw(Null(Compilation.GetWellKnownType(StarkPlatform.Compiler.WellKnownType.system_Exception)));
+            return Throw(Null(Compilation.GetWellKnownType(StarkPlatform.Compiler.WellKnownType.core_Exception)));
         }
 
         public BoundExpression ThrowExpression(BoundExpression thrown, TypeSymbol type)
@@ -1029,7 +1029,7 @@ namespace StarkPlatform.Compiler.Stark
                 Syntax,
                 Type(type),
                 WellKnownMethod(Compiler.WellKnownMember.System_Type__GetTypeFromHandle),
-                WellKnownType(Compiler.WellKnownType.system_Type))
+                WellKnownType(Compiler.WellKnownType.core_Type))
             { WasCompilerGenerated = true };
         }
 
@@ -1059,7 +1059,7 @@ namespace StarkPlatform.Compiler.Stark
                 Syntax,
                 ctor,
                 GetMethodFromHandleMethod(ctor.ContainingType),
-                WellKnownType(StarkPlatform.Compiler.WellKnownType.system_Reflection_ConstructorInfo))
+                WellKnownType(StarkPlatform.Compiler.WellKnownType.core_Reflection_ConstructorInfo))
             { WasCompilerGenerated = true };
         }
 
@@ -1078,7 +1078,7 @@ namespace StarkPlatform.Compiler.Stark
         /// <returns></returns>
         public BoundExpression ModuleVersionId()
         {
-            return new BoundModuleVersionId(Syntax, WellKnownType(StarkPlatform.Compiler.WellKnownType.system_Guid)) { WasCompilerGenerated = true };
+            return new BoundModuleVersionId(Syntax, WellKnownType(StarkPlatform.Compiler.WellKnownType.core_Guid)) { WasCompilerGenerated = true };
         }
 
         public BoundExpression ModuleVersionIdString()
@@ -1126,7 +1126,7 @@ namespace StarkPlatform.Compiler.Stark
                 Syntax,
                 method,
                 GetMethodFromHandleMethod(method.ContainingType),
-                WellKnownType(StarkPlatform.Compiler.WellKnownType.system_Reflection_MethodInfo))
+                WellKnownType(StarkPlatform.Compiler.WellKnownType.core_Reflection_MethodInfo))
             { WasCompilerGenerated = true };
         }
 
@@ -1136,7 +1136,7 @@ namespace StarkPlatform.Compiler.Stark
                 Syntax,
                 field,
                 GetFieldFromHandleMethod(field.ContainingType),
-                WellKnownType(StarkPlatform.Compiler.WellKnownType.system_Reflection_FieldInfo))
+                WellKnownType(StarkPlatform.Compiler.WellKnownType.core_Reflection_FieldInfo))
             { WasCompilerGenerated = true };
         }
 

@@ -424,7 +424,7 @@ namespace StarkPlatform.Compiler.Stark
             // as long as it derives from Exception
             if (exceptionDispatchInfoCapture != null && exceptionDispatchInfoThrow != null)
             {
-                var ex = _F.SynthesizedLocal(_F.WellKnownType(WellKnownType.system_Exception));
+                var ex = _F.SynthesizedLocal(_F.WellKnownType(WellKnownType.core_Exception));
                 var assignment = _F.Assignment(
                     _F.Local(ex),
                     _F.As(_F.Local(obj), ex.Type.TypeSymbol));

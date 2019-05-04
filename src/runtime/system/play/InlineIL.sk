@@ -4,7 +4,7 @@ public module inline_il
     {
         var x : int
         unsafe il {
-            sizeof system.Int
+            sizeof core.Int
             stloc x
         }
         return 1

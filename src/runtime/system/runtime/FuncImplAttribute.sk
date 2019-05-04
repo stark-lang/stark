@@ -1,4 +1,4 @@
-namespace system.runtime
+namespace core.runtime
 {    
     public enum FuncImplOptions
     {

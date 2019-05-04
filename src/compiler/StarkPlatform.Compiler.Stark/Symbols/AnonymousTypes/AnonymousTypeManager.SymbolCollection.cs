@@ -122,7 +122,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         public NamedTypeSymbol System_Diagnostics_DebuggerBrowsableState
         {
-            get { return Compilation.GetWellKnownType(WellKnownType.system_Diagnostics_DebuggerBrowsableState); }
+            get { return Compilation.GetWellKnownType(WellKnownType.core_Diagnostics_DebuggerBrowsableState); }
         }
 
         public MethodSymbol System_Object__Equals

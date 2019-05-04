@@ -14,7 +14,7 @@ namespace StarkPlatform.Cci
         SystemObject = StarkPlatform.Compiler.SpecialType.System_Object,
         SystemDecimal = StarkPlatform.Compiler.SpecialType.System_Decimal,
         SystemTypedReference = StarkPlatform.Compiler.SpecialType.System_TypedReference,
-        SystemType = StarkPlatform.Compiler.WellKnownType.system_Type,
+        SystemType = StarkPlatform.Compiler.WellKnownType.core_Type,
         SystemInt32 = StarkPlatform.Compiler.SpecialType.System_Int32,
         SystemVoid = StarkPlatform.Compiler.SpecialType.System_Void,
         SystemString = StarkPlatform.Compiler.SpecialType.System_String,

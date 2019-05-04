@@ -210,8 +210,8 @@ namespace StarkPlatform.Compiler.Stark
                         return (((NamedTypeSymbol)returnType).TypeArgumentsNoUseSiteDiagnostics[0], false);
                 }
 
-                if (TypeSymbol.Equals(originalDefinition, compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerable_T), TypeCompareKind.ConsiderEverything2) ||
-                    TypeSymbol.Equals(originalDefinition, compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerator_T), TypeCompareKind.ConsiderEverything2))
+                if (TypeSymbol.Equals(originalDefinition, compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerable_T), TypeCompareKind.ConsiderEverything2) ||
+                    TypeSymbol.Equals(originalDefinition, compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerator_T), TypeCompareKind.ConsiderEverything2))
                 {
                     return (((NamedTypeSymbol)returnType).TypeArgumentsNoUseSiteDiagnostics[0], true);
                 }

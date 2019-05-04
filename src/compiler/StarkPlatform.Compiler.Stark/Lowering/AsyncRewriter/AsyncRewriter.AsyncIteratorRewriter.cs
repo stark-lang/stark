@@ -113,7 +113,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 // Add a field: ManualResetValueTaskSourceLogic<bool> promiseOfValueOrEnd
                 _promiseOfValueOrEndField = F.StateMachineField(
-                    F.WellKnownType(WellKnownType.system_Threading_Tasks_Sources_ManualResetValueTaskSourceCore_T).Construct(boolType),
+                    F.WellKnownType(WellKnownType.core_Threading_Tasks_Sources_ManualResetValueTaskSourceCore_T).Construct(boolType),
                     GeneratedNames.MakeAsyncIteratorPromiseOfValueOrEndFieldName(), isPublic: true);
 
                 // the element type may contain method type parameters, which are now alpha-renamed into type parameters of the generated class
@@ -203,7 +203,7 @@ namespace StarkPlatform.Compiler.Stark
                 //  return new ValueTask<bool>(this, version);
 
                 NamedTypeSymbol IAsyncEnumeratorOfElementType =
-                    F.WellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerator_T)
+                    F.WellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerator_T)
                     .Construct(_currentField.Type.TypeSymbol);
 
                 MethodSymbol IAsyncEnumerableOfElementType_MoveNextAsync = F.WellKnownMethod(WellKnownMember.System_Collections_Generic_IAsyncEnumerator_T__MoveNextAsync)
@@ -347,7 +347,7 @@ namespace StarkPlatform.Compiler.Stark
                     // if (state >= StateMachineStates.NotStartedStateMachine /* -1 */)
                     F.IntGreaterThanOrEqual(F.InstanceField(stateField), F.Literal(StateMachineStates.NotStartedStateMachine)),
                     // throw new NotSupportedException();
-                    thenClause: F.Throw(F.New(F.WellKnownType(WellKnownType.system_NotSupportedException))));
+                    thenClause: F.Throw(F.New(F.WellKnownType(WellKnownType.core_NotSupportedException))));
 
                 BoundStatement ifFinished = F.If(
                     // if (state == StateMachineStates.FinishedStateMachine)
@@ -382,7 +382,7 @@ namespace StarkPlatform.Compiler.Stark
                 // return _current;
 
                 NamedTypeSymbol IAsyncEnumeratorOfElementType =
-                    F.WellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerator_T)
+                    F.WellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerator_T)
                     .Construct(_currentField.Type.TypeSymbol);
 
                 MethodSymbol IAsyncEnumerableOfElementType_get_Current =
@@ -400,7 +400,7 @@ namespace StarkPlatform.Compiler.Stark
                 // return _valueOrEndPromise.GetResult(token);
 
                 NamedTypeSymbol IValueTaskSourceOfBool =
-                    F.WellKnownType(WellKnownType.system_Threading_Tasks_Sources_IValueTaskSource_T)
+                    F.WellKnownType(WellKnownType.core_Threading_Tasks_Sources_IValueTaskSource_T)
                     .Construct(F.SpecialType(SpecialType.System_Boolean));
 
                 MethodSymbol IValueTaskSourceOfBool_GetResult =
@@ -425,7 +425,7 @@ namespace StarkPlatform.Compiler.Stark
                 // return this._valueOrEndPromise.GetStatus(token);
 
                 NamedTypeSymbol IValueTaskSourceOfBool =
-                    F.WellKnownType(WellKnownType.system_Threading_Tasks_Sources_IValueTaskSource_T)
+                    F.WellKnownType(WellKnownType.core_Threading_Tasks_Sources_IValueTaskSource_T)
                     .Construct(F.SpecialType(SpecialType.System_Boolean));
 
                 MethodSymbol IValueTaskSourceOfBool_GetStatus =
@@ -451,7 +451,7 @@ namespace StarkPlatform.Compiler.Stark
                 // return;
 
                 NamedTypeSymbol IValueTaskSourceOfBool =
-                    F.WellKnownType(WellKnownType.system_Threading_Tasks_Sources_IValueTaskSource_T)
+                    F.WellKnownType(WellKnownType.core_Threading_Tasks_Sources_IValueTaskSource_T)
                     .Construct(F.SpecialType(SpecialType.System_Boolean));
 
                 MethodSymbol IValueTaskSourceOfBool_OnCompleted =
@@ -555,7 +555,7 @@ namespace StarkPlatform.Compiler.Stark
             private void GenerateIAsyncEnumerableImplementation_GetAsyncEnumerator()
             {
                 NamedTypeSymbol IAsyncEnumerableOfElementType =
-                    F.WellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerable_T)
+                    F.WellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerable_T)
                     .Construct(_currentField.Type.TypeSymbol);
 
                 MethodSymbol IAsyncEnumerableOfElementType_GetEnumerator =

@@ -1046,7 +1046,7 @@ namespace StarkPlatform.Compiler.Stark
             bool hasErrors = argument.HasAnyErrors;
 
             TypeSymbol typedReferenceType = this.Compilation.GetSpecialType(SpecialType.System_TypedReference);
-            TypeSymbol typeType = this.Compilation.GetWellKnownType(WellKnownType.system_Type);
+            TypeSymbol typeType = this.Compilation.GetWellKnownType(WellKnownType.core_Type);
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
             Conversion conversion = this.Conversions.ClassifyConversionFromExpression(argument, typedReferenceType, ref useSiteDiagnostics);
             diagnostics.Add(node, useSiteDiagnostics);
@@ -1162,7 +1162,7 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             BoundTypeExpression boundType = new BoundTypeExpression(typeSyntax, alias, type, type.IsErrorType());
-            return new BoundTypeOfOperator(node, boundType, null, this.GetWellKnownType(WellKnownType.system_Type, diagnostics, node), hasError);
+            return new BoundTypeOfOperator(node, boundType, null, this.GetWellKnownType(WellKnownType.core_Type, diagnostics, node), hasError);
         }
 
         private BoundExpression BindSizeOf(SizeOfExpressionSyntax node, DiagnosticBag diagnostics)
@@ -1973,7 +1973,7 @@ namespace StarkPlatform.Compiler.Stark
 
             BoundExpression boundOperand = BindValue(node.Operand, diagnostics, BindValueKind.RValue);
             TypeSymbol intType = GetSpecialType(SpecialType.System_Int32, diagnostics, node);
-            TypeSymbol indexType = GetWellKnownType(WellKnownType.system_Index, diagnostics, node);
+            TypeSymbol indexType = GetWellKnownType(WellKnownType.core_Index, diagnostics, node);
 
             if ((object)boundOperand.Type != null && boundOperand.Type.IsNullableType())
             {
@@ -2009,7 +2009,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             CheckFeatureAvailability(node, MessageID.IDS_FeatureRangeOperator, diagnostics);
 
-            TypeSymbol rangeType = GetWellKnownType(WellKnownType.system_Range, diagnostics, node);
+            TypeSymbol rangeType = GetWellKnownType(WellKnownType.core_Range, diagnostics, node);
             MethodSymbol symbolOpt = null;
 
             if (!rangeType.IsErrorType())
@@ -2057,7 +2057,7 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             BoundExpression boundOperand = BindValue(operand, diagnostics, BindValueKind.RValue);
-            TypeSymbol indexType = GetWellKnownType(WellKnownType.system_Index, diagnostics, operand);
+            TypeSymbol indexType = GetWellKnownType(WellKnownType.core_Index, diagnostics, operand);
 
             if (boundOperand.Type?.IsNullableType() == true)
             {
@@ -3403,7 +3403,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 CheckFeatureAvailability(node, MessageID.IDS_FeatureRefStructs, diagnostics);
 
-                var spanType = GetWellKnownType(WellKnownType.system_Span_T, diagnostics, node);
+                var spanType = GetWellKnownType(WellKnownType.core_Span_T, diagnostics, node);
                 if (!spanType.IsErrorType())
                 {
                     return ConstructNamedType(
@@ -6904,7 +6904,7 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             var resultType = rank == 1 &&
-                TypeSymbol.Equals(convertedArguments[0].Type, Compilation.GetWellKnownType(WellKnownType.system_Range), TypeCompareKind.ConsiderEverything2)
+                TypeSymbol.Equals(convertedArguments[0].Type, Compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything2)
                 ? arrayType
                 : arrayType.ElementType.TypeSymbol;
 
@@ -6933,8 +6933,8 @@ namespace StarkPlatform.Compiler.Stark
             if (result is null && allowIndexAndRange)
             {
                 result =
-                    TryImplicitConversionToArrayIndex(index, WellKnownType.system_Index, node, diagnostics) ??
-                    TryImplicitConversionToArrayIndex(index, WellKnownType.system_Range, node, diagnostics);
+                    TryImplicitConversionToArrayIndex(index, WellKnownType.core_Index, node, diagnostics) ??
+                    TryImplicitConversionToArrayIndex(index, WellKnownType.core_Range, node, diagnostics);
             }
 
             if (result is null)
@@ -7264,11 +7264,11 @@ namespace StarkPlatform.Compiler.Stark
                     {
                         var argType = analyzedArguments.Arguments[0].Type;
                         TypeSymbol resultType = null;
-                        if (TypeSymbol.Equals(argType, Compilation.GetWellKnownType(WellKnownType.system_Index), TypeCompareKind.ConsiderEverything2))
+                        if (TypeSymbol.Equals(argType, Compilation.GetWellKnownType(WellKnownType.core_Index), TypeCompareKind.ConsiderEverything2))
                         {
                             resultType = GetSpecialType(SpecialType.System_Char, diagnostics, syntax);
                         }
-                        else if (TypeSymbol.Equals(argType, Compilation.GetWellKnownType(WellKnownType.system_Range), TypeCompareKind.ConsiderEverything2))
+                        else if (TypeSymbol.Equals(argType, Compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything2))
                         {
                             resultType = GetSpecialType(SpecialType.System_String, diagnostics, syntax);
                         }

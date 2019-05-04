@@ -65,13 +65,13 @@ namespace StarkPlatform.Compiler.Stark
                 lengthGet = UnsafeGetSpecialTypeMethod(forEachSyntax, SpecialMember.System_String__Length);
                 indexerGet = UnsafeGetSpecialTypeMethod(forEachSyntax, SpecialMember.System_String__Chars);
             }
-            else if ((object)origDefinition == this._compilation.GetWellKnownType(WellKnownType.system_Span_T))
+            else if ((object)origDefinition == this._compilation.GetWellKnownType(WellKnownType.core_Span_T))
             {
                 var spanType = (NamedTypeSymbol)nodeExpressionType;
                 lengthGet = (MethodSymbol)_factory.WellKnownMember(WellKnownMember.System_Span_T__get_Length, isOptional: true)?.SymbolAsMember(spanType);
                 indexerGet = (MethodSymbol)_factory.WellKnownMember(WellKnownMember.System_Span_T__get_Item, isOptional: true)?.SymbolAsMember(spanType);
             }
-            else if ((object)origDefinition == this._compilation.GetWellKnownType(WellKnownType.system_ReadOnlySpan_T))
+            else if ((object)origDefinition == this._compilation.GetWellKnownType(WellKnownType.core_ReadOnlySpan_T))
             {
                 var spanType = (NamedTypeSymbol)nodeExpressionType;
                 lengthGet = (MethodSymbol)_factory.WellKnownMember(WellKnownMember.System_ReadOnlySpan_T__get_Length, isOptional: true)?.SymbolAsMember(spanType);

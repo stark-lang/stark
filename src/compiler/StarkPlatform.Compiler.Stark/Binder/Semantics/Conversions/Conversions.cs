@@ -62,8 +62,8 @@ namespace StarkPlatform.Compiler.Stark
         {
             // An interpolated string expression may be converted to the types
             // System.IFormattable and System.FormattableString
-            return (TypeSymbol.Equals(destination, Compilation.GetWellKnownType(WellKnownType.system_IFormattable), TypeCompareKind.ConsiderEverything2) ||
-                    TypeSymbol.Equals(destination, Compilation.GetWellKnownType(WellKnownType.system_FormattableString), TypeCompareKind.ConsiderEverything2))
+            return (TypeSymbol.Equals(destination, Compilation.GetWellKnownType(WellKnownType.core_IFormattable), TypeCompareKind.ConsiderEverything2) ||
+                    TypeSymbol.Equals(destination, Compilation.GetWellKnownType(WellKnownType.core_FormattableString), TypeCompareKind.ConsiderEverything2))
                 ? Conversion.InterpolatedString : Conversion.NoConversion;
         }
 
@@ -318,7 +318,7 @@ namespace StarkPlatform.Compiler.Stark
                 }
                 else
                 {
-                    var spanType = _binder.GetWellKnownType(WellKnownType.system_Span_T, ref useSiteDiagnostics);
+                    var spanType = _binder.GetWellKnownType(WellKnownType.core_Span_T, ref useSiteDiagnostics);
                     if (spanType.TypeKind == TypeKind.Struct && spanType.IsRefLikeType)
                     {
                         var spanType_T = spanType.Construct(sourceExpression.ElementType);

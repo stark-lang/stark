@@ -75,7 +75,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         private static NamedTypeSymbol MakeBaseType(CSharpCompilation compilation, DiagnosticBag diagnostics)
         {
-            NamedTypeSymbol result = compilation.GetWellKnownType(WellKnownType.system_Attribute);
+            NamedTypeSymbol result = compilation.GetWellKnownType(WellKnownType.core_Attribute);
 
             // Report errors in case base type was missing or bad
             Binder.ReportUseSiteDiagnostics(result, diagnostics, Location.None);

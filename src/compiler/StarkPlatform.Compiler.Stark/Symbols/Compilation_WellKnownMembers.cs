@@ -218,7 +218,7 @@ namespace StarkPlatform.Compiler.Stark
         internal bool IsAttributeType(TypeSymbol type)
         {
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-            return IsEqualOrDerivedFromWellKnownClass(type, WellKnownType.system_Attribute, ref useSiteDiagnostics);
+            return IsEqualOrDerivedFromWellKnownClass(type, WellKnownType.core_Attribute, ref useSiteDiagnostics);
         }
 
         internal override bool IsAttributeType(ITypeSymbol type)
@@ -228,18 +228,18 @@ namespace StarkPlatform.Compiler.Stark
 
         internal bool IsExceptionType(TypeSymbol type, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
-            return IsEqualOrDerivedFromWellKnownClass(type, WellKnownType.system_Exception, ref useSiteDiagnostics);
+            return IsEqualOrDerivedFromWellKnownClass(type, WellKnownType.core_Exception, ref useSiteDiagnostics);
         }
 
         internal bool IsReadOnlySpanType(TypeSymbol type)
         {
-            return TypeSymbol.Equals(type.OriginalDefinition, GetWellKnownType(WellKnownType.system_ReadOnlySpan_T), TypeCompareKind.ConsiderEverything2);
+            return TypeSymbol.Equals(type.OriginalDefinition, GetWellKnownType(WellKnownType.core_ReadOnlySpan_T), TypeCompareKind.ConsiderEverything2);
         }
 
         internal bool IsEqualOrDerivedFromWellKnownClass(TypeSymbol type, WellKnownType wellKnownType, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
-            Debug.Assert(wellKnownType == WellKnownType.system_Attribute ||
-                         wellKnownType == WellKnownType.system_Exception);
+            Debug.Assert(wellKnownType == WellKnownType.core_Attribute ||
+                         wellKnownType == WellKnownType.core_Exception);
 
             if (type.Kind != SymbolKind.NamedType || type.TypeKind != TypeKind.Class)
             {
@@ -252,7 +252,7 @@ namespace StarkPlatform.Compiler.Stark
 
         internal override bool IsSystemTypeReference(ITypeSymbol type)
         {
-            return TypeSymbol.Equals((TypeSymbol)type, GetWellKnownType(WellKnownType.system_Type), TypeCompareKind.ConsiderEverything2);
+            return TypeSymbol.Equals((TypeSymbol)type, GetWellKnownType(WellKnownType.core_Type), TypeCompareKind.ConsiderEverything2);
         }
 
         internal override ISymbol CommonGetWellKnownTypeMember(WellKnownMember member)
@@ -475,7 +475,7 @@ namespace StarkPlatform.Compiler.Stark
 
             return TrySynthesizeAttribute(WellKnownMember.System_Diagnostics_DebuggerBrowsableAttribute__ctor,
                    ImmutableArray.Create(new TypedConstant(
-                       GetWellKnownType(WellKnownType.system_Diagnostics_DebuggerBrowsableState),
+                       GetWellKnownType(WellKnownType.core_Diagnostics_DebuggerBrowsableState),
                        TypedConstantKind.Enum,
                        DebuggerBrowsableState.Never)));
         }
@@ -543,7 +543,7 @@ namespace StarkPlatform.Compiler.Stark
             return CheckIfAttributeShouldBeEmbedded(
                 diagnosticsOpt,
                 locationOpt,
-                WellKnownType.system_runtime_ReadOnlyAttribute,
+                WellKnownType.core_runtime_ReadOnlyAttribute,
                 WellKnownMember.System_Runtime_CompilerServices_IsReadOnlyAttribute__ctor);
         }
 
@@ -552,7 +552,7 @@ namespace StarkPlatform.Compiler.Stark
             return CheckIfAttributeShouldBeEmbedded(
                 diagnosticsOpt,
                 locationOpt,
-                WellKnownType.system_runtime_ByRefLikeAttribute,
+                WellKnownType.core_runtime_ByRefLikeAttribute,
                 WellKnownMember.System_Runtime_CompilerServices_IsByRefLikeAttribute__ctor);
         }
 
@@ -561,7 +561,7 @@ namespace StarkPlatform.Compiler.Stark
             return CheckIfAttributeShouldBeEmbedded(
                 diagnosticsOpt,
                 locationOpt,
-                WellKnownType.system_runtime_UnmanagedAttribute,
+                WellKnownType.core_runtime_UnmanagedAttribute,
                 WellKnownMember.System_Runtime_CompilerServices_IsUnmanagedAttribute__ctor);
         }
 
@@ -571,7 +571,7 @@ namespace StarkPlatform.Compiler.Stark
             return CheckIfAttributeShouldBeEmbedded(
                 diagnosticsOpt,
                 locationOpt,
-                WellKnownType.system_runtime_compiler_NullableAttribute,
+                WellKnownType.core_runtime_compiler_NullableAttribute,
                 WellKnownMember.System_Runtime_CompilerServices_NullableAttribute__ctorByte,
                 WellKnownMember.System_Runtime_CompilerServices_NullableAttribute__ctorTransformFlags);
         }
@@ -610,14 +610,14 @@ namespace StarkPlatform.Compiler.Stark
 
         internal SynthesizedAttributeData SynthesizeDebuggableAttribute()
         {
-            TypeSymbol debuggableAttribute = GetWellKnownType(WellKnownType.system_Diagnostics_DebuggableAttribute);
+            TypeSymbol debuggableAttribute = GetWellKnownType(WellKnownType.core_Diagnostics_DebuggableAttribute);
             Debug.Assert((object)debuggableAttribute != null, "GetWellKnownType unexpectedly returned null");
             if (debuggableAttribute is MissingMetadataTypeSymbol)
             {
                 return null;
             }
 
-            TypeSymbol debuggingModesType = GetWellKnownType(WellKnownType.system_Diagnostics_DebuggableAttribute__DebuggingModes);
+            TypeSymbol debuggingModesType = GetWellKnownType(WellKnownType.core_Diagnostics_DebuggableAttribute__DebuggingModes);
             Debug.Assert((object)debuggingModesType != null, "GetWellKnownType unexpectedly returned null");
             if (debuggingModesType is MissingMetadataTypeSymbol)
             {

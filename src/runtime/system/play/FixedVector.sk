@@ -1,4 +1,4 @@
-namespace system
+namespace core
 {
     public class Toto<tSize> where tSize : is const int
     {

@@ -2740,7 +2740,7 @@ namespace StarkPlatform.Compiler.Stark
 
                             diagnostics.Add(declaration.Type, useSiteDiagnostics);
                         }
-                        else if (TypeSymbol.Equals(previousType, Compilation.GetWellKnownType(WellKnownType.system_Exception), TypeCompareKind.ConsiderEverything2) &&
+                        else if (TypeSymbol.Equals(previousType, Compilation.GetWellKnownType(WellKnownType.core_Exception), TypeCompareKind.ConsiderEverything2) &&
                                  Compilation.SourceAssembly.RuntimeCompatibilityWrapNonExceptionThrows)
                         {
                             // If the RuntimeCompatibility(WrapNonExceptionThrows = false) is applied on the source assembly or any referenced netmodule.

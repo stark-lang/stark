@@ -285,7 +285,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
             else if (_refKind == RefKind.RefReadOnly)
             {
-                var modifierType = bodyBinder.GetWellKnownType(WellKnownType.system_runtime_InAttribute, diagnostics, syntax.Type);
+                var modifierType = bodyBinder.GetWellKnownType(WellKnownType.core_runtime_InAttribute, diagnostics, syntax.Type);
 
                 _refCustomModifiers = ImmutableArray.Create(CSharpCustomModifier.CreateRequired(modifierType));
             }

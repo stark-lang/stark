@@ -1,4 +1,4 @@
-namespace system
+namespace core
 {
     @AttributeUsage(AttributeTargets.CLASS, inherited:  true)
     public class AttributeUsageAttribute extends Attribute

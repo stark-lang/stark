@@ -1,4 +1,4 @@
-import system
+import core
 
 module checked_exceptions
 {

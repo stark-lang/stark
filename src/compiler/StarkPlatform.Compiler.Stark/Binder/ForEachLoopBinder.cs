@@ -454,7 +454,7 @@ namespace StarkPlatform.Compiler.Stark
         private bool GetAwaitDisposeAsyncInfo(ref ForEachEnumeratorInfo.Builder builder, DiagnosticBag diagnostics)
         {
             var awaitableType = builder.DisposeMethod is null
-                ? this.GetWellKnownType(WellKnownType.system_Threading_Tasks_ValueTask, diagnostics, this._syntax)
+                ? this.GetWellKnownType(WellKnownType.core_Threading_Tasks_ValueTask, diagnostics, this._syntax)
                 : builder.DisposeMethod.ReturnType.TypeSymbol;
 
             var placeholder = new BoundAwaitableValuePlaceholder(_syntax.Expression, awaitableType);
@@ -696,7 +696,7 @@ namespace StarkPlatform.Compiler.Stark
                 {
                     diagnostics.Add(isAsync ? ErrorCode.ERR_MultipleIAsyncEnumOfT : ErrorCode.ERR_MultipleIEnumOfT, errorLocationSyntax.Location, collectionExprType,
                         isAsync ?
-                            this.Compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerable_T) :
+                            this.Compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerable_T) :
                             this.Compilation.GetSpecialType(SpecialType.System_Collections_Generic_IEnumerable_T));
                     return EnumeratorResult.FailedAndReported;
                 }
@@ -719,7 +719,7 @@ namespace StarkPlatform.Compiler.Stark
 
                         if (isAsync)
                         {
-                            Debug.Assert(enumeratorType.OriginalDefinition.Equals(Compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerator_T)));
+                            Debug.Assert(enumeratorType.OriginalDefinition.Equals(Compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerator_T)));
 
                             MethodSymbol moveNextAsync = (MethodSymbol)GetWellKnownTypeMember(Compilation, WellKnownMember.System_Collections_Generic_IAsyncEnumerator_T__MoveNextAsync,
                                 diagnostics, errorLocationSyntax.Location, isOptional: false);
@@ -792,7 +792,7 @@ namespace StarkPlatform.Compiler.Stark
             // For async foreach, we don't do the runtime check
             if ((!enumeratorType.IsSealed && !isAsync) ||
                 this.Conversions.ClassifyImplicitConversionFromType(enumeratorType,
-                    isAsync ? this.Compilation.GetWellKnownType(WellKnownType.system_IAsyncDisposable) : this.Compilation.GetSpecialType(SpecialType.System_IDisposable),
+                    isAsync ? this.Compilation.GetWellKnownType(WellKnownType.core_IAsyncDisposable) : this.Compilation.GetSpecialType(SpecialType.System_IDisposable),
                     ref useSiteDiagnostics).IsImplicit)
             {
                 builder.NeedsDisposal = true;
@@ -1168,7 +1168,7 @@ namespace StarkPlatform.Compiler.Stark
 
         private bool IsIAsyncEnumerable(TypeSymbol type)
         {
-            return type.OriginalDefinition.Equals(Compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerable_T));
+            return type.OriginalDefinition.Equals(Compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerable_T));
         }
 
         /// <summary>
@@ -1257,7 +1257,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             if (isAsync)
             {
-                return type.Equals(Compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerable_T));
+                return type.Equals(Compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerable_T));
             }
             else
             {

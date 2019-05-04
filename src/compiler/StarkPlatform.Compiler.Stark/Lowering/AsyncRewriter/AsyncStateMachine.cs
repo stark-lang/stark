@@ -35,23 +35,23 @@ namespace StarkPlatform.Compiler.Stark
                 if (isEnumerable)
                 {
                     // IAsyncEnumerable<TResult>
-                    interfaces.Add(compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerable_T).Construct(elementType));
+                    interfaces.Add(compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerable_T).Construct(elementType));
                 }
 
                 // IAsyncEnumerator<TResult>
-                interfaces.Add(compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IAsyncEnumerator_T).Construct(elementType));
+                interfaces.Add(compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerator_T).Construct(elementType));
 
                 // IValueTaskSource<bool>
-                interfaces.Add(compilation.GetWellKnownType(WellKnownType.system_Threading_Tasks_Sources_IValueTaskSource_T).Construct(compilation.GetSpecialType(SpecialType.System_Boolean)));
+                interfaces.Add(compilation.GetWellKnownType(WellKnownType.core_Threading_Tasks_Sources_IValueTaskSource_T).Construct(compilation.GetSpecialType(SpecialType.System_Boolean)));
 
                 // IValueTaskSource
-                interfaces.Add(compilation.GetWellKnownType(WellKnownType.system_Threading_Tasks_Sources_IValueTaskSource));
+                interfaces.Add(compilation.GetWellKnownType(WellKnownType.core_Threading_Tasks_Sources_IValueTaskSource));
 
                 // IAsyncDisposable
-                interfaces.Add(compilation.GetWellKnownType(WellKnownType.system_IAsyncDisposable));
+                interfaces.Add(compilation.GetWellKnownType(WellKnownType.core_IAsyncDisposable));
             }
 
-            interfaces.Add(compilation.GetWellKnownType(WellKnownType.system_runtime_compiler_IAsyncStateMachine));
+            interfaces.Add(compilation.GetWellKnownType(WellKnownType.core_runtime_compiler_IAsyncStateMachine));
             _interfaces = interfaces.ToImmutableAndFree();
 
             _constructor = isIterator ? (MethodSymbol)new IteratorConstructor(this) : new AsyncConstructor(this);

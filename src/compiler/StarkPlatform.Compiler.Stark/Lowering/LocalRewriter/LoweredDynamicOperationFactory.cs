@@ -238,8 +238,8 @@ namespace StarkPlatform.Compiler.Stark
 
                 // type arguments:
                 typeArguments.IsDefaultOrEmpty ?
-                    _factory.Null(_factory.WellKnownArrayType(WellKnownType.system_Type)) :
-                    _factory.ArrayOrEmpty(_factory.WellKnownType(WellKnownType.system_Type), _factory.TypeOfs(typeArguments)),
+                    _factory.Null(_factory.WellKnownArrayType(WellKnownType.core_Type)) :
+                    _factory.ArrayOrEmpty(_factory.WellKnownType(WellKnownType.core_Type), _factory.TypeOfs(typeArguments)),
 
                 // context:
                 _factory.TypeofDynamicOperationContextType(),
@@ -273,7 +273,7 @@ namespace StarkPlatform.Compiler.Stark
                 _factory.Literal(accessorName),
 
                 // type arguments:
-                _factory.Null(_factory.WellKnownArrayType(WellKnownType.system_Type)),
+                _factory.Null(_factory.WellKnownArrayType(WellKnownType.core_Type)),
 
                 // context:
                 _factory.TypeofDynamicOperationContextType(),
@@ -612,7 +612,7 @@ namespace StarkPlatform.Compiler.Stark
 
             // get well-known types and members we need:
             NamedTypeSymbol delegateTypeOverMethodTypeParameters = GetDelegateType(loweredReceiver, receiverRefKind, loweredArguments, refKinds, loweredRight, resultType);
-            NamedTypeSymbol callSiteTypeGeneric = _factory.WellKnownType(WellKnownType.system_runtime_compiler_CallSite_T);
+            NamedTypeSymbol callSiteTypeGeneric = _factory.WellKnownType(WellKnownType.core_runtime_compiler_CallSite_T);
             MethodSymbol callSiteFactoryGeneric = _factory.WellKnownMethod(WellKnownMember.System_Runtime_CompilerServices_CallSite_T__Create);
             FieldSymbol callSiteTargetFieldGeneric = (FieldSymbol)_factory.WellKnownMember(WellKnownMember.System_Runtime_CompilerServices_CallSite_T__Target);
             MethodSymbol delegateInvoke;
@@ -706,7 +706,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             var fieldName = GeneratedNames.MakeDynamicCallSiteFieldName(_callSiteIdDispenser++);
             var delegateTypeOverContainerTypeParameters = methodToContainerTypeParametersMap.SubstituteNamedType(delegateTypeOverMethodTypeParameters);
-            var callSiteType = _factory.Compilation.GetWellKnownType(WellKnownType.system_runtime_compiler_CallSite_T).Construct(new[] { delegateTypeOverContainerTypeParameters });
+            var callSiteType = _factory.Compilation.GetWellKnownType(WellKnownType.core_runtime_compiler_CallSite_T).Construct(new[] { delegateTypeOverContainerTypeParameters });
             var field = new SynthesizedFieldSymbol(containerDefinition, callSiteType, fieldName, isPublic: true, isStatic: true);
             _factory.AddField(containerDefinition, field);
             return _currentDynamicCallSiteContainer.IsGenericType ? field.AsMember(_currentDynamicCallSiteContainer) : field;
@@ -722,7 +722,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             Debug.Assert(refKinds.IsDefaultOrEmpty || refKinds.Length == loweredArguments.Length);
 
-            var callSiteType = _factory.WellKnownType(WellKnownType.system_runtime_compiler_CallSite);
+            var callSiteType = _factory.WellKnownType(WellKnownType.core_runtime_compiler_CallSite);
             if (callSiteType.IsErrorType())
             {
                 return null;

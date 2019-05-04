@@ -222,7 +222,7 @@ namespace StarkPlatform.Compiler.Stark
             // Add void IEnumerator.Reset()
             {
                 OpenMethodImplementation(IEnumerator_Reset, hasMethodBodyDependency: false);
-                F.CloseMethod(F.Throw(F.New(F.WellKnownType(WellKnownType.system_NotSupportedException))));
+                F.CloseMethod(F.Throw(F.New(F.WellKnownType(WellKnownType.core_NotSupportedException))));
             }
 
             // Add object IEnumerator.Current

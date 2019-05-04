@@ -286,8 +286,8 @@ namespace StarkPlatform.Compiler
             {"System.Data.SqlServerCe", s_SQL_MOBILE_PUBLIC_KEY_TOKEN, new AssemblyVersion(3, 0, 3600, 0), NULL, NULL, s_SQL_PUBLIC_KEY_TOKEN, s_VER_SQL_ASSEMBLYVERSION_STR_L},
 
             // Linq and friends redirect
-            {"system.xml.linq", s_NETCF_PUBLIC_KEY_TOKEN_3, new AssemblyVersion(3, 5, 0, 0), new AssemblyVersion(3, 9, 0, 0), NULL, s_ECMA_PUBLICKEY_STR_L, s_VER_LINQ_ASSEMBLYVERSION_STR_2_L},
-            {"system.data.DataSetExtensions", s_NETCF_PUBLIC_KEY_TOKEN_3, new AssemblyVersion(3, 5, 0, 0), new AssemblyVersion(3, 9, 0, 0), NULL, s_ECMA_PUBLICKEY_STR_L, s_VER_LINQ_ASSEMBLYVERSION_STR_2_L},
+            {"core.xml.linq", s_NETCF_PUBLIC_KEY_TOKEN_3, new AssemblyVersion(3, 5, 0, 0), new AssemblyVersion(3, 9, 0, 0), NULL, s_ECMA_PUBLICKEY_STR_L, s_VER_LINQ_ASSEMBLYVERSION_STR_2_L},
+            {"core.data.DataSetExtensions", s_NETCF_PUBLIC_KEY_TOKEN_3, new AssemblyVersion(3, 5, 0, 0), new AssemblyVersion(3, 9, 0, 0), NULL, s_ECMA_PUBLICKEY_STR_L, s_VER_LINQ_ASSEMBLYVERSION_STR_2_L},
             {"System.Core", s_NETCF_PUBLIC_KEY_TOKEN_3, new AssemblyVersion(3, 5, 0, 0), new AssemblyVersion(3, 9, 0, 0), NULL, s_ECMA_PUBLICKEY_STR_L, s_VER_LINQ_ASSEMBLYVERSION_STR_2_L},
             {"System.ServiceModel", s_NETCF_PUBLIC_KEY_TOKEN_3, new AssemblyVersion(3, 5, 0, 0), new AssemblyVersion(3, 9, 0, 0), NULL, s_ECMA_PUBLICKEY_STR_L, s_VER_LINQ_ASSEMBLYVERSION_STR_L},
             {"System.Runtime.Serialization", s_NETCF_PUBLIC_KEY_TOKEN_3, new AssemblyVersion(3, 5, 0, 0), new AssemblyVersion(3, 9, 0, 0), NULL, s_ECMA_PUBLICKEY_STR_L, s_VER_LINQ_ASSEMBLYVERSION_STR_L},

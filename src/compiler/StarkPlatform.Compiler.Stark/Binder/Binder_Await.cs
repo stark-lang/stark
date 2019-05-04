@@ -379,7 +379,7 @@ namespace StarkPlatform.Compiler.Stark
         /// </remarks>
         private bool AwaiterImplementsINotifyCompletion(TypeSymbol awaiterType, SyntaxNode node, DiagnosticBag diagnostics)
         {
-            var INotifyCompletion = GetWellKnownType(WellKnownType.system_runtime_compiler_INotifyCompletion, diagnostics, node);
+            var INotifyCompletion = GetWellKnownType(WellKnownType.core_runtime_compiler_INotifyCompletion, diagnostics, node);
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
 
             var conversion = this.Conversions.ClassifyImplicitConversionFromType(awaiterType, INotifyCompletion, ref useSiteDiagnostics);

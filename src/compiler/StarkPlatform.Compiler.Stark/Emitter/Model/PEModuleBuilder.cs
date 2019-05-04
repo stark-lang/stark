@@ -704,7 +704,7 @@ namespace StarkPlatform.Compiler.Stark.Emit
 
         internal sealed override Cci.INamedTypeReference GetSystemType(SyntaxNode syntaxOpt, DiagnosticBag diagnostics)
         {
-            NamedTypeSymbol systemTypeSymbol = Compilation.GetWellKnownType(WellKnownType.system_Type);
+            NamedTypeSymbol systemTypeSymbol = Compilation.GetWellKnownType(WellKnownType.core_Type);
 
             DiagnosticInfo info = systemTypeSymbol.GetUseSiteDiagnostic();
             if (info != null)
@@ -729,7 +729,7 @@ namespace StarkPlatform.Compiler.Stark.Emit
             {
                 if (platformType == Cci.PlatformType.SystemType)
                 {
-                    return (object)namedType == (object)Compilation.GetWellKnownType(WellKnownType.system_Type);
+                    return (object)namedType == (object)Compilation.GetWellKnownType(WellKnownType.core_Type);
                 }
 
                 return namedType.SpecialType == (SpecialType)platformType;

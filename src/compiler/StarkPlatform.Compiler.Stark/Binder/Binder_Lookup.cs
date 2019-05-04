@@ -609,7 +609,7 @@ namespace StarkPlatform.Compiler.Stark
                 {
                     HashSet<DiagnosticInfo> useSiteDiagnostics = null;
 
-                    if (Compilation.IsEqualOrDerivedFromWellKnownClass(namedType, WellKnownType.system_Attribute, ref useSiteDiagnostics))
+                    if (Compilation.IsEqualOrDerivedFromWellKnownClass(namedType, WellKnownType.core_Attribute, ref useSiteDiagnostics))
                     {
                         // Reuse existing diagnostic info.
                         return true;
@@ -838,12 +838,12 @@ namespace StarkPlatform.Compiler.Stark
 
         private void GetWellKnownWinRTMemberInterfaces(out NamedTypeSymbol idictSymbol, out NamedTypeSymbol iroDictSymbol, out NamedTypeSymbol iListSymbol, out NamedTypeSymbol iCollectionSymbol, out NamedTypeSymbol inccSymbol, out NamedTypeSymbol inpcSymbol)
         {
-            idictSymbol = Compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IDictionary_KV);
-            iroDictSymbol = Compilation.GetWellKnownType(WellKnownType.system_Collections_Generic_IReadOnlyDictionary_KV);
-            iListSymbol = Compilation.GetWellKnownType(WellKnownType.system_Collections_IList);
-            iCollectionSymbol = Compilation.GetWellKnownType(WellKnownType.system_Collections_ICollection);
-            inccSymbol = Compilation.GetWellKnownType(WellKnownType.system_Collections_Specialized_INotifyCollectionChanged);
-            inpcSymbol = Compilation.GetWellKnownType(WellKnownType.system_ComponentModel_INotifyPropertyChanged);
+            idictSymbol = Compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IDictionary_KV);
+            iroDictSymbol = Compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IReadOnlyDictionary_KV);
+            iListSymbol = Compilation.GetWellKnownType(WellKnownType.core_Collections_IList);
+            iCollectionSymbol = Compilation.GetWellKnownType(WellKnownType.core_Collections_ICollection);
+            inccSymbol = Compilation.GetWellKnownType(WellKnownType.core_Collections_Specialized_INotifyCollectionChanged);
+            inpcSymbol = Compilation.GetWellKnownType(WellKnownType.core_ComponentModel_INotifyPropertyChanged);
         }
 
         private static bool ShouldAddWinRTMembersForInterface(NamedTypeSymbol iface, NamedTypeSymbol idictSymbol, NamedTypeSymbol iroDictSymbol, NamedTypeSymbol iListSymbol, NamedTypeSymbol iCollectionSymbol, NamedTypeSymbol inccSymbol, NamedTypeSymbol inpcSymbol)

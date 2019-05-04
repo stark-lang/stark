@@ -1,6 +1,6 @@
-import system.runtime
+import core.runtime
 
-namespace system.sync
+namespace core.sync
 {
     public enum MemoryOrder
     {
