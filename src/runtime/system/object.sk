@@ -2,7 +2,7 @@ namespace system
 {
     public abstract class Object
     {
-        public constructor()
+        protected constructor()
         {
         }
     }
