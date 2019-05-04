@@ -4,7 +4,7 @@ module checked_exceptions
 {
     // throwing an exception without declaring throws on the method is not allowed
     public static func throw_my_exception_invalid() {
-        throw new MyException()
+        //throw new MyException()
     }
 
     // Valid (throws declared)
@@ -14,7 +14,7 @@ module checked_exceptions
 
     // Calling a method that throws without `try method()` is invalid
     public static func call_a_method_which_throws_invalid() {
-        throw_my_exception()
+        //throw_my_exception()
     }
 
     // Valid (try with method throwing an exception)
@@ -35,7 +35,7 @@ module checked_exceptions
     public static func try_a_method_which_throws_with_invalid_catch_invalid() {
         try {
             try throw_my_exception()
-        } catch (MyException2 ex) { // This exception is not catched because not thrown, this is an error
+        } catch (MyException ex) { // This exception is not catched because not thrown, this is an error
         }
     }
 
