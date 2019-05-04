@@ -5,7 +5,7 @@
     <key>name</key>
     <string>Stark</string>
     <key>scopeName</key>
-    <string>source.stark</string>
+    <string>source.sk</string>
     <key>fileTypes</key>
     <array>
       <string>sk</string>

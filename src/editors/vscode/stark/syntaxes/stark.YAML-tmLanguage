@@ -1,6 +1,6 @@
 # [PackageDev] target_format: plist, ext: tmLanguage
 name: Stark
-scopeName: source.stark
+scopeName: source.sk
 fileTypes: [sk]
 uuid: 582789B5-991D-49E1-8E39-54327B3DBDFF
 

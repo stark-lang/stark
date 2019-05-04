@@ -23,7 +23,7 @@
         }],
         "grammars": [{
             "language": "stark",
-            "scopeName": "source.stark",
+            "scopeName": "source.sk",
             "path": "./syntaxes/stark.tmLanguage"
         }]
     },
