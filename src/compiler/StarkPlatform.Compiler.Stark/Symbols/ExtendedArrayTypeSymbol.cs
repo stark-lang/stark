@@ -34,6 +34,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         internal override bool HasDefaultSizesAndLowerBounds => _underlyingArray.HasDefaultSizesAndLowerBounds;
 
-        public TypeAccessModifiers AccessModifiers => _accessModifiers;
+        public override TypeAccessModifiers AccessModifiers => _accessModifiers;
     }
 }

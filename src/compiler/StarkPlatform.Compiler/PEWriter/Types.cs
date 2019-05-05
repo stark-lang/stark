@@ -379,8 +379,6 @@ namespace StarkPlatform.Cci
         /// The type of value stored at the target memory location.
         /// </summary>
         ITypeReference GetElementType(EmitContext context);
-
-        TypeAccessModifiers AccessModifiers { get; }
     }
 
     internal interface IConstLiteralTypeReference : ITypeReference

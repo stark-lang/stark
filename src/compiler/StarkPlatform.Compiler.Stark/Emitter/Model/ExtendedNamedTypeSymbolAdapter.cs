@@ -24,7 +24,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         public bool IsTransient => (_accessModifiers & TypeAccessModifiers.Transient) != 0 || _underlyingType.IsRefLikeType;
 
-        TypeAccessModifiers IExtendedTypeReference.AccessModifiers => _accessModifiers;
+        TypeAccessModifiers ITypeWithAccessModifiers.AccessModifiers => _accessModifiers;
 
     }
 }
