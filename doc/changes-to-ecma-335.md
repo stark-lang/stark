@@ -7,6 +7,9 @@ TODO:
 - [ ] add changes to type specs
 - [ ] add changes to type constraints
 
+
+
+
 ## In `II.23.1.10 Flags for methods [MethodAttributes]`
 
 - `HasSecurity` is transformed to `IsReadOnly` `0x4000`: when `this` is `readonly`, only a method instance with `IsReadOnly` can be called. Only valid for method instance (doesn't work with static modifier)
@@ -19,4 +22,10 @@ TODO:
   In `Implementation info and interop`:  `Intrinsic = 0x2000`
 
 
+
+
+## References
+
+Challenges around CustomModifiers and byref in the current spec:
+https://github.com/dotnet/corefx/blob/master/src/System.Reflection.Metadata/specs/Ecma-335-Issues.md
 
