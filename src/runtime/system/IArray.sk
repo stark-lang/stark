@@ -27,6 +27,7 @@ namespace core
             readonly get 
         }
     }
+
 /*
     public class Array<T> implements IArray<T>
     {

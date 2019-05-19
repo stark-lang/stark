@@ -311,6 +311,8 @@ namespace StarkPlatform.Compiler.CodeGen
         public override string ToString()
             => _containingType.ToString() + "." + this.Name;
 
+        override public ushort Packing => 1;
+
         override public ushort Alignment => 1;
 
         override public Cci.ITypeReference GetBaseClass(EmitContext context) => null;
@@ -551,6 +553,8 @@ namespace StarkPlatform.Compiler.CodeGen
         public Cci.ITypeDefinition AsTypeDefinition(EmitContext context) => this;
 
         public bool MangleName => false;
+
+        public virtual ushort Packing => 0;
 
         public virtual ushort Alignment => 0;
 

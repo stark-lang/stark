@@ -4,12 +4,12 @@ namespace core.sync
 {
     public enum MemoryOrder
     {
+        SEQUENTIAL_CONSISTENT
         RELAXED
         CONSUME
         ACQUIRE
         RELEASE
-        ACQUIRE_RELEASE
-        SEQUENTIAL_CONSISTENT
+        ACQUIRE_RELEASE        
     }
 
 

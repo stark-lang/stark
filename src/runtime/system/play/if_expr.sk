@@ -1,5 +1,8 @@
 module if_expr
 {
+    /// This is a check for a condition.
+    /// @param condition a boolean to check if the function is valid
+    /// @return an integer
     public static func check(condition: bool) -> i32 
     {
         // if expression

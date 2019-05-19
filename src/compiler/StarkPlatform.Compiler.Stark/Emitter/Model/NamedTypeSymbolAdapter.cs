@@ -761,6 +761,16 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 }
             }
         }
+        ushort Cci.ITypeDefinition.Packing
+        {
+            get
+            {
+                CheckDefinitionInvariant();
+                var layout = this.Layout;
+                return (ushort)layout.Pack;
+            }
+        }
+
         ushort Cci.ITypeDefinition.Alignment
         {
             get

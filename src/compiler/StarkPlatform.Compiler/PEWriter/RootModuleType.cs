@@ -40,6 +40,11 @@ namespace StarkPlatform.Cci
             get { return "<Module>"; }
         }
 
+        public ushort Packing
+        {
+            get { return 0; }
+        }
+
         public ushort Alignment
         {
             get { return 0; }

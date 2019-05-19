@@ -155,7 +155,8 @@ namespace StarkPlatform.Reflection.Metadata
             }
 
             int packingSize = _reader.ClassLayoutTable.GetPackingSize(classLayoutRowId);
-            return new TypeLayout((int)size, packingSize);
+            int alignment = _reader.ClassLayoutTable.GetAlignment(classLayoutRowId);
+            return new TypeLayout((int)size, packingSize, alignment);
         }
 
         /// <summary>

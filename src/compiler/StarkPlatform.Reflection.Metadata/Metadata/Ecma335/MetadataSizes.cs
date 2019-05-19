@@ -269,7 +269,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
             size += GetTableSize(TableIndex.CustomAttribute, hasCustomAttributeCodedIndexSize + customAttributeTypeCodedIndexSize + blobReferenceSize);
             size += GetTableSize(TableIndex.FieldMarshal, hasFieldMarshalCodedIndexSize + blobReferenceSize);
             size += GetTableSize(TableIndex.DeclSecurity, 2 + declSecurityCodedIndexSize + blobReferenceSize);
-            size += GetTableSize(TableIndex.ClassLayout, 6 + typeDefReferenceSize);
+            size += GetTableSize(TableIndex.ClassLayout, 8 + typeDefReferenceSize);
             size += GetTableSize(TableIndex.FieldLayout, 4 + fieldDefReferenceSize);
             size += GetTableSize(TableIndex.StandAloneSig, blobReferenceSize);
             size += GetTableSize(TableIndex.EventMap, typeDefReferenceSize + eventDefReferenceSize);

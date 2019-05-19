@@ -343,6 +343,7 @@ namespace StarkPlatform.Compiler
 
             CharSet charSet = (defaultCharSet != Cci.Constants.CharSet_None) ? defaultCharSet : CharSet.Ansi;
             int? size = null;
+            int? pack = null;
             int? alignment = null;
             bool hasErrors = false;
 
@@ -365,7 +366,7 @@ namespace StarkPlatform.Compiler
             {
                 switch (namedArg.Key)
                 {
-                    case "CharSet":
+                    case "charset":
                         charSet = namedArg.Value.DecodeValue<CharSet>(SpecialType.System_Enum);
                         switch (charSet)
                         {
@@ -386,7 +387,19 @@ namespace StarkPlatform.Compiler
 
                         break;
 
-                    case "Pack":
+                    case "pack":
+                        pack = namedArg.Value.DecodeValue<int>(SpecialType.System_Int32);
+
+                        // only powers of 2 less or equal to 128 are allowed:
+                        if (pack > 128 || (pack & (pack - 1)) != 0)
+                        {
+                            messageProvider.ReportInvalidNamedArgument(arguments.Diagnostics, arguments.AttributeSyntaxOpt, position, attribute.AttributeClass, namedArg.Key);
+                            hasErrors = true;
+                        }
+
+                        break;
+
+                    case "align":
                         alignment = namedArg.Value.DecodeValue<int>(SpecialType.System_Int32);
 
                         // only powers of 2 less or equal to 128 are allowed:
@@ -398,7 +411,7 @@ namespace StarkPlatform.Compiler
 
                         break;
 
-                    case "Size":
+                    case "size":
                         size = namedArg.Value.DecodeValue<int>(StarkPlatform.Compiler.SpecialType.System_Int32);
                         if (size < 0)
                         {
@@ -414,7 +427,7 @@ namespace StarkPlatform.Compiler
 
             if (!hasErrors)
             {
-                if (kind == LayoutKind.Auto && size == null && alignment != null)
+                if (kind == LayoutKind.Auto && size == null && pack != null)
                 {
                     // If size is unspecified
                     //   C# emits size=0
@@ -422,7 +435,8 @@ namespace StarkPlatform.Compiler
                     size = defaultAutoLayoutSize;
                 }
 
-                arguments.GetOrCreateData<TTypeWellKnownAttributeData>().SetStructLayout(new TypeLayout(kind, size ?? 0, (byte)(alignment ?? 0)), charSet);
+                arguments.GetOrCreateData<TTypeWellKnownAttributeData>().SetStructLayout(new TypeLayout(kind, size ?? 0, (byte)(pack ?? 0), (byte)(alignment 
+                                                                                                                                                   ?? 0)), charSet);
             }
         }
 

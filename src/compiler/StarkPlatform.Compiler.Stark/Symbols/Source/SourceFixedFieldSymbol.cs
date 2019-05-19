@@ -181,10 +181,11 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 int nElements = _field.FixedSize;
                 var elementType = ((PointerTypeSymbol)_field.Type.TypeSymbol).PointedAtType.TypeSymbol;
                 int elementSize = elementType.FixedBufferElementSizeInBytes();
+                const int pack = 0;
                 const int alignment = 0;
                 int totalSize = nElements * elementSize;
                 const LayoutKind layoutKind = LayoutKind.Sequential;
-                return new TypeLayout(layoutKind, totalSize, alignment);
+                return new TypeLayout(layoutKind, totalSize, pack, alignment);
             }
         }
 

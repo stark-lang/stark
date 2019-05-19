@@ -8,11 +8,13 @@ namespace StarkPlatform.Reflection.Metadata
     {
         private readonly int _size;
         private readonly int _packingSize;
+        private readonly int _alignment;
 
-        public TypeLayout(int size, int packingSize)
+        public TypeLayout(int size, int packingSize, int alignment)
         {
             _size = size;
             _packingSize = packingSize;
+            _alignment = alignment;
         }
 
         public int Size
@@ -25,9 +27,14 @@ namespace StarkPlatform.Reflection.Metadata
             get { return _packingSize; }
         }
 
+        public int Alignment
+        {
+            get { return _alignment; }
+        }
+
         public bool IsDefault
         {
-            get { return _size == 0 && _packingSize == 0; }
+            get { return _size == 0 && _packingSize == 0 && _alignment == 0; }
         }
     }
 }

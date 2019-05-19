@@ -21,7 +21,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         private struct AssemblyRefTableRow { public Version Version; public BlobHandle PublicKeyToken; public StringHandle Name; public StringHandle Culture; public uint Flags; public BlobHandle HashValue; }
         private struct ModuleRow { public ushort Generation; public StringHandle Name; public GuidHandle ModuleVersionId; public GuidHandle EncId; public GuidHandle EncBaseId; }
         private struct AssemblyRow { public uint HashAlgorithm; public Version Version; public ushort Flags; public BlobHandle AssemblyKey; public StringHandle AssemblyName; public StringHandle AssemblyCulture; }
-        private struct ClassLayoutRow { public ushort PackingSize; public uint ClassSize; public int Parent; }
+        private struct ClassLayoutRow { public ushort PackingSize; public ushort Alignment; public uint ClassSize; public int Parent; }
         private struct ConstantRow { public byte Type; public int Parent; public BlobHandle Value; }
         private struct CustomAttributeRow { public int Parent; public int Type; public BlobHandle Value; }
         private struct DeclSecurityRow { public ushort Action; public int Parent; public BlobHandle PermissionSet; }
@@ -487,27 +487,29 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         /// </summary>
         /// <param name="type">Type definition.</param>
         /// <param name="packingSize">
-        /// Specifies that fields should be placed within the type instance at byte addresses which are a multiple of the value, 
-        /// or at natural alignment for that field type, whichever is smaller. Shall be one of the following: 0, 1, 2, 4, 8, 16, 32, 64, or 128. 
-        /// A value of zero indicates that the packing size used should match the default for the current platform.
+        ///     Specifies that fields should be placed within the type instance at byte addresses which are a multiple of the value, 
+        ///     or at natural alignment for that field type, whichever is smaller. Shall be one of the following: 0, 1, 2, 4, 8, 16, 32, 64, or 128. 
+        ///     A value of zero indicates that the packing size used should match the default for the current platform.
         /// </param>
+        /// <param name="alignment"></param>
         /// <param name="size">
-        /// Indicates a minimum size of the type instance, and is intended to allow for padding. 
-        /// The amount of memory allocated is the maximum of the size calculated from the layout and <paramref name="size"/>. 
-        /// Note that if this directive applies to a value type, then the size shall be less than 1 MB.
+        ///     Indicates a minimum size of the type instance, and is intended to allow for padding. 
+        ///     The amount of memory allocated is the maximum of the size calculated from the layout and <paramref name="size"/>. 
+        ///     Note that if this directive applies to a value type, then the size shall be less than 1 MB.
         /// </param>
         /// <remarks>
         /// Entires must be added in the same order as the corresponding type definitions.
         /// </remarks>
-        public void AddTypeLayout(
-            TypeDefinitionHandle type,
+        public void AddTypeLayout(TypeDefinitionHandle type,
             ushort packingSize,
+            ushort alignment,
             uint size)
         {
             _classLayoutTable.Add(new ClassLayoutRow
             {
                 Parent = type.RowId,
                 PackingSize = packingSize,
+                Alignment = alignment,
                 ClassSize = size
             });
         }
@@ -2110,6 +2112,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
             foreach (ClassLayoutRow classLayout in _classLayoutTable)
             {
                 writer.WriteUInt16(classLayout.PackingSize);
+                writer.WriteUInt16(classLayout.Alignment);
                 writer.WriteUInt32(classLayout.ClassSize);
                 writer.WriteReference(classLayout.Parent, metadataSizes.TypeDefReferenceIsSmall);
             }

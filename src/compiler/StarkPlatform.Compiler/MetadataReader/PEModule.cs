@@ -911,11 +911,17 @@ namespace StarkPlatform.Compiler
                 var layout = def.GetLayout();
                 int size = layout.Size;
                 int packingSize = layout.PackingSize;
+                int alignment = layout.Alignment;
 
                 if (packingSize > byte.MaxValue)
                 {
                     // TODO (tomat) report error:
                     packingSize = 0;
+                }
+
+                if (alignment > byte.MaxValue)
+                {
+                    alignment = 0;
                 }
 
                 if (size < 0)
@@ -924,7 +930,7 @@ namespace StarkPlatform.Compiler
                     size = 0;
                 }
 
-                return new TypeLayout(kind, size, (byte)packingSize);
+                return new TypeLayout(kind, size, (byte)packingSize, (byte)alignment);
             }
             catch (BadImageFormatException)
             {

@@ -13,10 +13,11 @@ namespace StarkPlatform.Compiler
     internal struct TypeLayout : IEquatable<TypeLayout>
     {
         private readonly byte _kind;
+        private readonly short _pack;
         private readonly short _alignment;
         private readonly int _size;
 
-        public TypeLayout(LayoutKind kind, int size, byte alignment)
+        public TypeLayout(LayoutKind kind, int size, byte pack, byte alignment)
         {
             Debug.Assert(size >= 0 && (int)kind >= 0 && (int)kind <= 3);
 
@@ -25,6 +26,7 @@ namespace StarkPlatform.Compiler
             _kind = (byte)(kind + 1);
 
             _size = size;
+            _pack = pack;
             _alignment = alignment;
         }
 
@@ -41,7 +43,15 @@ namespace StarkPlatform.Compiler
         }
 
         /// <summary>
-        /// Field alignment (PackingSize field in metadata).
+        /// Field packing (PackingSize field in metadata).
+        /// </summary>
+        public short Pack
+        {
+            get { return _pack; }
+        }
+
+        /// <summary>
+        /// Struct alignment (PackingSize field in metadata).
         /// </summary>
         public short Alignment
         {
@@ -59,6 +69,7 @@ namespace StarkPlatform.Compiler
         public bool Equals(TypeLayout other)
         {
             return _size == other._size
+                && _pack == other._pack
                 && _alignment == other._alignment
                 && _kind == other._kind;
         }
@@ -70,7 +81,7 @@ namespace StarkPlatform.Compiler
 
         public override int GetHashCode()
         {
-            return Hash.Combine(Hash.Combine(this.Size, this.Alignment), _kind);
+            return Hash.Combine(Hash.Combine(Hash.Combine(this.Size, this.Pack), this.Alignment), _kind);
         }
     }
 }

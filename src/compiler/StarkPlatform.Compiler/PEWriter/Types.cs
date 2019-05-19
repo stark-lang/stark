@@ -445,6 +445,11 @@ namespace StarkPlatform.Cci
         /// <summary>
         /// The byte alignment that values of the given type ought to have. Must be a power of 2. If zero, the alignment is decided at runtime.
         /// </summary>
+        ushort Packing { get; }
+
+        /// <summary>
+        /// The byte alignment for the specified type. Must be a power of 2. If zero, the alignment is decided at runtime.
+        /// </summary>
         ushort Alignment { get; }
 
         /// <summary>

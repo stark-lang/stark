@@ -1,0 +1,91 @@
+import core.runtime
+
+namespace core
+{
+    public partial module intrinsics
+    {
+        public partial module x86
+        {
+            @StructLayoutAttribute(LayoutKind.SEQUENTIAL, size = 128, align = 128)
+            public struct __m128
+            {
+                public var x: f32
+                public var y: f32
+                public var z: f32
+                public var w: f32
+            }
+
+            @StructLayoutAttribute(LayoutKind.SEQUENTIAL, size = 128, align = 128)
+            public struct __m128i
+            {
+                public var x: i32
+                public var y: i32
+                public var z: i32
+                public var w: i32
+            }
+
+            @StructLayoutAttribute(LayoutKind.SEQUENTIAL, size = 128, align = 128)
+            public struct __m128d
+            {
+                public var x: f64
+                public var y: f64
+            }
+
+            @StructLayoutAttribute(LayoutKind.SEQUENTIAL, size = 128, align = 128)
+            public struct __m256
+            {
+                public var x0: f32
+                public var y0: f32
+                public var z0: f32
+                public var w0: f32
+                public var x1: f32
+                public var y1: f32
+                public var z1: f32
+                public var w1: f32
+            }
+
+            @StructLayoutAttribute(LayoutKind.SEQUENTIAL, size = 128, align = 128)
+            public struct __m256i
+            {
+                public var x0: i32
+                public var y0: i32
+                public var z0: i32
+                public var w0: i32
+                public var x1: i32
+                public var y1: i32
+                public var z1: i32
+                public var w1: i32
+            }
+
+            @StructLayoutAttribute(LayoutKind.SEQUENTIAL, size = 128, align = 128)
+            public struct __m256d
+            {
+                public var x0: f64
+                public var y0: f64
+                public var x1: f64
+                public var y1: f64
+            }
+
+            @Flags
+            public enum CpuFeatures
+            {
+                None = 0
+                MMX = 1 << 0
+                SSE = 1 << 1
+                SSE2 = 1 << 2
+                SSE3 = 1 << 3
+                SSSE3 = 1 << 4
+                SSE41 = 1 << 5
+                SSE42 = 1 << 6
+                AVX = 1 << 7
+                AVX2 = 1 << 8
+                FMA = 1 << 9
+                AVX512 = 1 << 10
+            }
+
+            @Intrinsic
+            public static extern func is_cpu_features_supported(cpu: CpuFeatures) -> bool
+        }
+    }
+}
+

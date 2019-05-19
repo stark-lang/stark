@@ -1,0 +1,9 @@
+namespace core.runtime
+{
+    public enum LayoutKind
+    {
+        SEQUENTIAL = 0
+        EXPLICIT = 2
+        AUTO = 3
+    }
+}

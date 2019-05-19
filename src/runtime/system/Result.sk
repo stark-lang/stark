@@ -1,0 +1,71 @@
+import core.runtime
+
+namespace core
+{
+    // public union struct Result<T>
+    //     case Failure(exception: Exception)
+    //     case Success(value: T)
+    // {
+    // }
+
+/*    @Union
+    public readonly abstract struct Result<T>
+    {
+        internal let _type : i32
+        internal let _exception : Exception
+        internal let _value : T
+
+        protected constructor(value: T)
+        {
+            _type = 0
+            _exception = null
+            _value = value
+        }
+
+        protected constructor(unused: bool, exception: Exception)
+        {
+            _type = 1
+            _exception = exception
+            _value = default
+        }
+    }
+
+
+    @Union
+    public readonly struct Success<T> extends Result<T>
+    {
+        public constructor(value: T) : base(value) {}
+
+        public func value -> T => _value
+    }
+
+    @Union
+    public readonly struct Failure<T> extends Result<T>
+    {
+        public constructor(exception: Exception) : base(false, exception) {}
+
+        public func exception -> Exception => _exception
+    }
+
+    public module yo
+    {
+
+        public static func test()
+        {
+            var x = new Success<int>(5)
+            var y = new Failure<int>(new Exception())
+
+            if x is Success<int> success then
+            {
+
+            }
+        }
+    }
+*/
+
+    // public union struct Option<T>
+    //     case None()
+    //     case Value(value: T)
+    // {
+    // }
+}

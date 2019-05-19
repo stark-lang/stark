@@ -321,6 +321,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 case SyntaxKind.DelegateDeclaration:
                 case SyntaxKind.EnumDeclaration:
+                case SyntaxKind.ModuleDeclaration:
                 case SyntaxKind.ClassDeclaration:
                 case SyntaxKind.StructDeclaration:
                 case SyntaxKind.InterfaceDeclaration:

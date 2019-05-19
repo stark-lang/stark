@@ -396,6 +396,15 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                 }
             }
 
+            ushort Cci.ITypeDefinition.Packing
+            {
+                get
+                {
+                    var layout = GetTypeLayoutIfStruct();
+                    return (ushort)(layout?.Pack ?? 0);
+                }
+            }
+
             ushort Cci.ITypeDefinition.Alignment
             {
                 get

@@ -2710,14 +2710,15 @@ namespace StarkPlatform.Cci
         {
             foreach (ITypeDefinition typeDef in this.GetTypeDefs())
             {
-                if (typeDef.Alignment == 0 && typeDef.SizeOf == 0)
+                if (typeDef.Packing == 0 && typeDef.SizeOf == 0 && typeDef.Alignment == 0)
                 {
                     continue;
                 }
 
                 metadata.AddTypeLayout(
                     type: GetTypeDefinitionHandle(typeDef),
-                    packingSize: typeDef.Alignment,
+                    packingSize: typeDef.Packing, 
+                    alignment: typeDef.Alignment,
                     size: typeDef.SizeOf);
             }
         }

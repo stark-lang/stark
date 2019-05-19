@@ -1,0 +1,23 @@
+import core.intrinsics.x86
+import core.intrinsics.x86.sse2
+
+public module play_intrinsics
+{
+    public static unsafe func bit_operation_and(dst: *u8, src: *u8, block_size: i32)
+    {
+        var wrd_ptr = src as *__m128i
+        var wrd_end = (src + block_size) as *__m128i
+        var dst_ptr = dst as *__m128i
+
+        while wrd_ptr < wrd_end
+        {
+            var xmm1 = _mm_load_si128(wrd_ptr)
+            var xmm2 = _mm_load_si128(dst_ptr)
+
+            xmm1 = _mm_and_si128(xmm1, xmm2)
+            _mm_store_si128(dst_ptr, xmm1)
+            dst_ptr++
+            wrd_ptr++
+        }
+    }
+}

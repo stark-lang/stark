@@ -1013,6 +1013,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         internal int NumberOfRows;
         private readonly bool _IsTypeDefTableRowRefSizeSmall;
         private readonly int _PackagingSizeOffset;
+        private readonly int _AlignmentSizeOffset;
         private readonly int _ClassSizeOffset;
         private readonly int _ParentOffset;
         internal readonly int RowSize;
@@ -1028,7 +1029,8 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
             this.NumberOfRows = numberOfRows;
             _IsTypeDefTableRowRefSizeSmall = typeDefTableRowRefSize == 2;
             _PackagingSizeOffset = 0;
-            _ClassSizeOffset = _PackagingSizeOffset + sizeof(ushort);
+            _AlignmentSizeOffset = _PackagingSizeOffset + sizeof(ushort);
+            _ClassSizeOffset = _AlignmentSizeOffset + sizeof(ushort);
             _ParentOffset = _ClassSizeOffset + sizeof(uint);
             this.RowSize = _ParentOffset + typeDefTableRowRefSize;
             this.Block = containingBlock.GetMemoryBlockAt(containingBlockOffset, this.RowSize * numberOfRows);
@@ -1049,6 +1051,12 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         {
             int rowOffset = (rowId - 1) * this.RowSize;
             return this.Block.PeekUInt16(rowOffset + _PackagingSizeOffset);
+        }
+
+        internal ushort GetAlignment(int rowId)
+        {
+            int rowOffset = (rowId - 1) * this.RowSize;
+            return this.Block.PeekUInt16(rowOffset + _AlignmentSizeOffset);
         }
 
         internal uint GetClassSize(int rowId)

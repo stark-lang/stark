@@ -8,8 +8,6 @@ TODO:
 - [ ] add changes to type constraints
 
 
-
-
 ## In `II.23.1.10 Flags for methods [MethodAttributes]`
 
 - `HasSecurity` is transformed to `IsReadOnly` `0x4000`: when `this` is `readonly`, only a method instance with `IsReadOnly` can be called. Only valid for method instance (doesn't work with static modifier)
@@ -21,8 +19,15 @@ TODO:
 
   In `Implementation info and interop`:  `Intrinsic = 0x2000`
 
+## In `II.22.8 ClassLayout : 0x0F`
 
+Add Alignment (a 2 byte-constant) to the ClassLayout
 
+The ClassLayout table has the following columns:
+- PackingSize (a 2-byte constant)
+- Add Alignment (a 2 byte-constant)
+- ClassSize (a 4-byte constant)
+- Parent (an index into the TypeDef table)
 
 ## References
 
