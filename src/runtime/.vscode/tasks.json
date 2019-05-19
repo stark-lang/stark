@@ -6,14 +6,14 @@
         {
             "label": "stark.build",
             "type": "shell",
-            "command": "./system/build.cmd",
+            "command": "./core/build.cmd",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "problemMatcher": {
                 "owner": "stark",
-                "fileLocation": ["relative", "${workspaceRoot}/system"],
+                "fileLocation": ["relative", "${workspaceRoot}/core"],
                 "pattern": {
                     "regexp": "^(.*)\\((\\d+),(\\d+)\\):\\s+(warning|error)\\s+\\w+:\\s+(.*)$",
                     "file": 1,
