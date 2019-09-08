@@ -168,7 +168,7 @@ namespace StarkPlatform.Compiler
         private static bool IsTheObjectClass(this MetadataReader reader, TypeDefinition typeDef)
         {
             return typeDef.BaseType.IsNil &&
-                reader.IsPublicNonInterfaceType(typeDef, "System", "Object");
+                reader.IsPublicNonInterfaceType(typeDef, "core", "Object");
         }
 
         internal static bool DeclaresType(this MetadataReader reader, Func<MetadataReader, TypeDefinition, bool> predicate)
