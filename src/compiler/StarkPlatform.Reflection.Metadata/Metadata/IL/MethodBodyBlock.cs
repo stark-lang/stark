@@ -1,102 +1,101 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
 using System;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using StarkPlatform.Reflection.Internal;
+using System.Runtime.InteropServices;
 using StarkPlatform.Reflection.Metadata.Ecma335;
-using SR = StarkPlatform.Reflection.Resources.SR;
+using StarkPlatform.Reflection.Resources;
 
 namespace StarkPlatform.Reflection.Metadata
 {
-    public sealed class MethodBodyBlock
+    public struct MethodBodyBlock
     {
-        private readonly MemoryBlock _il;
-        private readonly int _size;
+        private readonly IntPtr _il;
+        private readonly int _ilSize;
         private readonly ushort _maxStack;
-        private readonly bool _localVariablesInitialized;
-        private readonly StandaloneSignatureHandle _localSignature;
-        private readonly ImmutableArray<ExceptionRegion> _exceptionRegions;
+        private readonly bool _isFatException;
+        private readonly int _exceptionHandlerCount;
+        private readonly int _offsetExceptionHandlers;
 
-        private MethodBodyBlock(
+        private unsafe MethodBodyBlock(
             bool localVariablesInitialized,
             ushort maxStack,
             StandaloneSignatureHandle localSignatureHandle,
-            MemoryBlock il,
-            ImmutableArray<ExceptionRegion> exceptionRegions,
-            int size)
+            IntPtr il,
+            int ilSize,
+            bool isFatException,
+            int exceptionHandlerCount,
+            int offsetExceptionHandlers)
         {
-            Debug.Assert(!exceptionRegions.IsDefault);
-
-            _localVariablesInitialized = localVariablesInitialized;
+            LocalVariablesInitialized = localVariablesInitialized;
             _maxStack = maxStack;
-            _localSignature = localSignatureHandle;
+            LocalSignature = localSignatureHandle;
             _il = il;
-            _exceptionRegions = exceptionRegions;
-            _size = size;
+            _ilSize = ilSize;
+            _isFatException = isFatException;
+            _exceptionHandlerCount = exceptionHandlerCount;
+            _offsetExceptionHandlers = offsetExceptionHandlers;
         }
 
-        /// <summary>
-        /// Size of the method body - includes the header, IL and exception regions.
-        /// </summary>
-        public int Size
+        public int MaxStack => _maxStack;
+
+        public bool LocalVariablesInitialized { get; }
+
+        public StandaloneSignatureHandle LocalSignature { get; }
+
+        public int ExceptionHandlerCount => _exceptionHandlerCount;
+
+        public bool HasException => ExceptionHandlerCount > 0;
+
+        public unsafe ExceptionRegion GetExceptionHandler(int index)
         {
-            get { return _size; }
+            if (((uint)index) > (uint)_exceptionHandlerCount)
+            {
+                Throw.OutOfBounds();
+            }
+
+            if (_isFatException)
+            {
+                return *(ExceptionRegion*)((byte*)_il + _offsetExceptionHandlers);
+            }
+
+            ref var smallExceptionView = ref *(SmallExceptionView*)((byte*) _il + _offsetExceptionHandlers);
+            return new ExceptionRegion(smallExceptionView.ExceptionRegionkind, smallExceptionView.TryOffset, smallExceptionView.TryLength, smallExceptionView.HandlerOffset, smallExceptionView.HandlerLength, smallExceptionView.ClassTokenOrFilterOffset);
         }
 
-        public int MaxStack
-        {
-            get { return _maxStack; }
-        }
 
-        public bool LocalVariablesInitialized
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        readonly struct SmallExceptionView
         {
-            get { return _localVariablesInitialized; }
-        }
-
-        public StandaloneSignatureHandle LocalSignature
-        {
-            get { return _localSignature; }
-        }
-
-        public ImmutableArray<ExceptionRegion> ExceptionRegions
-        {
-            get { return _exceptionRegions; }
-        }
-
-        public byte[] GetILBytes()
-        {
-            return _il.ToArray();
-        }
-
-        public ImmutableArray<byte> GetILContent()
-        {
-            byte[] bytes = GetILBytes();
-            return ImmutableByteArrayInterop.DangerousCreateFromUnderlyingArray(ref bytes);
+            public readonly ExceptionRegionKind ExceptionRegionkind;
+            public readonly ushort TryOffset;
+            public readonly byte TryLength;
+            public readonly ushort HandlerOffset;
+            public readonly byte HandlerLength;
+            public readonly int ClassTokenOrFilterOffset;
         }
 
         public BlobReader GetILReader()
         {
-            return new BlobReader(_il);
+            unsafe
+            {
+                return new BlobReader((byte*) _il, _ilSize);
+            }
         }
-
-        private const byte ILTinyFormat = 0x02;
-        private const byte ILFatFormat = 0x03;
-        private const byte ILFormatMask = 0x03;
-        private const int ILTinyFormatSizeShift = 2;
-        private const byte ILMoreSects = 0x08;
-        private const byte ILInitLocals = 0x10;
-        private const byte ILFatFormatHeaderSize = 0x03;
-        private const int ILFatFormatHeaderSizeShift = 4;
-        private const byte SectEHTable = 0x01;
-        private const byte SectOptILTable = 0x02;
-        private const byte SectFatFormat = 0x40;
-        private const byte SectMoreSects = 0x40;
 
         public static MethodBodyBlock Create(BlobReader reader)
         {
+            const byte ILTinyFormat = 0x02;
+            const byte ILFatFormat = 0x03;
+            const byte ILFormatMask = 0x03;
+            const int ILTinyFormatSizeShift = 2;
+            const byte ILMoreSects = 0x08;
+            const byte ILInitLocals = 0x10;
+            const byte ILFatFormatHeaderSize = 0x03;
+            const int ILFatFormatHeaderSizeShift = 4;
+            const byte SectEHTable = 0x01;
+            const byte SectOptILTable = 0x02;
+            const byte SectFatFormat = 0x40;
+            const byte SectMoreSects = 0x40;
+
             int startOffset = reader.Offset;
             int ilSize;
 
@@ -110,14 +109,19 @@ namespace StarkPlatform.Reflection.Metadata
                 const bool initLocalsForTinyIL = false;
 
                 ilSize = headByte >> ILTinyFormatSizeShift;
-                return new MethodBodyBlock(
-                    initLocalsForTinyIL,
-                    8,
-                    default(StandaloneSignatureHandle),
-                    reader.GetMemoryBlockAt(0, ilSize),
-                    ImmutableArray<ExceptionRegion>.Empty,
-                    1 + ilSize // header + IL
-                );
+                unsafe
+                {
+                    return new MethodBodyBlock(
+                        initLocalsForTinyIL,
+                        8,
+                        default(StandaloneSignatureHandle),
+                        new IntPtr(reader.CurrentPointer),
+                        ilSize,
+                        false,
+                        0,
+                        0
+                    );
+                }
             }
 
             if ((headByte & ILFormatMask) != ILFatFormat)
@@ -153,10 +157,18 @@ namespace StarkPlatform.Reflection.Metadata
                 throw new BadImageFormatException(StarkPlatform.Reflection.Resources.SR.Format(SR.InvalidLocalSignatureToken, unchecked((uint)localSignatureToken)));
             }
 
-            var ilBlock = reader.GetMemoryBlockAt(0, ilSize);
+            var startIlBlockOffset = reader.Offset;
+            IntPtr ilPtr;
+            unsafe
+            {
+                ilPtr = new IntPtr(reader.CurrentPointer);
+            }
             reader.Offset += ilSize;
 
             ImmutableArray<ExceptionRegion> exceptionHandlers;
+            int countExceptionHandler = 0;
+            int offsetExceptionHandler = 0;
+            bool isFatExceptionHandler = false;
             if (hasExceptionHandlers)
             {
                 reader.Align(4);
@@ -171,60 +183,26 @@ namespace StarkPlatform.Reflection.Metadata
                 if (sehFatFormat)
                 {
                     dataSize += reader.ReadUInt16() << 8;
-                    exceptionHandlers = ReadFatExceptionHandlers(ref reader, dataSize / 24);
+                    countExceptionHandler = dataSize / 24;
+                    isFatExceptionHandler = true;
                 }
                 else
                 {
                     reader.Offset += 2; // skip over reserved field
-                    exceptionHandlers = ReadSmallExceptionHandlers(ref reader, dataSize / 12);
+                    countExceptionHandler = dataSize / 12;
                 }
-            }
-            else
-            {
-                exceptionHandlers = ImmutableArray<ExceptionRegion>.Empty;
+                offsetExceptionHandler = reader.Offset - startIlBlockOffset;
             }
 
             return new MethodBodyBlock(
                 localsInitialized,
                 maxStack,
                 localSignatureHandle,
-                ilBlock,
-                exceptionHandlers,
-                reader.Offset - startOffset);
-        }
-
-        private static ImmutableArray<ExceptionRegion> ReadSmallExceptionHandlers(ref BlobReader memReader, int count)
-        {
-            var result = new ExceptionRegion[count];
-            for (int i = 0; i < result.Length; i++)
-            {
-                var kind = (ExceptionRegionKind)memReader.ReadUInt16();
-                var tryOffset = memReader.ReadUInt16();
-                var tryLength = memReader.ReadByte();
-                var handlerOffset = memReader.ReadUInt16();
-                var handlerLength = memReader.ReadByte();
-                var classTokenOrFilterOffset = memReader.ReadInt32();
-                result[i] = new ExceptionRegion(kind, tryOffset, tryLength, handlerOffset, handlerLength, classTokenOrFilterOffset);
-            }
-
-            return ImmutableArray.Create(result);
-        }
-
-        private static ImmutableArray<ExceptionRegion> ReadFatExceptionHandlers(ref BlobReader memReader, int count)
-        {
-            var result = new ExceptionRegion[count];
-            for (int i = 0; i < result.Length; i++)
-            {
-                var sehFlags = (ExceptionRegionKind)memReader.ReadUInt32();
-                int tryOffset = memReader.ReadInt32();
-                int tryLength = memReader.ReadInt32();
-                int handlerOffset = memReader.ReadInt32();
-                int handlerLength = memReader.ReadInt32();
-                int classTokenOrFilterOffset = memReader.ReadInt32();
-                result[i] = new ExceptionRegion(sehFlags, tryOffset, tryLength, handlerOffset, handlerLength, classTokenOrFilterOffset);
-            }
-
-            return ImmutableArray.Create(result);
+                ilPtr,
+                ilSize,
+                isFatExceptionHandler,
+                offsetExceptionHandler,
+                countExceptionHandler);
         }
     }
 }

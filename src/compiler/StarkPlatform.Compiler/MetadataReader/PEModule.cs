@@ -3122,7 +3122,7 @@ namespace StarkPlatform.Compiler
         }
 
         /// <exception cref="BadImageFormatException">Invalid metadata.</exception>
-        internal MethodBodyBlock GetMethodBodyOrThrow(MethodDefinitionHandle methodHandle)
+        internal MethodBodyBlock? GetMethodBodyOrThrow(MethodDefinitionHandle methodHandle)
         {
             // we shouldn't ask for method IL if we don't have PE image
             Debug.Assert(_peReaderOpt != null);
