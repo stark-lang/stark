@@ -1,24 +1,41 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
-
-using System;
+﻿using System;
+using System.Diagnostics;
 using SR = StarkPlatform.Reflection.Resources.SR;
 
 namespace StarkPlatform.Reflection.Metadata
 {
-    public static partial class ILOpCodeExtensions
+    /// <summary>
+    /// IL Instruction reader.
+    /// </summary>
+    public struct ILInstructionReader
     {
+        private BlobReader _ilReader;
+
         /// <summary>
-        /// Get the size in bytes of the operand for a particular <see cref="ILOpCode"/>.
+        /// Create a new instance of this reader from a IL <see cref="BlobReader"/>
         /// </summary>
-        /// <param name="opCode">The OpCode</param>
-        /// <returns>Size in bytes of the operand of this OpCode</returns>
-        /// <remarks>
-        /// For switch OpCode it will return 4 while the full size is determined by also multiplying the operand value by sizeof(uint)
-        /// </remarks>
-        public static int GetOperandSize(this ILOpCode opCode)
+        /// <param name="ilReader">An IL <see cref="BlobReader"/></param>
+        public ILInstructionReader(BlobReader ilReader)
         {
+            _ilReader = ilReader;
+        }
+
+        /// <summary>
+        /// Gets a boolean indicating whether there are instructions left
+        /// </summary>
+        public bool HasNext => _ilReader.RemainingBytes != 0;
+
+        /// <summary>
+        /// Reads the next ILInstruction. Must have HasNext
+        /// </summary>
+        /// <param name="instruction">Output the next ILInstruction</param>
+        public void Read(ref ILInstruction instruction)
+        {
+            Debug.Assert(HasNext);
+            instruction.Offset = _ilReader.Offset;
+            var byte1 = _ilReader.ReadByte();
+            var opCode = byte1 >= 0xfe ? (ILOpCode) ((byte1 << 8) | _ilReader.ReadByte()) : (ILOpCode) byte1;
+            instruction.OpCode = opCode;
             switch (opCode)
             {
                 case ILOpCode.Nop:
@@ -160,8 +177,7 @@ namespace StarkPlatform.Reflection.Metadata
                 case ILOpCode.Rethrow:
                 case ILOpCode.Refanytype:
                 case ILOpCode.Readonly:
-                    return 0;
-
+                    break;
                 case ILOpCode.Ldarg_s:
                 case ILOpCode.Ldarga_s:
                 case ILOpCode.Starg_s:
@@ -184,16 +200,18 @@ namespace StarkPlatform.Reflection.Metadata
                 case ILOpCode.Blt_un_s:
                 case ILOpCode.Leave_s:
                 case ILOpCode.Unaligned:
-                    return 1;
-
+                    // Writing to the entire operand to make sure we are resetting the entire value
+                    instruction.Operand64 = _ilReader.ReadByte();
+                    break;
                 case ILOpCode.Ldarg:
                 case ILOpCode.Ldarga:
                 case ILOpCode.Starg:
                 case ILOpCode.Ldloc:
                 case ILOpCode.Ldloca:
                 case ILOpCode.Stloc:
-                    return 2;
-
+                    // Writing to the entire operand to make sure we are resetting the entire value
+                    instruction.Operand64 = _ilReader.ReadUInt16();
+                    break;
                 case ILOpCode.Ldc_i4:
                 case ILOpCode.Ldc_r4:
                 case ILOpCode.Jmp:
@@ -243,246 +261,24 @@ namespace StarkPlatform.Reflection.Metadata
                 case ILOpCode.Initobj:
                 case ILOpCode.Constrained:
                 case ILOpCode.Sizeof:
-                    return 4;
+                    // Writing to the entire operand to make sure we are resetting the entire value
+                    instruction.Operand64 = _ilReader.ReadUInt32();
+                    break;
                 case ILOpCode.Ldc_i8:
                 case ILOpCode.Ldc_r8:
-                    return 8;
+                    // Writing to the entire operand to make sure we are resetting the entire value
+                    instruction.Operand64 = _ilReader.ReadUInt64();
+                    break;
                 case ILOpCode.Switch:
-                    return 4;
+                    var targetCount = _ilReader.ReadInt32();
+                    // Writing to the entire operand to make sure we are resetting the entire value
+                    instruction.Operand64 = _ilReader.ReadUInt32();
+                    // Special case, followed by Operand = target count * 4 bytes
+                    _ilReader.Offset += _ilReader.Offset + targetCount * sizeof(uint);
+                    break;
                 default:
                     throw new ArgumentException(StarkPlatform.Reflection.Resources.SR.Format(SR.UnexpectedOpCode, opCode), nameof(opCode));
             }
-        }
-
-        /// <summary>
-        /// Returns true of the specified op-code is a branch to a label.
-        /// </summary>
-        public static bool IsBranch(this ILOpCode opCode)
-        {
-            switch (opCode)
-            {
-                case ILOpCode.Br:
-                case ILOpCode.Br_s:
-                case ILOpCode.Brtrue:
-                case ILOpCode.Brtrue_s:
-                case ILOpCode.Brfalse:
-                case ILOpCode.Brfalse_s:
-                case ILOpCode.Beq:
-                case ILOpCode.Beq_s:
-                case ILOpCode.Bne_un:
-                case ILOpCode.Bne_un_s:
-                case ILOpCode.Bge:
-                case ILOpCode.Bge_s:
-                case ILOpCode.Bge_un:
-                case ILOpCode.Bge_un_s:
-                case ILOpCode.Bgt:
-                case ILOpCode.Bgt_s:
-                case ILOpCode.Bgt_un:
-                case ILOpCode.Bgt_un_s:
-                case ILOpCode.Ble:
-                case ILOpCode.Ble_s:
-                case ILOpCode.Ble_un:
-                case ILOpCode.Ble_un_s:
-                case ILOpCode.Blt:
-                case ILOpCode.Blt_s:
-                case ILOpCode.Blt_un:
-                case ILOpCode.Blt_un_s:
-                case ILOpCode.Leave:
-                case ILOpCode.Leave_s:
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Calculate the size of the specified branch instruction operand.
-        /// </summary>
-        /// <param name="opCode">Branch op-code.</param>
-        /// <returns>1 if <paramref name="opCode"/> is a short branch or 4 if it is a long branch.</returns>
-        /// <exception cref="ArgumentException">Specified <paramref name="opCode"/> is not a branch op-code.</exception>
-        public static int GetBranchOperandSize(this ILOpCode opCode)
-        {
-            switch (opCode)
-            {
-                case ILOpCode.Br_s:
-                case ILOpCode.Brfalse_s:
-                case ILOpCode.Brtrue_s:
-                case ILOpCode.Beq_s:
-                case ILOpCode.Bge_s:
-                case ILOpCode.Bgt_s:
-                case ILOpCode.Ble_s:
-                case ILOpCode.Blt_s:
-                case ILOpCode.Bne_un_s:
-                case ILOpCode.Bge_un_s:
-                case ILOpCode.Bgt_un_s:
-                case ILOpCode.Ble_un_s:
-                case ILOpCode.Blt_un_s:
-                case ILOpCode.Leave_s:
-                    return 1;
-
-                case ILOpCode.Br:
-                case ILOpCode.Brfalse:
-                case ILOpCode.Brtrue:
-                case ILOpCode.Beq:
-                case ILOpCode.Bge:
-                case ILOpCode.Bgt:
-                case ILOpCode.Ble:
-                case ILOpCode.Blt:
-                case ILOpCode.Bne_un:
-                case ILOpCode.Bge_un:
-                case ILOpCode.Bgt_un:
-                case ILOpCode.Ble_un:
-                case ILOpCode.Blt_un:
-                case ILOpCode.Leave:
-                    return 4;
-            }
-
-            throw new ArgumentException(StarkPlatform.Reflection.Resources.SR.Format(SR.UnexpectedOpCode, opCode), nameof(opCode));
-        }
-
-        /// <summary>
-        /// Get a short form of the specified branch op-code.
-        /// </summary>
-        /// <param name="opCode">Branch op-code.</param>
-        /// <returns>Short form of the branch op-code.</returns>
-        /// <exception cref="ArgumentException">Specified <paramref name="opCode"/> is not a branch op-code.</exception>
-        public static ILOpCode GetShortBranch(this ILOpCode opCode)
-        {
-            switch (opCode)
-            {
-                case ILOpCode.Br_s:
-                case ILOpCode.Brfalse_s:
-                case ILOpCode.Brtrue_s:
-                case ILOpCode.Beq_s:
-                case ILOpCode.Bge_s:
-                case ILOpCode.Bgt_s:
-                case ILOpCode.Ble_s:
-                case ILOpCode.Blt_s:
-                case ILOpCode.Bne_un_s:
-                case ILOpCode.Bge_un_s:
-                case ILOpCode.Bgt_un_s:
-                case ILOpCode.Ble_un_s:
-                case ILOpCode.Blt_un_s:
-                case ILOpCode.Leave_s:
-                    return opCode;
-
-                case ILOpCode.Br:
-                    return ILOpCode.Br_s;
-
-                case ILOpCode.Brfalse:
-                    return ILOpCode.Brfalse_s;
-
-                case ILOpCode.Brtrue:
-                    return ILOpCode.Brtrue_s;
-
-                case ILOpCode.Beq:
-                    return ILOpCode.Beq_s;
-
-                case ILOpCode.Bge:
-                    return ILOpCode.Bge_s;
-
-                case ILOpCode.Bgt:
-                    return ILOpCode.Bgt_s;
-
-                case ILOpCode.Ble:
-                    return ILOpCode.Ble_s;
-
-                case ILOpCode.Blt:
-                    return ILOpCode.Blt_s;
-
-                case ILOpCode.Bne_un:
-                    return ILOpCode.Bne_un_s;
-
-                case ILOpCode.Bge_un:
-                    return ILOpCode.Bge_un_s;
-
-                case ILOpCode.Bgt_un:
-                    return ILOpCode.Bgt_un_s;
-
-                case ILOpCode.Ble_un:
-                    return ILOpCode.Ble_un_s;
-
-                case ILOpCode.Blt_un:
-                    return ILOpCode.Blt_un_s;
-
-                case ILOpCode.Leave:
-                    return ILOpCode.Leave_s;
-            }
-
-            throw new ArgumentException(StarkPlatform.Reflection.Resources.SR.Format(SR.UnexpectedOpCode, opCode), nameof(opCode));
-        }
-
-        /// <summary>
-        /// Get a long form of the specified branch op-code.
-        /// </summary>
-        /// <param name="opCode">Branch op-code.</param>
-        /// <returns>Long form of the branch op-code.</returns>
-        /// <exception cref="ArgumentException">Specified <paramref name="opCode"/> is not a branch op-code.</exception>
-        public static ILOpCode GetLongBranch(this ILOpCode opCode)
-        {
-            switch (opCode)
-            {
-                case ILOpCode.Br:
-                case ILOpCode.Brfalse:
-                case ILOpCode.Brtrue:
-                case ILOpCode.Beq:
-                case ILOpCode.Bge:
-                case ILOpCode.Bgt:
-                case ILOpCode.Ble:
-                case ILOpCode.Blt:
-                case ILOpCode.Bne_un:
-                case ILOpCode.Bge_un:
-                case ILOpCode.Bgt_un:
-                case ILOpCode.Ble_un:
-                case ILOpCode.Blt_un:
-                case ILOpCode.Leave:
-                    return opCode;
-
-                case ILOpCode.Br_s:
-                    return ILOpCode.Br;
-
-                case ILOpCode.Brfalse_s:
-                    return ILOpCode.Brfalse;
-
-                case ILOpCode.Brtrue_s:
-                    return ILOpCode.Brtrue;
-
-                case ILOpCode.Beq_s:
-                    return ILOpCode.Beq;
-
-                case ILOpCode.Bge_s:
-                    return ILOpCode.Bge;
-
-                case ILOpCode.Bgt_s:
-                    return ILOpCode.Bgt;
-
-                case ILOpCode.Ble_s:
-                    return ILOpCode.Ble;
-
-                case ILOpCode.Blt_s:
-                    return ILOpCode.Blt;
-
-                case ILOpCode.Bne_un_s:
-                    return ILOpCode.Bne_un;
-
-                case ILOpCode.Bge_un_s:
-                    return ILOpCode.Bge_un;
-
-                case ILOpCode.Bgt_un_s:
-                    return ILOpCode.Bgt_un;
-
-                case ILOpCode.Ble_un_s:
-                    return ILOpCode.Ble_un;
-
-                case ILOpCode.Blt_un_s:
-                    return ILOpCode.Blt_un;
-
-                case ILOpCode.Leave_s:
-                    return ILOpCode.Leave;
-            }
-
-            throw new ArgumentException(StarkPlatform.Reflection.Resources.SR.Format(SR.UnexpectedOpCode, opCode), nameof(opCode));
         }
     }
 }

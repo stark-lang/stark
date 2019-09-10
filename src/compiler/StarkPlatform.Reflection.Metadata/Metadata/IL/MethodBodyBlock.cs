@@ -81,6 +81,11 @@ namespace StarkPlatform.Reflection.Metadata
             }
         }
 
+        public ILInstructionReader GetILInstructionReader()
+        {
+            return new ILInstructionReader(GetILReader());
+        }
+
         public static MethodBodyBlock Create(BlobReader reader)
         {
             const byte ILTinyFormat = 0x02;
