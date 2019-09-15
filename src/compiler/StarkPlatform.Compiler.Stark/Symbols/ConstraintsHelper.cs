@@ -106,7 +106,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
             ImmutableArray<NamedTypeSymbol> interfaces;
 
-            NamedTypeSymbol effectiveBaseClass = typeParameter.HasValueTypeConstraint || typeParameter.HasConstTypeConstraint ? null : corLibrary.GetSpecialType(SpecialType.System_Object);
+            //bool isConstOrValueTypeConstraint = typeParameter.HasValueTypeConstraint || typeParameter.HasConstTypeConstraint;
+            NamedTypeSymbol effectiveBaseClass = corLibrary.GetSpecialType(SpecialType.System_Object);
             TypeSymbol deducedBaseType = effectiveBaseClass;
             DynamicTypeEraser dynamicEraser = null;
 
@@ -303,12 +304,16 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
                 AppendUseSiteDiagnostics(useSiteDiagnostics, typeParameter, ref useSiteDiagnosticsBuilder);
 
-                CheckEffectiveAndDeducedBaseTypes(conversions, effectiveBaseClass, deducedBaseType);
+                //if (!isConstOrValueTypeConstraint)
+                {
+                    CheckEffectiveAndDeducedBaseTypes(conversions, effectiveBaseClass, deducedBaseType);
+                }
 
                 constraintTypes = constraintTypesBuilder.ToImmutableAndFree();
                 interfaces = interfacesBuilder.ToImmutableAndFree();
             }
 
+            //Debug.Assert((isConstOrValueTypeConstraint || effectiveBaseClass.SpecialType == SpecialType.System_Object) || (deducedBaseType.SpecialType != SpecialType.System_Object));
             Debug.Assert((effectiveBaseClass.SpecialType == SpecialType.System_Object) || (deducedBaseType.SpecialType != SpecialType.System_Object));
 
             // Only create a TypeParameterBounds instance for this type
@@ -1066,8 +1071,9 @@ hasRelatedInterfaces:
             // "... A boxing conversion (6.1.7), provided that type A is a non-nullable value type. ..."
             // NOTE: we extend this to allow, for example, a conversion from Nullable<T> to object.
             if (typeArgument.IsValueType &&
-                conversions.HasBoxingConversion(typeArgument.TypeSymbol.IsNullableType() ? ((NamedTypeSymbol)typeArgument.TypeSymbol).ConstructedFrom : typeArgument.TypeSymbol,
-                                                constraintType.TypeSymbol, ref useSiteDiagnostics))
+                (conversions.HasBoxingConversion(typeArgument.TypeSymbol.IsNullableType() ? ((NamedTypeSymbol)typeArgument.TypeSymbol).ConstructedFrom : typeArgument.TypeSymbol,
+                                                constraintType.TypeSymbol, ref useSiteDiagnostics)
+                || conversions.HasAnyBaseInterfaceConversion(typeArgument.TypeSymbol, constraintType.TypeSymbol, ref useSiteDiagnostics)))
             {
                 return true;
             }

@@ -2512,7 +2512,7 @@ namespace StarkPlatform.Compiler.Stark
             return false;
         }
 
-        private bool HasAnyBaseInterfaceConversion(TypeSymbol derivedType, TypeSymbol baseType, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
+        public bool HasAnyBaseInterfaceConversion(TypeSymbol derivedType, TypeSymbol baseType, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             Debug.Assert((object)derivedType != null);
             Debug.Assert((object)baseType != null);
