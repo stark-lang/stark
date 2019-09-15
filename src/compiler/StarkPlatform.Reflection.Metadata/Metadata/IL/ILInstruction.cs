@@ -48,6 +48,11 @@ namespace StarkPlatform.Reflection.Metadata
         [FieldOffset(8)]
         public ulong Operand64;
 
+        public int GetInstructionSize()
+        {
+            return ((ushort) OpCode < 0xfe00 ? 1 : 2) + OpCode.GetOperandSize();
+        }
+
         public override string ToString()
         {
             var builder = new StringBuilder();
@@ -66,15 +71,15 @@ namespace StarkPlatform.Reflection.Metadata
                     break;
                 case 2:
                     builder.Append(" 0x");
-                    builder.Append(Operand8.ToString("x4"));
+                    builder.Append(Operand16.ToString("x4"));
                     break;
                 case 4:
                     builder.Append(" 0x");
-                    builder.Append(Operand8.ToString("x8"));
+                    builder.Append(Operand32.ToString("x8"));
                     break;
                 case 8:
                     builder.Append(" 0x");
-                    builder.Append(Operand8.ToString("x16"));
+                    builder.Append(Operand64.ToString("x16"));
                     break;
             }
 
