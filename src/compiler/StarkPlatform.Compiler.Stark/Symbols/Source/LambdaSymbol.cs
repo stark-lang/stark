@@ -6,6 +6,7 @@ using System.Diagnostics;
 using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -131,9 +132,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return false; }
         }
 
-        internal override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal override MethodImplAttributes ImplementationAttributes
         {
-            get { return default(System.Reflection.MethodImplAttributes); }
+            get { return default(MethodImplAttributes); }
         }
 
         internal override bool RequiresSecurityObject

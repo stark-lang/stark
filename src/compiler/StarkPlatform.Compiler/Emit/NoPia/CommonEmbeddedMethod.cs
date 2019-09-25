@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using Roslyn.Utilities;
 using StarkPlatform.Compiler.CodeGen;
 using StarkPlatform.Compiler.Debugging;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Emit.NoPia
 {
@@ -60,7 +61,7 @@ namespace StarkPlatform.Compiler.Emit.NoPia
             protected abstract bool IsSealed { get; }
             protected abstract bool IsStatic { get; }
             protected abstract bool IsVirtual { get; }
-            protected abstract System.Reflection.MethodImplAttributes GetImplementationAttributes(EmitContext context);
+            protected abstract MethodImplAttributes GetImplementationAttributes(EmitContext context);
             protected abstract bool ReturnValueIsMarshalledExplicitly { get; }
             protected abstract Cci.IMarshallingInformation ReturnValueMarshallingInformation { get; }
             protected abstract ImmutableArray<byte> ReturnValueMarshallingDescriptor { get; }
@@ -190,7 +191,7 @@ namespace StarkPlatform.Compiler.Emit.NoPia
 
             bool Cci.IMethodDefinition.IsVirtual => IsVirtual;
 
-            System.Reflection.MethodImplAttributes Cci.IMethodDefinition.GetImplementationAttributes(EmitContext context)
+            MethodImplAttributes Cci.IMethodDefinition.GetImplementationAttributes(EmitContext context)
             {
                 return GetImplementationAttributes(context);
             }

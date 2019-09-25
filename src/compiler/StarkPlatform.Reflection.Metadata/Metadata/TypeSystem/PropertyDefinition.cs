@@ -4,7 +4,6 @@
 
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection;
 using StarkPlatform.Reflection.Metadata.Ecma335;
 
 namespace StarkPlatform.Reflection.Metadata

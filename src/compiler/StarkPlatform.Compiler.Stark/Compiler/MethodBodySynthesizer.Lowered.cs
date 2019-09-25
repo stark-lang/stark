@@ -2,13 +2,7 @@
 
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
-using StarkPlatform.Compiler.Stark.Emit;
-using StarkPlatform.Compiler.Stark.Symbols;
-using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
-using StarkPlatform.Compiler.RuntimeMembers;
-using StarkPlatform.Compiler.Text;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {

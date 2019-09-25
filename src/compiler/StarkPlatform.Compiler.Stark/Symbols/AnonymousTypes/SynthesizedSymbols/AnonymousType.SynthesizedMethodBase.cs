@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Stark.Emit;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -77,9 +78,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 get { return false; }
             }
 
-            internal sealed override System.Reflection.MethodImplAttributes ImplementationAttributes
+            internal sealed override MethodImplAttributes ImplementationAttributes
             {
-                get { return default(System.Reflection.MethodImplAttributes); }
+                get { return default(MethodImplAttributes); }
             }
 
             internal sealed override Cci.CallingConvention CallingConvention

@@ -3,6 +3,7 @@
 using System.Collections.Immutable;
 using Roslyn.Utilities;
 using System.Collections.Generic;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Emit.NoPia
 {
@@ -97,9 +98,9 @@ namespace StarkPlatform.Compiler.Emit.NoPia
             get { return false; }
         }
 
-        System.Reflection.MethodImplAttributes Cci.IMethodDefinition.GetImplementationAttributes(EmitContext context)
+        MethodImplAttributes Cci.IMethodDefinition.GetImplementationAttributes(EmitContext context)
         {
-            return System.Reflection.MethodImplAttributes.Managed | System.Reflection.MethodImplAttributes.Runtime;
+            return MethodImplAttributes.Managed | MethodImplAttributes.Runtime;
         }
 
         ImmutableArray<Cci.IParameterDefinition> Cci.IMethodDefinition.Parameters

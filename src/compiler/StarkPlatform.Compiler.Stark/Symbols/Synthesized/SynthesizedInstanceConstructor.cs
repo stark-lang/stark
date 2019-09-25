@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -69,22 +70,22 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return true; }
         }
 
-        internal sealed override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal sealed override MethodImplAttributes ImplementationAttributes
         {
             get
             {
                 if (_containingType.IsComImport)
                 {
                     Debug.Assert(_containingType.TypeKind == TypeKind.Class);
-                    return System.Reflection.MethodImplAttributes.Runtime | System.Reflection.MethodImplAttributes.InternalCall;
+                    return MethodImplAttributes.Runtime | MethodImplAttributes.InternalCall;
                 }
 
                 if (_containingType.TypeKind == TypeKind.Delegate)
                 {
-                    return System.Reflection.MethodImplAttributes.Runtime;
+                    return MethodImplAttributes.Runtime;
                 }
 
-                return default(System.Reflection.MethodImplAttributes);
+                return default(MethodImplAttributes);
             }
         }
 

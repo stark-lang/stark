@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using Roslyn.Utilities;
 using System;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -139,11 +140,11 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        internal override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal override MethodImplAttributes ImplementationAttributes
         {
             get
             {
-                return System.Reflection.MethodImplAttributes.Managed;
+                return MethodImplAttributes.Managed;
             }
         }
 

@@ -9,6 +9,7 @@ using StarkPlatform.Compiler.Stark.Emit;
 using StarkPlatform.Compiler.Emit;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -445,7 +446,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        System.Reflection.MethodImplAttributes Cci.IMethodDefinition.GetImplementationAttributes(EmitContext context)
+        MethodImplAttributes Cci.IMethodDefinition.GetImplementationAttributes(EmitContext context)
         {
             CheckDefinitionInvariant();
             return this.ImplementationAttributes;

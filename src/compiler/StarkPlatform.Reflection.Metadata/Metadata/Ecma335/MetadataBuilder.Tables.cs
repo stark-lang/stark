@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection;
 using StarkPlatform.Reflection.Internal;
 using SR = StarkPlatform.Reflection.Resources.SR;
 

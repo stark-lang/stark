@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.Emit;
+using StarkPlatform.Reflection.Metadata;
 using Cci = StarkPlatform.Cci;
 
 namespace StarkPlatform.Compiler.Stark.Emit.NoPia
@@ -143,7 +144,7 @@ namespace StarkPlatform.Compiler.Stark.Emit.NoPia
             }
         }
 
-        protected override System.Reflection.MethodImplAttributes GetImplementationAttributes(EmitContext context)
+        protected override MethodImplAttributes GetImplementationAttributes(EmitContext context)
         {
             return UnderlyingMethod.ImplementationAttributes;
         }

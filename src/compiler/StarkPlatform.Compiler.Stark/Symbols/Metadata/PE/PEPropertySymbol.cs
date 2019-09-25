@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using StarkPlatform.Compiler.Stark.DocumentationComments;
 using StarkPlatform.Compiler.Stark.Emit;

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Reflection;
 using StarkPlatform.Reflection.Metadata.Ecma335;
 
 namespace StarkPlatform.Reflection.Metadata

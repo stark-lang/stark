@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Reflection;
 using System.Threading;
 using StarkPlatform.Compiler.Stark.DocumentationComments;
 using StarkPlatform.Compiler.PooledObjects;

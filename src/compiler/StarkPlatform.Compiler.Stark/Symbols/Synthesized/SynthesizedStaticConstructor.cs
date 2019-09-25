@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -44,9 +45,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return true; }
         }
 
-        internal override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal override MethodImplAttributes ImplementationAttributes
         {
-            get { return default(System.Reflection.MethodImplAttributes); }
+            get { return default(MethodImplAttributes); }
         }
 
         public override bool IsVararg

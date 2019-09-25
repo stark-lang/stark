@@ -341,6 +341,12 @@ namespace StarkPlatform.Reflection.Metadata
             throw new ArgumentException(StarkPlatform.Reflection.Resources.SR.Format(SR.UnexpectedOpCode, opCode), nameof(opCode));
         }
 
+        public static bool IsConditionalBranch(this ILOpCode opCode)
+        {
+            return !(opCode == ILOpCode.Br || opCode == ILOpCode.Br_s ||
+                   opCode == ILOpCode.Leave || opCode == ILOpCode.Leave_s);
+        }
+
         /// <summary>
         /// Get a short form of the specified branch op-code.
         /// </summary>

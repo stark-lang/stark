@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using StarkPlatform.Reflection.Internal;
 
 namespace StarkPlatform.Reflection.Metadata.Ecma335

@@ -12,6 +12,7 @@ using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -443,7 +444,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 }
             }
 
-            if ((this.ImplementationAttributes & System.Reflection.MethodImplAttributes.Synchronized) != 0)
+            if ((this.ImplementationAttributes & MethodImplAttributes.Synchronized) != 0)
             {
                 diagnostics.Add(ErrorCode.ERR_SynchronizedAsyncMethod, errorLocation);
             }

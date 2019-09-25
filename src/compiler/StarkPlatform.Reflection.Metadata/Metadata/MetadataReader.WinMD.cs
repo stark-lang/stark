@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using StarkPlatform.Reflection.Metadata.Ecma335;
 using SR = StarkPlatform.Reflection.Resources.SR;

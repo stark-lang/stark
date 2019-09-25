@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection;
 using System.Threading;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
@@ -313,7 +312,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
         {
             get
             {
-                return (_flags & GenericParameterAttributesExt.ConstConstraint) != 0;
+                return (_flags & GenericParameterAttributes.ConstConstraint) != 0;
             }
         }
 

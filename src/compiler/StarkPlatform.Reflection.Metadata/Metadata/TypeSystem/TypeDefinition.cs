@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection;
 using StarkPlatform.Reflection.Metadata.Ecma335;
 using SR = StarkPlatform.Reflection.Resources.SR;
 

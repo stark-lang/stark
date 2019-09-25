@@ -13,6 +13,7 @@ using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -1577,17 +1578,17 @@ done:
             }
         }
 
-        internal override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal override MethodImplAttributes ImplementationAttributes
         {
             get
             {
                 var data = GetDecodedWellKnownAttributeData();
-                var result = (data != null) ? data.MethodImplAttributes : default(System.Reflection.MethodImplAttributes);
+                var result = (data != null) ? data.MethodImplAttributes : default(MethodImplAttributes);
 
                 if (this.ContainingType.IsComImport && this.MethodKind == MethodKind.Constructor)
                 {
                     // Synthesized constructor of ComImport types is marked as Runtime implemented and InternalCall
-                    result |= (System.Reflection.MethodImplAttributes.Runtime | System.Reflection.MethodImplAttributes.InternalCall);
+                    result |= (MethodImplAttributes.Runtime | MethodImplAttributes.InternalCall);
                 }
 
                 return result;

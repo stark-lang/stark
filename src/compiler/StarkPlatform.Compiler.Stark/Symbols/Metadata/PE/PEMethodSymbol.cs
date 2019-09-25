@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
-using System.Reflection;
 using System.Threading;
 using StarkPlatform.Compiler.Stark.DocumentationComments;
 using StarkPlatform.Compiler.Stark.Emit;
@@ -404,7 +403,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 
         // Has to have the abstract flag.
         // NOTE: dev10 treats the method as abstract (i.e. requiring an impl in subtypes) event if it is not metadata virtual.
-        public override bool IsReadOnly => HasFlag(MethodAttributesExt.ReadOnly);
+        public override bool IsReadOnly => HasFlag(MethodAttributes.ReadOnly);
 
         // NOTE: abstract final methods are a bit strange.  First, they don't
         // PEVerify - there's a specific error message for that combination of modifiers.
@@ -642,7 +641,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             }
         }
 
-        public override ImmutableArray<TypeSymbol> ThrowsList => throw new NotImplementedException("TODO: implement ThrowsList for PEMethodSymbol");
+        public override ImmutableArray<TypeSymbol> ThrowsList => ImmutableArray<TypeSymbol>.Empty; // throw new NotImplementedException("TODO: implement ThrowsList for PEMethodSymbol");
 
         private ImmutableArray<TypeParameterSymbol> EnsureTypeParametersAreLoaded(ref DiagnosticInfo diagnosticInfo)
         {

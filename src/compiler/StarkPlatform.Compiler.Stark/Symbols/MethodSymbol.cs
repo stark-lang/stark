@@ -11,6 +11,7 @@ using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Symbols;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -101,7 +102,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         /// <summary>
         /// Misc implementation metadata flags (ImplFlags in metadata).
         /// </summary>
-        internal abstract System.Reflection.MethodImplAttributes ImplementationAttributes { get; }
+        internal abstract MethodImplAttributes ImplementationAttributes { get; }
 
         /// <summary>
         /// Platform invoke information, or null if the method isn't a P/Invoke.

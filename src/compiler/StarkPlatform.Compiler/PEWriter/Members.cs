@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Reflection;
 using StarkPlatform.Compiler;
 using StarkPlatform.Compiler.CodeGen;
 using StarkPlatform.Compiler.Debugging;

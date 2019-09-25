@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -1016,7 +1015,7 @@ namespace StarkPlatform.Cci
 
             if (methodDef.IsReadOnly)
             {
-                result |= MethodAttributesExt.ReadOnly;
+                result |= MethodAttributes.ReadOnly;
             }
             
             if (methodDef.IsSealed)
@@ -1492,7 +1491,7 @@ namespace StarkPlatform.Cci
 
             if (typeDef.IsValueType)
             {
-                result |= TypeAttributesExt.Struct;
+                result |= TypeAttributes.Struct;
             }
 
             if (typeDef.IsAbstract)
@@ -3573,13 +3572,13 @@ namespace StarkPlatform.Cci
                 sb.Append(", Retargetable=Yes");
             }
 
-            if (identity.ContentType == AssemblyContentType.WindowsRuntime)
+            if (identity.ContentType == System.Reflection.AssemblyContentType.WindowsRuntime)
             {
                 sb.Append(", ContentType=WindowsRuntime");
             }
             else
             {
-                Debug.Assert(identity.ContentType == AssemblyContentType.Default);
+                Debug.Assert(identity.ContentType == System.Reflection.AssemblyContentType.Default);
             }
 
             return pooled.ToStringAndFree();

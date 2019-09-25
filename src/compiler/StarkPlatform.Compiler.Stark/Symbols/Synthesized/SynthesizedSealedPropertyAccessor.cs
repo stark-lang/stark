@@ -7,6 +7,7 @@ using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 using Cci = StarkPlatform.Cci;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
@@ -289,11 +290,11 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        internal override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal override MethodImplAttributes ImplementationAttributes
         {
             get
             {
-                return default(System.Reflection.MethodImplAttributes);
+                return default(MethodImplAttributes);
             }
         }
 

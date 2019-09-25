@@ -6,6 +6,7 @@ using System.Diagnostics;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Stark.Emit;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -212,9 +213,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return _interfaceMethod.HasSpecialName; }
         }
 
-        internal sealed override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal sealed override MethodImplAttributes ImplementationAttributes
         {
-            get { return default(System.Reflection.MethodImplAttributes); }
+            get { return default(MethodImplAttributes); }
         }
 
         internal sealed override bool RequiresSecurityObject

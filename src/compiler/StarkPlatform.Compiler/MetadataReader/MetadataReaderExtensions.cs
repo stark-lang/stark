@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Immutable;
 using System.Globalization;
-using System.Reflection;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Reflection;
 using StarkPlatform.Reflection.Metadata;
@@ -156,7 +155,7 @@ namespace StarkPlatform.Compiler
                 publicKeyOrToken: publicKeyOrToken,
                 hasPublicKey: hasPublicKey,
                 isRetargetable: (flags & AssemblyFlags.Retargetable) != 0,
-                contentType: (AssemblyContentType)((int)(flags & AssemblyFlags.ContentTypeMask) >> 9),
+                contentType: (System.Reflection.AssemblyContentType)((int)(flags & AssemblyFlags.ContentTypeMask) >> 9),
                 noThrow: true);
         }
 

@@ -9,6 +9,7 @@ using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -172,7 +173,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return _reducedFrom.HasSpecialName; }
         }
 
-        internal override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal override MethodImplAttributes ImplementationAttributes
         {
             get { return _reducedFrom.ImplementationAttributes; }
         }

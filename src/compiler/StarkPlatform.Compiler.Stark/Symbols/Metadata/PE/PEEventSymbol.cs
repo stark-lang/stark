@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
-using System.Reflection;
 using System.Threading;
 using StarkPlatform.Compiler.Stark.Emit;
 using StarkPlatform.Reflection.Metadata;

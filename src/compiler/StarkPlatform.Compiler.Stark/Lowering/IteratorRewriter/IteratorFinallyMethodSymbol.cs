@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using StarkPlatform.Compiler.Stark.Symbols;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark
 {
@@ -82,9 +83,9 @@ namespace StarkPlatform.Compiler.Stark
             get { return false; }
         }
 
-        internal override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal override MethodImplAttributes ImplementationAttributes
         {
-            get { return default(System.Reflection.MethodImplAttributes); }
+            get { return default(MethodImplAttributes); }
         }
 
         public override DllImportData GetDllImportData()

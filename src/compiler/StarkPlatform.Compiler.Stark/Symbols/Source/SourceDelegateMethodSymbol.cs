@@ -10,6 +10,7 @@ using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
 using System.Collections.Generic;
 using System;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -175,9 +176,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        internal sealed override System.Reflection.MethodImplAttributes ImplementationAttributes
+        internal sealed override MethodImplAttributes ImplementationAttributes
         {
-            get { return System.Reflection.MethodImplAttributes.Runtime; }
+            get { return MethodImplAttributes.Runtime; }
         }
 
         internal sealed override OneOrMany<SyntaxList<AttributeSyntax>> GetAttributeDeclarations()

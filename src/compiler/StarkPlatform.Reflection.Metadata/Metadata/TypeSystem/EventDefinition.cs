@@ -4,7 +4,6 @@
 
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace StarkPlatform.Reflection.Metadata
 {
