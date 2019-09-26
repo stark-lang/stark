@@ -185,5 +185,15 @@ namespace StarkPlatform.Reflection.Metadata
         /// Represents a local variable that is pinned by garbage collector
         /// </summary>
         Pinned = CorElementType.ELEMENT_TYPE_PINNED,
+
+        /// <summary>
+        /// Represents a type with access modifiers: [TypeAccessModifiers] [TypeRef/TypeSpec/TypeDef]
+        /// </summary>
+        TypeWithAccessModifiers = CorElementType.ELEMENT_TYPE_WITH_ACCESS_MODIFIERS,
+
+        /// <summary>
+        /// Represents a const literal: [ELEMENT_TYPE_OF_VALUE] [serialized value]
+        /// </summary>
+        ConstLiteral = CorElementType.ELEMENT_CONST_LITERAL_TYPE,
     }
 }

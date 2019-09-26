@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-namespace StarkPlatform.Reflection.Metadata.Ecma335
+namespace StarkPlatform.Reflection.Metadata
 {
-    internal enum CorElementType : byte
+    public enum CorElementType : byte
     {
         Invalid = 0x0,
 
@@ -51,5 +51,8 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         ELEMENT_TYPE_HANDLE = 0x40,
         ELEMENT_TYPE_SENTINEL = 0x41, // sentinel for varargs
         ELEMENT_TYPE_PINNED = 0x45,
+
+        ELEMENT_TYPE_WITH_ACCESS_MODIFIERS = 0x60,
+        ELEMENT_CONST_LITERAL_TYPE = 0x61, // <type token> <encoded value>
     }
 }

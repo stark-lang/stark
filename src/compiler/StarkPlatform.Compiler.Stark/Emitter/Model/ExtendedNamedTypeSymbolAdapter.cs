@@ -1,6 +1,7 @@
 ﻿using StarkPlatform.Cci;
 using StarkPlatform.Compiler.Stark.Emit;
 using StarkPlatform.Compiler.Emit;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {

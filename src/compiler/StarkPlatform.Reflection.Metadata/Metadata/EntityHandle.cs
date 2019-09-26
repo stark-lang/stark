@@ -64,7 +64,7 @@ namespace StarkPlatform.Reflection.Metadata
             get { return (_vToken & (TokenTypeIds.VirtualBit | TokenTypeIds.RIDMask)) == 0; }
         }
 
-        internal int RowId
+        public int RowId
         {
             get { return (int)(_vToken & TokenTypeIds.RIDMask); }
         }
@@ -87,7 +87,7 @@ namespace StarkPlatform.Reflection.Metadata
             }
         }
 
-        internal int Token
+        public int Token
         {
             get
             {

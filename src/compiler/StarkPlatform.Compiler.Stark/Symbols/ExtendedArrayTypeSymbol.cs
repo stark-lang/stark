@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {

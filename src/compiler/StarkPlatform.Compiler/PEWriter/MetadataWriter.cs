@@ -3679,12 +3679,11 @@ namespace StarkPlatform.Cci
                     continue;
                 }
 
-
                 var constTypeReference = typeReference as IConstLiteralTypeReference;
                 if (constTypeReference != null)
                 {
                     // ELEMENT_CONST_LITERAL_TYPE: 0x61
-                    encoder.Builder.WriteByte(0x61);
+                    encoder.Builder.WriteByte((byte)CorElementType.ELEMENT_CONST_LITERAL_TYPE);
                     var underlyingTypeReference = constTypeReference.GetElementType(Context);
                     SerializeTypeReference(encoder, underlyingTypeReference);
                     var constValue = constTypeReference.Value;
@@ -3733,7 +3732,7 @@ namespace StarkPlatform.Cci
                 if (extendedTypeReference != null)
                 {
                     // ELEMENT_TYPE_WITH_ACCESS_MODIFIERS: 0x60
-                    encoder.Builder.WriteByte(0x60);
+                    encoder.Builder.WriteByte((byte)CorElementType.ELEMENT_TYPE_WITH_ACCESS_MODIFIERS);
                     byte modifiers = (byte)extendedTypeReference.AccessModifiers;
                     encoder.Builder.WriteByte(modifiers);
 

@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using StarkPlatform.Compiler.DocumentationComments;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.MetadataAsSource
 {

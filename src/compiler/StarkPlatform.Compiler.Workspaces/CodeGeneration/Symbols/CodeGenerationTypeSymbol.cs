@@ -2,6 +2,7 @@
 
 using System.Collections.Immutable;
 using StarkPlatform.Compiler.Editing;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.CodeGeneration
 {

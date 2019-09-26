@@ -6,6 +6,7 @@ using System.Linq;
 using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.SymbolDisplay;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark
 {

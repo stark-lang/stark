@@ -5,6 +5,7 @@ using System.Diagnostics;
 using StarkPlatform.Cci;
 using StarkPlatform.Compiler.Stark.Syntax;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
