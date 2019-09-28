@@ -79,15 +79,21 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 foreach (var member in type.GetMembersUnordered())
                 {
                     var field = member as FieldSymbol;
-                    if ((object)field == null || field.Type.TypeKind != TypeKind.Struct || field.IsStatic)
+                    var fieldType = field?.NonPointerType();
+                    if (fieldType is null || fieldType.TypeKind != TypeKind.Struct || field.IsStatic)
                     {
                         continue;
                     }
 
-                    StructDependsClosure((NamedTypeSymbol)field.Type.TypeSymbol, partialClosure, on);
+                    StructDependsClosure((NamedTypeSymbol)fieldType, partialClosure, on);
                 }
             }
         }
+
+        // NOTE: If we do not check HasPointerType, we will unconditionally
+        //       bind Type and that may cause infinite recursion.
+        //       HasPointerType can use syntax directly and break recursion.
+        internal static TypeSymbol NonPointerType(this FieldSymbol field) => field.HasPointerType ? null : field.Type.TypeSymbol;
 
         /// <summary>
         /// IsManagedType is simple for most named types:
@@ -164,16 +170,13 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                         continue;
                     }
 
-                    // pointers are unmanaged
-                    // NOTE: If we do not check HasPointerType, we will unconditionally
-                    //       bind Type and that may cause infinite recursion.
-                    //       HasPointerType can use syntax directly and break recursion.
-                    if (field.HasPointerType)
+                    TypeSymbol fieldType = field.NonPointerType();
+                    if (fieldType is null)
                     {
+                        // pointers are unmanaged
                         continue;
                     }
 
-                    TypeSymbol fieldType = field.Type.TypeSymbol;
                     NamedTypeSymbol fieldNamedType = fieldType as NamedTypeSymbol;
                     if ((object)fieldNamedType == null)
                     {

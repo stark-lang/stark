@@ -1887,7 +1887,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     {
                         continue;
                     }
-                    var type = field.Type.TypeSymbol;
+                    var type = field.NonPointerType();
                     if (((object)type != null) &&
                         (type.TypeKind == TypeKind.Struct) &&
                         BaseTypeAnalysis.StructDependsOn((NamedTypeSymbol)type, this) &&
