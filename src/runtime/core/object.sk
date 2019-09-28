@@ -2,6 +2,8 @@ namespace core
 {
     public abstract class Object
     {
+        private unsafe let _methodTablePtr : *ObjectMethodTable
+
         protected constructor()
         {
         }

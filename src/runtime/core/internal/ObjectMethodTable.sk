@@ -1,0 +1,6 @@
+namespace core
+{
+    internal struct ObjectMethodTable
+    {
+    }
+}
