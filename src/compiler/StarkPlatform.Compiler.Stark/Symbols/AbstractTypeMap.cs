@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols
 {
@@ -102,15 +103,35 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
             TypeSymbol result;
 
+            TypeAccessModifiers? accessModifiers = null;
+            if (previous is IExtendedTypeSymbol extendedTypeSymbol)
+            {
+                accessModifiers = extendedTypeSymbol.AccessModifiers;
+                previous = (TypeSymbol)extendedTypeSymbol.ElementType;
+            }
+
             switch (previous.Kind)
             {
                 case SymbolKind.NamedType:
                     result = SubstituteNamedType((NamedTypeSymbol)previous);
+                    if (accessModifiers.HasValue)
+                    {
+                        result = new ExtendedNamedTypeSymbol(TypeSymbolWithAnnotations.Create(result), accessModifiers.Value);
+                    }
                     break;
                 case SymbolKind.TypeParameter:
-                    return SubstituteTypeParameter((TypeParameterSymbol)previous);
+                    var subType = SubstituteTypeParameter((TypeParameterSymbol)previous);
+                    if (accessModifiers.HasValue)
+                    {
+                        subType = TypeSymbolWithAnnotations.Create(new ExtendedTypeParameterSymbol((TypeParameterSymbol)subType.TypeSymbol, accessModifiers.Value));
+                    }
+                    return subType;
                 case SymbolKind.ArrayType:
                     result = SubstituteArrayType((ArrayTypeSymbol)previous);
+                    if (accessModifiers.HasValue)
+                    {
+                        result = new ExtendedArrayTypeSymbol(TypeSymbolWithAnnotations.Create(result), (ArrayTypeSymbol)result, accessModifiers.Value);
+                    }
                     break;
                 case SymbolKind.PointerType:
                     result = SubstitutePointerType((PointerTypeSymbol)previous);
@@ -124,6 +145,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     result = previous;
                     break;
             }
+
 
             return TypeSymbolWithAnnotations.Create(result);
         }
