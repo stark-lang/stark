@@ -482,6 +482,8 @@ namespace StarkPlatform.Compiler.Stark
                     }
                     var elementType = BindType(extendedTypeSyntax.ElementType, diagnostics, basesBeingResolved);
 
+                    if (elementType.IsErrorType()) return elementType;
+
                     // Create an extended type symbol
                     return ExtendedTypeSymbol.CreateExtendedTypeSymbol(extendedTypeSyntax, elementType, accessModifiers, diagnostics);
                 }
