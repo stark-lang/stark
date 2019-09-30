@@ -13,6 +13,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         public override TypeAccessModifiers AccessModifiers { get; }
 
+        public override TypeParameterSymbol OriginalDefinition => this;
+
         public override Symbol ContainingSymbol => _underlyingTypeParameter.ContainingSymbol;
 
         internal override ImmutableArray<TypeSymbolWithAnnotations> GetConstraintTypes(ConsList<TypeParameterSymbol> inProgress, bool early)
@@ -36,5 +38,21 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         }
 
         public ITypeSymbol ElementType => _underlyingTypeParameter;
+
+
+        internal override bool Equals(TypeSymbol t2, TypeCompareKind comparison)
+        {
+            if (t2 is ExtendedTypeParameterSymbol t2Extended && _underlyingTypeParameter.Equals(t2Extended._underlyingTypeParameter, comparison))
+            {
+                return AccessModifiers == t2Extended.AccessModifiers;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return (base.GetHashCode() * 397) ^ (int)AccessModifiers;
+        }
     }
 }

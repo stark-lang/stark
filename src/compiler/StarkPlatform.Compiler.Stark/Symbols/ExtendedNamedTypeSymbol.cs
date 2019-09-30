@@ -46,12 +46,17 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         internal override bool Equals(TypeSymbol t2, TypeCompareKind comparison)
         {
-            if (base.Equals(t2, comparison) && t2 is ExtendedNamedTypeSymbol t2Extended)
+            if (t2 is ExtendedNamedTypeSymbol t2Extended && UnderlyingNamedType.Equals(t2Extended.UnderlyingNamedType, comparison))
             {
                 return _accessModifiers == t2Extended._accessModifiers;
             }
 
             return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return (base.GetHashCode() * 397) ^ (int)AccessModifiers;
         }
 
         internal override IEnumerable<FieldSymbol> GetFieldsToEmit()
@@ -147,7 +152,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 return TypeSymbolWithAnnotations.Create(new ExtendedTypeParameterSymbol((TypeParameterSymbol)baseSymbol.TypeSymbol, accessModifiers));
             }
-            throw new NotSupportedException($"The syntax `{syntax}` is not supported");
+            throw new NotSupportedException($"The syntax `{syntax}` is not supported for extended type");
         }
     }
 }
