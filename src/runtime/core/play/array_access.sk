@@ -1,0 +1,8 @@
+
+module array_access
+{
+    public static func process_array(array: []i32) -> i32
+    {
+        return array[0]
+    }
+}

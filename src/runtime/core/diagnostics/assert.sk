@@ -6,7 +6,15 @@ namespace core {
         @FuncImpl(FuncImplOptions.INTERNAL_CALL)
         public static extern func abort()
 
-        public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: string = null)
+        // public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: ?string = null)
+        // {
+        //     if !condition then 
+        //     {
+        //         abort() // TODO: propagate conditionAsText
+        //     }
+        // }
+
+        public static func assert(condition: bool)
         {
             if !condition then 
             {

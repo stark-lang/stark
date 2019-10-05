@@ -1,9 +1,12 @@
 namespace core
 {
-    public class String
+    public struct String
     {
-        public constructor()
+        private let _buffer : []u8
+
+        public constructor(buffer: readonly []u8)
         {
+            _buffer = buffer
         }
     }
 }

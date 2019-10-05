@@ -1,10 +1,11 @@
+/*
 import core.runtime
 
 module asserts
 {
     private static var val : bool
 
-    public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition))  conditionAsText: string = null )
+    public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: ?string = null )
     {
         var result = if condition then 1 else 2
         
@@ -25,3 +26,4 @@ module asserts
         assert(1 == 2)
     }
 }
+*/

@@ -17,7 +17,7 @@ namespace core
             this.inner_exception = inner_exception;
         }
 
-        public func message -> ?string { get }
+        public func message -> string { get }
 
         public func inner_exception -> ?Exception { get }
     }
