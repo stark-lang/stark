@@ -196,7 +196,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax
             }
 
             // optimization for a common case - when position is in the ReturnType, we can see type parameters
-            if (methodDecl.ReturnType.FullSpan.Contains(position))
+            if (methodDecl.ReturnType != null && methodDecl.ReturnType.FullSpan.Contains(position))
             {
                 return true;
             }

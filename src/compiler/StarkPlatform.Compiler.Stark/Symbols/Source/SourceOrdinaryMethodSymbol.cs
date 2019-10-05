@@ -507,7 +507,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 var withTypeParametersBinder =
                     this.DeclaringCompilation
                     .GetBinderFactory(syntax.SyntaxTree)
-                    .GetBinder(syntax.ReturnType, syntax, this);
+                    .GetBinder(syntax, syntax, this);
                 var constraints = this.MakeTypeParameterConstraintsEarly(
                     withTypeParametersBinder,
                     TypeParameters,
