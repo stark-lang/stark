@@ -15,6 +15,7 @@ namespace StarkPlatform.Reflection.Metadata
     /// Use <see cref="EntityHandle"/> to store multiple kinds of entity handles.
     /// It has smaller memory footprint than <see cref="Handle"/>.
     /// </remarks>
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public readonly struct EntityHandle : IEquatable<EntityHandle>
     {
         // bits:
@@ -131,5 +132,12 @@ namespace StarkPlatform.Reflection.Metadata
 
         public static readonly ModuleDefinitionHandle ModuleDefinition = new ModuleDefinitionHandle(1);
         public static readonly AssemblyDefinitionHandle AssemblyDefinition = new AssemblyDefinitionHandle(1);
+        
+        private string DebuggerDisplay => ToString();
+
+        public override string ToString()
+        {
+            return $"{nameof(Kind)}: {Kind} {nameof(RowId)}: 0x{RowId:X8}";
+        }
     }
 }
