@@ -221,6 +221,7 @@ namespace StarkPlatform.Reflection.Metadata
         Constrained = 0xfe16,
         Cpblk = 0xfe17,
         Initblk = 0xfe18,
+        No = 0xfe19,
         Rethrow = 0xfe1a,
         Sizeof = 0xfe1c,
         Refanytype = 0xfe1d,
