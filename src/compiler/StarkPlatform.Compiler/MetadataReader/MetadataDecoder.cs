@@ -1097,12 +1097,7 @@ tryAgain:
                         return ConstantValue.Null;
                     }
 
-                    if (sigReader.RemainingBytes % 2 != 0)
-                    {
-                        return ConstantValue.Bad;
-                    }
-
-                    return ConstantValue.Create(sigReader.ReadUTF16(sigReader.RemainingBytes));
+                    return ConstantValue.Create(sigReader.ReadUTF8(sigReader.RemainingBytes));
 
                 case SignatureTypeCode.Object:
                     // null reference

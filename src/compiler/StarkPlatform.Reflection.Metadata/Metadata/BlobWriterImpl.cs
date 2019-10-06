@@ -173,7 +173,7 @@ namespace StarkPlatform.Reflection.Metadata
             }
             else if (type == typeof(string))
             {
-                writer.WriteUTF16((string)value);
+                writer.WriteUTF8((string)value, false);
             }
             else if (type == typeof(byte))
             {
@@ -246,7 +246,7 @@ namespace StarkPlatform.Reflection.Metadata
             }
             else if (type == typeof(string))
             {
-                writer.WriteUTF16((string)value);
+                writer.WriteUTF8((string)value);
             }
             else if (type == typeof(byte))
             {

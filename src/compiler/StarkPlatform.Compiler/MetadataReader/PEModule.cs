@@ -2934,7 +2934,7 @@ namespace StarkPlatform.Compiler
                     return ConstantValue.Create(reader.ReadDouble());
 
                 case ConstantTypeCode.String:
-                    return ConstantValue.Create(reader.ReadUTF16(reader.Length));
+                    return ConstantValue.Create(reader.ReadUTF8(reader.Length));
 
                 case ConstantTypeCode.NullReference:
                     // Partition II section 22.9:

@@ -406,19 +406,6 @@ namespace StarkPlatform.Reflection.Metadata
         }
 
         /// <summary>
-        /// Reads UTF16 (little-endian) encoded string starting at the current position. 
-        /// </summary>
-        /// <param name="byteCount">The number of bytes to read.</param>
-        /// <returns>The string.</returns>
-        /// <exception cref="BadImageFormatException"><paramref name="byteCount"/> bytes not available.</exception>
-        public string ReadUTF16(int byteCount)
-        {
-            string s = _block.PeekUtf16(this.Offset, byteCount);
-            _currentPointer += byteCount;
-            return s;
-        }
-
-        /// <summary>
         /// Reads bytes starting at the current position. 
         /// </summary>
         /// <param name="byteCount">The number of bytes to read.</param>
@@ -644,7 +631,7 @@ namespace StarkPlatform.Reflection.Metadata
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="typeCode"/> is not a valid <see cref="ConstantTypeCode"/>.</exception>
         /// <returns>
         /// Boxed constant value. To avoid allocating the object use Read* methods directly.
-        /// Constants of type <see cref="ConstantTypeCode.String"/> are encoded as UTF16 strings, use <see cref="ReadUTF16(int)"/> to read them.
+        /// Constants of type <see cref="ConstantTypeCode.String"/> are encoded as UTF8 strings, use <see cref="ReadUTF8(int)"/> to read them.
         /// </returns>
         public object ReadConstant(ConstantTypeCode typeCode)
         {
@@ -694,7 +681,7 @@ namespace StarkPlatform.Reflection.Metadata
                     return ReadDouble();
 
                 case ConstantTypeCode.String:
-                    return ReadUTF16(RemainingBytes);
+                    return ReadUTF8(RemainingBytes);
 
                 case ConstantTypeCode.NullReference:
                     // Partition II section 22.9:

@@ -7,6 +7,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using StarkPlatform.Reflection.Internal;
 
 namespace StarkPlatform.Reflection.Metadata
@@ -368,45 +369,6 @@ namespace StarkPlatform.Reflection.Metadata
         }
 
         /// <summary>
-        /// Writes UTF16 (little-endian) encoded string at the current position.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
-        public void WriteUTF16(char[] value)
-        {
-            if (value == null)
-            {
-                Throw.ArgumentNull(nameof(value));
-            }
-
-            if (value.Length == 0)
-            {
-                return;
-            }
-
-            fixed (char* ptr = &value[0])
-            {
-                WriteBytesUnchecked((byte*)ptr, value.Length * sizeof(char));
-            }
-        }
-
-        /// <summary>
-        /// Writes UTF16 (little-endian) encoded string at the current position.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
-        public void WriteUTF16(string value)
-        {
-            if (value == null)
-            {
-                Throw.ArgumentNull(nameof(value));
-            }
-
-            fixed (char* ptr = value)
-            {
-                WriteBytesUnchecked((byte*)ptr, value.Length * sizeof(char));
-            }
-        }
-
-        /// <summary>
         /// Writes string in SerString format (see ECMA-335-II 23.3 Custom attributes).
         /// </summary>
         /// <remarks>
@@ -443,8 +405,8 @@ namespace StarkPlatform.Reflection.Metadata
                 throw new ArgumentNullException(nameof(value));
             }
 
-            WriteCompressedInteger(BlobUtilities.GetUserStringByteLength(value.Length));
-            WriteUTF16(value);
+            WriteCompressedInteger(BlobUtilities.GetUserStringByteLength(BlobUtilities.GetUTF8ByteCount(value)));
+            WriteUTF8(value, false);
             WriteByte(BlobUtilities.GetUserStringTrailingByte(value));
         }
 

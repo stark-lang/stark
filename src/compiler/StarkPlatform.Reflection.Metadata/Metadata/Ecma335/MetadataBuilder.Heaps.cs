@@ -250,7 +250,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
             string str = value as string;
             if (str != null)
             {
-                return GetOrAddBlobUTF16(str);
+                return GetOrAddBlobUTF8(str);
             }
             
             var builder = PooledBlobBuilder.GetInstance();
@@ -258,21 +258,6 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
             var result = GetOrAddBlob(builder);
             builder.Free();
             return result;
-        }
-
-        /// <summary>
-        /// Encodes a string using UTF16 encoding to a blob and adds it to the Blob heap, if it's not there already.
-        /// </summary>
-        /// <param name="value">String.</param>
-        /// <returns>Handle to the added or existing blob.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
-        public BlobHandle GetOrAddBlobUTF16(string value)
-        {
-            var builder = PooledBlobBuilder.GetInstance();
-            builder.WriteUTF16(value);
-            var handle = GetOrAddBlob(builder);
-            builder.Free();
-            return handle;
         }
 
         /// <summary>

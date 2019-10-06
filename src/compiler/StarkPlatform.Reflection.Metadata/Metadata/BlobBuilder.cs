@@ -1038,8 +1038,8 @@ namespace StarkPlatform.Reflection.Metadata
                 throw new ArgumentNullException(nameof(value));
             }
 
-            WriteCompressedInteger(BlobUtilities.GetUserStringByteLength(value.Length));
-            WriteUTF16(value);
+            WriteCompressedInteger(BlobUtilities.GetUserStringByteLength(BlobUtilities.GetUTF8ByteCount(value)));
+            WriteUTF8(value, false);
             WriteByte(BlobUtilities.GetUserStringTrailingByte(value));
         }
 
