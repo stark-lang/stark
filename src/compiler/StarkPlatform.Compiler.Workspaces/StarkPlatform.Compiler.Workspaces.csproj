@@ -54,9 +54,6 @@
     <Compile Include="..\StarkPlatform.Compiler\InternalUtilities\ConsList`1.cs">
       <Link>InternalUtilities\ConsList`1.cs</Link>
     </Compile>
-    <Compile Include="..\StarkPlatform.Compiler\InternalUtilities\DecimalUtilities.cs">
-      <Link>InternalUtilities\DecimalUtilities.cs</Link>
-    </Compile>
     <Compile Include="..\StarkPlatform.Compiler\InternalUtilities\DocumentationCommentXmlNames.cs">
       <Link>InternalUtilities\DocumentationCommentXmlNames.cs</Link>
     </Compile>

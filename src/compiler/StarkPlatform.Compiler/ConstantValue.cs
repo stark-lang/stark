@@ -27,7 +27,6 @@ namespace StarkPlatform.Compiler
         Single,
         Double,
         String,
-        Decimal,
         DateTime,
         ConstTypeParameter,
     }
@@ -63,7 +62,7 @@ namespace StarkPlatform.Compiler
         public virtual ulong UInt64Value { get { return UInt32Value; } }
 
         public virtual char CharValue { get { throw new InvalidOperationException(); } }
-        public virtual decimal DecimalValue { get { throw new InvalidOperationException(); } }
+
         public virtual DateTime DateTimeValue { get { throw new InvalidOperationException(); } }
 
         public virtual double DoubleValue { get { throw new InvalidOperationException(); } }
@@ -317,26 +316,6 @@ namespace StarkPlatform.Compiler
             return new ConstantValueTypeParameter(typeParameterSymbol);
         }
 
-        public static ConstantValue Create(decimal value)
-        {
-            // The significant bits should be preserved even for Zero or One.
-            // The fourth element of the returned array contains the scale factor and sign.
-            int[] decimalBits = System.Decimal.GetBits(value);
-            if (decimalBits[3] == 0)
-            {
-                if (value == 0)
-                {
-                    return ConstantValueDefault.Decimal;
-                }
-                else if (value == 1)
-                {
-                    return ConstantValueOne.Decimal;
-                }
-            }
-
-            return new ConstantValueDecimal(value);
-        }
-
         public static ConstantValue Create(DateTime value)
         {
             if (value == default(DateTime))
@@ -385,7 +364,6 @@ namespace StarkPlatform.Compiler
                         CreateSingle((double)value) :
                         Create((float)value);
                 case ConstantValueTypeDiscriminator.Double: return Create((double)value);
-                case ConstantValueTypeDiscriminator.Decimal: return Create((decimal)value);
                 case ConstantValueTypeDiscriminator.DateTime: return Create((DateTime)value);
                 case ConstantValueTypeDiscriminator.String: return Create((string)value);
                 default:
@@ -418,7 +396,6 @@ namespace StarkPlatform.Compiler
                 case ConstantValueTypeDiscriminator.Boolean: return ConstantValueDefault.Boolean;
                 case ConstantValueTypeDiscriminator.Single: return ConstantValueDefault.Float32;
                 case ConstantValueTypeDiscriminator.Double: return ConstantValueDefault.Float64;
-                case ConstantValueTypeDiscriminator.Decimal: return ConstantValueDefault.Decimal;
                 case ConstantValueTypeDiscriminator.DateTime: return ConstantValueDefault.DateTime;
 
                 case ConstantValueTypeDiscriminator.Null:
@@ -446,7 +423,6 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_Boolean: return ConstantValueTypeDiscriminator.Boolean;
                 case SpecialType.System_Float32: return ConstantValueTypeDiscriminator.Single;
                 case SpecialType.System_Float64: return ConstantValueTypeDiscriminator.Double;
-                case SpecialType.System_Decimal: return ConstantValueTypeDiscriminator.Decimal;
                 case SpecialType.System_DateTime: return ConstantValueTypeDiscriminator.DateTime;
                 case SpecialType.System_String: return ConstantValueTypeDiscriminator.String;
             }
@@ -472,7 +448,6 @@ namespace StarkPlatform.Compiler
                 case ConstantValueTypeDiscriminator.Boolean: return SpecialType.System_Boolean;
                 case ConstantValueTypeDiscriminator.Single: return SpecialType.System_Float32;
                 case ConstantValueTypeDiscriminator.Double: return SpecialType.System_Float64;
-                case ConstantValueTypeDiscriminator.Decimal: return SpecialType.System_Decimal;
                 case ConstantValueTypeDiscriminator.DateTime: return SpecialType.System_DateTime;
                 case ConstantValueTypeDiscriminator.String: return SpecialType.System_String;
                 default: return SpecialType.None;
@@ -501,7 +476,6 @@ namespace StarkPlatform.Compiler
                     case ConstantValueTypeDiscriminator.Boolean: return Boxes.Box(BooleanValue);
                     case ConstantValueTypeDiscriminator.Single: return Boxes.Box(SingleValue);
                     case ConstantValueTypeDiscriminator.Double: return Boxes.Box(DoubleValue);
-                    case ConstantValueTypeDiscriminator.Decimal: return Boxes.Box(DecimalValue);
                     case ConstantValueTypeDiscriminator.DateTime: return DateTimeValue;
                     case ConstantValueTypeDiscriminator.String: return StringValue;
                     case ConstantValueTypeDiscriminator.ConstTypeParameter: return TypeParameter;
@@ -559,8 +533,6 @@ namespace StarkPlatform.Compiler
                         return SingleValue < 0;
                     case ConstantValueTypeDiscriminator.Double:
                         return DoubleValue < 0;
-                    case ConstantValueTypeDiscriminator.Decimal:
-                        return DecimalValue < 0;
 
                     default:
                         return false;
@@ -580,7 +552,6 @@ namespace StarkPlatform.Compiler
                     case ConstantValueTypeDiscriminator.Int64:
                     case ConstantValueTypeDiscriminator.Single:
                     case ConstantValueTypeDiscriminator.Double:
-                    case ConstantValueTypeDiscriminator.Decimal:
                     case ConstantValueTypeDiscriminator.UInt8:
                     case ConstantValueTypeDiscriminator.UInt16:
                     case ConstantValueTypeDiscriminator.UInt32:
@@ -652,19 +623,6 @@ namespace StarkPlatform.Compiler
             get
             {
                 return this.Discriminator == ConstantValueTypeDiscriminator.String;
-            }
-        }
-
-        public static bool IsDecimalType(ConstantValueTypeDiscriminator discriminator)
-        {
-            return discriminator == ConstantValueTypeDiscriminator.Decimal;
-        }
-
-        public bool IsDecimal
-        {
-            get
-            {
-                return this.Discriminator == ConstantValueTypeDiscriminator.Decimal;
             }
         }
 

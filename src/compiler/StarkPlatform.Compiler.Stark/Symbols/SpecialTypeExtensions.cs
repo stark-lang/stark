@@ -60,7 +60,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 case SpecialType.System_UInt64:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
-                case SpecialType.System_Decimal:
                 case SpecialType.System_String:
                     return true;
                 default:
@@ -120,7 +119,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         {
             // SizeInBytes() handles decimal (contrary to the language spec).  But decimal is not allowed
             // as a fixed buffer element type.
-            return specialType == SpecialType.System_Decimal ? 0 : specialType.SizeInBytes();
+            return specialType.SizeInBytes();
         }
     }
 }

@@ -1031,26 +1031,7 @@ namespace StarkPlatform.Compiler.Stark
             // affect conversions from decimal to any integral type; if those are out of bounds then
             // we always give an error regardless.
 
-            if (sourceValue.IsDecimal)
-            {
-                if (!CheckConstantBounds(destinationType, sourceValue))
-                {
-                    // NOTE: Dev10 puts a suffix, "M", on the constant value.
-                    Error(diagnostics, ErrorCode.ERR_ConstOutOfRange, syntax, sourceValue.Value + "M", destination);
-
-                    return ConstantValue.Bad;
-                }
-            }
-            else if (destinationType == SpecialType.System_Decimal)
-            {
-                if (!CheckConstantBounds(destinationType, sourceValue))
-                {
-                    Error(diagnostics, ErrorCode.ERR_ConstOutOfRange, syntax, sourceValue.Value, destination);
-
-                    return ConstantValue.Bad;
-                }
-            }
-            else if (CheckOverflowAtCompileTime)
+            if (CheckOverflowAtCompileTime)
             {
                 if (!CheckConstantBounds(destinationType, sourceValue))
                 {
@@ -1111,7 +1092,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)byteValue;
                             case SpecialType.System_Float32:
                             case SpecialType.System_Float64: return (double)byteValue;
-                            case SpecialType.System_Decimal: return (decimal)byteValue;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     case ConstantValueTypeDiscriminator.Char:
@@ -1129,7 +1109,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)charValue;
                             case SpecialType.System_Float32:
                             case SpecialType.System_Float64: return (double)charValue;
-                            case SpecialType.System_Decimal: return (decimal)charValue;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     case ConstantValueTypeDiscriminator.UInt16:
@@ -1149,7 +1128,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)uint16Value;
                             case SpecialType.System_Float32:
                             case SpecialType.System_Float64: return (double)uint16Value;
-                            case SpecialType.System_Decimal: return (decimal)uint16Value;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     case ConstantValueTypeDiscriminator.UInt32:
@@ -1169,7 +1147,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)uint32Value;
                             case SpecialType.System_Float32: return (double)(float)uint32Value;
                             case SpecialType.System_Float64: return (double)uint32Value;
-                            case SpecialType.System_Decimal: return (decimal)uint32Value;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     case ConstantValueTypeDiscriminator.UInt64:
@@ -1187,7 +1164,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)uint64Value;
                             case SpecialType.System_Float32: return (double)(float)uint64Value;
                             case SpecialType.System_Float64: return (double)uint64Value;
-                            case SpecialType.System_Decimal: return (decimal)uint64Value;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     case ConstantValueTypeDiscriminator.Int8:
@@ -1207,7 +1183,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)sbyteValue;
                             case SpecialType.System_Float32:
                             case SpecialType.System_Float64: return (double)sbyteValue;
-                            case SpecialType.System_Decimal: return (decimal)sbyteValue;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     case ConstantValueTypeDiscriminator.Int16:
@@ -1227,7 +1202,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)int16Value;
                             case SpecialType.System_Float32:
                             case SpecialType.System_Float64: return (double)int16Value;
-                            case SpecialType.System_Decimal: return (decimal)int16Value;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     case ConstantValueTypeDiscriminator.Int32:
@@ -1247,7 +1221,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)int32Value;
                             case SpecialType.System_Float32: return (double)(float)int32Value;
                             case SpecialType.System_Float64: return (double)int32Value;
-                            case SpecialType.System_Decimal: return (decimal)int32Value;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     case ConstantValueTypeDiscriminator.Int64:
@@ -1265,7 +1238,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)int64Value;
                             case SpecialType.System_Float32: return (double)(float)int64Value;
                             case SpecialType.System_Float64: return (double)int64Value;
-                            case SpecialType.System_Decimal: return (decimal)int64Value;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     case ConstantValueTypeDiscriminator.Single:
@@ -1291,25 +1263,6 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Int64: return (long)doubleValue;
                             case SpecialType.System_Float32: return (double)(float)doubleValue;
                             case SpecialType.System_Float64: return (double)doubleValue;
-                            case SpecialType.System_Decimal: return (value.Discriminator == ConstantValueTypeDiscriminator.Single) ? (decimal)(float)doubleValue : (decimal)doubleValue;
-                            default: throw ExceptionUtilities.UnexpectedValue(destinationType);
-                        }
-                    case ConstantValueTypeDiscriminator.Decimal:
-                        decimal decimalValue = CheckConstantBounds(destinationType, value.DecimalValue) ? value.DecimalValue : 0m;
-                        switch (destinationType)
-                        {
-                            case SpecialType.System_UInt8: return (byte)decimalValue;
-                            case SpecialType.System_Char: return (char)decimalValue;
-                            case SpecialType.System_UInt16: return (ushort)decimalValue;
-                            case SpecialType.System_UInt32: return (uint)decimalValue;
-                            case SpecialType.System_UInt64: return (ulong)decimalValue;
-                            case SpecialType.System_Int8: return (sbyte)decimalValue;
-                            case SpecialType.System_Int16: return (short)decimalValue;
-                            case SpecialType.System_Int32: return (int)decimalValue;
-                            case SpecialType.System_Int64: return (long)decimalValue;
-                            case SpecialType.System_Float32: return (double)(float)decimalValue;
-                            case SpecialType.System_Float64: return (double)decimalValue;
-                            case SpecialType.System_Decimal: return (decimal)decimalValue;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
                     default:
@@ -1354,7 +1307,6 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_Int32: return (int.MinValue - 1D) < value && value < (int.MaxValue + 1D);
                 // Note: Using <= to compare the min value matches the native compiler.
                 case SpecialType.System_Int64: return (long.MinValue - 1D) <= value && value < (long.MaxValue + 1D);
-                case SpecialType.System_Decimal: return ((double)decimal.MinValue - 1D) < value && value < ((double)decimal.MaxValue + 1D);
             }
 
             return true;
@@ -1396,7 +1348,6 @@ namespace StarkPlatform.Compiler.Stark
                 case ConstantValueTypeDiscriminator.UInt64: return (decimal)value.UInt64Value;
                 case ConstantValueTypeDiscriminator.Single:
                 case ConstantValueTypeDiscriminator.Double: return value.DoubleValue;
-                case ConstantValueTypeDiscriminator.Decimal: return value.DecimalValue;
                 default: throw ExceptionUtilities.UnexpectedValue(value.Discriminator);
             }
 

@@ -164,7 +164,6 @@
       <Kind Name="UInt64Keyword"/>
       <Kind Name="Float32Keyword"/>
       <Kind Name="Float64Keyword"/>
-      <Kind Name="DecimalKeyword"/>
       <Kind Name="StringKeyword"/>
       <Kind Name="CharKeyword"/>
       <Kind Name="ObjectKeyword"/>

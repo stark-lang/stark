@@ -220,10 +220,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 VerifyConstantValueMatches(attribute.DecodeDateTimeConstantValue(), ref arguments);
             }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.DecimalConstantAttribute))
-            {
-                VerifyConstantValueMatches(attribute.DecodeDecimalConstantValue(), ref arguments);
-            }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.TupleElementNamesAttribute))
             {
                 arguments.Diagnostics.Add(ErrorCode.ERR_ExplicitTupleElementNamesAttribute, arguments.AttributeSyntaxOpt.Location);
@@ -249,19 +245,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
                 if (this.IsConst)
                 {
-                    if (this.Type.SpecialType == SpecialType.System_Decimal)
-                    {
-                        constValue = this.GetConstantValue(ConstantFieldsInProgress.Empty, earlyDecodingWellKnownAttributes: false);
-
-                        if ((object)constValue != null && !constValue.IsBad && constValue != attrValue)
-                        {
-                            arguments.Diagnostics.Add(ErrorCode.ERR_FieldHasMultipleDistinctConstantValues, arguments.AttributeSyntaxOpt.Location);
-                        }
-                    }
-                    else
-                    {
-                        arguments.Diagnostics.Add(ErrorCode.ERR_FieldHasMultipleDistinctConstantValues, arguments.AttributeSyntaxOpt.Location);
-                    }
+                    arguments.Diagnostics.Add(ErrorCode.ERR_FieldHasMultipleDistinctConstantValues, arguments.AttributeSyntaxOpt.Location);
 
                     if (data.ConstValue == Compiler.ConstantValue.Unset)
                     {

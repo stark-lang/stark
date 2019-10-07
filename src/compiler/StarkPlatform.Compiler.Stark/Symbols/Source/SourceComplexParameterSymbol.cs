@@ -492,10 +492,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 return EarlyDecodeAttributeForDefaultParameterValue(AttributeDescription.DefaultParameterValueAttribute, ref arguments);
             }
-            else if (CSharpAttributeData.IsTargetEarlyAttribute(arguments.AttributeType, arguments.AttributeSyntax, AttributeDescription.DecimalConstantAttribute))
-            {
-                return EarlyDecodeAttributeForDefaultParameterValue(AttributeDescription.DecimalConstantAttribute, ref arguments);
-            }
             else if (CSharpAttributeData.IsTargetEarlyAttribute(arguments.AttributeType, arguments.AttributeSyntax, AttributeDescription.DateTimeConstantAttribute))
             {
                 return EarlyDecodeAttributeForDefaultParameterValue(AttributeDescription.DateTimeConstantAttribute, ref arguments);
@@ -557,7 +553,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         private CSharpAttributeData EarlyDecodeAttributeForDefaultParameterValue(AttributeDescription description, ref EarlyDecodeWellKnownAttributeArguments<EarlyWellKnownAttributeBinder, NamedTypeSymbol, AttributeSyntax, AttributeLocation> arguments)
         {
             Debug.Assert(description.Equals(AttributeDescription.DefaultParameterValueAttribute) ||
-                description.Equals(AttributeDescription.DecimalConstantAttribute) ||
                 description.Equals(AttributeDescription.DateTimeConstantAttribute));
 
             bool hasAnyDiagnostics;
@@ -594,11 +589,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 // Attribute decoded and constant value stored during EarlyDecodeWellKnownAttribute.
                 DecodeDefaultParameterValueAttribute(AttributeDescription.DefaultParameterValueAttribute, ref arguments);
-            }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.DecimalConstantAttribute))
-            {
-                // Attribute decoded and constant value stored during EarlyDecodeWellKnownAttribute.
-                DecodeDefaultParameterValueAttribute(AttributeDescription.DecimalConstantAttribute, ref arguments);
             }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.DateTimeConstantAttribute))
             {
@@ -746,10 +736,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             if (description.Equals(AttributeDescription.DefaultParameterValueAttribute))
             {
                 return DecodeDefaultParameterValueAttribute(attribute, node, diagnose, diagnosticsOpt);
-            }
-            else if (description.Equals(AttributeDescription.DecimalConstantAttribute))
-            {
-                return attribute.DecodeDecimalConstantValue();
             }
             else
             {

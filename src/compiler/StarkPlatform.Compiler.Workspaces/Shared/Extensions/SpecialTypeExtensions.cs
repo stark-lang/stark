@@ -34,8 +34,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     return PredefinedType.Int64;
                 case SpecialType.System_UInt64:
                     return PredefinedType.UInt64;
-                case SpecialType.System_Decimal:
-                    return PredefinedType.Decimal;
                 case SpecialType.System_Float32:
                     return PredefinedType.Float32;
                 case SpecialType.System_Float64:

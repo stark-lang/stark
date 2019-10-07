@@ -514,7 +514,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     case SpecialType.System_UInt64:
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
-                    case SpecialType.System_Decimal:
                         return true;
                 }
             }
@@ -606,7 +605,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     case SpecialType.System_Boolean:
                     case SpecialType.System_Int8:
                     case SpecialType.System_UInt8:
-                    case SpecialType.System_Decimal:
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
                     case SpecialType.System_Int16:

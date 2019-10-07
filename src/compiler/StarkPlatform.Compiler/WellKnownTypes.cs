@@ -147,7 +147,6 @@ namespace StarkPlatform.Compiler
         core_STAThreadAttribute,
         core_Reflection_DefaultMemberAttribute,
         core_runtime_compiler_DateTimeConstantAttribute,
-        core_runtime_compiler_DecimalConstantAttribute,
         core_runtime_compiler_IUnknownConstantAttribute,
         core_runtime_compiler_IDispatchConstantAttribute,
         core_runtime_compiler_ExtensionAttribute,
@@ -444,7 +443,6 @@ namespace StarkPlatform.Compiler
             "core.STAThreadAttribute",
             "core.Reflection.DefaultMemberAttribute",
             "core.runtime.compiler.DateTimeConstantAttribute",
-            "core.runtime.compiler.DecimalConstantAttribute",
             "core.runtime.compiler.IUnknownConstantAttribute",
             "core.runtime.compiler.IDispatchConstantAttribute",
             "core.runtime.compiler.ExtensionAttribute",
@@ -652,7 +650,7 @@ namespace StarkPlatform.Compiler
                 Debug.Assert(name == typeIdName, $"Enum name and type name must match {name} != {typeIdName}");
             }
 
-            Debug.Assert((int)WellKnownType.ExtSentinel == 255);
+            Debug.Assert((int)WellKnownType.ExtSentinel == 253);
             Debug.Assert((int)WellKnownType.NextAvailable <= 512, "Time for a new sentinel");
         }
 

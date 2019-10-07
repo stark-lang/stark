@@ -59,7 +59,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.CharPostfixIncrement,
                         (int)UnaryOperatorKind.Float32PostfixIncrement,
                         (int)UnaryOperatorKind.Float64PostfixIncrement,
-                        (int)UnaryOperatorKind.DecimalPostfixIncrement,
                         (int)UnaryOperatorKind.IntPostfixIncrement,
                         (int)UnaryOperatorKind.UIntPostfixIncrement,
                         (int)UnaryOperatorKind.LiftedInt8PostfixIncrement,
@@ -73,7 +72,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.LiftedCharPostfixIncrement,
                         (int)UnaryOperatorKind.LiftedFloat32PostfixIncrement,
                         (int)UnaryOperatorKind.LiftedFloat64PostfixIncrement,
-                        (int)UnaryOperatorKind.LiftedDecimalPostfixIncrement,
                         (int)UnaryOperatorKind.LiftedIntPostfixIncrement,
                         (int)UnaryOperatorKind.LiftedUIntPostfixIncrement,
                     }),
@@ -90,7 +88,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.CharPostfixDecrement,
                         (int)UnaryOperatorKind.Float32PostfixDecrement,
                         (int)UnaryOperatorKind.Float64PostfixDecrement,
-                        (int)UnaryOperatorKind.DecimalPostfixDecrement,
                         (int)UnaryOperatorKind.IntPostfixDecrement,
                         (int)UnaryOperatorKind.UIntPostfixDecrement,
                         (int)UnaryOperatorKind.LiftedInt8PostfixDecrement,
@@ -104,7 +101,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.LiftedCharPostfixDecrement,
                         (int)UnaryOperatorKind.LiftedFloat32PostfixDecrement,
                         (int)UnaryOperatorKind.LiftedFloat64PostfixDecrement,
-                        (int)UnaryOperatorKind.LiftedDecimalPostfixDecrement,
                         (int)UnaryOperatorKind.LiftedIntPostfixDecrement,
                         (int)UnaryOperatorKind.LiftedUIntPostfixDecrement,
                     }),
@@ -121,7 +117,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.CharPrefixIncrement,
                         (int)UnaryOperatorKind.Float32PrefixIncrement,
                         (int)UnaryOperatorKind.Float64PrefixIncrement,
-                        (int)UnaryOperatorKind.DecimalPrefixIncrement,
                         (int)UnaryOperatorKind.IntPrefixIncrement,
                         (int)UnaryOperatorKind.UIntPrefixIncrement,
                         (int)UnaryOperatorKind.LiftedInt8PrefixIncrement,
@@ -135,7 +130,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.LiftedCharPrefixIncrement,
                         (int)UnaryOperatorKind.LiftedFloat32PrefixIncrement,
                         (int)UnaryOperatorKind.LiftedFloat64PrefixIncrement,
-                        (int)UnaryOperatorKind.LiftedDecimalPrefixIncrement,
                         (int)UnaryOperatorKind.LiftedIntPrefixIncrement,
                         (int)UnaryOperatorKind.LiftedUIntPrefixIncrement,
                     }),
@@ -152,7 +146,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.CharPrefixDecrement,
                         (int)UnaryOperatorKind.Float32PrefixDecrement,
                         (int)UnaryOperatorKind.Float64PrefixDecrement,
-                        (int)UnaryOperatorKind.DecimalPrefixDecrement,
                         (int)UnaryOperatorKind.IntPrefixDecrement,
                         (int)UnaryOperatorKind.UIntPrefixDecrement,
                         (int)UnaryOperatorKind.LiftedInt8PrefixDecrement,
@@ -166,7 +159,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.LiftedCharPrefixDecrement,
                         (int)UnaryOperatorKind.LiftedFloat32PrefixDecrement,
                         (int)UnaryOperatorKind.LiftedFloat64PrefixDecrement,
-                        (int)UnaryOperatorKind.LiftedDecimalPrefixDecrement,
                         (int)UnaryOperatorKind.LiftedIntPrefixDecrement,
                         (int)UnaryOperatorKind.LiftedUIntPrefixDecrement,
                     }),
@@ -178,7 +170,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.UInt64UnaryPlus,
                         (int)UnaryOperatorKind.Float32UnaryPlus,
                         (int)UnaryOperatorKind.Float64UnaryPlus,
-                        (int)UnaryOperatorKind.DecimalUnaryPlus,
                         (int)UnaryOperatorKind.IntUnaryPlus,
                         (int)UnaryOperatorKind.UIntUnaryPlus,
                         (int)UnaryOperatorKind.LiftedInt32UnaryPlus,
@@ -187,7 +178,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.LiftedUInt64UnaryPlus,
                         (int)UnaryOperatorKind.LiftedFloat32UnaryPlus,
                         (int)UnaryOperatorKind.LiftedFloat64UnaryPlus,
-                        (int)UnaryOperatorKind.LiftedDecimalUnaryPlus,
                         (int)UnaryOperatorKind.LiftedIntUnaryPlus,
                         (int)UnaryOperatorKind.LiftedUIntUnaryPlus,
                     }),
@@ -197,13 +187,11 @@ namespace StarkPlatform.Compiler.Stark
                         (int)UnaryOperatorKind.Int64UnaryMinus,
                         (int)UnaryOperatorKind.Float32UnaryMinus,
                         (int)UnaryOperatorKind.Float64UnaryMinus,
-                        (int)UnaryOperatorKind.DecimalUnaryMinus,
                         (int)UnaryOperatorKind.IntUnaryMinus,
                         (int)UnaryOperatorKind.LiftedInt32UnaryMinus,
                         (int)UnaryOperatorKind.LiftedInt64UnaryMinus,
                         (int)UnaryOperatorKind.LiftedFloat32UnaryMinus,
                         (int)UnaryOperatorKind.LiftedFloat64UnaryMinus,
-                        (int)UnaryOperatorKind.LiftedDecimalUnaryMinus,
                         (int)UnaryOperatorKind.LiftedIntUnaryMinus,
                     }),
                     GetSignaturesFromUnaryOperatorKinds(new []
@@ -251,7 +239,6 @@ namespace StarkPlatform.Compiler.Stark
                 case UnaryOperatorKind.Char: opType = _compilation.GetSpecialType(SpecialType.System_Char); break;
                 case UnaryOperatorKind.Float32: opType = _compilation.GetSpecialType(SpecialType.System_Float32); break;
                 case UnaryOperatorKind.Float64: opType = _compilation.GetSpecialType(SpecialType.System_Float64); break;
-                case UnaryOperatorKind.Decimal: opType = _compilation.GetSpecialType(SpecialType.System_Decimal); break;
                 case UnaryOperatorKind.Bool: opType = _compilation.GetSpecialType(SpecialType.System_Boolean); break;
                 case UnaryOperatorKind.Int: opType = _compilation.GetSpecialType(SpecialType.System_Int); break;
                 case UnaryOperatorKind.UInt: opType = _compilation.GetSpecialType(SpecialType.System_UInt); break;
@@ -313,7 +300,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64Multiplication,
                         (int)BinaryOperatorKind.Float32Multiplication,
                         (int)BinaryOperatorKind.Float64Multiplication,
-                        (int)BinaryOperatorKind.DecimalMultiplication,
                         (int)BinaryOperatorKind.IntMultiplication,
                         (int)BinaryOperatorKind.UIntMultiplication,
                         (int)BinaryOperatorKind.LiftedInt32Multiplication,
@@ -322,7 +308,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64Multiplication,
                         (int)BinaryOperatorKind.LiftedFloat32Multiplication,
                         (int)BinaryOperatorKind.LiftedFloat64Multiplication,
-                        (int)BinaryOperatorKind.LiftedDecimalMultiplication,
                         (int)BinaryOperatorKind.LiftedIntMultiplication,
                         (int)BinaryOperatorKind.LiftedUIntMultiplication,
                     }),
@@ -334,7 +319,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64Addition,
                         (int)BinaryOperatorKind.Float32Addition,
                         (int)BinaryOperatorKind.Float64Addition,
-                        (int)BinaryOperatorKind.DecimalAddition,
                         (int)BinaryOperatorKind.IntAddition,
                         (int)BinaryOperatorKind.UIntAddition,
                         (int)BinaryOperatorKind.LiftedInt32Addition,
@@ -343,7 +327,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64Addition,
                         (int)BinaryOperatorKind.LiftedFloat32Addition,
                         (int)BinaryOperatorKind.LiftedFloat64Addition,
-                        (int)BinaryOperatorKind.LiftedDecimalAddition,
                         (int)BinaryOperatorKind.LiftedIntAddition,
                         (int)BinaryOperatorKind.LiftedUIntAddition,
                         (int)BinaryOperatorKind.StringConcatenation,
@@ -358,7 +341,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64Subtraction,
                         (int)BinaryOperatorKind.Float32Subtraction,
                         (int)BinaryOperatorKind.Float64Subtraction,
-                        (int)BinaryOperatorKind.DecimalSubtraction,
                         (int)BinaryOperatorKind.IntSubtraction,
                         (int)BinaryOperatorKind.UIntSubtraction,
                         (int)BinaryOperatorKind.Lifted32IntSubtraction,
@@ -367,7 +349,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64Subtraction,
                         (int)BinaryOperatorKind.LiftedFloat32Subtraction,
                         (int)BinaryOperatorKind.LiftedFloat64Subtraction,
-                        (int)BinaryOperatorKind.LiftedDecimalSubtraction,
                         (int)BinaryOperatorKind.LiftedIntSubtraction,
                         (int)BinaryOperatorKind.LiftedUIntSubtraction,
                     }),
@@ -379,7 +360,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64Division,
                         (int)BinaryOperatorKind.Float32Division,
                         (int)BinaryOperatorKind.Float64Division,
-                        (int)BinaryOperatorKind.DecimalDivision,
                         (int)BinaryOperatorKind.IntDivision,
                         (int)BinaryOperatorKind.UIntDivision,
                         (int)BinaryOperatorKind.LiftedInt32Division,
@@ -388,7 +368,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64Division,
                         (int)BinaryOperatorKind.LiftedFloat32Division,
                         (int)BinaryOperatorKind.LiftedFloat64Division,
-                        (int)BinaryOperatorKind.LiftedDecimalDivision,
                         (int)BinaryOperatorKind.LiftedIntDivision,
                         (int)BinaryOperatorKind.LiftedUIntDivision,
                     }),
@@ -400,7 +379,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64Remainder,
                         (int)BinaryOperatorKind.Float32Remainder,
                         (int)BinaryOperatorKind.Float64Remainder,
-                        (int)BinaryOperatorKind.DecimalRemainder,
                         (int)BinaryOperatorKind.IntRemainder,
                         (int)BinaryOperatorKind.UIntRemainder,
                         (int)BinaryOperatorKind.LiftedInt32Remainder,
@@ -409,7 +387,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64Remainder,
                         (int)BinaryOperatorKind.LiftedFloat32Remainder,
                         (int)BinaryOperatorKind.LiftedFloat64Remainder,
-                        (int)BinaryOperatorKind.LiftedDecimalRemainder,
                         (int)BinaryOperatorKind.LiftedIntRemainder,
                         (int)BinaryOperatorKind.LiftedUIntRemainder,
                     }),
@@ -451,7 +428,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64Equal,
                         (int)BinaryOperatorKind.Float32Equal,
                         (int)BinaryOperatorKind.Float64Equal,
-                        (int)BinaryOperatorKind.DecimalEqual,
                         (int)BinaryOperatorKind.IntEqual,
                         (int)BinaryOperatorKind.UIntEqual,
                         (int)BinaryOperatorKind.BoolEqual,
@@ -461,7 +437,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64Equal,
                         (int)BinaryOperatorKind.LiftedFloat32Equal,
                         (int)BinaryOperatorKind.LiftedFloat64Equal,
-                        (int)BinaryOperatorKind.LiftedDecimalEqual,
                         (int)BinaryOperatorKind.LiftedIntEqual,
                         (int)BinaryOperatorKind.LiftedUIntEqual,
                         (int)BinaryOperatorKind.LiftedBoolEqual,
@@ -476,7 +451,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64NotEqual,
                         (int)BinaryOperatorKind.Float32NotEqual,
                         (int)BinaryOperatorKind.Float64NotEqual,
-                        (int)BinaryOperatorKind.DecimalNotEqual,
                         (int)BinaryOperatorKind.IntNotEqual,
                         (int)BinaryOperatorKind.UIntNotEqual,
                         (int)BinaryOperatorKind.BoolNotEqual,
@@ -486,7 +460,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64NotEqual,
                         (int)BinaryOperatorKind.LiftedFloat32NotEqual,
                         (int)BinaryOperatorKind.LiftedFloat64NotEqual,
-                        (int)BinaryOperatorKind.LiftedDecimalNotEqual,
                         (int)BinaryOperatorKind.LiftedIntNotEqual,
                         (int)BinaryOperatorKind.LiftedUIntNotEqual,
                         (int)BinaryOperatorKind.LiftedBoolNotEqual,
@@ -501,7 +474,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64GreaterThan,
                         (int)BinaryOperatorKind.Float32GreaterThan,
                         (int)BinaryOperatorKind.Float64GreaterThan,
-                        (int)BinaryOperatorKind.DecimalGreaterThan,
                         (int)BinaryOperatorKind.IntGreaterThan,
                         (int)BinaryOperatorKind.UIntGreaterThan,
                         (int)BinaryOperatorKind.Lifted32IntGreaterThan,
@@ -510,7 +482,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64GreaterThan,
                         (int)BinaryOperatorKind.LiftedFloat32GreaterThan,
                         (int)BinaryOperatorKind.LiftedFloat64GreaterThan,
-                        (int)BinaryOperatorKind.LiftedDecimalGreaterThan,
                         (int)BinaryOperatorKind.LiftedIntGreaterThan,
                         (int)BinaryOperatorKind.LiftedUIntGreaterThan,
                     }),
@@ -522,7 +493,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64LessThan,
                         (int)BinaryOperatorKind.Float32LessThan,
                         (int)BinaryOperatorKind.Float64LessThan,
-                        (int)BinaryOperatorKind.DecimalLessThan,
                         (int)BinaryOperatorKind.IntLessThan,
                         (int)BinaryOperatorKind.UIntLessThan,
                         (int)BinaryOperatorKind.LiftedInt32LessThan,
@@ -531,7 +501,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64LessThan,
                         (int)BinaryOperatorKind.LiftedFloat32LessThan,
                         (int)BinaryOperatorKind.LiftedFloat64LessThan,
-                        (int)BinaryOperatorKind.LiftedDecimalLessThan,
                         (int)BinaryOperatorKind.LiftedIntLessThan,
                         (int)BinaryOperatorKind.LiftedUIntLessThan,
                     }),
@@ -543,7 +512,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64GreaterThanOrEqual,
                         (int)BinaryOperatorKind.Float32GreaterThanOrEqual,
                         (int)BinaryOperatorKind.Float64GreaterThanOrEqual,
-                        (int)BinaryOperatorKind.DecimalGreaterThanOrEqual,
                         (int)BinaryOperatorKind.IntGreaterThanOrEqual,
                         (int)BinaryOperatorKind.UIntGreaterThanOrEqual,
                         (int)BinaryOperatorKind.LiftedInt32GreaterThanOrEqual,
@@ -552,7 +520,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64GreaterThanOrEqual,
                         (int)BinaryOperatorKind.LiftedFloat32GreaterThanOrEqual,
                         (int)BinaryOperatorKind.LiftedFloat64GreaterThanOrEqual,
-                        (int)BinaryOperatorKind.LiftedDecimalGreaterThanOrEqual,
                         (int)BinaryOperatorKind.LiftedIntGreaterThanOrEqual,
                         (int)BinaryOperatorKind.LiftedUIntGreaterThanOrEqual,
                     }),
@@ -564,7 +531,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.UInt64LessThanOrEqual,
                         (int)BinaryOperatorKind.Float32LessThanOrEqual,
                         (int)BinaryOperatorKind.Float64LessThanOrEqual,
-                        (int)BinaryOperatorKind.DecimalLessThanOrEqual,
                         (int)BinaryOperatorKind.IntLessThanOrEqual,
                         (int)BinaryOperatorKind.UIntLessThanOrEqual,
                         (int)BinaryOperatorKind.LiftedInt32LessThanOrEqual,
@@ -573,7 +539,6 @@ namespace StarkPlatform.Compiler.Stark
                         (int)BinaryOperatorKind.LiftedUInt64LessThanOrEqual,
                         (int)BinaryOperatorKind.LiftedFloat32LessThanOrEqual,
                         (int)BinaryOperatorKind.LiftedFloat64LessThanOrEqual,
-                        (int)BinaryOperatorKind.LiftedDecimalLessThanOrEqual,
                         (int)BinaryOperatorKind.LiftedIntLessThanOrEqual,
                         (int)BinaryOperatorKind.LiftedUIntLessThanOrEqual,
                     }),
@@ -692,7 +657,6 @@ namespace StarkPlatform.Compiler.Stark
                     case BinaryOperatorKind.UInt64: return _compilation.GetSpecialType(SpecialType.System_UInt64);
                     case BinaryOperatorKind.Float32: return _compilation.GetSpecialType(SpecialType.System_Float32);
                     case BinaryOperatorKind.Float64: return _compilation.GetSpecialType(SpecialType.System_Float64);
-                    case BinaryOperatorKind.Decimal: return _compilation.GetSpecialType(SpecialType.System_Decimal);
                     case BinaryOperatorKind.Int: return _compilation.GetSpecialType(SpecialType.System_Int);
                     case BinaryOperatorKind.UInt: return _compilation.GetSpecialType(SpecialType.System_UInt);
                     case BinaryOperatorKind.Bool: return _compilation.GetSpecialType(SpecialType.System_Boolean);
@@ -724,7 +688,6 @@ namespace StarkPlatform.Compiler.Stark
                     case BinaryOperatorKind.UInt64: return _compilation.GetSpecialType(SpecialType.System_UInt64);
                     case BinaryOperatorKind.Float32: return _compilation.GetSpecialType(SpecialType.System_Float32);
                     case BinaryOperatorKind.Float64: return _compilation.GetSpecialType(SpecialType.System_Float64);
-                    case BinaryOperatorKind.Decimal: return _compilation.GetSpecialType(SpecialType.System_Decimal);
                     case BinaryOperatorKind.Int: return _compilation.GetSpecialType(SpecialType.System_Int);
                     case BinaryOperatorKind.UInt: return _compilation.GetSpecialType(SpecialType.System_UInt);
                     case BinaryOperatorKind.Bool: return _compilation.GetSpecialType(SpecialType.System_Boolean);
@@ -756,7 +719,6 @@ namespace StarkPlatform.Compiler.Stark
                     case BinaryOperatorKind.UInt64: return _compilation.GetSpecialType(SpecialType.System_UInt64);
                     case BinaryOperatorKind.Float32: return _compilation.GetSpecialType(SpecialType.System_Float32);
                     case BinaryOperatorKind.Float64: return _compilation.GetSpecialType(SpecialType.System_Float64);
-                    case BinaryOperatorKind.Decimal: return _compilation.GetSpecialType(SpecialType.System_Decimal);
                     case BinaryOperatorKind.Int: return _compilation.GetSpecialType(SpecialType.System_Int);
                     case BinaryOperatorKind.UInt: return _compilation.GetSpecialType(SpecialType.System_UInt);
                     case BinaryOperatorKind.Bool: return _compilation.GetSpecialType(SpecialType.System_Boolean);
@@ -785,7 +747,6 @@ namespace StarkPlatform.Compiler.Stark
                 case BinaryOperatorKind.UInt64: return nullable.Construct(_compilation.GetSpecialType(SpecialType.System_UInt64));
                 case BinaryOperatorKind.Float32: return nullable.Construct(_compilation.GetSpecialType(SpecialType.System_Float32));
                 case BinaryOperatorKind.Float64: return nullable.Construct(_compilation.GetSpecialType(SpecialType.System_Float64));
-                case BinaryOperatorKind.Decimal: return nullable.Construct(_compilation.GetSpecialType(SpecialType.System_Decimal));
                 case BinaryOperatorKind.Int: return nullable.Construct(_compilation.GetSpecialType(SpecialType.System_Int));
                 case BinaryOperatorKind.UInt: return nullable.Construct(_compilation.GetSpecialType(SpecialType.System_UInt));
                 case BinaryOperatorKind.Bool: return nullable.Construct(_compilation.GetSpecialType(SpecialType.System_Boolean));

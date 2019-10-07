@@ -97,7 +97,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 // Similarly for DateTime. (C# does not directly support optional parameters with DateTime constants, but honors
                 // the attributes if [Optional][DateTimeConstant(whatever)] are on the parameter.)
                 return this.ExplicitDefaultConstantValue != null &&
-                       this.ExplicitDefaultConstantValue.SpecialType != SpecialType.System_Decimal &&
                        this.ExplicitDefaultConstantValue.SpecialType != SpecialType.System_DateTime;
             }
         }

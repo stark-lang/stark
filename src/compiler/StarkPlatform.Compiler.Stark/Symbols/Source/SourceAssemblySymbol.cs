@@ -2548,7 +2548,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 case SpecialType.System_Boolean:
                     return "false";
                 case SpecialType.System_UInt8:
-                case SpecialType.System_Decimal:
                 case SpecialType.System_Float64:
                 case SpecialType.System_Int16:
                 case SpecialType.System_Int32:

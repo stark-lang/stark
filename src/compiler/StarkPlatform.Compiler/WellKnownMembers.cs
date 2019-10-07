@@ -57,14 +57,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
 
-                // System_Convert__ToBooleanDecimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
-
                 // System_Convert__ToBooleanInt32
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
                 (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
@@ -113,14 +105,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64,
 
-                // System_Convert__ToSByteDecimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int8, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
-
                 // System_Convert__ToSByteDouble
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
                 (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
@@ -136,14 +120,6 @@ namespace StarkPlatform.Compiler
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int8, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float32,
-
-                // System_Convert__ToByteDecimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt8, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
 
                 // System_Convert__ToByteDouble
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -161,14 +137,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt8, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float32,
 
-                // System_Convert__ToInt16Decimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int16, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
-
                 // System_Convert__ToInt16Double
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
                 (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
@@ -184,14 +152,6 @@ namespace StarkPlatform.Compiler
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int16, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float32,
-
-                // System_Convert__ToUInt16Decimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt16, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
 
                 // System_Convert__ToUInt16Double
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -209,14 +169,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt16, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float32,
 
-                // System_Convert__ToInt32Decimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
-
                 // System_Convert__ToInt32Double
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
                 (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
@@ -232,14 +184,6 @@ namespace StarkPlatform.Compiler
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float32,
-
-                // System_Convert__ToUInt32Decimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt32, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
 
                 // System_Convert__ToUInt32Double
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -257,14 +201,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt32, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float32,
 
-                // System_Convert__ToInt64Decimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int64, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
-
                 // System_Convert__ToInt64Double
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
                 (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
@@ -281,14 +217,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int64, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float32,
 
-                // System_Convert__ToUInt64Decimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt64, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
-
                 // System_Convert__ToUInt64Double
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
                 (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
@@ -304,22 +232,6 @@ namespace StarkPlatform.Compiler
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt64, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float32,
-
-                // System_Convert__ToSingleDecimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float32, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
-
-                // System_Convert__ToDoubleDecimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.core_Convert,                                                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
 
                 // System_CLSCompliantAttribute__ctor
                 (byte)MemberFlags.Constructor,                                                                              // Flags
@@ -868,30 +780,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int64,
 
-                // System_Runtime_CompilerServices_DecimalConstantAttribute__ctor
-                (byte)MemberFlags.Constructor,                                                                              // Flags
-                (byte)WellKnownType.core_runtime_compiler_DecimalConstantAttribute,                               // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    5,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt8,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt8,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt32,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt32,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt32,
-
-                // System_Runtime_CompilerServices_DecimalConstantAttribute__ctorByteByteInt32Int32Int32
-                (byte)MemberFlags.Constructor,                                                                              // Flags
-                (byte)WellKnownType.core_runtime_compiler_DecimalConstantAttribute,                               // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    5,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt8,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt8,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
-
                 // System_Runtime_CompilerServices_ExtensionAttribute__ctor
                 (byte)MemberFlags.Constructor,                                                                              // Flags
                 (byte)WellKnownType.core_runtime_compiler_ExtensionAttribute,                                     // DeclaringTypeId
@@ -1270,14 +1158,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfoFlags,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
 
-                // Microsoft_VisualBasic_CompilerServices_Conversions__ToDecimalBoolean
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
-
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToBooleanString
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
                 (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
@@ -1364,14 +1244,6 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
-
-                // Microsoft_VisualBasic_CompilerServices_Conversions__ToDecimalString
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToDateString
@@ -1461,14 +1333,6 @@ namespace StarkPlatform.Compiler
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64,
-
-                // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDecimal
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDateTime
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -1580,14 +1444,6 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
-
-                // Microsoft_VisualBasic_CompilerServices_Conversions__ToDecimalObject
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Decimal, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToDateObject
@@ -3414,39 +3270,28 @@ namespace StarkPlatform.Compiler
                 "get_Length",                               // System_Array__get_Length
                 "Empty",                                    // System_Array__Empty
                 "Copy",                                     // System_Array__Copy
-                "ToBoolean",                                // System_Convert__ToBooleanDecimal
                 "ToBoolean",                                // System_Convert__ToBooleanInt32
                 "ToBoolean",                                // System_Convert__ToBooleanUInt32
                 "ToBoolean",                                // System_Convert__ToBooleanInt64
                 "ToBoolean",                                // System_Convert__ToBooleanUInt64
                 "ToBoolean",                                // System_Convert__ToBooleanSingle
                 "ToBoolean",                                // System_Convert__ToBooleanDouble
-                "ToSByte",                                  // System_Convert__ToSByteDecimal
                 "ToSByte",                                  // System_Convert__ToSByteDouble
                 "ToSByte",                                  // System_Convert__ToSByteSingle
-                "ToByte",                                   // System_Convert__ToByteDecimal
                 "ToByte",                                   // System_Convert__ToByteDouble
                 "ToByte",                                   // System_Convert__ToByteSingle
-                "ToInt16",                                  // System_Convert__ToInt16Decimal
                 "ToInt16",                                  // System_Convert__ToInt16Double
                 "ToInt16",                                  // System_Convert__ToInt16Single
-                "ToUInt16",                                 // System_Convert__ToUInt16Decimal
                 "ToUInt16",                                 // System_Convert__ToUInt16Double
                 "ToUInt16",                                 // System_Convert__ToUInt16Single
-                "ToInt32",                                  // System_Convert__ToInt32Decimal
                 "ToInt32",                                  // System_Convert__ToInt32Double
                 "ToInt32",                                  // System_Convert__ToInt32Single
-                "ToUInt32",                                 // System_Convert__ToUInt32Decimal
                 "ToUInt32",                                 // System_Convert__ToUInt32Double
                 "ToUInt32",                                 // System_Convert__ToUInt32Single
-                "ToInt64",                                  // System_Convert__ToInt64Decimal
                 "ToInt64",                                  // System_Convert__ToInt64Double
                 "ToInt64",                                  // System_Convert__ToInt64Single
-                "ToUInt64",                                 // System_Convert__ToUInt64Decimal
                 "ToUInt64",                                 // System_Convert__ToUInt64Double
                 "ToUInt64",                                 // System_Convert__ToUInt64Single
-                "ToSingle",                                 // System_Convert__ToSingleDecimal
-                "ToDouble",                                 // System_Convert__ToDoubleDecimal
                 ".ctor",                                    // System_CLSCompliantAttribute__ctor
                 ".ctor",                                    // System_FlagsAttribute__ctor
                 ".ctor",                                    // System_Guid__ctor
@@ -3514,8 +3359,6 @@ namespace StarkPlatform.Compiler
                 "RemoveAllEventHandlers",                   // System_Runtime_InteropServices_WindowsRuntime_WindowsRuntimeMarshal__RemoveAllEventHandlers
                 "RemoveEventHandler",                       // System_Runtime_InteropServices_WindowsRuntime_WindowsRuntimeMarshal__RemoveEventHandler_T
                 ".ctor",                                    // System_Runtime_CompilerServices_DateTimeConstantAttribute__ctor
-                ".ctor",                                    // System_Runtime_CompilerServices_DecimalConstantAttribute__ctor
-                ".ctor",                                    // System_Runtime_CompilerServices_DecimalConstantAttribute__ctorByteByteInt32Int32Int32
                 ".ctor",                                    // System_Runtime_CompilerServices_ExtensionAttribute__ctor
                 ".ctor",                                    // System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor
                 ".ctor",                                    // System_Runtime_CompilerServices_AccessedThroughPropertyAttribute__ctor
@@ -3557,7 +3400,6 @@ namespace StarkPlatform.Compiler
                 "SetMember",                                // Microsoft_CSharp_RuntimeBinder_Binder__SetMember
                 "UnaryOperation",                           // Microsoft_CSharp_RuntimeBinder_Binder__UnaryOperation
                 "Create",                                   // Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo__Create
-                "ToDecimal",                                // Microsoft_VisualBasic_CompilerServices_Conversions__ToDecimalBoolean
                 "ToBoolean",                                // Microsoft_VisualBasic_CompilerServices_Conversions__ToBooleanString
                 "ToSByte",                                  // Microsoft_VisualBasic_CompilerServices_Conversions__ToSByteString
                 "ToByte",                                   // Microsoft_VisualBasic_CompilerServices_Conversions__ToByteString
@@ -3569,7 +3411,6 @@ namespace StarkPlatform.Compiler
                 "ToULong",                                  // Microsoft_VisualBasic_CompilerServices_Conversions__ToULongString
                 "ToSingle",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToSingleString
                 "ToDouble",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToDoubleString
-                "ToDecimal",                                // Microsoft_VisualBasic_CompilerServices_Conversions__ToDecimalString
                 "ToDate",                                   // Microsoft_VisualBasic_CompilerServices_Conversions__ToDateString
                 "ToChar",                                   // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharString
                 "ToCharArrayRankOne",                       // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharArrayRankOneString
@@ -3581,7 +3422,6 @@ namespace StarkPlatform.Compiler
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringUInt64
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringSingle
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDouble
-                "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDecimal
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDateTime
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringChar
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringObject
@@ -3596,7 +3436,6 @@ namespace StarkPlatform.Compiler
                 "ToULong",                                  // Microsoft_VisualBasic_CompilerServices_Conversions__ToULongObject
                 "ToSingle",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToSingleObject
                 "ToDouble",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToDoubleObject
-                "ToDecimal",                                // Microsoft_VisualBasic_CompilerServices_Conversions__ToDecimalObject
                 "ToDate",                                   // Microsoft_VisualBasic_CompilerServices_Conversions__ToDateObject
                 "ToChar",                                   // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharObject
                 "ToCharArrayRankOne",                       // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharArrayRankOneObject

@@ -42,11 +42,8 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                     return;
                 }
 
-                if ((object)expression.Type == null || expression.Type.SpecialType != SpecialType.System_Decimal)
-                {
-                    EmitConstantExpression(expression.Type, constantValue, used, expression.Syntax);
-                    return;
-                }
+                EmitConstantExpression(expression.Type, constantValue, used, expression.Syntax);
+                return;
             }
 
             _recursionDepth++;
@@ -1001,8 +998,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                 }
             }
 
-            Debug.Assert(!field.IsConst || field.ContainingType.SpecialType == SpecialType.System_Decimal,
-                "rewriter should lower constant fields into constant expressions");
+            Debug.Assert(!field.IsConst, "rewriter should lower constant fields into constant expressions");
 
             // static field access is sideeffecting since it guarantees that ..ctor has run.
             // we emit static accesses even if unused.
@@ -2098,7 +2094,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             // in-place is not advantageous for reference types or constants
             if (!rightType.IsTypeParameter())
             {
-                if (rightType.IsReferenceType || (right.ConstantValue != null && rightType.SpecialType != SpecialType.System_Decimal))
+                if (rightType.IsReferenceType || (right.ConstantValue != null))
                 {
                     return false;
                 }
@@ -2887,7 +2883,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             if (used)
             {
                 // default type parameter values must be emitted as 'initobj' regardless of constraints
-                if (!type.IsTypeParameter() && type.SpecialType != SpecialType.System_Decimal)
+                if (!type.IsTypeParameter())
                 {
                     var constantValue = type.GetDefaultValue();
                     if (constantValue != null)
@@ -2917,8 +2913,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
 
         private void EmitDefaultExpression(BoundDefaultExpression expression, bool used)
         {
-            Debug.Assert(expression.Type.SpecialType == SpecialType.System_Decimal ||
-                expression.Type.GetDefaultValue() == null, "constant should be set on this expression");
+            Debug.Assert(expression.Type.GetDefaultValue() == null, "constant should be set on this expression");
 
             // Default value for the given default expression is not a constant
             // Expression must be of type parameter type or a non-primitive value type

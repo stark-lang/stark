@@ -5335,7 +5335,6 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_UInt64:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
-                case SpecialType.System_Decimal:
                 case SpecialType.System_Boolean:
                 case SpecialType.System_Char:
                     return ConstantValue.Default(specialType);

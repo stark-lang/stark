@@ -443,29 +443,6 @@ namespace StarkPlatform.Compiler.Stark
             return new SynthesizedAttributeData(ctorSymbol, arguments, namedStringArguments);
         }
 
-        internal SynthesizedAttributeData SynthesizeDecimalConstantAttribute(decimal value)
-        {
-            bool isNegative;
-            byte scale;
-            uint low, mid, high;
-            value.GetBits(out isNegative, out scale, out low, out mid, out high);
-            var systemByte = GetSpecialType(SpecialType.System_UInt8);
-            Debug.Assert(!systemByte.HasUseSiteError);
-
-            var systemUnit32 = GetSpecialType(SpecialType.System_UInt32);
-            Debug.Assert(!systemUnit32.HasUseSiteError);
-
-            return TrySynthesizeAttribute(
-                WellKnownMember.System_Runtime_CompilerServices_DecimalConstantAttribute__ctor,
-                ImmutableArray.Create(
-                    new TypedConstant(systemByte, TypedConstantKind.Primitive, scale),
-                    new TypedConstant(systemByte, TypedConstantKind.Primitive, (byte)(isNegative ? 128 : 0)),
-                    new TypedConstant(systemUnit32, TypedConstantKind.Primitive, high),
-                    new TypedConstant(systemUnit32, TypedConstantKind.Primitive, mid),
-                    new TypedConstant(systemUnit32, TypedConstantKind.Primitive, low)
-                ));
-        }
-
         internal SynthesizedAttributeData SynthesizeDebuggerBrowsableNeverAttribute()
         {
             if (Options.OptimizationLevel != OptimizationLevel.Debug)

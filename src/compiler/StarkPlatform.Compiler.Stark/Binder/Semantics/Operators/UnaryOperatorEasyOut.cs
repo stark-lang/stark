@@ -25,7 +25,6 @@ namespace StarkPlatform.Compiler.Stark
             private const UnaryOperatorKind U64 = UnaryOperatorKind.UInt64;
             private const UnaryOperatorKind R32 = UnaryOperatorKind.Float32;
             private const UnaryOperatorKind R64 = UnaryOperatorKind.Float64;
-            private const UnaryOperatorKind DEC = UnaryOperatorKind.Decimal;
             private const UnaryOperatorKind INT = UnaryOperatorKind.Int;
             private const UnaryOperatorKind UNT = UnaryOperatorKind.UInt;
             private const UnaryOperatorKind LBOL = UnaryOperatorKind.Lifted | UnaryOperatorKind.Bool;
@@ -40,35 +39,34 @@ namespace StarkPlatform.Compiler.Stark
             private const UnaryOperatorKind LU64 = UnaryOperatorKind.Lifted | UnaryOperatorKind.UInt64;
             private const UnaryOperatorKind LR32 = UnaryOperatorKind.Lifted | UnaryOperatorKind.Float32;
             private const UnaryOperatorKind LR64 = UnaryOperatorKind.Lifted | UnaryOperatorKind.Float64;
-            private const UnaryOperatorKind LDEC = UnaryOperatorKind.Lifted | UnaryOperatorKind.Decimal;
             private const UnaryOperatorKind LINT = UnaryOperatorKind.Lifted | UnaryOperatorKind.Int;
             private const UnaryOperatorKind LUNT = UnaryOperatorKind.Lifted | UnaryOperatorKind.UInt;
 
 
             private static readonly UnaryOperatorKind[] s_increment =
-                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64   dec   int   uint
-                { ERR, ERR, ERR, CHR,  I08,  I16,  I32,  I64,  U08,  U16,  U32,  U64,  R32,  R64,  DEC,  INT,  UNT,
-               /* lifted */ ERR, LCHR, LI08, LI16, LI32, LI64, LU08, LU16, LU32, LU64, LR32, LR64, LDEC,LINT, LUNT };
+                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64   int   uint
+                { ERR, ERR, ERR, CHR,  I08,  I16,  I32,  I64,  U08,  U16,  U32,  U64,  R32,  R64,  INT,  UNT,
+               /* lifted */ ERR, LCHR, LI08, LI16, LI32, LI64, LU08, LU16, LU32, LU64, LR32, LR64, LINT, LUNT };
 
             private static readonly UnaryOperatorKind[] s_plus =
-                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64   dec   int   uint
-                { ERR, ERR, ERR, I32,  I32,  I32,  I32,  I64,  I32,  I32,  U32,  U64,  R32,  R64,  DEC,  INT,  UNT,
-               /* lifted */ ERR, LI32, LI32, LI32, LI32, LI64, LI32, LI32, LU32, LU64, LR32, LR64, LDEC,LINT, LUNT };
+                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64   int   uint
+                { ERR, ERR, ERR, I32,  I32,  I32,  I32,  I64,  I32,  I32,  U32,  U64,  R32,  R64,  INT,  UNT,
+               /* lifted */ ERR, LI32, LI32, LI32, LI32, LI64, LI32, LI32, LU32, LU64, LR32, LR64, LINT, LUNT };
 
             private static readonly UnaryOperatorKind[] s_minus =
-                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64   dec   int   uint
-                { ERR, ERR, ERR, I32,  I32,  I32,  I32,  I64,  I32,  I32,  I64,  ERR,  R32,  R64,  DEC,  INT,  UNT,
-               /* lifted */ ERR, LI32, LI32, LI32, LI32, LI64, LI32, LI32, LI64, ERR,  LR32, LR64, LDEC,LINT, LUNT };
+                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64   int   uint
+                { ERR, ERR, ERR, I32,  I32,  I32,  I32,  I64,  I32,  I32,  I64,  ERR,  R32,  R64,  INT,  UNT,
+               /* lifted */ ERR, LI32, LI32, LI32, LI32, LI64, LI32, LI32, LI64, ERR,  LR32, LR64, LINT, LUNT };
 
             private static readonly UnaryOperatorKind[] s_logicalNegation =
-                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64   dec   int   uint
-                { ERR, ERR, BOL,  ERR, ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,
-               /* lifted */ LBOL, ERR, ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR };
+                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64   int   uint
+                { ERR, ERR, BOL,  ERR, ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,
+               /* lifted */ LBOL, ERR, ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR,  ERR };
 
             private static readonly UnaryOperatorKind[] s_bitwiseComplement =
-                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64   dec   int   uint
-                { ERR, ERR, ERR, I32,  I32,  I32,  I32,  I64,  I32,  I32,  U32,  U64,  ERR,  ERR,  ERR,  INT,  UNT,
-               /* lifted */ ERR, LI32, LI32, LI32, LI32, LI64, LI32, LI32, LU32, LU64, ERR,  ERR,  ERR, LINT, LUNT };
+                //obj  str  bool chr   i08   i16   i32   i64   u08   u16   u32   u64   r32   r64    int   uint
+                { ERR, ERR, ERR, I32,  I32,  I32,  I32,  I64,  I32,  I32,  U32,  U64,  ERR,  ERR,   INT,  UNT,
+               /* lifted */ ERR, LI32, LI32, LI32, LI32, LI64, LI32, LI32, LU32, LU64, ERR,  ERR,  LINT, LUNT };
 
             private static readonly UnaryOperatorKind[][] s_opkind =
             {
@@ -101,9 +99,8 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_UInt64: return 11;
                     case SpecialType.System_Float32: return 12;
                     case SpecialType.System_Float64: return 13;
-                    case SpecialType.System_Decimal: return 14;
-                    case SpecialType.System_Int: return 15;
-                    case SpecialType.System_UInt: return 16;
+                    case SpecialType.System_Int: return 14;
+                    case SpecialType.System_UInt: return 15;
 
                     case SpecialType.None:
                         if ((object)type != null && type.IsNullableType())
@@ -124,9 +121,8 @@ namespace StarkPlatform.Compiler.Stark
                                 case SpecialType.System_UInt64: return 26;
                                 case SpecialType.System_Float32: return 27;
                                 case SpecialType.System_Float64: return 28;
-                                case SpecialType.System_Decimal: return 29;
-                                case SpecialType.System_Int: return 30;
-                                case SpecialType.System_UInt: return 31;
+                                case SpecialType.System_Int: return 29;
+                                case SpecialType.System_UInt: return 30;
                             }
                         }
 

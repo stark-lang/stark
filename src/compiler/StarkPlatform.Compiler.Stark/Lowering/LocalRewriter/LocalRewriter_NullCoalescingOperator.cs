@@ -103,7 +103,7 @@ namespace StarkPlatform.Compiler.Stark
                             notNullAccess = conditionalAccess.WhenNotNull;
                         }
 
-                        if (whenNullOpt.IsDefaultValue() && whenNullOpt.Type.SpecialType != SpecialType.System_Decimal)
+                        if (whenNullOpt.IsDefaultValue())
                         {
                             whenNullOpt = null;
                         }

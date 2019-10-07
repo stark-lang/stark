@@ -85,7 +85,6 @@ namespace StarkPlatform.Compiler.CodeGeneration
                 case StarkPlatform.Compiler.SpecialType.System_UInt32:
                 case StarkPlatform.Compiler.SpecialType.System_Int64:
                 case StarkPlatform.Compiler.SpecialType.System_UInt64:
-                case StarkPlatform.Compiler.SpecialType.System_Decimal:
                 case StarkPlatform.Compiler.SpecialType.System_Float32:
                 case StarkPlatform.Compiler.SpecialType.System_Float64:
                 case StarkPlatform.Compiler.SpecialType.System_String:

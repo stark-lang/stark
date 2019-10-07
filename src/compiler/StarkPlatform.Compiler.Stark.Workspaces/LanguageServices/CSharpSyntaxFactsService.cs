@@ -376,8 +376,6 @@ namespace StarkPlatform.Compiler.Stark
                     return PredefinedType.Float32;
                 case SyntaxKind.Float64Keyword:
                     return PredefinedType.Float64;
-                case SyntaxKind.DecimalKeyword:
-                    return PredefinedType.Decimal;
                 case SyntaxKind.StringKeyword:
                     return PredefinedType.String;
                 case SyntaxKind.CharKeyword:

@@ -149,15 +149,6 @@ namespace StarkPlatform.Compiler.Stark
                 return MakeConversionNode(newNode.Syntax, newNode, Conversion.ExplicitEnumeration, type, @checked: false);
             }
 
-            if (kind == UnaryOperatorKind.DecimalUnaryMinus)
-            {
-                method = (MethodSymbol)_compilation.Assembly.GetSpecialTypeMember(SpecialMember.System_Decimal__op_UnaryNegation);
-                if (!_inExpressionLambda)
-                {
-                    return BoundCall.Synthesized(syntax, null, method, loweredOperand);
-                }
-            }
-
             return (oldNode != null) ?
                 oldNode.Update(kind, loweredOperand, oldNode.ConstantValueOpt, method, oldNode.ResultKind, type) :
                 new BoundUnaryOperator(syntax, kind, loweredOperand, null, method, LookupResultKind.Viable, type);
@@ -745,18 +736,7 @@ namespace StarkPlatform.Compiler.Stark
 
             // (int)(short)x + 1            
             BoundExpression binOp;
-            if (unaryOperandType.SpecialType == SpecialType.System_Decimal)
-            {
-                binOp = MakeDecimalIncDecOperator(node.Syntax, binaryOperatorKind, binaryOperand);
-            }
-            else if (unaryOperandType.IsNullableType() && unaryOperandType.GetNullableUnderlyingType().SpecialType == SpecialType.System_Decimal)
-            {
-                binOp = MakeLiftedDecimalIncDecOperator(node.Syntax, binaryOperatorKind, binaryOperand);
-            }
-            else
-            {
-                binOp = MakeBinaryOperator(node.Syntax, binaryOperatorKind, binaryOperand, boundOne, binaryOperandType, method: null);
-            }
+            binOp = MakeBinaryOperator(node.Syntax, binaryOperatorKind, binaryOperand, boundOne, binaryOperandType, method: null);
 
             // Generate the conversion back to the type of the unary operator.
 
@@ -765,53 +745,6 @@ namespace StarkPlatform.Compiler.Stark
             return result;
         }
 
-        private MethodSymbol GetDecimalIncDecOperator(BinaryOperatorKind oper)
-        {
-            SpecialMember member;
-            switch (oper.Operator())
-            {
-                case BinaryOperatorKind.Addition: member = SpecialMember.System_Decimal__op_Increment; break;
-                case BinaryOperatorKind.Subtraction: member = SpecialMember.System_Decimal__op_Decrement; break;
-                default:
-                    throw ExceptionUtilities.UnexpectedValue(oper.Operator());
-            }
-
-            var method = (MethodSymbol)_compilation.Assembly.GetSpecialTypeMember(member);
-            Debug.Assert((object)method != null); // Should have been checked during Warnings pass
-            return method;
-        }
-
-        // Build Decimal.op_Increment((Decimal)operand) or Decimal.op_Decrement((Decimal)operand)
-        private BoundExpression MakeDecimalIncDecOperator(SyntaxNode syntax, BinaryOperatorKind oper, BoundExpression operand)
-        {
-            Debug.Assert(operand.Type.SpecialType == SpecialType.System_Decimal);
-            MethodSymbol method = GetDecimalIncDecOperator(oper);
-            return BoundCall.Synthesized(syntax, null, method, operand);
-        }
-
-        private BoundExpression MakeLiftedDecimalIncDecOperator(SyntaxNode syntax, BinaryOperatorKind oper, BoundExpression operand)
-        {
-            Debug.Assert(operand.Type.IsNullableType() && operand.Type.GetNullableUnderlyingType().SpecialType == SpecialType.System_Decimal);
-
-            // This method assumes that operand is already a temporary and so there is no need to copy it again.
-            MethodSymbol method = GetDecimalIncDecOperator(oper);
-            MethodSymbol getValueOrDefault = UnsafeGetNullableMethod(syntax, operand.Type, SpecialMember.System_Nullable_T_GetValueOrDefault);
-            MethodSymbol ctor = UnsafeGetNullableMethod(syntax, operand.Type, SpecialMember.System_Nullable_T__ctor);
-
-            // x.HasValue
-            BoundExpression condition = MakeNullableHasValue(syntax, operand);
-            // x.GetValueOrDefault()
-            BoundExpression getValueCall = BoundCall.Synthesized(syntax, operand, getValueOrDefault);
-            // op_Inc(x.GetValueOrDefault())
-            BoundExpression methodCall = BoundCall.Synthesized(syntax, null, method, getValueCall);
-            // new decimal?(op_Inc(x.GetValueOrDefault()))
-            BoundExpression consequence = new BoundObjectCreationExpression(syntax, ctor, null, methodCall);
-            // default(decimal?)
-            BoundExpression alternative = new BoundDefaultExpression(syntax, null, operand.Type);
-
-            // x.HasValue ? new decimal?(op_Inc(x.GetValueOrDefault())) : default(decimal?)
-            return RewriteConditionalOperator(syntax, condition, consequence, alternative, ConstantValue.NotAvailable, operand.Type, isRef: false);
-        }
 
         /// <summary>
         /// Transform an expression from a form suitable as an lvalue to a form suitable as an rvalue.
@@ -904,9 +837,6 @@ namespace StarkPlatform.Compiler.Stark
                 case UnaryOperatorKind.Float64:
                     specialType = SpecialType.System_Float64;
                     break;
-                case UnaryOperatorKind.Decimal:
-                    specialType = SpecialType.System_Decimal;
-                    break;
                 case UnaryOperatorKind.Int:
                     specialType = SpecialType.System_Int;
                     break;
@@ -970,9 +900,6 @@ namespace StarkPlatform.Compiler.Stark
                     break;
                 case UnaryOperatorKind.Float64:
                     result = BinaryOperatorKind.Float64;
-                    break;
-                case UnaryOperatorKind.Decimal: //Dev10 special cased this, but we'll let DecimalRewriter handle it
-                    result = BinaryOperatorKind.Decimal;
                     break;
                 case UnaryOperatorKind.Enum:
                     {
@@ -1060,8 +987,6 @@ namespace StarkPlatform.Compiler.Stark
                     return ConstantValue.Create(1f);
                 case BinaryOperatorKind.Float64:
                     return ConstantValue.Create(1.0);
-                case BinaryOperatorKind.Decimal:
-                    return ConstantValue.Create(1m);
                 default:
                     throw ExceptionUtilities.UnexpectedValue(binaryOperatorKind.OperandTypes());
             }

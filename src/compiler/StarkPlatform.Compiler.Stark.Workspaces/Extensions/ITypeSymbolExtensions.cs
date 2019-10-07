@@ -152,9 +152,6 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                 case SpecialType.System_UInt64:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
-                // NOTE: VB treats System.DateTime as an intrinsic, while C# does not, see "predeftype.h"
-                //case SpecialType.System_DateTime:
-                case SpecialType.System_Decimal:
                     return true;
                 default:
                     return false;

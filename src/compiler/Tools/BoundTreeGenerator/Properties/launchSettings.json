@@ -2,7 +2,7 @@
   "profiles": {
     "CompilersBoundTreeGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "CSharp C:\\code\\stark\\stark\\ext\\stark-roslyn\\src\\Compilers\\Stark\\Portable\\BoundTree\\BoundNodes.xml C:\\code\\stark\\stark\\ext\\stark-roslyn\\src\\Compilers\\Stark\\Portable\\Generated\\BoundNodes.xml.Generated.cs"
+      "commandLineArgs": "CSharp C:\\code\\stark\\stark\\src\\compiler\\StarkPlatform.Compiler.Stark\\BoundTree\\BoundNodes.xml  C:\\code\\stark\\stark\\src\\compiler\\StarkPlatform.Compiler.Stark\\Generated\\BoundNodes.xml.Generated.cs"
     }
   }
 }

@@ -226,7 +226,6 @@ namespace StarkPlatform.Compiler
         private static readonly byte[][] s_signaturesOfOptionalAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfDefaultParameterValueAttribute = { s_signature_HasThis_Void_Object };
         private static readonly byte[][] s_signaturesOfDateTimeConstantAttribute = { s_signature_HasThis_Void_Int64 };
-        private static readonly byte[][] s_signaturesOfDecimalConstantAttribute = { s_signature_HasThis_Void_UInt8_UInt8_UInt32_UInt32_UInt32, s_signature_HasThis_Void_UIn8_UInt8_Int32_Int32_Int32 };
         private static readonly byte[][] s_signaturesOfIUnknownConstantAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfCallerArgumentExpressionAttribute = { s_signature_HasThis_Void_String };
         private static readonly byte[][] s_signaturesOfCallerFilePathAttribute = { s_signature_HasThis_Void };
@@ -440,7 +439,6 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription SatelliteContractVersionAttribute = new AttributeDescription("System.Resources", "SatelliteContractVersionAttribute", s_signaturesOfSatelliteContractVersionAttribute);
         internal static readonly AttributeDescription AssemblyTrademarkAttribute = new AttributeDescription("System.Reflection", "AssemblyTrademarkAttribute", s_signaturesOfAssemblyTrademarkAttribute);
         internal static readonly AttributeDescription AssemblyFlagsAttribute = new AttributeDescription("System.Reflection", "AssemblyFlagsAttribute", s_signaturesOfAssemblyFlagsAttribute);
-        internal static readonly AttributeDescription DecimalConstantAttribute = new AttributeDescription("core.runtime", "DecimalConstantAttribute", s_signaturesOfDecimalConstantAttribute);
         internal static readonly AttributeDescription IUnknownConstantAttribute = new AttributeDescription("core.runtime", "IUnknownConstantAttribute", s_signaturesOfIUnknownConstantAttribute);
         internal static readonly AttributeDescription CallerArgumentExpressionAttribute = new AttributeDescription("core.runtime", "CallerArgumentExpressionAttribute", s_signaturesOfCallerArgumentExpressionAttribute);
         internal static readonly AttributeDescription CallerFilePathAttribute = new AttributeDescription("core.runtime", "CallerFilePathAttribute", s_signaturesOfCallerFilePathAttribute);

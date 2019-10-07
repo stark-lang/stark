@@ -106,145 +106,140 @@ namespace StarkPlatform.Compiler
         System_UInt64 = 16,
 
         /// <summary>
-        /// Indicates that the type is <see cref="decimal"/>.
-        /// </summary>
-        System_Decimal = 17,
-
-        /// <summary>
         /// Indicates that the type is <see cref="float"/>.
         /// </summary>
-        System_Float32 = 18,
+        System_Float32 = 17,
 
         /// <summary>
         /// Indicates that the type is <see cref="double"/>.
         /// </summary>
-        System_Float64 = 19,
+        System_Float64 = 18,
 
         /// <summary>
         /// Indicates that the type is <see cref="string"/>.
         /// </summary>
-        System_String = 20,
+        System_String = 19,
 
         /// <summary>
         /// Indicates that the type is <see cref="IntPtr" />.
         /// </summary>
-        System_Int = 21,
+        System_Int = 20,
 
         /// <summary>
         /// Indicates that the type is <see cref="UIntPtr"/>.
         /// </summary>
-        System_UInt = 22,
+        System_UInt = 21,
 
         /// <summary>
         /// Indicates that the type is <see cref="Array"/>.
         /// </summary>
-        System_Array = 23,
+        System_Array = 22,
 
         /// <summary>
         /// Indicates that the type is <see cref="IEnumerable"/>.
         /// </summary>
-        System_Collections_IEnumerable = 24,
+        System_Collections_IEnumerable = 23,
 
         /// <summary>
         /// Indicates that the type is <see cref="IEnumerable{T}"/>.
         /// </summary>
-        System_Collections_Generic_IEnumerable_T = 25, // Note: IEnumerable<int> (i.e. constructed type) has no special type
+        System_Collections_Generic_IEnumerable_T = 24, // Note: IEnumerable<int> (i.e. constructed type) has no special type
 
         /// <summary>
         /// Indicates that the type is <see cref="IList{T}"/>.
         /// </summary>
-        System_Collections_Generic_IList_T = 26,
+        System_Collections_Generic_IList_T = 25,
 
         /// <summary>
         /// Indicates that the type is <see cref="ICollection{T}"/>.
         /// </summary>
-        System_Collections_Generic_ICollection_T = 27,
+        System_Collections_Generic_ICollection_T = 26,
 
         /// <summary>
         /// Indicates that the type is <see cref="IEnumerator"/>.
         /// </summary>
-        System_Collections_IEnumerator = 28,
+        System_Collections_IEnumerator = 27,
 
         /// <summary>
         /// Indicates that the type is <see cref="IEnumerator{T}"/>.
         /// </summary>
-        System_Collections_Generic_IEnumerator_T = 29,
+        System_Collections_Generic_IEnumerator_T = 28,
 
         /// <summary>
         /// Indicates that the type is <see cref="IReadOnlyList{T}"/>.
         /// </summary>
-        System_Collections_Generic_IReadOnlyList_T = 30,
+        System_Collections_Generic_IReadOnlyList_T = 29,
 
         /// <summary>
         /// Indicates that the type is <see cref="IReadOnlyCollection{T}"/>.
         /// </summary>
-        System_Collections_Generic_IReadOnlyCollection_T = 31,
+        System_Collections_Generic_IReadOnlyCollection_T = 30,
 
         /// <summary>
         /// Indicates that the type is <see cref="Nullable{T}"/>.
         /// </summary>
-        System_Nullable_T = 32,
+        System_Nullable_T = 31,
 
         /// <summary>
         /// Indicates that the type is <see cref="DateTime"/>.
         /// </summary>
-        System_DateTime = 33,
+        System_DateTime = 32,
 
         /// <summary>
         /// Indicates that the type is <see cref="IsVolatile"/>.
         /// </summary>
-        System_Runtime_CompilerServices_IsVolatile = 34,
+        System_Runtime_CompilerServices_IsVolatile = 33,
 
         /// <summary>
         /// Indicates that the type is <see cref="IDisposable"/>.
         /// </summary>
-        System_IDisposable = 35,
+        System_IDisposable = 34,
 
 #pragma warning disable CA1200 // Avoid using cref tags with a prefix
         /// <summary>
         /// Indicates that the type is <see cref="T:System.TypedReference"/>.
         /// </summary>
 #pragma warning restore CA1200 // Avoid using cref tags with a prefix
-        System_TypedReference = 36,
+        System_TypedReference = 35,
 
 #pragma warning disable CA1200 // Avoid using cref tags with a prefix
         /// <summary>
         /// Indicates that the type is <see cref="T:System.ArgIterator"/>.
         /// </summary>
 #pragma warning restore CA1200 // Avoid using cref tags with a prefix
-        System_ArgIterator = 37,
+        System_ArgIterator = 36,
 
 #pragma warning disable CA1200 // Avoid using cref tags with a prefix
         /// <summary>
         /// Indicates that the type is <see cref="T:System.RuntimeArgumentHandle"/>.
         /// </summary>
 #pragma warning restore CA1200 // Avoid using cref tags with a prefix
-        System_RuntimeArgumentHandle = 38,
+        System_RuntimeArgumentHandle = 37,
 
         /// <summary>
         /// Indicates that the type is <see cref="RuntimeFieldHandle"/>.
         /// </summary>
-        System_RuntimeFieldHandle = 39,
+        System_RuntimeFieldHandle = 38,
 
         /// <summary>
         /// Indicates that the type is <see cref="RuntimeMethodHandle"/>.
         /// </summary>
-        System_RuntimeMethodHandle = 40,
+        System_RuntimeMethodHandle = 39,
 
         /// <summary>
         /// Indicates that the type is <see cref="RuntimeTypeHandle"/>.
         /// </summary>
-        System_RuntimeTypeHandle = 41,
+        System_RuntimeTypeHandle = 40,
 
         /// <summary>
         /// Indicates that the type is <see cref="IAsyncResult"/>.
         /// </summary>
-        System_IAsyncResult = 42,
+        System_IAsyncResult = 41,
 
         /// <summary>
         /// Indicates that the type is <see cref="AsyncCallback"/>.
         /// </summary>
-        System_AsyncCallback = 43,
+        System_AsyncCallback = 42,
 
         /// <summary>
         /// Count of special types. This is not a count of enum members.

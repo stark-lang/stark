@@ -285,8 +285,6 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Int8:
                     case SpecialType.System_UInt16:
                         return _localRewriter.MakeBinaryOperator(_factory.Syntax, BinaryOperatorKind.Int32Equal, _factory.Convert(intType, input), _factory.Convert(intType, loweredLiteral), booleanType, method: null);
-                    case SpecialType.System_Decimal:
-                        return _localRewriter.MakeBinaryOperator(_factory.Syntax, BinaryOperatorKind.DecimalEqual, input, loweredLiteral, booleanType, method: null);
                     case SpecialType.System_Float64:
                         return _localRewriter.MakeBinaryOperator(_factory.Syntax, BinaryOperatorKind.Float64Equal, input, loweredLiteral, booleanType, method: null);
                     case SpecialType.System_Int32:

@@ -174,8 +174,6 @@ namespace StarkPlatform.Compiler.CodeGeneration
                         return value is long;
                     case SpecialType.System_UInt64:
                         return value is ulong;
-                    case SpecialType.System_Decimal:
-                        return value is decimal;
                     case SpecialType.System_Float32:
                         return value is float;
                     case SpecialType.System_Float64:

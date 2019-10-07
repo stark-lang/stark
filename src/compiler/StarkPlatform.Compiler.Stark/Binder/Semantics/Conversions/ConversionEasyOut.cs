@@ -119,9 +119,8 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_UInt64: return 11;
                     case SpecialType.System_Float32: return 12;
                     case SpecialType.System_Float64: return 13;
-                    case SpecialType.System_Decimal: return 14;
-                    case SpecialType.System_Int: return 15;
-                    case SpecialType.System_UInt: return 16;
+                    case SpecialType.System_Int: return 14;
+                    case SpecialType.System_UInt: return 15;
 
                     case SpecialType.None:
                         if ((object)type != null && type.IsNullableType())
@@ -142,9 +141,8 @@ namespace StarkPlatform.Compiler.Stark
                                 case SpecialType.System_UInt64: return 26;
                                 case SpecialType.System_Float32: return 27;
                                 case SpecialType.System_Float64: return 28;
-                                case SpecialType.System_Decimal: return 29;
-                                case SpecialType.System_Int: return 30;
-                                case SpecialType.System_UInt: return 31;
+                                case SpecialType.System_Int: return 29;
+                                case SpecialType.System_UInt: return 30;
                             }
                         }
 

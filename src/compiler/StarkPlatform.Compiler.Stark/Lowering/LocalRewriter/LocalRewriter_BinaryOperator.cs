@@ -338,19 +338,6 @@ namespace StarkPlatform.Compiler.Stark
                     case BinaryOperatorKind.UInt64RightShift:
                         return RewriteBuiltInShiftOperation(oldNode, syntax, operatorKind, loweredLeft, loweredRight, type, 0x3F);
 
-                    case BinaryOperatorKind.DecimalAddition:
-                    case BinaryOperatorKind.DecimalSubtraction:
-                    case BinaryOperatorKind.DecimalMultiplication:
-                    case BinaryOperatorKind.DecimalDivision:
-                    case BinaryOperatorKind.DecimalRemainder:
-                    case BinaryOperatorKind.DecimalEqual:
-                    case BinaryOperatorKind.DecimalNotEqual:
-                    case BinaryOperatorKind.DecimalLessThan:
-                    case BinaryOperatorKind.DecimalLessThanOrEqual:
-                    case BinaryOperatorKind.DecimalGreaterThan:
-                    case BinaryOperatorKind.DecimalGreaterThanOrEqual:
-                        return RewriteDecimalBinaryOperation(syntax, loweredLeft, loweredRight, operatorKind);
-
                     case BinaryOperatorKind.PointerAndInt32Addition:
                     case BinaryOperatorKind.PointerAndUInt32Addition:
                     case BinaryOperatorKind.PointerAndInt64Addition:
@@ -1875,37 +1862,6 @@ namespace StarkPlatform.Compiler.Stark
                 MakeConversionNode(syntax, call, Conversion.ExplicitReference, type, @checked: false) :
                 call;
             return result;
-        }
-
-        private BoundExpression RewriteDecimalBinaryOperation(SyntaxNode syntax, BoundExpression loweredLeft, BoundExpression loweredRight, BinaryOperatorKind operatorKind)
-        {
-            Debug.Assert(loweredLeft.Type.SpecialType == SpecialType.System_Decimal);
-            Debug.Assert(loweredRight.Type.SpecialType == SpecialType.System_Decimal);
-
-            SpecialMember member;
-
-            switch (operatorKind)
-            {
-                case BinaryOperatorKind.DecimalAddition: member = SpecialMember.System_Decimal__op_Addition; break;
-                case BinaryOperatorKind.DecimalSubtraction: member = SpecialMember.System_Decimal__op_Subtraction; break;
-                case BinaryOperatorKind.DecimalMultiplication: member = SpecialMember.System_Decimal__op_Multiply; break;
-                case BinaryOperatorKind.DecimalDivision: member = SpecialMember.System_Decimal__op_Division; break;
-                case BinaryOperatorKind.DecimalRemainder: member = SpecialMember.System_Decimal__op_Modulus; break;
-                case BinaryOperatorKind.DecimalEqual: member = SpecialMember.System_Decimal__op_Equality; break;
-                case BinaryOperatorKind.DecimalNotEqual: member = SpecialMember.System_Decimal__op_Inequality; break;
-                case BinaryOperatorKind.DecimalLessThan: member = SpecialMember.System_Decimal__op_LessThan; break;
-                case BinaryOperatorKind.DecimalLessThanOrEqual: member = SpecialMember.System_Decimal__op_LessThanOrEqual; break;
-                case BinaryOperatorKind.DecimalGreaterThan: member = SpecialMember.System_Decimal__op_GreaterThan; break;
-                case BinaryOperatorKind.DecimalGreaterThanOrEqual: member = SpecialMember.System_Decimal__op_GreaterThanOrEqual; break;
-                default:
-                    throw ExceptionUtilities.UnexpectedValue(operatorKind);
-            }
-
-            // call Operator (left, right)
-            var method = UnsafeGetSpecialTypeMethod(syntax, member);
-            Debug.Assert((object)method != null);
-
-            return BoundCall.Synthesized(syntax, null, method, loweredLeft, loweredRight);
         }
 
         private BoundExpression MakeNullCheck(SyntaxNode syntax, BoundExpression rewrittenExpr, BinaryOperatorKind operatorKind)

@@ -19,7 +19,6 @@ namespace StarkPlatform.Compiler
         public static readonly object BoxedUInt64Zero = 0UL;
         public static readonly object BoxedSingleZero = 0.0f;
         public static readonly object BoxedDoubleZero = 0.0;
-        public static readonly object BoxedDecimalZero = 0m;
 
         private static readonly object[] s_boxedAsciiChars = new object[128];
 
@@ -92,14 +91,6 @@ namespace StarkPlatform.Compiler
             return c < 128
                 ? s_boxedAsciiChars[c] ?? (s_boxedAsciiChars[c] = c)
                 : c;
-        }
-
-        public static unsafe object Box(decimal d)
-        {
-            // There are many representation of zero in System.Decimal
-            // Use the boxed value only if the bit pattern is all zeros.
-            ulong* ptr = (ulong*)&d;
-            return ptr[0] == 0 && ptr[1] == 0 ? BoxedDecimalZero : d;
         }
     }
 }

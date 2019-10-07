@@ -29,10 +29,9 @@ namespace StarkPlatform.Compiler.Stark
         Char = 0x00000019,
         Float32 = 0x0000001A,
         Float64 = 0x0000001B,
-        Decimal = 0x0000001C,
-        Bool = 0x0000001D,
-        _Object = 0x0000001E, // reserved for binary op
-        _String = 0x0000001F, // reserved for binary op
+        Bool = 0x0000001C,
+        _Object = 0x0000001D, // reserved for binary op
+        _String = 0x0000001E, // reserved for binary op
         _StringAndObject = 0x00000021, // reserved for binary op
         _ObjectAndString = 0x00000022, // reserved for binary op
 
@@ -86,7 +85,6 @@ namespace StarkPlatform.Compiler.Stark
         CharPostfixIncrement = Char | PostfixIncrement,
         Float32PostfixIncrement = Float32 | PostfixIncrement,
         Float64PostfixIncrement = Float64 | PostfixIncrement,
-        DecimalPostfixIncrement = Decimal | PostfixIncrement,
         IntPostfixIncrement = Int | PostfixIncrement,
         UIntPostfixIncrement = UInt | PostfixIncrement,
 
@@ -103,7 +101,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedCharPostfixIncrement = Lifted | Char | PostfixIncrement,
         LiftedFloat32PostfixIncrement = Lifted | Float32 | PostfixIncrement,
         LiftedFloat64PostfixIncrement = Lifted | Float64 | PostfixIncrement,
-        LiftedDecimalPostfixIncrement = Lifted | Decimal | PostfixIncrement,
         LiftedIntPostfixIncrement = Lifted | Int | PostfixIncrement,
         LiftedUIntPostfixIncrement = Lifted | UInt | PostfixIncrement,
 
@@ -123,7 +120,6 @@ namespace StarkPlatform.Compiler.Stark
         CharPrefixIncrement = Char | PrefixIncrement,
         Float32PrefixIncrement = Float32 | PrefixIncrement,
         Float64PrefixIncrement = Float64 | PrefixIncrement,
-        DecimalPrefixIncrement = Decimal | PrefixIncrement,
         IntPrefixIncrement = Int | PrefixIncrement,
         UIntPrefixIncrement = UInt | PrefixIncrement,
 
@@ -140,7 +136,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedCharPrefixIncrement = Lifted | Char | PrefixIncrement,
         LiftedFloat32PrefixIncrement = Lifted | Float32 | PrefixIncrement,
         LiftedFloat64PrefixIncrement = Lifted | Float64 | PrefixIncrement,
-        LiftedDecimalPrefixIncrement = Lifted | Decimal | PrefixIncrement,
         LiftedIntPrefixIncrement = Lifted | Int | PrefixIncrement,
         LiftedUIntPrefixIncrement = Lifted | UInt | PrefixIncrement,
 
@@ -160,7 +155,6 @@ namespace StarkPlatform.Compiler.Stark
         CharPostfixDecrement = Char | PostfixDecrement,
         Float32PostfixDecrement = Float32 | PostfixDecrement,
         Float64PostfixDecrement = Float64 | PostfixDecrement,
-        DecimalPostfixDecrement = Decimal | PostfixDecrement,
         IntPostfixDecrement = Int | PostfixDecrement,
         UIntPostfixDecrement = UInt | PostfixDecrement,
 
@@ -177,7 +171,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedCharPostfixDecrement = Lifted | Char | PostfixDecrement,
         LiftedFloat32PostfixDecrement = Lifted | Float32 | PostfixDecrement,
         LiftedFloat64PostfixDecrement = Lifted | Float64 | PostfixDecrement,
-        LiftedDecimalPostfixDecrement = Lifted | Decimal | PostfixDecrement,
         LiftedIntPostfixDecrement = Lifted | Int | PostfixDecrement,
         LiftedUIntPostfixDecrement = Lifted | UInt | PostfixDecrement,
 
@@ -197,7 +190,6 @@ namespace StarkPlatform.Compiler.Stark
         CharPrefixDecrement = Char | PrefixDecrement,
         Float32PrefixDecrement = Float32 | PrefixDecrement,
         Float64PrefixDecrement = Float64 | PrefixDecrement,
-        DecimalPrefixDecrement = Decimal | PrefixDecrement,
         IntPrefixDecrement = Int | PrefixDecrement,
         UIntPrefixDecrement = UInt | PrefixDecrement,
 
@@ -214,7 +206,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedCharPrefixDecrement = Lifted | Char | PrefixDecrement,
         LiftedFloat32PrefixDecrement = Lifted | Float32 | PrefixDecrement,
         LiftedFloat64PrefixDecrement = Lifted | Float64 | PrefixDecrement,
-        LiftedDecimalPrefixDecrement = Lifted | Decimal | PrefixDecrement,
         LiftedIntPrefixDecrement = Lifted | Int | PrefixDecrement,
         LiftedUIntPrefixDecrement = Lifted | UInt | PrefixDecrement,
 
@@ -229,7 +220,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64UnaryPlus = UInt64 | UnaryPlus,
         Float32UnaryPlus = Float32 | UnaryPlus,
         Float64UnaryPlus = Float64 | UnaryPlus,
-        DecimalUnaryPlus = Decimal | UnaryPlus,
         IntUnaryPlus = Int | UnaryPlus,
         UIntUnaryPlus = UInt | UnaryPlus,
 
@@ -240,7 +230,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64UnaryPlus = Lifted | UInt64 | UnaryPlus,
         LiftedFloat32UnaryPlus = Lifted | Float32 | UnaryPlus,
         LiftedFloat64UnaryPlus = Lifted | Float64 | UnaryPlus,
-        LiftedDecimalUnaryPlus = Lifted | Decimal | UnaryPlus,
         LiftedIntUnaryPlus = Lifted | Int | UnaryPlus,
         LiftedUIntUnaryPlus = Lifted | UInt | UnaryPlus,
 
@@ -251,7 +240,6 @@ namespace StarkPlatform.Compiler.Stark
         Int64UnaryMinus = Int64 | UnaryMinus,
         Float32UnaryMinus = Float32 | UnaryMinus,
         Float64UnaryMinus = Float64 | UnaryMinus,
-        DecimalUnaryMinus = Decimal | UnaryMinus,
         IntUnaryMinus = Int | UnaryMinus,
 
         UserDefinedUnaryMinus = UserDefined | UnaryMinus,
@@ -259,7 +247,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedInt64UnaryMinus = Lifted | Int64 | UnaryMinus,
         LiftedFloat32UnaryMinus = Lifted | Float32 | UnaryMinus,
         LiftedFloat64UnaryMinus = Lifted | Float64 | UnaryMinus,
-        LiftedDecimalUnaryMinus = Lifted | Decimal | UnaryMinus,
         LiftedIntUnaryMinus = Lifted | Int | UnaryMinus,
 
         LiftedUserDefinedUnaryMinus = Lifted | UserDefined | UnaryMinus,
@@ -318,7 +305,6 @@ namespace StarkPlatform.Compiler.Stark
         Char = UnaryOperatorKind.Char, //not used
         Float32 = UnaryOperatorKind.Float32,
         Float64 = UnaryOperatorKind.Float64,
-        Decimal = UnaryOperatorKind.Decimal,
         Bool = UnaryOperatorKind.Bool,
         Object = UnaryOperatorKind._Object,
         String = UnaryOperatorKind._String,
@@ -376,7 +362,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64Multiplication = UInt64 | Multiplication,
         Float32Multiplication = Float32 | Multiplication,
         Float64Multiplication = Float64 | Multiplication,
-        DecimalMultiplication = Decimal | Multiplication,
         IntMultiplication = Int | Multiplication,
         UIntMultiplication = UInt | Multiplication,
 
@@ -387,7 +372,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64Multiplication = Lifted | UInt64 | Multiplication,
         LiftedFloat32Multiplication = Lifted | Float32 | Multiplication,
         LiftedFloat64Multiplication = Lifted | Float64 | Multiplication,
-        LiftedDecimalMultiplication = Lifted | Decimal | Multiplication,
         LiftedIntMultiplication = Lifted | Int | Multiplication,
         LiftedUIntMultiplication = Lifted | UInt | Multiplication,
         LiftedUserDefinedMultiplication = Lifted | UserDefined | Multiplication,
@@ -399,7 +383,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64Division = UInt64 | Division,
         Float32Division = Float32 | Division,
         Float64Division = Float64 | Division,
-        DecimalDivision = Decimal | Division,
         IntDivision = Int | Division,
         UIntDivision = UInt | Division,
 
@@ -410,7 +393,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64Division = Lifted | UInt64 | Division,
         LiftedFloat32Division = Lifted | Float32 | Division,
         LiftedFloat64Division = Lifted | Float64 | Division,
-        LiftedDecimalDivision = Lifted | Decimal | Division,
         LiftedIntDivision = Lifted | Int | Division,
         LiftedUIntDivision = Lifted | UInt | Division,
         LiftedUserDefinedDivision = Lifted | UserDefined | Division,
@@ -422,7 +404,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64Remainder = UInt64 | Remainder,
         Float32Remainder = Float32 | Remainder,
         Float64Remainder = Float64 | Remainder,
-        DecimalRemainder = Decimal | Remainder,
         IntRemainder = Int | Remainder,
         UIntRemainder = UInt | Remainder,
 
@@ -433,7 +414,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64Remainder = Lifted | UInt64 | Remainder,
         LiftedFloat32Remainder = Lifted | Float32 | Remainder,
         LiftedFloat64Remainder = Lifted | Float64 | Remainder,
-        LiftedDecimalRemainder = Lifted | Decimal | Remainder,
         LiftedIntRemainder = Lifted | Int | Remainder,
         LiftedUIntRemainder = Lifted | UInt | Remainder,
         LiftedUserDefinedRemainder = Lifted | UserDefined | Remainder,
@@ -445,7 +425,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64Addition = UInt64 | Addition,
         Float32Addition = Float32 | Addition,
         Float64Addition = Float64 | Addition,
-        DecimalAddition = Decimal | Addition,
         IntAddition = Int | Addition,
         UIntAddition = UInt | Addition,
 
@@ -458,7 +437,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64Addition = Lifted | UInt64 | Addition,
         LiftedFloat32Addition = Lifted | Float32 | Addition,
         LiftedFloat64Addition = Lifted | Float64 | Addition,
-        LiftedDecimalAddition = Lifted | Decimal | Addition,
         LiftedIntAddition = Lifted | Int | Addition,
         LiftedUIntAddition = Lifted | UInt | Addition,
 
@@ -489,7 +467,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64Subtraction = UInt64 | Subtraction,
         Float32Subtraction = Float32 | Subtraction,
         Float64Subtraction = Float64 | Subtraction,
-        DecimalSubtraction = Decimal | Subtraction,
         IntSubtraction = Int | Subtraction,
         UIntSubtraction = UInt | Subtraction,
         EnumSubtraction = Enum | Subtraction,
@@ -502,7 +479,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64Subtraction = Lifted | UInt64 | Subtraction,
         LiftedFloat32Subtraction = Lifted | Float32 | Subtraction,
         LiftedFloat64Subtraction = Lifted | Float64 | Subtraction,
-        LiftedDecimalSubtraction = Lifted | Decimal | Subtraction,
         LiftedIntSubtraction = Lifted | Int | Subtraction,
         LiftedUIntSubtraction = Lifted | UInt | Subtraction,
         LiftedEnumSubtraction = Lifted | Enum | Subtraction,
@@ -557,7 +533,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64Equal = UInt64 | Equal,
         Float32Equal = Float32 | Equal,
         Float64Equal = Float64 | Equal,
-        DecimalEqual = Decimal | Equal,
         IntEqual = Int | Equal,
         UIntEqual = UInt | Equal,
         BoolEqual = Bool | Equal,
@@ -570,7 +545,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64Equal = Lifted | UInt64 | Equal,
         LiftedFloat32Equal = Lifted | Float32 | Equal,
         LiftedFloat64Equal = Lifted | Float64 | Equal,
-        LiftedDecimalEqual = Lifted | Decimal | Equal,
         LiftedIntEqual = Lifted | Int | Equal,
         LiftedUIntEqual = Lifted | UInt | Equal,
         LiftedBoolEqual = Lifted | Bool | Equal,
@@ -588,7 +562,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64NotEqual = UInt64 | NotEqual,
         Float32NotEqual = Float32 | NotEqual,
         Float64NotEqual = Float64 | NotEqual,
-        DecimalNotEqual = Decimal | NotEqual,
         IntNotEqual = Int | NotEqual,
         UIntNotEqual = UInt | NotEqual,
         BoolNotEqual = Bool | NotEqual,
@@ -601,7 +574,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64NotEqual = Lifted | UInt64 | NotEqual,
         LiftedFloat32NotEqual = Lifted | Float32 | NotEqual,
         LiftedFloat64NotEqual = Lifted | Float64 | NotEqual,
-        LiftedDecimalNotEqual = Lifted | Decimal | NotEqual,
         LiftedIntNotEqual = Lifted | Int | NotEqual,
         LiftedUIntNotEqual = Lifted | UInt | NotEqual,
         LiftedBoolNotEqual = Lifted | Bool | NotEqual,
@@ -619,7 +591,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64LessThan = UInt64 | LessThan,
         Float32LessThan = Float32 | LessThan,
         Float64LessThan = Float64 | LessThan,
-        DecimalLessThan = Decimal | LessThan,
         IntLessThan = Int | LessThan,
         UIntLessThan = UInt | LessThan,
         EnumLessThan = Enum | LessThan,
@@ -630,7 +601,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64LessThan = Lifted | UInt64 | LessThan,
         LiftedFloat32LessThan = Lifted | Float32 | LessThan,
         LiftedFloat64LessThan = Lifted | Float64 | LessThan,
-        LiftedDecimalLessThan = Lifted | Decimal | LessThan,
         LiftedIntLessThan = Lifted | Int | LessThan,
         LiftedUIntLessThan = Lifted | UInt | LessThan,
         LiftedEnumLessThan = Lifted | Enum | LessThan,
@@ -644,7 +614,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64GreaterThan = UInt64 | GreaterThan,
         Float32GreaterThan = Float32 | GreaterThan,
         Float64GreaterThan = Float64 | GreaterThan,
-        DecimalGreaterThan = Decimal | GreaterThan,
         IntGreaterThan = Int | GreaterThan,
         UIntGreaterThan = UInt | GreaterThan,
         EnumGreaterThan = Enum | GreaterThan,
@@ -655,7 +624,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64GreaterThan = Lifted | UInt64 | GreaterThan,
         LiftedFloat32GreaterThan = Lifted | Float32 | GreaterThan,
         LiftedFloat64GreaterThan = Lifted | Float64 | GreaterThan,
-        LiftedDecimalGreaterThan = Lifted | Decimal | GreaterThan,
         LiftedIntGreaterThan = Lifted | Int | GreaterThan,
         LiftedUIntGreaterThan = Lifted | UInt | GreaterThan,
         LiftedEnumGreaterThan = Lifted | Enum | GreaterThan,
@@ -669,7 +637,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64LessThanOrEqual = UInt64 | LessThanOrEqual,
         Float32LessThanOrEqual = Float32 | LessThanOrEqual,
         Float64LessThanOrEqual = Float64 | LessThanOrEqual,
-        DecimalLessThanOrEqual = Decimal | LessThanOrEqual,
         IntLessThanOrEqual = Int | LessThanOrEqual,
         UIntLessThanOrEqual = UInt | LessThanOrEqual,
         EnumLessThanOrEqual = Enum | LessThanOrEqual,
@@ -680,7 +647,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64LessThanOrEqual = Lifted | UInt64 | LessThanOrEqual,
         LiftedFloat32LessThanOrEqual = Lifted | Float32 | LessThanOrEqual,
         LiftedFloat64LessThanOrEqual = Lifted | Float64 | LessThanOrEqual,
-        LiftedDecimalLessThanOrEqual = Lifted | Decimal | LessThanOrEqual,
         LiftedIntLessThanOrEqual = Lifted | Int | LessThanOrEqual,
         LiftedUIntLessThanOrEqual = Lifted | UInt | LessThanOrEqual,
         LiftedEnumLessThanOrEqual = Lifted | Enum | LessThanOrEqual,
@@ -694,7 +660,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64GreaterThanOrEqual = UInt64 | GreaterThanOrEqual,
         Float32GreaterThanOrEqual = Float32 | GreaterThanOrEqual,
         Float64GreaterThanOrEqual = Float64 | GreaterThanOrEqual,
-        DecimalGreaterThanOrEqual = Decimal | GreaterThanOrEqual,
         IntGreaterThanOrEqual = Int | GreaterThanOrEqual,
         UIntGreaterThanOrEqual = UInt | GreaterThanOrEqual,
         EnumGreaterThanOrEqual = Enum | GreaterThanOrEqual,
@@ -705,7 +670,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUInt64GreaterThanOrEqual = Lifted | UInt64 | GreaterThanOrEqual,
         LiftedFloat32GreaterThanOrEqual = Lifted | Float32 | GreaterThanOrEqual,
         LiftedFloat64GreaterThanOrEqual = Lifted | Float64 | GreaterThanOrEqual,
-        LiftedDecimalGreaterThanOrEqual = Lifted | Decimal | GreaterThanOrEqual,
         LiftedIntGreaterThanOrEqual = Lifted | Int | GreaterThanOrEqual,
         LiftedUIntGreaterThanOrEqual = Lifted | UInt | GreaterThanOrEqual,
         LiftedEnumGreaterThanOrEqual = Lifted | Enum | GreaterThanOrEqual,

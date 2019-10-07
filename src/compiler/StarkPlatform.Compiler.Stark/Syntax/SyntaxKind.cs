@@ -92,7 +92,7 @@ namespace StarkPlatform.Compiler.Stark
         UInt64Keyword = 8312,
         Float64Keyword = 8313,
         Float32Keyword = 8314,
-        DecimalKeyword = 8315,
+        // DecimalKeyword = 8315,
         StringKeyword = 8316,
         CharKeyword = 8317,
         VoidKeyword = 8318,

@@ -1217,37 +1217,6 @@ namespace StarkPlatform.Compiler.Stark
             return possiblyBest;
         }
 
-        private static object FoldDecimalBinaryOperators(BinaryOperatorKind kind, ConstantValue valueLeft, ConstantValue valueRight)
-        {
-            Debug.Assert(valueLeft != null);
-            Debug.Assert(valueRight != null);
-
-            // Roslyn uses Decimal.operator+, operator-, etc. for both constant expressions and
-            // non-constant expressions. Dev11 uses Decimal.operator+ etc. for non-constant
-            // expressions only. This leads to different results between the two compilers
-            // for certain constant expressions involving +/-0. (See bug #529730.) For instance,
-            // +0 + -0 == +0 in Roslyn and == -0 in Dev11. Similarly, -0 - -0 == -0 in Roslyn, +0 in Dev11.
-            // This is a breaking change from the native compiler but seems acceptable since
-            // constant and non-constant expressions behave consistently in Roslyn.
-            // (In Dev11, (+0 + -0) != (x + y) when x = +0, y = -0.)
-
-            switch (kind)
-            {
-                case BinaryOperatorKind.DecimalAddition:
-                    return valueLeft.DecimalValue + valueRight.DecimalValue;
-                case BinaryOperatorKind.DecimalSubtraction:
-                    return valueLeft.DecimalValue - valueRight.DecimalValue;
-                case BinaryOperatorKind.DecimalMultiplication:
-                    return valueLeft.DecimalValue * valueRight.DecimalValue;
-                case BinaryOperatorKind.DecimalDivision:
-                    return valueLeft.DecimalValue / valueRight.DecimalValue;
-                case BinaryOperatorKind.DecimalRemainder:
-                    return valueLeft.DecimalValue % valueRight.DecimalValue;
-            }
-
-            return null;
-        }
-
         private static object FoldUncheckedIntegralBinaryOperator(BinaryOperatorKind kind, ConstantValue valueLeft, ConstantValue valueRight)
         {
             unchecked
@@ -1556,24 +1525,6 @@ namespace StarkPlatform.Compiler.Stark
                 return concatResult;
             }
 
-            // Certain binary operations always fail if they overflow even when in an unchecked context;
-            // decimal + decimal, for example. If we are in one of those cases, make the attempt. If it
-            // succeeds, return the result. If not, give a compile-time error regardless of context.
-            try
-            {
-                newValue = FoldDecimalBinaryOperators(kind, valueLeft, valueRight);
-            }
-            catch (OverflowException)
-            {
-                Error(diagnostics, ErrorCode.ERR_DecConstError, syntax);
-                return ConstantValue.Bad;
-            }
-
-            if (newValue != null)
-            {
-                return ConstantValue.Create(newValue, resultType);
-            }
-
             if (CheckOverflowAtCompileTime)
             {
                 try
@@ -1745,8 +1696,6 @@ namespace StarkPlatform.Compiler.Stark
                     return valueLeft.BooleanValue == valueRight.BooleanValue;
                 case BinaryOperatorKind.StringEqual:
                     return valueLeft.StringValue == valueRight.StringValue;
-                case BinaryOperatorKind.DecimalEqual:
-                    return valueLeft.DecimalValue == valueRight.DecimalValue;
                 case BinaryOperatorKind.Float32Equal:
                     return valueLeft.SingleValue == valueRight.SingleValue;
                 case BinaryOperatorKind.Float64Equal:
@@ -1763,8 +1712,6 @@ namespace StarkPlatform.Compiler.Stark
                     return valueLeft.BooleanValue != valueRight.BooleanValue;
                 case BinaryOperatorKind.StringNotEqual:
                     return valueLeft.StringValue != valueRight.StringValue;
-                case BinaryOperatorKind.DecimalNotEqual:
-                    return valueLeft.DecimalValue != valueRight.DecimalValue;
                 case BinaryOperatorKind.Float32NotEqual:
                     return valueLeft.SingleValue != valueRight.SingleValue;
                 case BinaryOperatorKind.Float64NotEqual:
@@ -1777,8 +1724,6 @@ namespace StarkPlatform.Compiler.Stark
                     return valueLeft.UInt32Value != valueRight.UInt32Value;
                 case BinaryOperatorKind.UInt64NotEqual:
                     return valueLeft.UInt64Value != valueRight.UInt64Value;
-                case BinaryOperatorKind.DecimalLessThan:
-                    return valueLeft.DecimalValue < valueRight.DecimalValue;
                 case BinaryOperatorKind.Float32LessThan:
                     return valueLeft.SingleValue < valueRight.SingleValue;
                 case BinaryOperatorKind.Float64LessThan:
@@ -1791,8 +1736,6 @@ namespace StarkPlatform.Compiler.Stark
                     return valueLeft.UInt32Value < valueRight.UInt32Value;
                 case BinaryOperatorKind.UInt64LessThan:
                     return valueLeft.UInt64Value < valueRight.UInt64Value;
-                case BinaryOperatorKind.DecimalGreaterThan:
-                    return valueLeft.DecimalValue > valueRight.DecimalValue;
                 case BinaryOperatorKind.Float32GreaterThan:
                     return valueLeft.SingleValue > valueRight.SingleValue;
                 case BinaryOperatorKind.Float64GreaterThan:
@@ -1805,8 +1748,6 @@ namespace StarkPlatform.Compiler.Stark
                     return valueLeft.UInt32Value > valueRight.UInt32Value;
                 case BinaryOperatorKind.UInt64GreaterThan:
                     return valueLeft.UInt64Value > valueRight.UInt64Value;
-                case BinaryOperatorKind.DecimalLessThanOrEqual:
-                    return valueLeft.DecimalValue <= valueRight.DecimalValue;
                 case BinaryOperatorKind.Float32LessThanOrEqual:
                     return valueLeft.SingleValue <= valueRight.SingleValue;
                 case BinaryOperatorKind.Float64LessThanOrEqual:
@@ -1819,8 +1760,6 @@ namespace StarkPlatform.Compiler.Stark
                     return valueLeft.UInt32Value <= valueRight.UInt32Value;
                 case BinaryOperatorKind.UInt64LessThanOrEqual:
                     return valueLeft.UInt64Value <= valueRight.UInt64Value;
-                case BinaryOperatorKind.DecimalGreaterThanOrEqual:
-                    return valueLeft.DecimalValue >= valueRight.DecimalValue;
                 case BinaryOperatorKind.Float32GreaterThanOrEqual:
                     return valueLeft.SingleValue >= valueRight.SingleValue;
                 case BinaryOperatorKind.Float64GreaterThanOrEqual:
@@ -2458,13 +2397,9 @@ namespace StarkPlatform.Compiler.Stark
             // Note that we do operations on single-precision floats as double-precision.
             switch (kind)
             {
-                case UnaryOperatorKind.DecimalUnaryMinus:
-                    return -value.DecimalValue;
                 case UnaryOperatorKind.Float64UnaryMinus:
                 case UnaryOperatorKind.Float32UnaryMinus:
                     return -value.DoubleValue;
-                case UnaryOperatorKind.DecimalUnaryPlus:
-                    return +value.DecimalValue;
                 case UnaryOperatorKind.Float32UnaryPlus:
                 case UnaryOperatorKind.Float64UnaryPlus:
                     return +value.DoubleValue;
@@ -2644,9 +2579,6 @@ namespace StarkPlatform.Compiler.Stark
 
             switch (kind)
             {
-                case BinaryOperatorKind.DecimalDivision:
-                case BinaryOperatorKind.DecimalRemainder:
-                    return valueRight.DecimalValue == 0.0m;
                 case BinaryOperatorKind.Int32Division:
                 case BinaryOperatorKind.Int32Remainder:
                     return valueRight.Int32Value == 0;

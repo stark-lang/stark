@@ -98,7 +98,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             internal ulong UlongValue;
             internal float FloatValue;
             internal double DoubleValue;
-            internal decimal DecimalValue;
             internal bool IsVerbatim;
         }
 
@@ -368,9 +367,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                                 break;
                             case SpecialType.System_Float64:
                                 token = SyntaxFactory.Literal(leadingNode, info.Text, info.DoubleValue, trailingNode);
-                                break;
-                            case SpecialType.System_Decimal:
-                                token = SyntaxFactory.Literal(leadingNode, info.Text, info.DecimalValue, trailingNode);
                                 break;
                             default:
                                 throw ExceptionUtilities.UnexpectedValue(info.ValueKind);
@@ -1186,11 +1182,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                         TextWindow.AdvanceChar();
                         info.ValueKind = SpecialType.System_Float64;
                     }
-                    else if (ch == 'm' || ch == 'M')
-                    {
-                        TextWindow.AdvanceChar();
-                        info.ValueKind = SpecialType.System_Decimal;
-                    }
                     else
                     {
                         info.ValueKind = SpecialType.System_Float64;
@@ -1205,11 +1196,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                 {
                     TextWindow.AdvanceChar();
                     info.ValueKind = SpecialType.System_Float64;
-                }
-                else if (ch == 'm' || ch == 'M')
-                {
-                    TextWindow.AdvanceChar();
-                    info.ValueKind = SpecialType.System_Decimal;
                 }
                 else if (ch == 'L' || ch == 'l')
                 {
@@ -1263,9 +1249,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                     break;
                 case SpecialType.System_Float64:
                     info.DoubleValue = this.GetValueDouble(valueText);
-                    break;
-                case SpecialType.System_Decimal:
-                    info.DecimalValue = this.GetValueDecimal(valueText, start, TextWindow.Position);
                     break;
                 default:
                     if (string.IsNullOrEmpty(valueText))

@@ -76,7 +76,6 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_UInt64:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
-                case SpecialType.System_Decimal:
                 case SpecialType.System_Int:
                 case SpecialType.System_UInt:
                 case SpecialType.System_Nullable_T:
@@ -121,10 +120,6 @@ namespace StarkPlatform.Compiler
                     return sizeof(double);
                 case SpecialType.System_Boolean:
                     return sizeof(bool);
-
-                case SpecialType.System_Decimal:
-                    //This isn't in the spec, but it is handled by dev10
-                    return sizeof(decimal);
 
                 default:
                     // invalid
@@ -194,7 +189,6 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_UInt64:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
-                case SpecialType.System_Decimal:
                     return true;
                 default:
                     return false;
@@ -303,11 +297,6 @@ namespace StarkPlatform.Compiler
             if (value.GetType() == typeof(float))
             {
                 return SpecialType.System_Float32;
-            }
-
-            if (value.GetType() == typeof(decimal))
-            {
-                return SpecialType.System_Decimal;
             }
 
             if (value.GetType() == typeof(short))

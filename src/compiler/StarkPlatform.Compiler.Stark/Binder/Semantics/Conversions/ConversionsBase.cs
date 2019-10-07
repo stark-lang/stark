@@ -1666,7 +1666,6 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_Char: return 8;
                 case SpecialType.System_Float32: return 9;
                 case SpecialType.System_Float64: return 10;
-                case SpecialType.System_Decimal: return 11;
                 default: return -1;
             }
         }
@@ -1736,8 +1735,6 @@ namespace StarkPlatform.Compiler.Stark
                 case ConstantValueTypeDiscriminator.Single:
                 case ConstantValueTypeDiscriminator.Double:
                     return value.DoubleValue == 0;
-                case ConstantValueTypeDiscriminator.Decimal:
-                    return value.DecimalValue == 0;
             }
             return false;
         }
@@ -1757,7 +1754,6 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_UInt64:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
-                case SpecialType.System_Decimal:
                     return true;
                 default:
                     return false;
@@ -1836,7 +1832,6 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_UInt64:
                 case SpecialType.System_Float64:
                 case SpecialType.System_Float32:
-                case SpecialType.System_Decimal:
                     return true;
             }
 

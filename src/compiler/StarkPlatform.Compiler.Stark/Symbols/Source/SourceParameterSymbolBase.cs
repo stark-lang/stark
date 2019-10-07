@@ -69,15 +69,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 AddSynthesizedAttribute(ref attributes, compilation.TrySynthesizeAttribute(WellKnownMember.System_ParamArrayAttribute__ctor));
             }
 
-            // Synthesize DecimalConstantAttribute if we don't have an explicit custom attribute already:
-            var defaultValue = this.ExplicitDefaultConstantValue;
-            if (defaultValue != ConstantValue.NotAvailable &&
-                defaultValue.SpecialType == SpecialType.System_Decimal &&
-                DefaultValueFromAttributes == ConstantValue.NotAvailable)
-            {
-                AddSynthesizedAttribute(ref attributes, compilation.SynthesizeDecimalConstantAttribute(defaultValue.DecimalValue));
-            }
-
             var type = this.Type;
 
             if (type.TypeSymbol.ContainsDynamic())

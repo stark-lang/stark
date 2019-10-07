@@ -205,11 +205,6 @@ namespace StarkPlatform.Compiler.Stark
                     {
                         return new BoundDefaultExpression(syntax, rewrittenType);
                     }
-
-                    if (rewrittenType.SpecialType == SpecialType.System_Decimal || rewrittenOperand.Type.SpecialType == SpecialType.System_Decimal)
-                    {
-                        return RewriteDecimalConversion(syntax, rewrittenOperand, rewrittenOperand.Type, rewrittenType, conversion.Kind.IsImplicitConversion(), constantValueOpt);
-                    }
                     break;
 
                 case ConversionKind.ImplicitTupleLiteral:
@@ -265,41 +260,6 @@ namespace StarkPlatform.Compiler.Stark
                     {
                         return new BoundDefaultExpression(syntax, rewrittenType);
                     }
-
-                    if (rewrittenType.SpecialType == SpecialType.System_Decimal)
-                    {
-                        Debug.Assert(rewrittenOperand.Type.IsEnumType());
-                        var underlyingTypeFrom = rewrittenOperand.Type.GetEnumUnderlyingType();
-                        rewrittenOperand = MakeConversionNode(rewrittenOperand, underlyingTypeFrom, false);
-                        return RewriteDecimalConversion(syntax, rewrittenOperand, underlyingTypeFrom, rewrittenType, isImplicit: false, constantValueOpt: constantValueOpt);
-                    }
-                    else if (rewrittenOperand.Type.SpecialType == SpecialType.System_Decimal)
-                    {
-                        // This is where we handle conversion from Decimal to Enum: e.g., E e = (E) d;
-                        // where 'e' is of type Enum E and 'd' is of type Decimal.
-                        // Conversion can be simply done by applying its underlying numeric type to RewriteDecimalConversion(). 
-
-                        Debug.Assert(rewrittenType.IsEnumType());
-                        var underlyingTypeTo = rewrittenType.GetEnumUnderlyingType();
-                        var rewrittenNode = RewriteDecimalConversion(syntax, rewrittenOperand, rewrittenOperand.Type, underlyingTypeTo, isImplicit: false, constantValueOpt: constantValueOpt);
-
-                        // However, the type of the rewritten node becomes underlying numeric type, not Enum type,
-                        // which violates the overall constraint saying the type cannot be changed during rewriting (see LocalRewriter.cs).
-
-                        // Instead of loosening this constraint, we return BoundConversion from underlying numeric type to Enum type,
-                        // which will be eliminated during emitting (see EmitEnumConversion): e.g., E e = (E)(int) d;
-                        return new BoundConversion(
-                            syntax,
-                            rewrittenNode,
-                            conversion,
-                            isBaseConversion: false,
-                            @checked: false,
-                            explicitCastInCode: explicitCastInCode,
-                            conversionGroupOpt: oldNode?.ConversionGroupOpt,
-                            constantValueOpt: constantValueOpt,
-                            type: rewrittenType);
-                    }
-
                     break;
 
                 case ConversionKind.ImplicitDynamic:
@@ -416,9 +376,7 @@ namespace StarkPlatform.Compiler.Stark
 
             if (!conversion.IsValid)
             {
-                if (!acceptFailingConversion ||
-                     rewrittenOperand.Type.SpecialType != SpecialType.System_Decimal &&
-                     rewrittenOperand.Type.SpecialType != SpecialType.System_DateTime)
+                if (!acceptFailingConversion || rewrittenOperand.Type.SpecialType != SpecialType.System_DateTime)
                 {
                     // error CS0029: Cannot implicitly convert type '{0}' to '{1}'
                     diagnostics.Add(
@@ -762,35 +720,7 @@ namespace StarkPlatform.Compiler.Stark
 
             TypeSymbol typeFrom = rewrittenOperandType.StrippedType();
             TypeSymbol typeTo = rewrittenType.StrippedType();
-            if (!TypeSymbol.Equals(typeFrom, typeTo, TypeCompareKind.ConsiderEverything2) && (typeFrom.SpecialType == SpecialType.System_Decimal || typeTo.SpecialType == SpecialType.System_Decimal))
-            {
-                // take special care if the underlying conversion is a decimal conversion
-                TypeSymbol typeFromUnderlying = typeFrom;
-                TypeSymbol typeToUnderlying = typeTo;
-
-                // They can't both be enums, since one of them is decimal.
-                if (typeFrom.IsEnumType())
-                {
-                    typeFromUnderlying = typeFrom.GetEnumUnderlyingType();
-
-                    // NOTE: Dev10 converts enum? to underlying?, rather than directly to underlying.
-                    rewrittenOperandType = rewrittenOperandType.IsNullableType() ? ((NamedTypeSymbol)rewrittenOperandType.OriginalDefinition).Construct(typeFromUnderlying) : typeFromUnderlying;
-                    rewrittenOperand = BoundConversion.SynthesizedNonUserDefined(syntax, rewrittenOperand, Conversion.ImplicitEnumeration, rewrittenOperandType);
-                }
-                else if (typeTo.IsEnumType())
-                {
-                    typeToUnderlying = typeTo.GetEnumUnderlyingType();
-                }
-
-                var method = (MethodSymbol)_compilation.Assembly.GetSpecialTypeMember(DecimalConversionMethod(typeFromUnderlying, typeToUnderlying));
-                var conversionKind = conversion.Kind.IsImplicitConversion() ? ConversionKind.ImplicitUserDefined : ConversionKind.ExplicitUserDefined;
-                var result = new BoundConversion(syntax, rewrittenOperand, new Conversion(conversionKind, method, false), @checked, explicitCastInCode: explicitCastInCode, conversionGroup, default(ConstantValue), rewrittenType);
-                return result;
-            }
-            else
-            {
-                return new BoundConversion(syntax, rewrittenOperand, conversion, @checked, explicitCastInCode: explicitCastInCode, conversionGroup, default(ConstantValue), rewrittenType);
-            }
+            return new BoundConversion(syntax, rewrittenOperand, conversion, @checked, explicitCastInCode: explicitCastInCode, conversionGroup, default(ConstantValue), rewrittenType);
         }
 
         private BoundExpression RewriteFullyLiftedBuiltInConversion(
@@ -1196,7 +1126,6 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Int64:
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
-                    case SpecialType.System_Decimal:
                         return SpecialMember.System_IntPtr__op_Explicit_FromInt64;
                 }
             }
@@ -1221,7 +1150,6 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Int64:
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
-                    case SpecialType.System_Decimal:
                         return SpecialMember.System_UIntPtr__op_Explicit_FromUInt64;
                 }
             }
@@ -1246,7 +1174,6 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Int64:
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
-                    case SpecialType.System_Decimal:
                         return SpecialMember.System_IntPtr__op_Explicit_ToInt64;
                 }
             }
@@ -1271,79 +1198,11 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Int64:
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
-                    case SpecialType.System_Decimal:
                         return SpecialMember.System_UIntPtr__op_Explicit_ToUInt64;
                 }
             }
 
             throw ExceptionUtilities.Unreachable;
-        }
-
-        internal static SpecialMember DecimalConversionMethod(TypeSymbol typeFrom, TypeSymbol typeTo)
-        {
-            if (typeFrom.SpecialType == SpecialType.System_Decimal)
-            {
-                // Rewrite Decimal to Numeric
-                switch (typeTo.SpecialType)
-                {
-                    case SpecialType.System_Char: return SpecialMember.System_Decimal__op_Explicit_ToChar;
-                    case SpecialType.System_Int8: return SpecialMember.System_Decimal__op_Explicit_ToSByte;
-                    case SpecialType.System_UInt8: return SpecialMember.System_Decimal__op_Explicit_ToByte;
-                    case SpecialType.System_Int16: return SpecialMember.System_Decimal__op_Explicit_ToInt16;
-                    case SpecialType.System_UInt16: return SpecialMember.System_Decimal__op_Explicit_ToUInt16;
-                    case SpecialType.System_Int32: return SpecialMember.System_Decimal__op_Explicit_ToInt32;
-                    case SpecialType.System_UInt32: return SpecialMember.System_Decimal__op_Explicit_ToUInt32;
-                    case SpecialType.System_Int64: return SpecialMember.System_Decimal__op_Explicit_ToInt64;
-                    case SpecialType.System_UInt64: return SpecialMember.System_Decimal__op_Explicit_ToUInt64;
-                    case SpecialType.System_Float32: return SpecialMember.System_Decimal__op_Explicit_ToSingle;
-                    case SpecialType.System_Float64: return SpecialMember.System_Decimal__op_Explicit_ToDouble;
-                    default:
-                        throw ExceptionUtilities.UnexpectedValue(typeTo.SpecialType);
-                }
-            }
-            else
-            {
-                // Rewrite Numeric to Decimal
-                switch (typeFrom.SpecialType)
-                {
-                    case SpecialType.System_Char: return SpecialMember.System_Decimal__op_Implicit_FromChar;
-                    case SpecialType.System_Int8: return SpecialMember.System_Decimal__op_Implicit_FromSByte;
-                    case SpecialType.System_UInt8: return SpecialMember.System_Decimal__op_Implicit_FromByte;
-                    case SpecialType.System_Int16: return SpecialMember.System_Decimal__op_Implicit_FromInt16;
-                    case SpecialType.System_UInt16: return SpecialMember.System_Decimal__op_Implicit_FromUInt16;
-                    case SpecialType.System_Int32: return SpecialMember.System_Decimal__op_Implicit_FromInt32;
-                    case SpecialType.System_UInt32: return SpecialMember.System_Decimal__op_Implicit_FromUInt32;
-                    case SpecialType.System_Int64: return SpecialMember.System_Decimal__op_Implicit_FromInt64;
-                    case SpecialType.System_UInt64: return SpecialMember.System_Decimal__op_Implicit_FromUInt64;
-                    case SpecialType.System_Float32: return SpecialMember.System_Decimal__op_Explicit_FromSingle;
-                    case SpecialType.System_Float64: return SpecialMember.System_Decimal__op_Explicit_FromDouble;
-                    default:
-                        throw ExceptionUtilities.UnexpectedValue(typeFrom.SpecialType);
-                }
-            }
-        }
-
-        private BoundExpression RewriteDecimalConversion(SyntaxNode syntax, BoundExpression operand, TypeSymbol fromType, TypeSymbol toType, bool isImplicit, ConstantValue constantValueOpt)
-        {
-            Debug.Assert(fromType.SpecialType == SpecialType.System_Decimal || toType.SpecialType == SpecialType.System_Decimal);
-
-            // call the method
-            SpecialMember member = DecimalConversionMethod(fromType, toType);
-            var method = (MethodSymbol)_compilation.Assembly.GetSpecialTypeMember(member);
-            Debug.Assert((object)method != null); // Should have been checked during Warnings pass
-
-            if (_inExpressionLambda)
-            {
-                ConversionKind conversionKind = isImplicit ? ConversionKind.ImplicitUserDefined : ConversionKind.ExplicitUserDefined;
-                var conversion = new Conversion(conversionKind, method, isExtensionMethod: false);
-
-                return new BoundConversion(syntax, operand, conversion, @checked: false, explicitCastInCode: false, conversionGroupOpt: null, constantValueOpt: constantValueOpt, type: toType);
-            }
-            else
-            {
-                Debug.Assert(TypeSymbol.Equals(method.ReturnType.TypeSymbol, toType, TypeCompareKind.ConsiderEverything2));
-                return BoundCall.Synthesized(syntax, null, method, operand);
-            }
         }
 
         /// <summary>
@@ -1395,43 +1254,10 @@ namespace StarkPlatform.Compiler.Stark
                 case ConversionKind.ImplicitNumeric:
                 case ConversionKind.ExplicitNumeric:
                     // TODO: what about nullable?
-                    if (fromType.SpecialType == SpecialType.System_Decimal || toType.SpecialType == SpecialType.System_Decimal)
-                    {
-                        SpecialMember member = DecimalConversionMethod(fromType, toType);
-                        MethodSymbol method;
-                        if (!TryGetSpecialTypeMethod(syntax, member, out method))
-                        {
-                            return Conversion.NoConversion;
-                        }
-
-                        return TryMakeUserDefinedConversion(syntax, method, fromType, toType, conversion.IsImplicit);
-                    }
                     return conversion;
                 case ConversionKind.ImplicitEnumeration:
                 case ConversionKind.ExplicitEnumeration:
                     // TODO: what about nullable?
-                    if (fromType.SpecialType == SpecialType.System_Decimal)
-                    {
-                        SpecialMember member = DecimalConversionMethod(fromType, toType.GetEnumUnderlyingType());
-                        MethodSymbol method;
-                        if (!TryGetSpecialTypeMethod(syntax, member, out method))
-                        {
-                            return Conversion.NoConversion;
-                        }
-
-                        return TryMakeUserDefinedConversion(syntax, method, fromType, toType, conversion.IsImplicit);
-                    }
-                    else if (toType.SpecialType == SpecialType.System_Decimal)
-                    {
-                        SpecialMember member = DecimalConversionMethod(fromType.GetEnumUnderlyingType(), toType);
-                        MethodSymbol method;
-                        if (!TryGetSpecialTypeMethod(syntax, member, out method))
-                        {
-                            return Conversion.NoConversion;
-                        }
-
-                        return TryMakeUserDefinedConversion(syntax, method, fromType, toType, conversion.IsImplicit);
-                    }
                     return conversion;
                 default:
                     return conversion;

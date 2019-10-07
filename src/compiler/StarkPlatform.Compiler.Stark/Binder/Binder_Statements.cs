@@ -1876,7 +1876,7 @@ namespace StarkPlatform.Compiler.Stark
                 if (conversion.IsExplicit)
                 {
                     if (sourceType.SpecialType == SpecialType.System_Float64 && syntax.Kind() == SyntaxKind.NumericLiteralExpression &&
-                        (targetType.SpecialType == SpecialType.System_Float32 || targetType.SpecialType == SpecialType.System_Decimal))
+                        (targetType.SpecialType == SpecialType.System_Float32))
                     {
                         Error(diagnostics, ErrorCode.ERR_LiteralDoubleCast, syntax, (targetType.SpecialType == SpecialType.System_Float32) ? "F" : "M", targetType);
                     }

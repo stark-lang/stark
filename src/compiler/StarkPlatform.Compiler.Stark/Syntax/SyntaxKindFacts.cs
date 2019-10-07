@@ -289,7 +289,6 @@ namespace StarkPlatform.Compiler.Stark
                 case SyntaxKind.UInt64Keyword:
                 case SyntaxKind.Float32Keyword:
                 case SyntaxKind.Float64Keyword:
-                case SyntaxKind.DecimalKeyword:
                 case SyntaxKind.StringKeyword:
                 case SyntaxKind.CharKeyword:
                 case SyntaxKind.ObjectKeyword:
@@ -840,8 +839,6 @@ namespace StarkPlatform.Compiler.Stark
                     return SyntaxKind.Float64Keyword;
                 case "f32":
                     return SyntaxKind.Float32Keyword;
-                case "decimal":
-                    return SyntaxKind.DecimalKeyword;
                 case "string":
                     return SyntaxKind.StringKeyword;
                 case "object":
@@ -1416,8 +1413,6 @@ namespace StarkPlatform.Compiler.Stark
                     return "f64";
                 case SyntaxKind.Float32Keyword:
                     return "f32";
-                case SyntaxKind.DecimalKeyword:
-                    return "decimal";
                 case SyntaxKind.StringKeyword:
                     return "string";
                 case SyntaxKind.ObjectKeyword:

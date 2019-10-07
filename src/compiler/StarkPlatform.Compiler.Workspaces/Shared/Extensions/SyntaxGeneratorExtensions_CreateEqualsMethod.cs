@@ -345,7 +345,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     case SpecialType.System_UInt32:
                     case SpecialType.System_Int64:
                     case SpecialType.System_UInt64:
-                    case SpecialType.System_Decimal:
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
                     case SpecialType.System_String:

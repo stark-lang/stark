@@ -38,7 +38,6 @@ namespace StarkPlatform.Compiler
             "core.UInt32",
             "core.Int64",
             "core.UInt64",
-            "core.Decimal",
             "core.Float32",
             "core.Float64",
             "core.String",

@@ -41064,7 +41064,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         case SyntaxKind.UInt64Keyword:
         case SyntaxKind.Float32Keyword:
         case SyntaxKind.Float64Keyword:
-        case SyntaxKind.DecimalKeyword:
         case SyntaxKind.StringKeyword:
         case SyntaxKind.CharKeyword:
         case SyntaxKind.ObjectKeyword:
@@ -48613,7 +48612,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         case SyntaxKind.UInt64Keyword:
         case SyntaxKind.Float32Keyword:
         case SyntaxKind.Float64Keyword:
-        case SyntaxKind.DecimalKeyword:
         case SyntaxKind.StringKeyword:
         case SyntaxKind.CharKeyword:
         case SyntaxKind.ObjectKeyword:

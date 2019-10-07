@@ -87,7 +87,6 @@ namespace StarkPlatform.Compiler
         private static readonly AttributeValueExtractor<int> s_attributeIntValueExtractor = CrackIntInAttributeValue;
         private static readonly AttributeValueExtractor<long> s_attributeLongValueExtractor = CrackLongInAttributeValue;
         // Note: not a general purpose helper
-        private static readonly AttributeValueExtractor<decimal> s_decimalValueInDecimalConstantAttributeExtractor = CrackDecimalInDecimalConstantAttribute;
         private static readonly AttributeValueExtractor<ImmutableArray<bool>> s_attributeBoolArrayValueExtractor = CrackBoolArrayInAttributeValue;
         private static readonly AttributeValueExtractor<ImmutableArray<byte>> s_attributeByteArrayValueExtractor = CrackByteArrayInAttributeValue;
         private static readonly AttributeValueExtractor<ImmutableArray<string>> s_attributeStringArrayValueExtractor = CrackStringArrayInAttributeValue;
@@ -1140,20 +1139,6 @@ namespace StarkPlatform.Compiler
             return false;
         }
 
-        internal bool HasDecimalConstantAttribute(EntityHandle token, out ConstantValue defaultValue)
-        {
-            decimal value;
-            AttributeInfo info = FindLastTargetAttribute(token, AttributeDescription.DecimalConstantAttribute);
-            if (info.HasValue && TryExtractDecimalValueFromDecimalConstantAttribute(info.Handle, out value))
-            {
-                defaultValue = ConstantValue.Create(value);
-                return true;
-            }
-
-            defaultValue = null;
-            return false;
-        }
-
         internal ImmutableArray<string> GetInternalsVisibleToAttributeValues(EntityHandle token)
         {
             List<AttributeInfo> attrInfos = FindTargetAttributes(token, AttributeDescription.InternalsVisibleToAttribute);
@@ -1347,12 +1332,6 @@ namespace StarkPlatform.Compiler
         internal bool TryExtractLongValueFromAttribute(CustomAttributeHandle handle, out long value)
         {
             return TryExtractValueFromAttribute(handle, out value, s_attributeLongValueExtractor);
-        }
-
-        // Note: not a general purpose helper
-        private bool TryExtractDecimalValueFromDecimalConstantAttribute(CustomAttributeHandle handle, out decimal value)
-        {
-            return TryExtractValueFromAttribute(handle, out value, s_decimalValueInDecimalConstantAttributeExtractor);
         }
 
         private struct StringAndInt
@@ -1640,29 +1619,6 @@ namespace StarkPlatform.Compiler
             if (sig.RemainingBytes >= 8)
             {
                 value = sig.ReadInt64();
-                return true;
-            }
-
-            value = -1;
-            return false;
-        }
-
-        // Note: not a general purpose helper
-        private static bool CrackDecimalInDecimalConstantAttribute(out decimal value, ref BlobReader sig)
-        {
-            byte scale;
-            byte sign;
-            int high;
-            int mid;
-            int low;
-
-            if (CrackByteInAttributeValue(out scale, ref sig) &&
-                CrackByteInAttributeValue(out sign, ref sig) &&
-                CrackIntInAttributeValue(out high, ref sig) &&
-                CrackIntInAttributeValue(out mid, ref sig) &&
-                CrackIntInAttributeValue(out low, ref sig))
-            {
-                value = new decimal(low, mid, high, sign != 0, scale);
                 return true;
             }
 

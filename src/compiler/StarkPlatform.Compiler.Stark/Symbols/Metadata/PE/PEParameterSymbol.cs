@@ -481,13 +481,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 return value;
             }
 
-            // It is possible in Visual Basic for a parameter of object type to have a default value of decimal type.
-            // If it's present, use it.  We'll let the call-site figure out whether it can actually be used.
-            if (_moduleSymbol.Module.HasDecimalConstantAttribute(_handle, out value))
-            {
-                return value;
-            }
-
             return value;
         }
 
@@ -822,10 +815,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                     if (defaultValue.Discriminator == ConstantValueTypeDiscriminator.DateTime)
                     {
                         filterOutConstantAttributeDescription = AttributeDescription.DateTimeConstantAttribute;
-                    }
-                    else if (defaultValue.Discriminator == ConstantValueTypeDiscriminator.Decimal)
-                    {
-                        filterOutConstantAttributeDescription = AttributeDescription.DecimalConstantAttribute;
                     }
                 }
 

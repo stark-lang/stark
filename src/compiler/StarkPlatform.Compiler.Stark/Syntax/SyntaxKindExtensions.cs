@@ -38,8 +38,6 @@ namespace StarkPlatform.Compiler.Stark
                     return SpecialType.System_Float64;
                 case SyntaxKind.Float32Keyword:
                     return SpecialType.System_Float32;
-                case SyntaxKind.DecimalKeyword:
-                    return SpecialType.System_Decimal;
                 case SyntaxKind.StringKeyword:
                     return SpecialType.System_String;
                 case SyntaxKind.CharKeyword:

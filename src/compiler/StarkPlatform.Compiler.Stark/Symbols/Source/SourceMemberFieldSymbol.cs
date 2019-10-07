@@ -98,18 +98,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
             var compilation = this.DeclaringCompilation;
             var value = this.GetConstantValue(ConstantFieldsInProgress.Empty, earlyDecodingWellKnownAttributes: false);
-
-            // Synthesize DecimalConstantAttribute when the default value is of type decimal
-            if (this.IsConst && value != null
-                && this.Type.SpecialType == SpecialType.System_Decimal)
-            {
-                var data = GetDecodedWellKnownAttributeData();
-
-                if (data == null || data.ConstValue == Compiler.ConstantValue.Unset)
-                {
-                    AddSynthesizedAttribute(ref attributes, compilation.SynthesizeDecimalConstantAttribute(value.DecimalValue));
-                }
-            }
         }
 
         public override Symbol AssociatedSymbol

@@ -168,14 +168,7 @@ namespace StarkPlatform.Cci
             object value = localConstant.CompileTimeValue.Value;
 
             // PrimitiveConstant or EnumConstant
-            if (value is decimal)
-            {
-                builder.WriteByte((byte)SignatureTypeKind.ValueType);
-                builder.WriteCompressedInteger(CodedIndex.TypeDefOrRefOrSpec(GetTypeHandle(type)));
-
-                builder.WriteDecimal((decimal)value);
-            }
-            else if (value is DateTime)
+            if (value is DateTime)
             {
                 builder.WriteByte((byte)SignatureTypeKind.ValueType);
                 builder.WriteCompressedInteger(CodedIndex.TypeDefOrRefOrSpec(GetTypeHandle(type)));

@@ -155,20 +155,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
                 return "UL";
             }
 
-            if (value is decimal d)
-            {
-                var scale = d.GetScale();
-
-                var isNotDecimal = !IsSpecialType(type, SpecialType.System_Decimal);
-                var isOutOfRange = d < long.MinValue || d > long.MaxValue;
-                var scaleIsNotZero = scale != 0;
-
-                if (isNotDecimal || isOutOfRange || scaleIsNotZero)
-                {
-                    return "M";
-                }
-            }
-
             return string.Empty;
         }
 

@@ -342,16 +342,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 
                 // If this is a Decimal, the constant value may come from DecimalConstantAttribute
 
-                if (this.Type.SpecialType == SpecialType.System_Decimal)
-                {
-                    ConstantValue defaultValue;
-
-                    if (_containingType.ContainingPEModule.Module.HasDecimalConstantAttribute(Handle, out defaultValue))
-                    {
-                        value = defaultValue;
-                    }
-                }
-
                 Interlocked.CompareExchange(
                     ref _lazyConstantValue,
                     value,
@@ -432,31 +422,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             if (_lazyCustomAttributes.IsDefault)
             {
                 var containingPEModuleSymbol = (PEModuleSymbol)this.ContainingModule;
-
-                if (FilterOutDecimalConstantAttribute())
-                {
-                    // filter out DecimalConstantAttribute
-                    var attributes = containingPEModuleSymbol.GetCustomAttributesForToken(
-                        _handle,
-                        out _,
-                        AttributeDescription.DecimalConstantAttribute);
-
-                    ImmutableInterlocked.InterlockedInitialize(ref _lazyCustomAttributes, attributes);
-                }
-                else
-                {
-                    containingPEModuleSymbol.LoadCustomAttributes(_handle, ref _lazyCustomAttributes);
-                }
+                containingPEModuleSymbol.LoadCustomAttributes(_handle, ref _lazyCustomAttributes);
             }
             return _lazyCustomAttributes;
-        }
-
-        private bool FilterOutDecimalConstantAttribute()
-        {
-            ConstantValue value;
-            return this.Type.SpecialType == SpecialType.System_Decimal &&
-                   (object)(value = GetConstantValue(ConstantFieldsInProgress.Empty, earlyDecodingWellKnownAttributes: false)) != null &&
-                   value.Discriminator == ConstantValueTypeDiscriminator.Decimal;
         }
 
         internal override IEnumerable<CSharpAttributeData> GetCustomAttributesToEmit(PEModuleBuilder moduleBuilder)
@@ -464,14 +432,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             foreach (CSharpAttributeData attribute in GetAttributes())
             {
                 yield return attribute;
-            }
-
-            // Yield hidden attributes last, order might be important.
-            if (FilterOutDecimalConstantAttribute())
-            {
-                var containingPEModuleSymbol = _containingType.ContainingPEModule;
-                yield return new PEAttributeData(containingPEModuleSymbol,
-                                          containingPEModuleSymbol.Module.FindLastTargetAttribute(_handle, AttributeDescription.DecimalConstantAttribute).Handle);
             }
         }
 

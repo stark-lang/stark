@@ -133,51 +133,7 @@ namespace StarkPlatform.Compiler
         }
 
         #region Decimal and DateTime Constant Decoding
-
-        internal ConstantValue DecodeDecimalConstantValue()
-        {
-            // There are two decimal constant attribute ctors:
-            // (byte scale, byte sign, uint high, uint mid, uint low) and
-            // (byte scale, byte sign, int high, int mid, int low) 
-            // The dev10 compiler only honors the first; Roslyn honours both.
-
-            // We should not end up in this code path unless we know we have one of them.
-
-            var parameters = AttributeConstructor.Parameters;
-            ImmutableArray<TypedConstant> args = this.CommonConstructorArguments;
-
-            Debug.Assert(parameters.Length == 5);
-            Debug.Assert(parameters[0].Type.SpecialType == SpecialType.System_UInt8);
-            Debug.Assert(parameters[1].Type.SpecialType == SpecialType.System_UInt8);
-
-            int low, mid, high;
-
-            byte scale = args[0].DecodeValue<byte>(SpecialType.System_UInt8);
-            bool isNegative = args[1].DecodeValue<byte>(SpecialType.System_UInt8) != 0;
-
-            if (parameters[2].Type.SpecialType == SpecialType.System_Int32)
-            {
-                Debug.Assert(parameters[2].Type.SpecialType == SpecialType.System_Int32);
-                Debug.Assert(parameters[3].Type.SpecialType == SpecialType.System_Int32);
-                Debug.Assert(parameters[4].Type.SpecialType == SpecialType.System_Int32);
-
-                high = args[2].DecodeValue<int>(SpecialType.System_Int32);
-                mid = args[3].DecodeValue<int>(SpecialType.System_Int32);
-                low = args[4].DecodeValue<int>(SpecialType.System_Int32);
-            }
-            else
-            {
-                Debug.Assert(parameters[2].Type.SpecialType == SpecialType.System_UInt32);
-                Debug.Assert(parameters[3].Type.SpecialType == SpecialType.System_UInt32);
-                Debug.Assert(parameters[4].Type.SpecialType == SpecialType.System_UInt32);
-
-                high = unchecked((int)args[2].DecodeValue<uint>(SpecialType.System_UInt32));
-                mid = unchecked((int)args[3].DecodeValue<uint>(SpecialType.System_UInt32));
-                low = unchecked((int)args[4].DecodeValue<uint>(SpecialType.System_UInt32));
-            }
-
-            return ConstantValue.Create(new decimal(low, mid, high, isNegative, scale));
-        }
+       
 
         internal ConstantValue DecodeDateTimeConstantValue()
         {

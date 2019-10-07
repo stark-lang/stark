@@ -3451,7 +3451,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
                 case SpecialType.System_UInt32:
                 case SpecialType.System_Int64:
                 case SpecialType.System_UInt64:
-                case SpecialType.System_Decimal:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
                     return SyntaxFactory.LiteralExpression(
@@ -3699,8 +3698,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.UInt8Keyword));
                 case SpecialType.System_Char:
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.CharKeyword));
-                case SpecialType.System_Decimal:
-                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.DecimalKeyword));
                 case SpecialType.System_Float64:
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.Float64Keyword));
                 case SpecialType.System_Int16:

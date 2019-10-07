@@ -98,20 +98,7 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                     }
                     else
                     {
-                        int signatureIndex = TypeManager.GetTargetAttributeSignatureIndex(UnderlyingParameter, attrData, AttributeDescription.DecimalConstantAttribute);
-                        if (signatureIndex != -1)
-                        {
-                            Debug.Assert(signatureIndex == 0 || signatureIndex == 1);
-
-                            if (attrData.CommonConstructorArguments.Length == 5)
-                            {
-                                builder.AddOptional(TypeManager.CreateSynthesizedAttribute(
-                                    signatureIndex == 0 ? WellKnownMember.System_Runtime_CompilerServices_DecimalConstantAttribute__ctor :
-                                        WellKnownMember.System_Runtime_CompilerServices_DecimalConstantAttribute__ctorByteByteInt32Int32Int32,
-                                    attrData, syntaxNodeOpt, diagnostics));
-                            }
-                        }
-                        else if (IsTargetAttribute(attrData, AttributeDescription.DefaultParameterValueAttribute))
+                        if (IsTargetAttribute(attrData, AttributeDescription.DefaultParameterValueAttribute))
                         {
                             if (attrData.CommonConstructorArguments.Length == 1)
                             {

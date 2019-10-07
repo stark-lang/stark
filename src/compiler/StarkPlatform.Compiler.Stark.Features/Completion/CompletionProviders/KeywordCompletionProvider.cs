@@ -45,7 +45,6 @@ namespace StarkPlatform.Compiler.Stark.Completion.Providers
                 new ClassKeywordRecommender(),
                 new ConstKeywordRecommender(),
                 new ContinueKeywordRecommender(),
-                new DecimalKeywordRecommender(),
                 new DefaultKeywordRecommender(),
                 new DefineKeywordRecommender(),
                 new DelegateKeywordRecommender(),

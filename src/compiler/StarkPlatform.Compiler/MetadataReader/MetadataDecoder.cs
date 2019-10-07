@@ -986,11 +986,7 @@ tryAgain:
                 bool refersToNoPiaLocalType;
                 type = GetSymbolForTypeHandleOrThrow(sigReader.ReadTypeHandle(), out refersToNoPiaLocalType, allowTypeSpec: true, requireShortForm: true);
 
-                if (type.SpecialType == SpecialType.System_Decimal)
-                {
-                    value = ConstantValue.Create(sigReader.ReadDecimal());
-                }
-                else if (type.SpecialType == SpecialType.System_DateTime)
+                if (type.SpecialType == SpecialType.System_DateTime)
                 {
                     value = ConstantValue.Create(sigReader.ReadDateTime());
                 }

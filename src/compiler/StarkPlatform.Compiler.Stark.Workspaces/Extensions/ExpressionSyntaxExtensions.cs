@@ -2592,8 +2592,6 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                     return SyntaxKind.Float32Keyword;
                 case SpecialType.System_Float64:
                     return SyntaxKind.Float64Keyword;
-                case SpecialType.System_Decimal:
-                    return SyntaxKind.DecimalKeyword;
                 case SpecialType.System_String:
                     return SyntaxKind.StringKeyword;
                 case SpecialType.System_Char:

@@ -4709,7 +4709,6 @@ namespace StarkPlatform.Compiler.Stark
         case SyntaxKind.UInt64Keyword:
         case SyntaxKind.Float32Keyword:
         case SyntaxKind.Float64Keyword:
-        case SyntaxKind.DecimalKeyword:
         case SyntaxKind.StringKeyword:
         case SyntaxKind.CharKeyword:
         case SyntaxKind.ObjectKeyword:

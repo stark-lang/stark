@@ -527,7 +527,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     case SpecialType.System_Boolean:
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
-                    case SpecialType.System_Decimal:
                         return ConstantValue.Default(type.SpecialType);
                 }
             }

@@ -158,47 +158,6 @@ namespace StarkPlatform.Compiler
             }
         }
 
-        private sealed class ConstantValueDecimal : ConstantValue
-        {
-            private readonly decimal _value;
-
-            public ConstantValueDecimal(decimal value)
-            {
-                _value = value;
-            }
-
-            public override ConstantValueTypeDiscriminator Discriminator
-            {
-                get
-                {
-                    return ConstantValueTypeDiscriminator.Decimal;
-                }
-            }
-
-            internal override SpecialType SpecialType
-            {
-                get { return SpecialType.System_Decimal; }
-            }
-
-            public override decimal DecimalValue
-            {
-                get
-                {
-                    return _value;
-                }
-            }
-
-            public override int GetHashCode()
-            {
-                return Hash.Combine(base.GetHashCode(), _value.GetHashCode());
-            }
-
-            public override bool Equals(ConstantValue other)
-            {
-                return base.Equals(other) && _value == other.DecimalValue;
-            }
-        }
-
         private sealed class ConstantValueDateTime : ConstantValue
         {
             private readonly DateTime _value;
@@ -281,7 +240,6 @@ namespace StarkPlatform.Compiler
             public static readonly ConstantValueDefault Char = new ConstantValueDefault(ConstantValueTypeDiscriminator.Char);
             public static readonly ConstantValueDefault Float32 = new ConstantValueSingleZero();
             public static readonly ConstantValueDefault Float64 = new ConstantValueDoubleZero();
-            public static readonly ConstantValueDefault Decimal = new ConstantValueDecimalZero();
             public static readonly ConstantValueDefault DateTime = new ConstantValueDefault(ConstantValueTypeDiscriminator.DateTime);
             public static readonly ConstantValueDefault Boolean = new ConstantValueDefault(ConstantValueTypeDiscriminator.Boolean);
 
@@ -330,14 +288,6 @@ namespace StarkPlatform.Compiler
                 }
             }
 
-            public override decimal DecimalValue
-            {
-                get
-                {
-                    return 0;
-                }
-            }
-
             public override char CharValue
             {
                 get
@@ -368,29 +318,6 @@ namespace StarkPlatform.Compiler
             public override bool IsDefaultValue
             {
                 get { return true; }
-            }
-        }
-
-        private sealed class ConstantValueDecimalZero : ConstantValueDefault
-        {
-            internal ConstantValueDecimalZero()
-                : base(ConstantValueTypeDiscriminator.Decimal)
-            {
-            }
-
-            public override bool Equals(ConstantValue other)
-            {
-                if (ReferenceEquals(other, this))
-                {
-                    return true;
-                }
-
-                if (ReferenceEquals(other, null))
-                {
-                    return false;
-                }
-
-                return this.Discriminator == other.Discriminator && other.DecimalValue == 0m;
             }
         }
 
@@ -454,7 +381,6 @@ namespace StarkPlatform.Compiler
             public static readonly ConstantValueOne UInt64 = new ConstantValueOne(ConstantValueTypeDiscriminator.UInt64);
             public static readonly ConstantValueOne Single = new ConstantValueOne(ConstantValueTypeDiscriminator.Single);
             public static readonly ConstantValueOne Double = new ConstantValueOne(ConstantValueTypeDiscriminator.Double);
-            public static readonly ConstantValueOne Decimal = new ConstantValueDecimalOne();
             public static readonly ConstantValueOne Boolean = new ConstantValueOne(ConstantValueTypeDiscriminator.Boolean);
 
             protected ConstantValueOne(ConstantValueTypeDiscriminator discriminator)
@@ -502,14 +428,6 @@ namespace StarkPlatform.Compiler
                 }
             }
 
-            public override decimal DecimalValue
-            {
-                get
-                {
-                    return 1;
-                }
-            }
-
             // all instances of this class are singletons
             public override bool Equals(ConstantValue other)
             {
@@ -519,29 +437,6 @@ namespace StarkPlatform.Compiler
             public override int GetHashCode()
             {
                 return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(this);
-            }
-        }
-
-        private sealed class ConstantValueDecimalOne : ConstantValueOne
-        {
-            internal ConstantValueDecimalOne()
-                : base(ConstantValueTypeDiscriminator.Decimal)
-            {
-            }
-
-            public override bool Equals(ConstantValue other)
-            {
-                if (ReferenceEquals(other, this))
-                {
-                    return true;
-                }
-
-                if (ReferenceEquals(other, null))
-                {
-                    return false;
-                }
-
-                return this.Discriminator == other.Discriminator && other.DecimalValue == 1m;
             }
         }
 
