@@ -123,7 +123,20 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     var subType = SubstituteTypeParameter((TypeParameterSymbol)previous);
                     if (accessModifiers.HasValue)
                     {
-                        subType = TypeSymbolWithAnnotations.Create(new ExtendedTypeParameterSymbol((TypeParameterSymbol)subType.TypeSymbol, accessModifiers.Value));
+                        switch (subType.Kind)
+                        {
+                            case SymbolKind.NamedType:
+                                subType = TypeSymbolWithAnnotations.Create(new ExtendedNamedTypeSymbol(subType, accessModifiers.Value));
+                                break;
+                            case SymbolKind.ArrayType:
+                                subType = TypeSymbolWithAnnotations.Create(new ExtendedArrayTypeSymbol(subType, (ArrayTypeSymbol)subType.TypeSymbol, accessModifiers.Value));
+                                break;
+                            case SymbolKind.TypeParameter:
+                                subType = TypeSymbolWithAnnotations.Create(new ExtendedTypeParameterSymbol((TypeParameterSymbol)subType.TypeSymbol, accessModifiers.Value));
+                                break;
+                            default:
+                                throw ExceptionUtilities.UnexpectedValue(subType.Kind);
+                        }
                     }
                     return subType;
                 case SymbolKind.ArrayType:
