@@ -1,6 +1,6 @@
 namespace core
 {
-    public abstract struct Void
+    public struct Void
     {
         private constructor() {}
     }
