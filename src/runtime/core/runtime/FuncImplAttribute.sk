@@ -2,6 +2,7 @@ namespace core.runtime
 {    
     public enum FuncImplOptions
     {
+        NONE = 0
         NO_INLINING = 0x0008
         NO_OPTIMIZATION = 0x0040
         AGGRESSIVE_INLINING = 0x0100

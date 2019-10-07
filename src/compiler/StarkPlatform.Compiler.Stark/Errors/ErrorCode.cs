@@ -1717,6 +1717,7 @@ namespace StarkPlatform.Compiler.Stark
         ERR_MissingTry = 9028,
         ERR_MissingThrowsOnBaseMethod = 9029,
         ERR_ThrowsNotDeclaredByBaseMethod = 9030,
+        ERR_EnumMustHaveZeroMember = 9031,
         #endregion
         // Note: you will need to re-generate compiler code after adding warnings (eng\generate-compiler-code.cmd)
     }

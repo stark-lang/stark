@@ -3,6 +3,7 @@ namespace core
     @Flags
     public enum AttributeTargets
     {
+        NONE = 0
         ASSEMBLY = 0x0001
         MODULE = 0x0002
         CLASS = 0x0004

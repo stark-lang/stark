@@ -1405,6 +1405,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             CheckSpecialMemberErrors(diagnostics);
             CheckTypeParameterNameConflicts(diagnostics);
             CheckAccessorNameConflicts(diagnostics);
+            CheckEnumMemberWithZero(diagnostics);
 
             bool unused = KnownCircularStruct;
 
@@ -2720,6 +2721,39 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 {
                     otherSymbolOffset++;
                 }
+            }
+        }
+
+        private void CheckEnumMemberWithZero(DiagnosticBag diagnostics)
+        {
+            if (TypeKind != TypeKind.Enum) return;
+
+            // Check that an enum should always have a zero member value
+            bool enumWithZeroValueFound = false;
+            foreach (var enumFieldMember in GetMembersAndInitializers().NonTypeNonIndexerMembers)
+            {
+                var sourceEnumSymbol = enumFieldMember as SourceEnumConstantSymbol;
+                if (sourceEnumSymbol == null) continue;
+
+                var constantValue = sourceEnumSymbol.ConstantValue;
+                if (constantValue == null) continue;
+
+
+                if (!(constantValue is ulong constantValueU64))
+                {
+                    constantValueU64 = (ulong)Convert.ToInt64(constantValue);
+                }
+
+                if (constantValueU64 == 0)
+                {
+                    enumWithZeroValueFound = true;
+                    break;
+                }
+            }
+
+            if (!enumWithZeroValueFound)
+            {
+                diagnostics.Add(ErrorCode.ERR_EnumMustHaveZeroMember, Locations[0], this);
             }
         }
 

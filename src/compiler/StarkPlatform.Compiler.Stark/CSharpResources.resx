@@ -2171,6 +2171,9 @@ If such a class is used as a base class and if the deriving class defines a dest
   <data name="ERR_ThrowsNotDeclaredByBaseMethod" xml:space="preserve">
     <value>The inherited method is throwing a new exception `{0}` that is not declared by the base method</value>
   </data>
+  <data name="ERR_EnumMustHaveZeroMember" xml:space="preserve">
+    <value>The enum `{0}` does not contain a mandatory enum item with the value 0</value>
+  </data>
   <data name="ERR_InvalidInlineILArgument" xml:space="preserve">
     <value>The argument is invalid for the IL opcode `{0}`</value>
   </data>
