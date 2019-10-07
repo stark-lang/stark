@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -73,7 +74,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             if (typeAccessModifiers != TypeAccessModifiers.None)
             {
                 // TODO: we should be able to cache these symbols 
-                containingType = new ExtendedNamedTypeSymbol(TypeSymbolWithAnnotations.Create(false, containingType), typeAccessModifiers);
+                Console.WriteLine($"TODO: Renable Access modifiers on method {syntax.ToString().TrimEnd()}");
+                // containingType = new ExtendedNamedTypeSymbol(TypeSymbolWithAnnotations.Create(false, containingType), typeAccessModifiers);
             }
 
             return new SourceOrdinaryMethodSymbol(containingType, explicitInterfaceType, name, location, syntax, methodKind, diagnostics);
