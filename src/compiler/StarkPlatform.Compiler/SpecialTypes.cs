@@ -23,7 +23,7 @@ namespace StarkPlatform.Compiler
             // 4) languageNames in SemanticFacts.vb
             null, // SpecialType.None
             "core.Object",
-            "core.Enum",
+            "core.Enum`1",
             "core.MulticastDelegate",
             "core.Delegate",
             "core.ValueType",

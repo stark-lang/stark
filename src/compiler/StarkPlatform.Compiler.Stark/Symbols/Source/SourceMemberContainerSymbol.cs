@@ -1265,14 +1265,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         internal override IEnumerable<FieldSymbol> GetFieldsToEmit()
         {
-            if (this.TypeKind == TypeKind.Enum)
-            {
-                // For consistency with Dev10, emit value__ field first.
-                var valueField = ((SourceNamedTypeSymbol)this).EnumValueField;
-                Debug.Assert((object)valueField != null);
-                yield return valueField;
-            }
-
             foreach (var m in this.GetMembers())
             {
                 switch (m.Kind)

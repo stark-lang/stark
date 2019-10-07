@@ -1,6 +1,13 @@
 namespace core
 {
-    public abstract struct Enum
+    public abstract struct Enum<T>
     {
+        private let _value : T
+
+        protected constructor()
+        {
+        }
+
+        public func value() -> T => _value
     }
 }

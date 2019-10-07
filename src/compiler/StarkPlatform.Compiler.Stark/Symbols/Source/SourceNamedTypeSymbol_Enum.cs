@@ -10,7 +10,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 {
     internal partial class SourceNamedTypeSymbol
     {
-        private SynthesizedEnumValueFieldSymbol _lazyEnumValueField;
         private NamedTypeSymbol _lazyEnumUnderlyingType = ErrorTypeSymbol.UnknownResultType;
 
         /// <summary>
@@ -72,29 +71,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             NamedTypeSymbol defaultUnderlyingType = compilation.GetSpecialType(SpecialType.System_Int32);
             Binder.ReportUseSiteDiagnostics(defaultUnderlyingType, diagnostics, this.Locations[0]);
             return defaultUnderlyingType;
-        }
-
-        /// <summary>
-        /// For enum types, returns the synthesized instance field used
-        /// for generating metadata. Returns null for non-enum types.
-        /// </summary>
-        internal FieldSymbol EnumValueField
-        {
-            get
-            {
-                if (this.TypeKind != TypeKind.Enum)
-                {
-                    return null;
-                }
-
-                if ((object)_lazyEnumValueField == null)
-                {
-                    Debug.Assert((object)this.EnumUnderlyingType != null);
-                    Interlocked.CompareExchange(ref _lazyEnumValueField, new SynthesizedEnumValueFieldSymbol(this), null);
-                }
-
-                return _lazyEnumValueField;
-            }
         }
     }
 }

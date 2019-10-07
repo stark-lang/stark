@@ -680,6 +680,10 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 Debug.Assert((object)GetDeclaredBaseType(basesBeingResolved: null) == null, "Computation skipped for enums");
                 declaredBase = compilation.GetSpecialType(SpecialType.System_Enum);
+
+                var newTypeArguments = ArrayBuilder<TypeSymbolWithAnnotations>.GetInstance(1);
+                newTypeArguments.Add(TypeSymbolWithAnnotations.Create(EnumUnderlyingType));
+                declaredBase = declaredBase.ConstructIfGeneric(newTypeArguments.ToImmutable());
             }
             else
             {

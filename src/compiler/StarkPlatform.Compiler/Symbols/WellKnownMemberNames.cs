@@ -13,7 +13,7 @@ namespace StarkPlatform.Compiler
         /// <summary>
         /// Name of the enum backing field.
         /// </summary>
-        public const string EnumBackingFieldName = "value__";
+        public const string EnumBackingFieldName = "value";
 
         /// <summary>
         /// The name assigned to an instance constructor.
