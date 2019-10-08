@@ -789,32 +789,9 @@ namespace StarkPlatform.Compiler.Stark
                 }
             }
 
-            var tmp = LookupResult.GetInstance();
-
             NamedTypeSymbol idictSymbol, iroDictSymbol, iListSymbol, iCollectionSymbol, inccSymbol, inpcSymbol;
             GetWellKnownWinRTMemberInterfaces(out idictSymbol, out iroDictSymbol, out iListSymbol, out iCollectionSymbol, out inccSymbol, out inpcSymbol);
 
-            // Dev11 searches all declared and undeclared base interfaces
-            foreach (var iface in type.AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics))
-            {
-                if (ShouldAddWinRTMembersForInterface(iface, idictSymbol, iroDictSymbol, iListSymbol, iCollectionSymbol, inccSymbol, inpcSymbol))
-                {
-                    LookupMembersWithoutInheritance(tmp, iface, name, arity, options, originalBinder, iface, diagnose, ref useSiteDiagnostics);
-                    // only add viable members
-                    if (tmp.IsMultiViable)
-                    {
-                        foreach (var sym in tmp.Symbols)
-                        {
-                            if (!allMembers.Add(sym))
-                            {
-                                conflictingMembers.Add(sym);
-                            }
-                        }
-                    }
-                    tmp.Clear();
-                }
-            }
-            tmp.Free();
             if (result.IsMultiViable)
             {
                 foreach (var sym in result.Symbols)
@@ -845,27 +822,6 @@ namespace StarkPlatform.Compiler.Stark
             inccSymbol = Compilation.GetWellKnownType(WellKnownType.core_Collections_Specialized_INotifyCollectionChanged);
             inpcSymbol = Compilation.GetWellKnownType(WellKnownType.core_ComponentModel_INotifyPropertyChanged);
         }
-
-        private static bool ShouldAddWinRTMembersForInterface(NamedTypeSymbol iface, NamedTypeSymbol idictSymbol, NamedTypeSymbol iroDictSymbol, NamedTypeSymbol iListSymbol, NamedTypeSymbol iCollectionSymbol, NamedTypeSymbol inccSymbol, NamedTypeSymbol inpcSymbol)
-        {
-            var iFaceOriginal = iface.OriginalDefinition;
-            var iFaceSpecial = iFaceOriginal.SpecialType;
-
-            // Types match the list given in dev11 IMPORTER::GetWindowsRuntimeInterfacesToFake
-            return iFaceSpecial == SpecialType.System_Collections_Generic_IEnumerable_T ||
-                   iFaceSpecial == SpecialType.System_Collections_Generic_IList_T ||
-                   iFaceSpecial == SpecialType.System_Collections_Generic_ICollection_T ||
-                   TypeSymbol.Equals(iFaceOriginal, idictSymbol, TypeCompareKind.ConsiderEverything2) ||
-                   iFaceSpecial == SpecialType.System_Collections_Generic_IReadOnlyList_T ||
-                   iFaceSpecial == SpecialType.System_Collections_Generic_IReadOnlyCollection_T ||
-                   TypeSymbol.Equals(iFaceOriginal, iroDictSymbol, TypeCompareKind.ConsiderEverything2) ||
-                   iFaceSpecial == SpecialType.System_Collections_IEnumerable ||
-                   TypeSymbol.Equals(iFaceOriginal, iListSymbol, TypeCompareKind.ConsiderEverything2) ||
-                   TypeSymbol.Equals(iFaceOriginal, iCollectionSymbol, TypeCompareKind.ConsiderEverything2) ||
-                   TypeSymbol.Equals(iFaceOriginal, inccSymbol, TypeCompareKind.ConsiderEverything2) ||
-                   TypeSymbol.Equals(iFaceOriginal, inpcSymbol, TypeCompareKind.ConsiderEverything2);
-        }
-
 
         // find the nearest symbol in list to the symbol 'type'.  It may be the same symbol if its the only one.
         private static Symbol GetNearestOtherSymbol(ConsList<TypeSymbol> list, TypeSymbol type)
@@ -1628,21 +1584,6 @@ symIsHidden:;
             }
         }
 
-        private void AddWinRTMembersLookupSymbolsInfo(LookupSymbolsInfo result, NamedTypeSymbol type, LookupOptions options, Binder originalBinder, TypeSymbol accessThroughType)
-        {
-            NamedTypeSymbol idictSymbol, iroDictSymbol, iListSymbol, iCollectionSymbol, inccSymbol, inpcSymbol;
-            GetWellKnownWinRTMemberInterfaces(out idictSymbol, out iroDictSymbol, out iListSymbol, out iCollectionSymbol, out inccSymbol, out inpcSymbol);
-
-            // Dev11 searches all declared and undeclared base interfaces
-            foreach (var iface in type.AllInterfacesNoUseSiteDiagnostics)
-            {
-                if (ShouldAddWinRTMembersForInterface(iface, idictSymbol, iroDictSymbol, iListSymbol, iCollectionSymbol, inccSymbol, inpcSymbol))
-                {
-                    AddMemberLookupSymbolsInfoWithoutInheritance(result, iface, options, originalBinder, accessThroughType);
-                }
-            }
-        }
-
         private void AddMemberLookupSymbolsInfoInClass(LookupSymbolsInfo result, TypeSymbol type, LookupOptions options, Binder originalBinder, TypeSymbol accessThroughType)
         {
             PooledHashSet<NamedTypeSymbol> visited = null;
@@ -1651,14 +1592,6 @@ symIsHidden:;
             while ((object)type != null && type.SpecialType != SpecialType.System_Void)
             {
                 AddMemberLookupSymbolsInfoWithoutInheritance(result, type, options, originalBinder, accessThroughType);
-
-                // If the type is from a winmd and implements any of the special WinRT collection
-                // projections then we may need to add underlying interface members. 
-                NamedTypeSymbol namedType = type as NamedTypeSymbol;
-                if ((object)namedType != null && namedType.ShouldAddWinRTMembers)
-                {
-                    AddWinRTMembersLookupSymbolsInfo(result, namedType, options, originalBinder, accessThroughType);
-                }
 
                 // As in dev11, we don't consider inherited members within crefs.
                 // CAVEAT: dev11 appears to ignore this rule within parameter types and return types,

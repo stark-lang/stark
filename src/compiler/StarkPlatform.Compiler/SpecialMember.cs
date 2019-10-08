@@ -42,15 +42,12 @@ namespace StarkPlatform.Compiler
         System_DateTime__op_LessThan,
         System_DateTime__op_LessThanOrEqual,
 
-        System_Collections_IEnumerable__GetEnumerator,
-        System_Collections_IEnumerator__Current,
-        System_Collections_IEnumerator__get_Current,
-        System_Collections_IEnumerator__MoveNext,
-        System_Collections_IEnumerator__Reset,
+        core_Iterable_T_TIterator__iterate_begin,
+        core_Iterable_T_TIterator__iterate_has_next,
+        core_Iterable_T_TIterator__iterate_next,
+        core_Iterable_T_TIterator__iterate_end,
 
-        System_Collections_Generic_IEnumerable_T__GetEnumerator,
-        System_Collections_Generic_IEnumerator_T__Current,
-        System_Collections_Generic_IEnumerator_T__get_Current,
+        core_MutableIterable_T_TIterator__iterate_item,
 
         System_IDisposable__Dispose,
 

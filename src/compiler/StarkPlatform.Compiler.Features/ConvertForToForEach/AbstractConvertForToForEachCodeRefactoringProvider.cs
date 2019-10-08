@@ -145,8 +145,9 @@ namespace StarkPlatform.Compiler.ConvertForToForEach
                 return;
             }
 
-            var ienumerableType = semanticModel.Compilation.GetSpecialType(SpecialType.System_Collections_Generic_IEnumerable_T);
-            var ienumeratorType = semanticModel.Compilation.GetSpecialType(SpecialType.System_Collections_Generic_IEnumerator_T);
+            var ienumerableType = semanticModel.Compilation.GetSpecialType(SpecialType.core_Iterable_T_TIterator);
+            var ienumeratorType = ienumerableType;
+            throw new NotImplementedException("TODO");
 
             // make sure the collection can be iterated.
             if (!TryGetIterationElementType(
@@ -256,7 +257,7 @@ namespace StarkPlatform.Compiler.ConvertForToForEach
 
             // Check in the class/struct hierarchy first.
             var getEnumeratorMethod = TryFindMemberInThisOrBaseTypes<IMethodSymbol>(
-                containingType, collectionType, WellKnownMemberNames.GetEnumeratorMethodName);
+                containingType, collectionType, WellKnownMemberNames.IteratorMethodName);
             if (getEnumeratorMethod != null)
             {
                 return TryGetIterationElementTypeFromGetEnumerator(

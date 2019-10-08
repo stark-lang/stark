@@ -1202,11 +1202,11 @@ namespace StarkPlatform.Compiler.Stark
                 if (!variableTypes.Any())
                 {
                     return CreateResult(
-                        this.Compilation.GetSpecialType(SpecialType.System_Collections_Generic_IEnumerable_T)
+                        this.Compilation.GetSpecialType(SpecialType.core_Iterable_T_TIterator)
                             .Construct(Compilation.GetSpecialType(SpecialType.System_Object)));
                 }
 
-                var type = this.Compilation.GetSpecialType(SpecialType.System_Collections_Generic_IEnumerable_T);
+                var type = this.Compilation.GetSpecialType(SpecialType.core_Iterable_T_TIterator);
                 return variableTypes.Select(v => new TypeInferenceInfo(type.Construct(v.InferredType)));
             }
 

@@ -4616,7 +4616,7 @@ tryAgain:
                     lastTokenOfList = this.EatToken();
 
                     // Type arguments cannot contain attributes, so if this is an open square, we early out and assume it is not a type argument
-                    if (this.CurrentToken.Kind == SyntaxKind.OpenBracketToken)
+                    if (this.CurrentToken.Kind == SyntaxKind.AtToken)
                     {
                         lastTokenOfList = null;
                         return ScanTypeFlags.NotType;

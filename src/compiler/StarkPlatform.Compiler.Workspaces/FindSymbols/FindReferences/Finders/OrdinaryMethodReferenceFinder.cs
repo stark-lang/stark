@@ -110,7 +110,7 @@ namespace StarkPlatform.Compiler.FindSymbols.Finders
         private bool IsForEachMethod(IMethodSymbol methodSymbol)
         {
             return
-                methodSymbol.Name == WellKnownMemberNames.GetEnumeratorMethodName ||
+                methodSymbol.Name == WellKnownMemberNames.IteratorMethodName ||
                 methodSymbol.Name == WellKnownMemberNames.MoveNextMethodName;
         }
 

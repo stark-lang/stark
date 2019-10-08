@@ -24,16 +24,12 @@ namespace StarkPlatform.Compiler.Stark
         {
             this.ElementType = TypeMap.SubstituteType(elementType).TypeSymbol;
 
-            var interfaces = ArrayBuilder<NamedTypeSymbol>.GetInstance();
-            if (isEnumerable)
-            {
-                interfaces.Add(ContainingAssembly.GetSpecialType(SpecialType.System_Collections_Generic_IEnumerable_T).Construct(ElementType));
-                interfaces.Add(ContainingAssembly.GetSpecialType(SpecialType.System_Collections_IEnumerable));
-            }
+            throw new NotImplementedException("TODO");
 
-            interfaces.Add(ContainingAssembly.GetSpecialType(SpecialType.System_Collections_Generic_IEnumerator_T).Construct(ElementType));
-            interfaces.Add(ContainingAssembly.GetSpecialType(SpecialType.System_IDisposable));
-            interfaces.Add(ContainingAssembly.GetSpecialType(SpecialType.System_Collections_IEnumerator));
+            var interfaces = ArrayBuilder<NamedTypeSymbol>.GetInstance();
+            // TODO: Add proper arguments
+            interfaces.Add(ContainingAssembly.GetSpecialType(SpecialType.core_Iterable_T_TIterator).Construct(ElementType));
+
             _interfaces = interfaces.ToImmutableAndFree();
 
             _constructor = new IteratorConstructor(this);

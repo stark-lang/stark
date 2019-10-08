@@ -20,9 +20,11 @@ namespace StarkPlatform.Compiler.Stark
     /// </remarks>
     internal sealed class ForEachLoopBinder : LoopBinder
     {
-        private const string GetEnumeratorMethodName = WellKnownMemberNames.GetEnumeratorMethodName;
-        private const string CurrentPropertyName = WellKnownMemberNames.CurrentPropertyName;
-        private const string MoveNextMethodName = WellKnownMemberNames.MoveNextMethodName;
+        private const string IteratorMethodName = WellKnownMemberNames.IteratorMethodName;
+        private const string IterateBeginMethodName = "iterate_begin";
+        private const string IterateNextMethodName = "iterate_next";
+        private const string IterateItemMethodName = "iterate_item";
+        private const string IterateEndMethodName = "iterate_end";
 
         private const string GetAsyncEnumeratorMethodName = WellKnownMemberNames.GetAsyncEnumeratorMethodName;
         private const string MoveNextAsyncMethodName = WellKnownMemberNames.MoveNextAsyncMethodName;
@@ -193,19 +195,16 @@ namespace StarkPlatform.Compiler.Stark
             TypeSymbolWithAnnotations inferredType;
             bool hasErrors = !GetEnumeratorInfoAndInferCollectionElementType(ref builder, ref collectionExpr, diagnostics, out inferredType);
 
-            // These occur when special types are missing or malformed, or the patterns are incompletely implemented.
-            hasErrors |= builder.IsIncomplete;
-
             AwaitableInfo awaitInfo = null;
-            MethodSymbol getEnumeratorMethod = builder.GetEnumeratorMethod;
             if (IsAsync)
             {
-                var placeholder = new BoundAwaitableValuePlaceholder(_syntax.Expression, builder.MoveNextMethod?.ReturnType.TypeSymbol ?? CreateErrorType());
+                throw new NotImplementedException("Async Foreach not implemented");
+                var placeholder = new BoundAwaitableValuePlaceholder(_syntax.Expression, builder.IterateHasNext?.ReturnType.TypeSymbol ?? CreateErrorType());
                 awaitInfo = BindAwaitInfo(placeholder, _syntax.Expression, _syntax.AwaitKeyword.GetLocation(), diagnostics, ref hasErrors);
 
                 if (!hasErrors && awaitInfo.GetResult?.ReturnType.SpecialType != SpecialType.System_Boolean)
                 {
-                    diagnostics.Add(ErrorCode.ERR_BadGetAsyncEnumerator, _syntax.Expression.Location, getEnumeratorMethod.ReturnType, getEnumeratorMethod);
+                    diagnostics.Add(ErrorCode.ERR_BadGetAsyncEnumerator, _syntax.Expression.Location, collectionExpr.Type, collectionExpr);
                     hasErrors = true;
                 }
             }
@@ -293,7 +292,7 @@ namespace StarkPlatform.Compiler.Stark
                                 }
 
                                 hasErrors |= !CheckMethodReturnValueKind(
-                                    builder.CurrentPropertyGetter,
+                                    builder.IterateNext,
                                     callSyntaxOpt: null,
                                     collectionExpr.Syntax,
                                     requiredCurrentKind,
@@ -345,10 +344,10 @@ namespace StarkPlatform.Compiler.Stark
             hasErrors |= hasNameConflicts;
 
             var foreachKeyword = _syntax.ForEachKeyword;
-            ReportDiagnosticsIfObsolete(diagnostics, getEnumeratorMethod, foreachKeyword, hasBaseReceiver: false);
-            ReportDiagnosticsIfObsolete(diagnostics, builder.MoveNextMethod, foreachKeyword, hasBaseReceiver: false);
-            ReportDiagnosticsIfObsolete(diagnostics, builder.CurrentPropertyGetter, foreachKeyword, hasBaseReceiver: false);
-            ReportDiagnosticsIfObsolete(diagnostics, builder.CurrentPropertyGetter.AssociatedSymbol, foreachKeyword, hasBaseReceiver: false);
+            ReportDiagnosticsIfObsolete(diagnostics, builder.IterateBegin, foreachKeyword, hasBaseReceiver: false);
+            ReportDiagnosticsIfObsolete(diagnostics, builder.IterateHasNext, foreachKeyword, hasBaseReceiver: false);
+            ReportDiagnosticsIfObsolete(diagnostics, builder.IterateNext, foreachKeyword, hasBaseReceiver: false);
+            ReportDiagnosticsIfObsolete(diagnostics, builder.IterateEnd, foreachKeyword, hasBaseReceiver: false);
 
             // We want to convert from inferredType in the array/string case and builder.ElementType in the enumerator case,
             // but it turns out that these are equivalent (when both are available).
@@ -378,56 +377,8 @@ namespace StarkPlatform.Compiler.Stark
             // Spec (§8.8.4):
             // If the type X of expression is dynamic then there is an implicit conversion from >>expression<< (not the type of the expression) 
             // to the System.Collections.IEnumerable interface (§6.1.8). 
-            builder.CollectionConversion = this.Conversions.ClassifyConversionFromExpression(collectionExpr, builder.CollectionType, ref useSiteDiagnostics);
-            builder.CurrentConversion = this.Conversions.ClassifyConversionFromType(builder.CurrentPropertyGetter.ReturnType.TypeSymbol, builder.ElementType.TypeSymbol, ref useSiteDiagnostics);
-
-            TypeSymbol getEnumeratorType = getEnumeratorMethod.ReturnType.TypeSymbol;
-            // we never convert struct enumerators to object - it is done only for null-checks.
-            builder.EnumeratorConversion = getEnumeratorType.IsValueType ?
-                Conversion.Identity :
-                this.Conversions.ClassifyConversionFromType(getEnumeratorType, GetSpecialType(SpecialType.System_Object, diagnostics, _syntax), ref useSiteDiagnostics);
-
-            if (getEnumeratorType.IsRestrictedType() && (IsDirectlyInIterator || IsInAsyncMethod()))
-            {
-                diagnostics.Add(ErrorCode.ERR_BadSpecialByRefIterator, foreachKeyword.GetLocation(), getEnumeratorType);
-            }
 
             diagnostics.Add(_syntax.ForEachKeyword.GetLocation(), useSiteDiagnostics);
-
-            // Due to the way we extracted the various types, these conversions should always be possible.
-            // CAVEAT: if we're iterating over an array of pointers, the current conversion will fail since we
-            // can't convert from object to a pointer type.  Similarly, if we're iterating over an array of
-            // Nullable<Error>, the current conversion will fail because we don't know if an ErrorType is a
-            // value type.  This doesn't matter in practice, since we won't actually use the enumerator pattern 
-            // when we lower the loop.
-            Debug.Assert(builder.CollectionConversion.IsValid);
-            Debug.Assert(builder.CurrentConversion.IsValid ||
-                (builder.ElementType.IsPointerType() && collectionExpr.Type.IsArray()) ||
-                (builder.ElementType.IsNullableType() && builder.ElementType.TypeSymbol.GetMemberTypeArgumentsNoUseSiteDiagnostics().Single().IsErrorType() && collectionExpr.Type.IsArray()));
-            Debug.Assert(builder.EnumeratorConversion.IsValid ||
-                this.Compilation.GetSpecialType(SpecialType.System_Object).TypeKind == TypeKind.Error ||
-                !useSiteDiagnostics.IsNullOrEmpty(),
-                "Conversions to object succeed unless there's a problem with the object type or the source type");
-
-            // If user-defined conversions could occur here, we would need to check for ObsoleteAttribute.
-            Debug.Assert((object)builder.CollectionConversion.Method == null,
-                "Conversion from collection expression to collection type should not be user-defined");
-            Debug.Assert((object)builder.CurrentConversion.Method == null,
-                "Conversion from Current property type to element type should not be user-defined");
-            Debug.Assert((object)builder.EnumeratorConversion.Method == null,
-                "Conversion from GetEnumerator return type to System.Object should not be user-defined");
-
-            // We're wrapping the collection expression in a (non-synthesized) conversion so that its converted
-            // type (i.e. builder.CollectionType) will be available in the binding API.
-            BoundConversion convertedCollectionExpression = new BoundConversion(
-                collectionExpr.Syntax,
-                collectionExpr,
-                builder.CollectionConversion,
-                @checked: CheckOverflowAtRuntime,
-                explicitCastInCode: false,
-                conversionGroupOpt: null,
-                ConstantValue.NotAvailable,
-                builder.CollectionType);
 
             if (builder.NeedsDisposal && IsAsync)
             {
@@ -436,12 +387,13 @@ namespace StarkPlatform.Compiler.Stark
 
             return new BoundForEachStatement(
                 _syntax,
-                builder.Build(this.Flags),
+                builder.
+                Build(this.Flags),
                 elementConversion,
                 boundIterationVariableType,
                 iterationVariables,
                 iterationErrorExpression,
-                convertedCollectionExpression,
+                collectionExpr,
                 deconstructStep,
                 awaitInfo,
                 body,
@@ -453,9 +405,7 @@ namespace StarkPlatform.Compiler.Stark
 
         private bool GetAwaitDisposeAsyncInfo(ref ForEachEnumeratorInfo.Builder builder, DiagnosticBag diagnostics)
         {
-            var awaitableType = builder.DisposeMethod is null
-                ? this.GetWellKnownType(WellKnownType.core_Threading_Tasks_ValueTask, diagnostics, this._syntax)
-                : builder.DisposeMethod.ReturnType.TypeSymbol;
+            var awaitableType = builder.IterableType;
 
             var placeholder = new BoundAwaitableValuePlaceholder(_syntax.Expression, awaitableType);
 
@@ -480,27 +430,7 @@ namespace StarkPlatform.Compiler.Stark
 
             bool gotInfo = GetEnumeratorInfo(ref builder, collectionExpr, diagnostics);
 
-            if (!gotInfo)
-            {
-                inferredType = default;
-            }
-            else if (collectionExpr.HasDynamicType())
-            {
-                // If the enumerator is dynamic, it yields dynamic values 
-                inferredType = TypeSymbolWithAnnotations.Create(DynamicTypeSymbol.Instance);
-            }
-            else if (collectionExpr.Type.SpecialType == SpecialType.System_String && builder.CollectionType.SpecialType == SpecialType.System_Collections_IEnumerable)
-            {
-                // Reproduce dev11 behavior: we're always going to lower a foreach loop over a string to a for loop 
-                // over the string's Chars indexer.  Therefore, we should infer "char", regardless of what the spec
-                // indicates the element type is.  This actually matters in practice because the System.String in
-                // the portable library doesn't have a pattern GetEnumerator method or implement IEnumerable<char>.
-                inferredType = TypeSymbolWithAnnotations.Create(GetSpecialType(SpecialType.System_Char, diagnostics, collectionExpr.Syntax));
-            }
-            else
-            {
-                inferredType = builder.ElementType;
-            }
+            inferredType = !gotInfo ? default : builder.ElementType;
 
             return gotInfo;
         }
@@ -593,7 +523,7 @@ namespace StarkPlatform.Compiler.Stark
                 : (isAsync ? ErrorCode.ERR_AwaitForEachMissingMember : ErrorCode.ERR_ForEachMissingMember);
 
             diagnostics.Add(errorCode, _syntax.Expression.Location,
-                collectionExprType, isAsync ? GetAsyncEnumeratorMethodName : GetEnumeratorMethodName);
+                collectionExprType, isAsync ? GetAsyncEnumeratorMethodName : IteratorMethodName);
             return false;
         }
 
@@ -641,54 +571,43 @@ namespace StarkPlatform.Compiler.Stark
                 return EnumeratorResult.FailedAndReported;
             }
 
-            if (collectionExprType.Kind == SymbolKind.DynamicType && IsAsync)
-            {
-                diagnostics.Add(ErrorCode.ERR_BadDynamicAwaitForEach, _syntax.Expression.Location);
-                return EnumeratorResult.FailedAndReported;
-            }
-
             // The spec specifically lists the collection, enumerator, and element types for arrays and dynamic.
-            if (collectionExprType.Kind == SymbolKind.ArrayType || collectionExprType.Kind == SymbolKind.DynamicType)
+            if (collectionExprType.Kind == SymbolKind.ArrayType)
             {
                 builder = GetDefaultEnumeratorInfo(builder, diagnostics, collectionExprType);
                 return EnumeratorResult.Succeeded;
             }
 
             bool foundMultipleGenericIEnumerableInterfaces;
-            if (SatisfiesGetEnumeratorPattern(ref builder, collectionExprType, isAsync, diagnostics))
-            {
-                Debug.Assert((object)builder.GetEnumeratorMethod != null);
 
-                builder.CollectionType = collectionExprType;
+            //if (SatisfiesGetEnumeratorPattern(ref builder, collectionExprType, isAsync, diagnostics))
+            //{
+            //    Debug.Assert((object)builder.IteratorMethod != null);
 
-                if (SatisfiesForEachPattern(ref builder, isAsync, diagnostics))
-                {
-                    builder.ElementType = ((PropertySymbol)builder.CurrentPropertyGetter.AssociatedSymbol).Type;
+            //    builder.CollectionType = collectionExprType;
 
-                    GetDisposalInfoForEnumerator(ref builder, collectionExpr, isAsync, diagnostics);
+            //    if (SatisfiesForEachPattern(ref builder, isAsync, diagnostics))
+            //    {
+            //        builder.ElementType = ((PropertySymbol)builder.IterateItem.AssociatedSymbol).Type;
 
-                    return EnumeratorResult.Succeeded;
-                }
+            //        GetDisposalInfoForEnumerator(ref builder, collectionExpr, isAsync, diagnostics);
 
-                MethodSymbol getEnumeratorMethod = builder.GetEnumeratorMethod;
-                diagnostics.Add(isAsync ? ErrorCode.ERR_BadGetAsyncEnumerator : ErrorCode.ERR_BadGetEnumerator, _syntax.Expression.Location, getEnumeratorMethod.ReturnType.TypeSymbol, getEnumeratorMethod);
-                return EnumeratorResult.FailedAndReported;
-            }
+            //        return EnumeratorResult.Succeeded;
+            //    }
 
-            if (!isAsync && IsIEnumerable(collectionExprType))
-            {
-                // This indicates a problem with the special IEnumerable type - it should have satisfied the GetEnumerator pattern.
-                diagnostics.Add(ErrorCode.ERR_ForEachMissingMember, _syntax.Expression.Location, collectionExprType, GetEnumeratorMethodName);
-                return EnumeratorResult.FailedAndReported;
-            }
-            if (isAsync && IsIAsyncEnumerable(collectionExprType))
-            {
-                // This indicates a problem with the well-known IAsyncEnumerable type - it should have satisfied the GetAsyncEnumerator pattern.
-                diagnostics.Add(ErrorCode.ERR_AwaitForEachMissingMember, _syntax.Expression.Location, collectionExprType, GetAsyncEnumeratorMethodName);
-                return EnumeratorResult.FailedAndReported;
-            }
+            //    MethodSymbol getEnumeratorMethod = builder.IteratorMethod;
+            //    diagnostics.Add(isAsync ? ErrorCode.ERR_BadGetAsyncEnumerator : ErrorCode.ERR_BadGetEnumerator, _syntax.Expression.Location, getEnumeratorMethod.ReturnType.TypeSymbol, getEnumeratorMethod);
+            //    return EnumeratorResult.FailedAndReported;
+            //}
 
-            if (AllInterfacesContainsIEnumerable(ref builder, collectionExprType, isAsync, diagnostics, out foundMultipleGenericIEnumerableInterfaces))
+            //if (isAsync && IsIAsyncEnumerable(collectionExprType))
+            //{
+            //    // This indicates a problem with the well-known IAsyncEnumerable type - it should have satisfied the GetAsyncEnumerator pattern.
+            //    diagnostics.Add(ErrorCode.ERR_AwaitForEachMissingMember, _syntax.Expression.Location, collectionExprType, GetAsyncEnumeratorMethodName);
+            //    return EnumeratorResult.FailedAndReported;
+            //}
+
+            if (AllInterfacesContainsIterable(ref builder, collectionExprType, isAsync, diagnostics, out foundMultipleGenericIEnumerableInterfaces))
             {
                 CSharpSyntaxNode errorLocationSyntax = _syntax.Expression;
 
@@ -697,82 +616,45 @@ namespace StarkPlatform.Compiler.Stark
                     diagnostics.Add(isAsync ? ErrorCode.ERR_MultipleIAsyncEnumOfT : ErrorCode.ERR_MultipleIEnumOfT, errorLocationSyntax.Location, collectionExprType,
                         isAsync ?
                             this.Compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerable_T) :
-                            this.Compilation.GetSpecialType(SpecialType.System_Collections_Generic_IEnumerable_T));
+                            this.Compilation.GetSpecialType(SpecialType.core_Iterable_T_TIterator));
                     return EnumeratorResult.FailedAndReported;
                 }
 
-                Debug.Assert((object)builder.CollectionType != null);
+                Debug.Assert((object)builder.IterableType != null);
 
-                NamedTypeSymbol collectionType = (NamedTypeSymbol)builder.CollectionType;
-                if (collectionType.IsGenericType)
+                NamedTypeSymbol iterableType = (NamedTypeSymbol)builder.IterableType;
+                Debug.Assert(iterableType.IsGenericType);
+
+                // If the type is generic, we have to search for the methods
+                builder.ElementType = iterableType.TypeArgumentsNoUseSiteDiagnostics[0];
+                builder.IteratorType = iterableType.TypeArgumentsNoUseSiteDiagnostics[1].TypeSymbol;
+
+                //MethodSymbol iteratorMethod = GetIteratorMethod(iterableType, diagnostics, isAsync, errorLocationSyntax);
+
+
+                if (isAsync)
                 {
-                    // If the type is generic, we have to search for the methods
-                    builder.ElementType = collectionType.TypeArgumentsNoUseSiteDiagnostics.Single();
+                    throw new NotImplementedException("Add support for async iterator in stark");
+                    Debug.Assert(builder.IterableType.OriginalDefinition.Equals(Compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerator_T)));
 
-                    MethodSymbol getEnumeratorMethod = GetGetEnumeratorMethod(collectionType, diagnostics, isAsync, errorLocationSyntax);
+                    MethodSymbol moveNextAsync = (MethodSymbol)GetWellKnownTypeMember(Compilation, WellKnownMember.System_Collections_Generic_IAsyncEnumerator_T__MoveNextAsync,
+                        diagnostics, errorLocationSyntax.Location, isOptional: false);
 
-                    if ((object)getEnumeratorMethod != null)
+                    if ((object)moveNextAsync != null)
                     {
-                        MethodSymbol specificGetEnumeratorMethod = getEnumeratorMethod.AsMember(collectionType);
-                        builder.GetEnumeratorMethod = specificGetEnumeratorMethod;
-                        TypeSymbol enumeratorType = specificGetEnumeratorMethod.ReturnType.TypeSymbol;
-
-                        if (isAsync)
-                        {
-                            Debug.Assert(enumeratorType.OriginalDefinition.Equals(Compilation.GetWellKnownType(WellKnownType.core_Collections_Generic_IAsyncEnumerator_T)));
-
-                            MethodSymbol moveNextAsync = (MethodSymbol)GetWellKnownTypeMember(Compilation, WellKnownMember.System_Collections_Generic_IAsyncEnumerator_T__MoveNextAsync,
-                                diagnostics, errorLocationSyntax.Location, isOptional: false);
-
-                            if ((object)moveNextAsync != null)
-                            {
-                                builder.MoveNextMethod = moveNextAsync.AsMember((NamedTypeSymbol)enumeratorType);
-                            }
-                        }
-
-                        MethodSymbol currentPropertyGetter = isAsync ?
-                            (MethodSymbol)GetWellKnownTypeMember(Compilation, WellKnownMember.System_Collections_Generic_IAsyncEnumerator_T__get_Current, diagnostics, errorLocationSyntax.Location, isOptional: false) :
-                            (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Collections_Generic_IEnumerator_T__get_Current, diagnostics, errorLocationSyntax);
-
-                        if ((object)currentPropertyGetter != null)
-                        {
-                            builder.CurrentPropertyGetter = currentPropertyGetter.AsMember((NamedTypeSymbol)enumeratorType);
-                        }
-                    }
-
-                    if (!isAsync)
-                    {
-                        // NOTE: MoveNext is actually inherited from System.Collections.IEnumerator
-                        builder.MoveNextMethod = (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Collections_IEnumerator__MoveNext, diagnostics, errorLocationSyntax);
+                        builder.IterateHasNext = moveNextAsync.AsMember((NamedTypeSymbol)builder.IterableType);
                     }
                 }
                 else
                 {
-                    // Non-generic - use special members to avoid re-computing
-                    Debug.Assert(collectionType.SpecialType == SpecialType.System_Collections_IEnumerable);
-
-                    builder.GetEnumeratorMethod = (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Collections_IEnumerable__GetEnumerator, diagnostics, errorLocationSyntax);
-                    builder.CurrentPropertyGetter = (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Collections_IEnumerator__get_Current, diagnostics, errorLocationSyntax);
-                    builder.MoveNextMethod = (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Collections_IEnumerator__MoveNext, diagnostics, errorLocationSyntax);
-                    builder.ElementType = builder.CurrentPropertyGetter?.ReturnType ?? TypeSymbolWithAnnotations.Create(GetSpecialType(SpecialType.System_Object, diagnostics, errorLocationSyntax));
-
-                    Debug.Assert((object)builder.GetEnumeratorMethod == null ||
-                        builder.GetEnumeratorMethod.ReturnType.SpecialType == SpecialType.System_Collections_IEnumerator);
+                    builder.IterateBegin = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_begin, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+                    builder.IterateHasNext = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_has_next, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+                    builder.IterateNext = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_next, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+                    builder.IterateEnd = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_end, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
                 }
 
                 // We don't know the runtime type, so we will have to insert a runtime check for IDisposable (with a conditional call to IDisposable.Dispose).
-                builder.NeedsDisposal = true;
-                return EnumeratorResult.Succeeded;
-            }
-
-            // COMPAT:
-            // In some rare cases, like MicroFramework, System.String does not implement foreach pattern.
-            // For compat reasons we must still treat System.String as valid to use in a foreach
-            // Similarly to the cases with array and dynamic, we will default to IEnumerable for binding purposes.
-            // Lowering will not use iterator info with strings, so it is ok.
-            if (collectionExprType.SpecialType == SpecialType.System_String)
-            {
-                builder = GetDefaultEnumeratorInfo(builder, diagnostics, collectionExprType);
+                builder.NeedsDisposal = false;
                 return EnumeratorResult.Succeeded;
             }
 
@@ -781,103 +663,64 @@ namespace StarkPlatform.Compiler.Stark
 
         private void GetDisposalInfoForEnumerator(ref ForEachEnumeratorInfo.Builder builder, BoundExpression expr, bool isAsync, DiagnosticBag diagnostics)
         {
-            // NOTE: if IDisposable is not available at all, no diagnostics will be reported - we will just assume that
-            // the enumerator is not disposable.  If it has IDisposable in its interface list, there will be a diagnostic there.
-            // If IDisposable is available but its Dispose method is not, then diagnostics will be reported only if the enumerator
-            // is potentially disposable.
+            //// NOTE: if IDisposable is not available at all, no diagnostics will be reported - we will just assume that
+            //// the enumerator is not disposable.  If it has IDisposable in its interface list, there will be a diagnostic there.
+            //// If IDisposable is available but its Dispose method is not, then diagnostics will be reported only if the enumerator
+            //// is potentially disposable.
 
-            TypeSymbol enumeratorType = builder.GetEnumeratorMethod.ReturnType.TypeSymbol;
-            HashSet<DiagnosticInfo> useSiteDiagnostics = null;
+            //TypeSymbol enumeratorType = builder.IteratorMethod.ReturnType.TypeSymbol;
+            //HashSet<DiagnosticInfo> useSiteDiagnostics = null;
 
-            // For async foreach, we don't do the runtime check
-            if ((!enumeratorType.IsSealed && !isAsync) ||
-                this.Conversions.ClassifyImplicitConversionFromType(enumeratorType,
-                    isAsync ? this.Compilation.GetWellKnownType(WellKnownType.core_IAsyncDisposable) : this.Compilation.GetSpecialType(SpecialType.System_IDisposable),
-                    ref useSiteDiagnostics).IsImplicit)
-            {
-                builder.NeedsDisposal = true;
-            }
-            else if (enumeratorType.IsRefLikeType || isAsync)
-            {
-                // if it wasn't directly convertable to IDisposable, see if it is pattern-disposable
-                // again, we throw away any binding diagnostics, and assume it's not disposable if we encounter errors
-                var patternDisposeDiags = new DiagnosticBag();
-                var receiver = new BoundDisposableValuePlaceholder(_syntax, enumeratorType);
-                MethodSymbol disposeMethod = TryFindDisposePatternMethod(receiver, _syntax, isAsync, patternDisposeDiags);
-                if (!(disposeMethod is null))
-                {
-                    builder.NeedsDisposal = true;
-                    builder.DisposeMethod = disposeMethod;
-                }
-                patternDisposeDiags.Free();
-            }
+            //// For async foreach, we don't do the runtime check
+            //if ((!enumeratorType.IsSealed && !isAsync) ||
+            //    this.Conversions.ClassifyImplicitConversionFromType(enumeratorType,
+            //        isAsync ? this.Compilation.GetWellKnownType(WellKnownType.core_IAsyncDisposable) : this.Compilation.GetSpecialType(SpecialType.System_IDisposable),
+            //        ref useSiteDiagnostics).IsImplicit)
+            //{
+            //    builder.NeedsDisposal = true;
+            //}
+            //else if (enumeratorType.IsRefLikeType || isAsync)
+            //{
+            //    // if it wasn't directly convertable to IDisposable, see if it is pattern-disposable
+            //    // again, we throw away any binding diagnostics, and assume it's not disposable if we encounter errors
+            //    var patternDisposeDiags = new DiagnosticBag();
+            //    var receiver = new BoundDisposableValuePlaceholder(_syntax, enumeratorType);
+            //    MethodSymbol disposeMethod = TryFindDisposePatternMethod(receiver, _syntax, isAsync, patternDisposeDiags);
+            //    if (!(disposeMethod is null))
+            //    {
+            //        builder.NeedsDisposal = true;
+            //        //builder.DisposeMethod = disposeMethod;
+            //        throw new NotImplementedException("TODO: Dispose not implemented for Async in stark");
+            //    }
+            //    patternDisposeDiags.Free();
+            //}
 
-            diagnostics.Add(_syntax, useSiteDiagnostics);
-        }
-
-        private MethodSymbol GetGetEnumeratorMethod(NamedTypeSymbol collectionType, DiagnosticBag diagnostics, bool isAsync, CSharpSyntaxNode errorLocationSyntax)
-        {
-            MethodSymbol getEnumeratorMethod;
-            if (isAsync)
-            {
-                Debug.Assert(IsIAsyncEnumerable(collectionType.OriginalDefinition));
-
-                getEnumeratorMethod = (MethodSymbol)GetWellKnownTypeMember(Compilation, WellKnownMember.System_Collections_Generic_IAsyncEnumerable_T__GetAsyncEnumerator,
-                    diagnostics, errorLocationSyntax.Location, isOptional: false);
-            }
-            else
-            {
-                Debug.Assert(collectionType.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T);
-                getEnumeratorMethod = (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Collections_Generic_IEnumerable_T__GetEnumerator, diagnostics, errorLocationSyntax);
-            }
-
-            return getEnumeratorMethod;
+            //diagnostics.Add(_syntax, useSiteDiagnostics);
         }
 
         private ForEachEnumeratorInfo.Builder GetDefaultEnumeratorInfo(ForEachEnumeratorInfo.Builder builder, DiagnosticBag diagnostics, TypeSymbol collectionExprType)
         {
             // NOTE: for arrays, we won't actually use any of these members - they're just for the API.
-            builder.CollectionType = GetSpecialType(SpecialType.System_Collections_IEnumerable, diagnostics, _syntax);
+            builder.ElementType = ((ArrayTypeSymbol)collectionExprType).ElementType;
+            builder.IteratorType =  GetSpecialType(SpecialType.System_Int, diagnostics, _syntax);
 
-            builder.ElementType = collectionExprType.SpecialType == SpecialType.System_String ?
-                TypeSymbolWithAnnotations.Create(GetSpecialType(SpecialType.System_Char, diagnostics, _syntax)) :
-                ((ArrayTypeSymbol)collectionExprType).ElementType;
+            // Construct the collection type
+            builder.IterableType = GetSpecialType(SpecialType.core_Iterable_T_TIterator, diagnostics, _syntax).Construct(builder.ElementType.TypeSymbol, builder.IteratorType, collectionExprType);
 
             // CONSIDER: 
             // For arrays and string none of these members will actually be emitted, so it seems strange to prevent compilation if they can't be found.
             // skip this work in the batch case?
-            builder.GetEnumeratorMethod = (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Collections_IEnumerable__GetEnumerator, diagnostics, _syntax);
-            builder.CurrentPropertyGetter = (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Collections_IEnumerator__get_Current, diagnostics, _syntax);
-            builder.MoveNextMethod = (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Collections_IEnumerator__MoveNext, diagnostics, _syntax);
+            builder.IterateBegin = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_begin, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+            builder.IterateHasNext = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_has_next, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+            builder.IterateNext = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_next, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+            builder.IterateEnd = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_end, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
 
-            Debug.Assert((object)builder.GetEnumeratorMethod == null ||
-                TypeSymbol.Equals(builder.GetEnumeratorMethod.ReturnType.TypeSymbol, this.Compilation.GetSpecialType(SpecialType.System_Collections_IEnumerator), TypeCompareKind.ConsiderEverything2));
+            //Debug.Assert((object)builder.GetEnumeratorMethod == null ||
+            //    TypeSymbol.Equals(builder.GetEnumeratorMethod.ReturnType.TypeSymbol, this.Compilation.GetSpecialType(SpecialType.core_Iterator_TItem_TState), TypeCompareKind.ConsiderEverything2));
 
             // We don't know the runtime type, so we will have to insert a runtime check for IDisposable (with a conditional call to IDisposable.Dispose).
             builder.NeedsDisposal = true;
             return builder;
-        }
-
-        /// <summary>
-        /// Check for a GetEnumerator (or GetAsyncEnumerator) method on collectionExprType.  Failing to satisfy the pattern is not an error -
-        /// it just means that we have to check for an interface instead.
-        /// </summary>
-        /// <param name="collectionExprType">Type of the expression over which to iterate.</param>
-        /// <param name="diagnostics">Populated with *warnings* if there are near misses.</param>
-        /// <param name="builder">Builder to fill in. <see cref="ForEachEnumeratorInfo.Builder.GetEnumeratorMethod"/> set if the pattern in satisfied.</param>
-        /// <returns>True if the method was found (still have to verify that the return (i.e. enumerator) type is acceptable).</returns>
-        /// <remarks>
-        /// Only adds warnings, so does not affect control flow (i.e. no need to check for failure).
-        /// </remarks>
-        private bool SatisfiesGetEnumeratorPattern(ref ForEachEnumeratorInfo.Builder builder, TypeSymbol collectionExprType, bool isAsync, DiagnosticBag diagnostics)
-        {
-            var lookupResult = LookupResult.GetInstance();
-            string methodName = isAsync ? GetAsyncEnumeratorMethodName : GetEnumeratorMethodName;
-            MethodSymbol getEnumeratorMethod = FindForEachPatternMethod(collectionExprType, methodName, lookupResult, warningsOnly: true, diagnostics: diagnostics, isAsync: isAsync);
-            lookupResult.Free();
-
-            builder.GetEnumeratorMethod = getEnumeratorMethod;
-            return (object)getEnumeratorMethod != null;
         }
 
         /// <summary>
@@ -890,7 +733,7 @@ namespace StarkPlatform.Compiler.Stark
         /// <param name="warningsOnly">True if failures should result in warnings; false if they should result in errors.</param>
         /// <param name="diagnostics">Populated with binding diagnostics.</param>
         /// <returns>The desired method or null.</returns>
-        private MethodSymbol FindForEachPatternMethod(TypeSymbol patternType, string methodName, LookupResult lookupResult, bool warningsOnly, DiagnosticBag diagnostics, bool isAsync)
+        private MethodSymbol FindForEachPatternMethod(TypeSymbol patternType, string methodName, int parameterCount, LookupResult lookupResult, bool warningsOnly, DiagnosticBag diagnostics, bool isAsync)
         {
             Debug.Assert(lookupResult.IsClear);
 
@@ -940,7 +783,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 // Note: for pattern-based lookup for `await foreach` we accept `GetAsyncEnumerator` and
                 // `MoveNextAsync` methods with optional/params parameters.
-                if (method.ParameterCount == 0 || isAsync)
+                if (method.ParameterCount == parameterCount || isAsync)
                 {
                     candidateMethods.Add((MethodSymbol)member);
                 }
@@ -1013,136 +856,6 @@ namespace StarkPlatform.Compiler.Stark
             return result;
         }
 
-        /// <summary>
-        /// Called after it is determined that the expression being enumerated is of a type that
-        /// has a GetEnumerator (or GetAsyncEnumerator) method.  Checks to see if the return type of the GetEnumerator
-        /// method is suitable (i.e. has Current and MoveNext for regular case, 
-        /// or Current and MoveNextAsync for async case).
-        /// </summary>
-        /// <param name="builder">Must be non-null and contain a non-null GetEnumeratorMethod.</param>
-        /// <param name="diagnostics">Will be populated with pattern diagnostics.</param>
-        /// <returns>True if the return type has suitable members.</returns>
-        /// <remarks>
-        /// It seems that every failure path reports the same diagnostics, so that is left to the caller.
-        /// </remarks>
-        private bool SatisfiesForEachPattern(ref ForEachEnumeratorInfo.Builder builder, bool isAsync, DiagnosticBag diagnostics)
-        {
-            Debug.Assert((object)builder.GetEnumeratorMethod != null);
-
-            MethodSymbol getEnumeratorMethod = builder.GetEnumeratorMethod;
-            TypeSymbol enumeratorType = getEnumeratorMethod.ReturnType.TypeSymbol;
-
-            switch (enumeratorType.TypeKind)
-            {
-                case TypeKind.Class:
-                case TypeKind.Struct:
-                case TypeKind.Interface:
-                case TypeKind.TypeParameter: // Not specifically mentioned in the spec, but consistent with Dev10.
-                case TypeKind.Dynamic: // Not specifically mentioned in the spec, but consistent with Dev10.
-                    break;
-
-                case TypeKind.Submission:
-                    // submission class is synthesized and should never appear in a foreach:
-                    throw ExceptionUtilities.UnexpectedValue(enumeratorType.TypeKind);
-
-                default:
-                    return false;
-            }
-
-            // Use a try-finally since there are many return points
-            LookupResult lookupResult = LookupResult.GetInstance();
-            try
-            {
-                // If we searched for the accessor directly, we could reuse FindForEachPatternMethod and we
-                // wouldn't have to mangle CurrentPropertyName.  However, Dev10 searches for the property and
-                // then extracts the accessor, so we should do the same (in case of accessors with non-standard
-                // names).
-                HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-                this.LookupMembersInType(
-                    lookupResult,
-                    enumeratorType,
-                    CurrentPropertyName,
-                    arity: 0,
-                    basesBeingResolved: null,
-                    options: LookupOptions.Default, // properties are not invocable - their accessors are
-                    originalBinder: this,
-                    diagnose: false,
-                    useSiteDiagnostics: ref useSiteDiagnostics);
-
-                diagnostics.Add(_syntax.Expression, useSiteDiagnostics);
-                useSiteDiagnostics = null;
-
-                if (!lookupResult.IsSingleViable)
-                {
-                    ReportPatternMemberLookupDiagnostics(lookupResult, enumeratorType, CurrentPropertyName, warningsOnly: false, diagnostics: diagnostics);
-                    return false;
-                }
-
-                // lookupResult.IsSingleViable above guaranteed there is exactly one symbol.
-                Symbol lookupSymbol = lookupResult.SingleSymbolOrDefault;
-                Debug.Assert((object)lookupSymbol != null);
-
-                if (lookupSymbol.IsStatic || lookupSymbol.DeclaredAccessibility != Accessibility.Public || lookupSymbol.Kind != SymbolKind.Property)
-                {
-                    return false;
-                }
-
-                // NOTE: accessor can be inherited from overridden property
-                MethodSymbol currentPropertyGetterCandidate = ((PropertySymbol)lookupSymbol).GetOwnOrInheritedGetMethod();
-
-                if ((object)currentPropertyGetterCandidate == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    bool isAccessible = this.IsAccessible(currentPropertyGetterCandidate, ref useSiteDiagnostics);
-                    diagnostics.Add(_syntax.Expression, useSiteDiagnostics);
-
-                    if (!isAccessible)
-                    {
-                        // NOTE: per Dev10 and the spec, the property has to be public, but the accessor just has to be accessible
-                        return false;
-                    }
-                }
-
-                builder.CurrentPropertyGetter = currentPropertyGetterCandidate;
-
-                lookupResult.Clear(); // Reuse the same LookupResult
-
-                MethodSymbol moveNextMethodCandidate = FindForEachPatternMethod(enumeratorType,
-                    isAsync ? MoveNextAsyncMethodName : MoveNextMethodName,
-                    lookupResult, warningsOnly: false, diagnostics: diagnostics, isAsync: isAsync);
-
-                if ((object)moveNextMethodCandidate == null ||
-                    moveNextMethodCandidate.IsStatic || moveNextMethodCandidate.DeclaredAccessibility != Accessibility.Public ||
-                    IsInvalidMoveNextMethod(moveNextMethodCandidate, isAsync))
-                {
-                    return false;
-                }
-
-                builder.MoveNextMethod = moveNextMethodCandidate;
-
-                return true;
-            }
-            finally
-            {
-                lookupResult.Free();
-            }
-        }
-
-        private bool IsInvalidMoveNextMethod(MethodSymbol moveNextMethodCandidate, bool isAsync)
-        {
-            if (isAsync)
-            {
-                // We'll verify the return type from `MoveNextAsync` when we try to bind the `await` for it
-                return false;
-            }
-
-            // SPEC VIOLATION: Dev10 checks the return type of the original definition, rather than the return type of the actual method.
-            return moveNextMethodCandidate.OriginalDefinition.ReturnType.SpecialType != SpecialType.System_Boolean;
-        }
-
         private void ReportEnumerableWarning(DiagnosticBag diagnostics, TypeSymbol enumeratorType, Symbol patternMemberCandidate)
         {
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
@@ -1152,18 +865,6 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             diagnostics.Add(_syntax.Expression, useSiteDiagnostics);
-        }
-
-        private static bool IsIEnumerable(TypeSymbol type)
-        {
-            switch (((TypeSymbol)type.OriginalDefinition).SpecialType)
-            {
-                case SpecialType.System_Collections_IEnumerable:
-                case SpecialType.System_Collections_Generic_IEnumerable_T:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         private bool IsIAsyncEnumerable(TypeSymbol type)
@@ -1182,7 +883,7 @@ namespace StarkPlatform.Compiler.Stark
         /// <param name="diagnostics" />
         /// <param name="foundMultiple">True if multiple T's are found.</param>
         /// <returns>True if some IEnumerable is found (may still be ambiguous).</returns>
-        private bool AllInterfacesContainsIEnumerable(
+        private bool AllInterfacesContainsIterable(
             ref ForEachEnumeratorInfo.Builder builder,
             TypeSymbol type,
             bool isAsync,
@@ -1196,40 +897,21 @@ namespace StarkPlatform.Compiler.Stark
             if (type.TypeKind == TypeKind.TypeParameter)
             {
                 var typeParameter = (TypeParameterSymbol)type;
-                GetIEnumerableOfT(typeParameter.EffectiveBaseClass(ref useSiteDiagnostics).AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics), isAsync, ref @implementedIEnumerable, ref foundMultiple);
-                GetIEnumerableOfT(typeParameter.AllEffectiveInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics), isAsync, ref @implementedIEnumerable, ref foundMultiple);
+                GetIterableOfTItemTStateTIterator(typeParameter.EffectiveBaseClass(ref useSiteDiagnostics).AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics), isAsync, ref @implementedIEnumerable, ref foundMultiple);
+                GetIterableOfTItemTStateTIterator(typeParameter.AllEffectiveInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics), isAsync, ref @implementedIEnumerable, ref foundMultiple);
             }
             else
             {
-                GetIEnumerableOfT(type.AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics), isAsync, ref @implementedIEnumerable, ref foundMultiple);
-            }
-
-            // Prefer generic to non-generic, unless it is inaccessible.
-            if (((object)implementedIEnumerable == null) || !this.IsAccessible(implementedIEnumerable, ref useSiteDiagnostics))
-            {
-                implementedIEnumerable = null;
-
-                if (!isAsync)
-                {
-                    var implementedNonGeneric = this.Compilation.GetSpecialType(SpecialType.System_Collections_IEnumerable);
-                    if ((object)implementedNonGeneric != null)
-                    {
-                        var conversion = this.Conversions.ClassifyImplicitConversionFromType(type, implementedNonGeneric, ref useSiteDiagnostics);
-                        if (conversion.IsImplicit)
-                        {
-                            implementedIEnumerable = implementedNonGeneric;
-                        }
-                    }
-                }
+                GetIterableOfTItemTStateTIterator(type.AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics), isAsync, ref @implementedIEnumerable, ref foundMultiple);
             }
 
             diagnostics.Add(_syntax.Expression, useSiteDiagnostics);
 
-            builder.CollectionType = implementedIEnumerable;
+            builder.IterableType = implementedIEnumerable;
             return (object)implementedIEnumerable != null;
         }
 
-        private void GetIEnumerableOfT(ImmutableArray<NamedTypeSymbol> interfaces, bool isAsync, ref NamedTypeSymbol result, ref bool foundMultiple)
+        private void GetIterableOfTItemTStateTIterator(ImmutableArray<NamedTypeSymbol> interfaces, bool isAsync, ref NamedTypeSymbol result, ref bool foundMultiple)
         {
             if (foundMultiple)
             {
@@ -1237,7 +919,7 @@ namespace StarkPlatform.Compiler.Stark
             }
             foreach (NamedTypeSymbol @interface in interfaces)
             {
-                if (IsIEnumerableT(@interface.OriginalDefinition, isAsync))
+                if (IsIterableOfTItemTStateTIterator(@interface.OriginalDefinition, isAsync))
                 {
                     if ((object)result == null ||
                         TypeSymbol.Equals(@interface, result, TypeCompareKind.IgnoreTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes))
@@ -1253,7 +935,7 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private bool IsIEnumerableT(TypeSymbol type, bool isAsync)
+        private bool IsIterableOfTItemTStateTIterator(TypeSymbol type, bool isAsync)
         {
             if (isAsync)
             {
@@ -1261,7 +943,7 @@ namespace StarkPlatform.Compiler.Stark
             }
             else
             {
-                return type.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T;
+                return type.SpecialType == SpecialType.core_Iterable_T_TIterator;
             }
         }
 

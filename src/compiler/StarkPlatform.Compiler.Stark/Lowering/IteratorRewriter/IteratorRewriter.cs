@@ -59,14 +59,9 @@ namespace StarkPlatform.Compiler.Stark
             bool isEnumerable;
             switch (method.ReturnType.TypeSymbol.OriginalDefinition.SpecialType)
             {
-                case SpecialType.System_Collections_IEnumerable:
-                case SpecialType.System_Collections_Generic_IEnumerable_T:
+                case SpecialType.core_MutableIterable_T_TIterator:
+                case SpecialType.core_Iterable_T_TIterator:
                     isEnumerable = true;
-                    break;
-
-                case SpecialType.System_Collections_IEnumerator:
-                case SpecialType.System_Collections_Generic_IEnumerator_T:
-                    isEnumerable = false;
                     break;
 
                 default:
@@ -95,24 +90,16 @@ namespace StarkPlatform.Compiler.Stark
             EnsureSpecialType(SpecialType.System_IDisposable, bag);
             EnsureSpecialMember(SpecialMember.System_IDisposable__Dispose, bag);
 
-            // IEnumerator
-            EnsureSpecialType(SpecialType.System_Collections_IEnumerator, bag);
-            EnsureSpecialPropertyGetter(SpecialMember.System_Collections_IEnumerator__Current, bag);
-            EnsureSpecialMember(SpecialMember.System_Collections_IEnumerator__MoveNext, bag);
-            EnsureSpecialMember(SpecialMember.System_Collections_IEnumerator__Reset, bag);
+            // Iterator<T, TIterator>
+            EnsureSpecialType(SpecialType.core_Iterable_T_TIterator, bag);
+            EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_begin, bag);
+            EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_has_next, bag);
+            EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_next, bag);
+            EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_end, bag);
 
-            // IEnumerator<T>
-            EnsureSpecialType(SpecialType.System_Collections_Generic_IEnumerator_T, bag);
-            EnsureSpecialPropertyGetter(SpecialMember.System_Collections_Generic_IEnumerator_T__Current, bag);
-
-            if (_isEnumerable)
-            {
-                // IEnumerable and IEnumerable<T>
-                EnsureSpecialType(SpecialType.System_Collections_IEnumerable, bag);
-                EnsureSpecialMember(SpecialMember.System_Collections_IEnumerable__GetEnumerator, bag);
-                EnsureSpecialType(SpecialType.System_Collections_Generic_IEnumerable_T, bag);
-                EnsureSpecialMember(SpecialMember.System_Collections_Generic_IEnumerable_T__GetEnumerator, bag);
-            }
+            // MutableIterator<T, TIterator>
+            EnsureSpecialType(SpecialType.core_MutableIterable_T_TIterator, bag);
+            EnsureSpecialMember(SpecialMember.core_MutableIterable_T_TIterator__iterate_item, bag);
 
             bool hasErrors = bag.HasAnyErrors();
             if (hasErrors)
@@ -193,14 +180,16 @@ namespace StarkPlatform.Compiler.Stark
 
         private void GenerateEnumeratorImplementation()
         {
-            var IDisposable_Dispose = F.SpecialMethod(SpecialMember.System_IDisposable__Dispose);
+            throw new NotImplementedException("TODO");
+            // TODO: implement with proper generic instantiation
+            var IDisposable_Dispose = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_end);
 
-            var IEnumerator_MoveNext = F.SpecialMethod(SpecialMember.System_Collections_IEnumerator__MoveNext);
-            var IEnumerator_Reset = F.SpecialMethod(SpecialMember.System_Collections_IEnumerator__Reset);
-            var IEnumerator_get_Current = F.SpecialProperty(SpecialMember.System_Collections_IEnumerator__Current).GetMethod;
+            var IEnumerator_Reset = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_begin);
+            var IEnumerator_MoveNext = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_has_next);
+            var IEnumerator_get_Current = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_next);
 
-            var IEnumeratorOfElementType = F.SpecialType(SpecialType.System_Collections_Generic_IEnumerator_T).Construct(_elementType);
-            var IEnumeratorOfElementType_get_Current = F.SpecialProperty(SpecialMember.System_Collections_Generic_IEnumerator_T__Current).GetMethod.AsMember(IEnumeratorOfElementType);
+            var IEnumeratorOfElementType = F.SpecialType(SpecialType.core_Iterable_T_TIterator).Construct(_elementType);
+            var IEnumeratorOfElementType_get_Current = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_next).AsMember(IEnumeratorOfElementType);
 
             // Add bool IEnumerator.MoveNext() and void IDisposable.Dispose()
             {
@@ -237,17 +226,19 @@ namespace StarkPlatform.Compiler.Stark
         /// </summary>
         private void GenerateEnumerableImplementation(ref BoundExpression managedThreadId)
         {
-            var IEnumerable_GetEnumerator = F.SpecialMethod(SpecialMember.System_Collections_IEnumerable__GetEnumerator);
+            throw new NotImplementedException("TODO");
 
-            var IEnumerableOfElementType = F.SpecialType(SpecialType.System_Collections_Generic_IEnumerable_T).Construct(_elementType);
-            var IEnumerableOfElementType_GetEnumerator = F.SpecialMethod(SpecialMember.System_Collections_Generic_IEnumerable_T__GetEnumerator).AsMember(IEnumerableOfElementType);
+            //var IEnumerable_GetEnumerator = F.SpecialMethod(SpecialMember.core_Iterable_TItem_TState_TIterator__iterator);
 
-            // generate GetEnumerator()
-            var getEnumeratorGeneric = GenerateIteratorGetEnumerator(IEnumerableOfElementType_GetEnumerator, ref managedThreadId, StateMachineStates.FirstUnusedState);
+            //var IEnumerableOfElementType = F.SpecialType(SpecialType.core_Iterable_T_TIterator).Construct(_elementType);
+            //var IEnumerableOfElementType_GetEnumerator = F.SpecialMethod(SpecialMember.core_Iterable_TItem_TState_TIterator__iterator).AsMember(IEnumerableOfElementType);
 
-            // Generate IEnumerable.GetEnumerator
-            var getEnumerator = OpenMethodImplementation(IEnumerable_GetEnumerator);
-            F.CloseMethod(F.Return(F.Call(F.This(), getEnumeratorGeneric)));
+            //// generate GetEnumerator()
+            //var getEnumeratorGeneric = GenerateIteratorGetEnumerator(IEnumerableOfElementType_GetEnumerator, ref managedThreadId, StateMachineStates.FirstUnusedState);
+
+            //// Generate IEnumerable.GetEnumerator
+            //var getEnumerator = OpenMethodImplementation(IEnumerable_GetEnumerator);
+            //F.CloseMethod(F.Return(F.Call(F.This(), getEnumeratorGeneric)));
         }
 
         private void GenerateConstructor(BoundExpression managedThreadId)

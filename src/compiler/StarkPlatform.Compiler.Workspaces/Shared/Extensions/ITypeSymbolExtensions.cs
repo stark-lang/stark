@@ -488,7 +488,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
 
             switch (typeSymbol.SpecialType)
             {
-                case SpecialType.System_Array:
+                case SpecialType.System_Array_T:
                 case SpecialType.System_Delegate:
                 case SpecialType.System_MulticastDelegate:
                 case SpecialType.System_Enum:
@@ -625,7 +625,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
         public static bool CanSupportCollectionInitializer(this ITypeSymbol typeSymbol, ISymbol within)
         {
             return
-                typeSymbol.AllInterfaces.Any(i => i.SpecialType == SpecialType.System_Collections_IEnumerable) &&
+                typeSymbol.AllInterfaces.Any(i => i.SpecialType == SpecialType.core_Iterable_T_TIterator) &&
                 typeSymbol.GetBaseTypesAndThis()
                     .Union(typeSymbol.GetOriginalInterfacesAndTheirBaseInterfaces())
                     .SelectAccessibleMembers<IMethodSymbol>(WellKnownMemberNames.CollectionInitializerAddMethodName, within ?? typeSymbol)

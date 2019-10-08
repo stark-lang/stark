@@ -382,7 +382,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
             if (st == SpecialType.System_Collections_Generic_IList_T ||
                 st == SpecialType.System_Collections_Generic_ICollection_T ||
-                st == SpecialType.System_Collections_Generic_IEnumerable_T ||
+                st == SpecialType.core_Iterable_T_TIterator ||
                 st == SpecialType.System_Collections_Generic_IReadOnlyList_T ||
                 st == SpecialType.System_Collections_Generic_IReadOnlyCollection_T)
             {

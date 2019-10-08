@@ -179,7 +179,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.Providers
                 var originalDefinition = namedType.OriginalDefinition;
 
                 var ienumerableOfT = namedType.GetAllInterfacesIncludingThis().FirstOrDefault(
-                    t => t.OriginalDefinition.SpecialType == SpecialType.System_Collections_Generic_IEnumerable_T);
+                    t => t.OriginalDefinition.SpecialType == SpecialType.core_Iterable_T_TIterator);
 
                 if (ienumerableOfT != null)
                 {

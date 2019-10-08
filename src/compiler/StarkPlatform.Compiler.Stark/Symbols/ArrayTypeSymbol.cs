@@ -65,14 +65,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             ImmutableArray<int> sizes,
             ImmutableArray<int> lowerBounds)
         {
-            return CreateMDArray(elementType, rank, sizes, lowerBounds, declaringAssembly.GetSpecialType(SpecialType.System_Array));
-        }
-
-        internal static ArrayTypeSymbol CreateSZArray(
-            TypeSymbolWithAnnotations elementType,
-            NamedTypeSymbol array)
-        {
-            return new SZArray(elementType, array, GetSZArrayInterfaces(elementType, array.ContainingAssembly));
+            return CreateMDArray(elementType, rank, sizes, lowerBounds, declaringAssembly.GetSpecialType(SpecialType.System_Array_T));
         }
 
         internal static ArrayTypeSymbol CreateSZArray(
@@ -87,7 +80,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             AssemblySymbol declaringAssembly,
             TypeSymbolWithAnnotations elementType)
         {
-            return CreateSZArray(elementType, declaringAssembly.GetSpecialType(SpecialType.System_Array), GetSZArrayInterfaces(elementType, declaringAssembly));
+            var arrayType = declaringAssembly.GetSpecialType(SpecialType.System_Array_T).Construct(elementType.TypeSymbol);
+            return CreateSZArray(elementType, arrayType, GetSZArrayInterfaces(elementType, arrayType, declaringAssembly));
         }
 
         internal ArrayTypeSymbol WithElementType(TypeSymbolWithAnnotations elementType)
@@ -99,23 +93,19 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         private static ImmutableArray<NamedTypeSymbol> GetSZArrayInterfaces(
             TypeSymbolWithAnnotations elementType,
+            NamedTypeSymbol arrayType,
             AssemblySymbol declaringAssembly)
         {
             var constructedInterfaces = ArrayBuilder<NamedTypeSymbol>.GetInstance();
 
             //There are cases where the platform does contain the interfaces.
             //So it is fine not to have them listed under the type
-            var iListOfT = declaringAssembly.GetSpecialType(SpecialType.System_Collections_Generic_IList_T);
-            if (!iListOfT.IsErrorType())
+            var mutableIterableTItem_TState_TIterator = declaringAssembly.GetSpecialType(SpecialType.core_MutableIterable_T_TIterator);
+            if (!mutableIterableTItem_TState_TIterator.IsErrorType())
             {
-                constructedInterfaces.Add(new ConstructedNamedTypeSymbol(iListOfT, ImmutableArray.Create(elementType)));
-            }
+                var iteratorType = TypeSymbolWithAnnotations.Create(declaringAssembly.GetSpecialType(Compiler.SpecialType.System_Int));
 
-            var iReadOnlyListOfT = declaringAssembly.GetSpecialType(SpecialType.System_Collections_Generic_IReadOnlyList_T);
-
-            if (!iReadOnlyListOfT.IsErrorType())
-            {
-                constructedInterfaces.Add(new ConstructedNamedTypeSymbol(iReadOnlyListOfT, ImmutableArray.Create(elementType)));
+                constructedInterfaces.Add(new ConstructedNamedTypeSymbol(mutableIterableTItem_TState_TIterator, ImmutableArray.Create(elementType, iteratorType)));
             }
 
             return constructedInterfaces.ToImmutableAndFree();

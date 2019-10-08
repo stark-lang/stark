@@ -82,7 +82,7 @@ namespace StarkPlatform.Compiler.Stark
 
             bool nonUnique = false;
             var originalType = instanceType.OriginalDefinition;
-            var ienumerable_t = Compilation.GetSpecialType(SpecialType.System_Collections_Generic_IEnumerable_T);
+            var ienumerable_t = Compilation.GetSpecialType(SpecialType.core_Iterable_T_TIterator);
             var iqueryable_t = Compilation.GetWellKnownType(WellKnownType.core_Linq_IQueryable_T);
             bool isIenumerable = TypeSymbol.Equals(originalType, ienumerable_t, TypeCompareKind.ConsiderEverything2) || HasUniqueInterface(instanceType, ienumerable_t, ref nonUnique, ref useSiteDiagnostics);
             bool isQueryable = TypeSymbol.Equals(originalType, iqueryable_t, TypeCompareKind.ConsiderEverything2) || HasUniqueInterface(instanceType, iqueryable_t, ref nonUnique, ref useSiteDiagnostics);
@@ -120,7 +120,7 @@ namespace StarkPlatform.Compiler.Stark
         private bool HasCastToQueryProvider(TypeSymbol instanceType, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             var originalType = instanceType.OriginalDefinition;
-            var ienumerable = Compilation.GetSpecialType(SpecialType.System_Collections_IEnumerable);
+            var ienumerable = Compilation.GetSpecialType(SpecialType.core_Iterable_T_TIterator);
             var iqueryable = Compilation.GetWellKnownType(WellKnownType.core_Linq_IQueryable);
             bool isIenumerable = TypeSymbol.Equals(originalType, ienumerable, TypeCompareKind.ConsiderEverything2) || HasUniqueInterface(instanceType, ienumerable, ref useSiteDiagnostics);
             bool isQueryable = TypeSymbol.Equals(originalType, iqueryable, TypeCompareKind.ConsiderEverything2) || HasUniqueInterface(instanceType, iqueryable, ref useSiteDiagnostics);

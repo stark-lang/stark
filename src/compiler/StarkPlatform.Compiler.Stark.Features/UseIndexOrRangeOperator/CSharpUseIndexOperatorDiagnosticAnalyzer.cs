@@ -68,7 +68,7 @@ namespace StarkPlatform.Compiler.Stark.UseIndexOrRangeOperator
                     c => AnalyzeInvocation(c, infoCache),
                     OperationKind.Invocation);
 
-                var arrayType = compilation.GetSpecialType(SpecialType.System_Array);
+                var arrayType = compilation.GetSpecialType(SpecialType.System_Array_T);
                 var arrayLengthProperty = TryGetNoArgInt32Property(arrayType, nameof(Array.Length));
 
                 if (arrayLengthProperty != null)

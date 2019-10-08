@@ -10,28 +10,16 @@ namespace StarkPlatform.Compiler.Stark
     /// </summary>
     public struct ForEachStatementInfo : IEquatable<ForEachStatementInfo>
     {
-        /// <summary>
-        /// Gets the &quot;GetEnumerator&quot; method.
-        /// </summary>
-        public IMethodSymbol GetEnumeratorMethod { get; }
+        public IMethodSymbol IterateBegin { get; }
+
+        public IMethodSymbol IterateHasNext { get; }
+
+        public IMethodSymbol IterateNext { get; }
+
+        public IMethodSymbol IterateEnd { get; }
 
         /// <summary>
-        /// Gets the &quot;MoveNext&quot; method (or &quot;MoveNextAsync&quot; in an asynchronous foreach).
-        /// </summary>
-        public IMethodSymbol MoveNextMethod { get; }
-
-        /// <summary>
-        /// Gets the &quot;Current&quot; property.
-        /// </summary>
-        public IPropertySymbol CurrentProperty { get; }
-
-        /// <summary>
-        /// Gets the &quot;Dispose&quot; method (or &quot;DisposeAsync&quot; in an asynchronous foreach).
-        /// </summary>
-        public IMethodSymbol DisposeMethod { get; }
-
-        /// <summary>
-        /// The intermediate type to which the output of the <see cref="CurrentProperty"/> is converted
+        /// The intermediate type to which the output of the <see cref="IterateNext"/> is converted
         /// before being converted to the iteration variable type.
         /// </summary>
         /// <remarks>
@@ -40,36 +28,31 @@ namespace StarkPlatform.Compiler.Stark
         public ITypeSymbol ElementType { get; }
 
         /// <summary>
-        /// The conversion from the <see cref="ElementType"/> to the iteration variable type.
+        /// The intermediate type to which the output of the <see cref="IterateNext"/> is converted
+        /// before being converted to the iteration variable type.
         /// </summary>
         /// <remarks>
-        /// May be user-defined.
+        /// As you might hope, for an array, it is the element type of the array.
         /// </remarks>
-        public Conversion ElementConversion { get; }
-
-        /// <summary>
-        /// The conversion from the type of the <see cref="CurrentProperty"/> to the <see cref="ElementType"/>.
-        /// </summary>
-        public Conversion CurrentConversion { get; }
+        public ITypeSymbol IteratorType { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ForEachStatementInfo" /> structure.
         /// </summary>
-        internal ForEachStatementInfo(IMethodSymbol getEnumeratorMethod,
-                                      IMethodSymbol moveNextMethod,
-                                      IPropertySymbol currentProperty,
-                                      IMethodSymbol disposeMethod,
+        internal ForEachStatementInfo(IMethodSymbol iterateBegin,
+                                      IMethodSymbol iterateHasNext,
+                                      IMethodSymbol iterateNext,
+                                      IMethodSymbol iterateEnd,
                                       ITypeSymbol elementType,
-                                      Conversion elementConversion,
-                                      Conversion currentConversion)
+                                      ITypeSymbol iteratorType
+                                      )
         {
-            this.GetEnumeratorMethod = getEnumeratorMethod;
-            this.MoveNextMethod = moveNextMethod;
-            this.CurrentProperty = currentProperty;
-            this.DisposeMethod = disposeMethod;
+            this.IterateBegin = iterateBegin;
+            this.IterateHasNext = iterateHasNext;
+            this.IterateNext = iterateNext;
+            this.IterateEnd = iterateEnd;
             this.ElementType = elementType;
-            this.ElementConversion = elementConversion;
-            this.CurrentConversion = currentConversion;
+            this.IteratorType = iteratorType;
         }
 
         public override bool Equals(object obj)
@@ -79,24 +62,21 @@ namespace StarkPlatform.Compiler.Stark
 
         public bool Equals(ForEachStatementInfo other)
         {
-            return object.Equals(this.GetEnumeratorMethod, other.GetEnumeratorMethod)
-                && object.Equals(this.MoveNextMethod, other.MoveNextMethod)
-                && object.Equals(this.CurrentProperty, other.CurrentProperty)
-                && object.Equals(this.DisposeMethod, other.DisposeMethod)
-                && object.Equals(this.ElementType, other.ElementType)
-                && this.ElementConversion == other.ElementConversion
-                && this.CurrentConversion == other.CurrentConversion;
+            return object.Equals(this.IterateBegin, other.IterateBegin)
+                   && object.Equals(this.IterateHasNext, other.IterateHasNext)
+                   && object.Equals(this.IterateNext, other.IterateNext)
+                   && object.Equals(this.IterateEnd, other.IterateEnd)
+                   && object.Equals(this.ElementType, other.ElementType)
+                   && object.Equals(this.IteratorType, other.IteratorType);
         }
 
         public override int GetHashCode()
         {
-            return Hash.Combine(GetEnumeratorMethod,
-                   Hash.Combine(MoveNextMethod,
-                   Hash.Combine(CurrentProperty,
-                   Hash.Combine(DisposeMethod,
-                   Hash.Combine(ElementType,
-                   Hash.Combine(ElementConversion.GetHashCode(),
-                                CurrentConversion.GetHashCode()))))));
+            return Hash.Combine(IterateBegin,
+                Hash.Combine(IterateHasNext,
+                    Hash.Combine(IterateNext,
+                        Hash.Combine(IterateEnd,
+                            Hash.Combine(ElementType, IteratorType.GetHashCode())))));
         }
     }
 }

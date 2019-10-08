@@ -140,10 +140,10 @@ namespace StarkPlatform.Compiler.Stark.UseDeconstruction
             CancellationToken cancellationToken)
         {
             var local = (ILocalSymbol)semanticModel.GetDeclaredSymbol(forEachStatement.Variable, cancellationToken);
-            var elementConversion = semanticModel.GetForEachStatementInfo(forEachStatement).ElementConversion;
 
+            // TODO: rework
             return TryAnalyze(
-                semanticModel, local, forEachStatement.Variable, default, elementConversion,
+                semanticModel, local, forEachStatement.Variable, default, default,
                 forEachStatement, out tupleType, out memberAccessExpressions, cancellationToken);
         }
 

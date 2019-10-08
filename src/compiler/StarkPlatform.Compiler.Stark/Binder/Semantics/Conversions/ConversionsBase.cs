@@ -2172,29 +2172,6 @@ namespace StarkPlatform.Compiler.Stark
                 return false;
             }
 
-            // The specification says that there is a conversion:
-
-            // * From a single-dimensional array type S[] to IList<T> and its base
-            //   interfaces, provided that there is an implicit identity or reference
-            //   conversion from S to T.
-            //
-            // Newer versions of the framework also have arrays be convertible to
-            // IReadOnlyList<T> and IReadOnlyCollection<T>; we honor that as well.
-            //
-            // Therefore we must check for:
-            //
-            // IList<T>
-            // ICollection<T>
-            // IEnumerable<T>
-            // IEnumerable
-            // IReadOnlyList<T>
-            // IReadOnlyCollection<T>
-
-            if (destination.SpecialType == SpecialType.System_Collections_IEnumerable)
-            {
-                return true;
-            }
-
             NamedTypeSymbol destinationAgg = (NamedTypeSymbol)destination;
 
             if (destinationAgg.AllTypeArgumentCount() != 1)
@@ -2336,23 +2313,8 @@ namespace StarkPlatform.Compiler.Stark
                 return false;
             }
 
-            // * From an array type S with an element type SE to an array type T with element type TE
-            //   provided that all of the following are true:
-            //   * S and T differ only in element type. In other words, S and T have the same number of dimensions.
-            //   * Both SE and TE are reference types.
-            //   * An implicit reference conversion exists from SE to TE.
-            if (HasCovariantArrayConversion(source, destination, ref useSiteDiagnostics))
-            {
-                return true;
-            }
-
-            // * From any array type to System.Array or any interface implemented by System.Array.
-            if (destination.GetSpecialTypeSafe() == SpecialType.System_Array)
-            {
-                return true;
-            }
-
-            if (IsBaseInterface(destination, this.corLibrary.GetDeclaredSpecialType(SpecialType.System_Array), ref useSiteDiagnostics))
+            //var arrayOfT = this.corLibrary.GetDeclaredSpecialType(SpecialType.System_Array_T).Construct(s.ElementType.TypeSymbol);
+            if (IsBaseInterface(destination, s.BaseTypeNoUseSiteDiagnostics, ref useSiteDiagnostics))
             {
                 return true;
             }
@@ -3097,12 +3059,12 @@ namespace StarkPlatform.Compiler.Stark
             // SPEC: From System.Array and the interfaces it implements to any array-type.
             if ((object)destinationArray != null)
             {
-                if (source.SpecialType == SpecialType.System_Array)
+                if (source.SpecialType == SpecialType.System_Array_T)
                 {
                     return true;
                 }
 
-                foreach (var iface in this.corLibrary.GetDeclaredSpecialType(SpecialType.System_Array).AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics))
+                foreach (var iface in this.corLibrary.GetDeclaredSpecialType(SpecialType.System_Array_T).AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics))
                 {
                     if (HasIdentityConversionInternal(iface, source))
                     {
@@ -3135,7 +3097,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 if (specialDefinition == SpecialType.System_Collections_Generic_IList_T ||
                     specialDefinition == SpecialType.System_Collections_Generic_ICollection_T ||
-                    specialDefinition == SpecialType.System_Collections_Generic_IEnumerable_T ||
+                    specialDefinition == SpecialType.core_Iterable_T_TIterator ||
                     specialDefinition == SpecialType.System_Collections_Generic_IReadOnlyList_T ||
                     specialDefinition == SpecialType.System_Collections_Generic_IReadOnlyCollection_T)
                 {

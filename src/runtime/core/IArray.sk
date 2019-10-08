@@ -8,7 +8,7 @@ namespace core
         func size -> int { readonly get }
     }
 
-    public interface IArray<T> extends ISizeable
+    public interface IArray<T, TIterator> extends ISizeable //, MutableIterable<T, int>
     {
         /// ref indexer #2, not readonly
         func operator [index: int] -> ref T 
@@ -25,6 +25,64 @@ namespace core
         }
     }
 
+    /// Base interface for iterable items
+    public interface Iterable<T, TIterator>
+    {
+        /// Starts the iterator
+        readonly func iterate_begin() -> TIterator
+
+        /// Returns true if the iterable has remaining elements
+        readonly func iterate_has_next(iterator: ref TIterator) -> bool 
+
+        /// Returns the next element
+        readonly func iterate_next(iterator: ref TIterator) -> T
+
+        /// Ends the iterator
+        readonly func iterate_end(iterator: ref TIterator)
+    }
+
+    /// Base interface for mutable iterable items
+    public interface MutableIterable<T, TIterator> extends Iterable<T, TIterator>
+    {
+        /// Returns a reference to the next element (mutable)
+        func iterate_next(iterator: ref TIterator) -> ref T
+    }
+
+    /// Example of a Range struct
+    public struct Range implements Iterable<int, int>
+    {
+        private let _from : int
+        private let _to : int
+
+        public constructor(indexFrom: int, indexTo: int)
+        {
+            _from = indexFrom
+            _to = indexTo
+        }
+
+        readonly func Iterable<int, int>.iterate_begin() -> int => _from
+
+        readonly func Iterable<int, int>.iterate_has_next(index: ref int) -> bool => index <= _to
+
+        readonly func Iterable<int, int>.iterate_next(index: ref int) -> int => index++
+
+        readonly func Iterable<int, int>.iterate_end(state: ref int) {}
+    }
+
+    /// Example using Range
+    public module enumeration_playground
+    {
+        public static func sun_range(range: Range) -> int
+        {
+            var result : int = 141
+            for x in range {
+                result += x
+            }
+            return result
+        }
+    }
+    
+
     public abstract class Array implements ISizeable
     {
         private let _size : int
@@ -36,7 +94,7 @@ namespace core
         public func size -> int { readonly get => _size }
     }
 
-    public class Array<T> extends Array implements IArray<T>
+    public class Array<T> extends Array implements IArray<T, []T>
     {
         // The array cannot be initialized by using directly this class
         private constructor() {}
@@ -52,6 +110,24 @@ namespace core
             @Intrinsic
             get 
         }
+
+        // readonly func Iterable<T, int>.iterate_begin() -> int => -1
+
+        // @FuncImpl(FuncImplOptions.AGGRESSIVE_INLINING)
+        // readonly func Iterable<T, int>.iterate_next(index: ref int) -> bool {
+        //     var nextIndex = index + 1
+        //     if nextIndex < size then {
+        //         index = nextIndex
+        //         return true   
+        //     }
+        //     return false
+        // }
+
+        // func Iterable<T, int>.iterate_item(index: ref int) -> T => this[index] 
+
+        // func MutableIterable<T, int>.iterate_item(index: ref int) -> ref T => ref this[index] 
+
+        // readonly func Iterable<T, int>.iterate_end(state: ref int) {}
     }
 
     // public module array_playground

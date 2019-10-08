@@ -212,12 +212,13 @@ namespace StarkPlatform.Compiler.Stark
             if (forEachStatement is ForStatementSyntax csforEachStatement)
             {
                 var info = semanticModel.GetForEachStatementInfo(csforEachStatement);
-                return new ForEachSymbols(
-                    info.GetEnumeratorMethod,
-                    info.MoveNextMethod,
-                    info.CurrentProperty,
-                    info.DisposeMethod,
-                    info.ElementType);
+                throw new NotImplementedException("TODO");
+                //return new ForEachSymbols(
+                //    info.IterateBegin,
+                //    info.IterateHasNext,
+                //    info.IterateNext,
+                //    info.IterateEnd,
+                //    info.ElementType);
             }
             else
             {

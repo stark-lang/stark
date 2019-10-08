@@ -266,64 +266,49 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
 
-                // System_Collections_IEnumerable__GetEnumerator
+                // core_Iterable_T_TIterator__iterate_begin
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
-                (byte)SpecialType.System_Collections_IEnumerable,                                                           // DeclaringTypeId
+                (byte)SpecialType.core_Iterable_T_TIterator,                                                               // DeclaringTypeId
                 0,                                                                                                          // Arity
                     0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_IEnumerator,
+                    (byte)SignatureTypeCode.GenericTypeParameter, 1,
 
-                // System_Collections_IEnumerator__Current
-                (byte)(MemberFlags.Property | MemberFlags.Virtual),                                                         // Flags
-                (byte)SpecialType.System_Collections_IEnumerator,                                                           // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
-
-                // System_Collections_IEnumerator__get_Current
-                (byte)(MemberFlags.PropertyGet | MemberFlags.Virtual),                                                      // Flags
-                (byte)SpecialType.System_Collections_IEnumerator,                                                           // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
-
-                // System_Collections_IEnumerator__MoveNext
+                // core_Iterable_T_TIterator__iterate_has_next
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
-                (byte)SpecialType.System_Collections_IEnumerator,                                                           // DeclaringTypeId
+                (byte)SpecialType.core_Iterable_T_TIterator,                                                               // DeclaringTypeId
                 0,                                                                                                          // Arity
-                    0,                                                                                                      // Method Signature
+                    1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
+                    (byte)SignatureTypeCode.ByReference,
+                    (byte)SignatureTypeCode.GenericTypeParameter, 1,
 
-                // System_Collections_IEnumerator__Reset
+                // core_Iterable_T_TIterator__iterate_next
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
-                (byte)SpecialType.System_Collections_IEnumerator,                                                           // DeclaringTypeId
+                (byte)SpecialType.core_Iterable_T_TIterator,                                                           // DeclaringTypeId
                 0,                                                                                                          // Arity
-                    0,                                                                                                      // Method Signature
+                    1,                                                                                                      // Method Signature
+                    (byte)SignatureTypeCode.GenericTypeParameter, 0,
+                    (byte)SignatureTypeCode.ByReference,
+                    (byte)SignatureTypeCode.GenericTypeParameter, 1,
+
+                // core_Iterable_T_TIterator__iterate_end
+                (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
+                (byte)SpecialType.core_Iterable_T_TIterator,                                                           // DeclaringTypeId
+                0,                                                                                                          // Arity
+                    1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
+                    (byte)SignatureTypeCode.ByReference,
+                    (byte)SignatureTypeCode.GenericTypeParameter, 1,
 
-                // System_Collections_Generic_IEnumerable_T__GetEnumerator
+                // core_MutableIterable_T_TIterator__iterate_next
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
-                (byte)SpecialType.System_Collections_Generic_IEnumerable_T,                                                 // DeclaringTypeId
+                (byte)SpecialType.core_MutableIterable_T_TIterator,                                                        // DeclaringTypeId
                 0,                                                                                                          // Arity
-                    0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerator_T,
-                    1,
+                    1,                                                                                                      // Method Signature
+                    (byte)SignatureTypeCode.ByReference,
                     (byte)SignatureTypeCode.GenericTypeParameter, 0,
-
-                // System_Collections_Generic_IEnumerator_T__Current
-                (byte)(MemberFlags.Property | MemberFlags.Virtual),                                                         // Flags
-                (byte)SpecialType.System_Collections_Generic_IEnumerator_T,                                                 // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.GenericTypeParameter, 0,
-
-                // System_Collections_Generic_IEnumerator_T__get_Current
-                (byte)(MemberFlags.PropertyGet | MemberFlags.Virtual),                                                      // Flags
-                (byte)SpecialType.System_Collections_Generic_IEnumerator_T,                                                 // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.GenericTypeParameter, 0,
+                    (byte)SignatureTypeCode.ByReference,
+                    (byte)SignatureTypeCode.GenericTypeParameter, 1,
 
                 // System_IDisposable__Dispose
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
@@ -334,21 +319,21 @@ namespace StarkPlatform.Compiler
 
                 // System_Array__Length
                 (byte)MemberFlags.Property,                                                                                 // Flags
-                (byte)SpecialType.System_Array,                                                                             // DeclaringTypeId
+                (byte)SpecialType.System_Array_T,                                                                             // DeclaringTypeId
                 0,                                                                                                          // Arity
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
 
                 // System_Array__LongLength
                 (byte)MemberFlags.Property,                                                                                 // Flags
-                (byte)SpecialType.System_Array,                                                                             // DeclaringTypeId
+                (byte)SpecialType.System_Array_T,                                                                             // DeclaringTypeId
                 0,                                                                                                          // Arity
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int64,
 
                 // System_Array__GetLowerBound
                 (byte)MemberFlags.Method,                                                                                   // Flags
-                (byte)SpecialType.System_Array,                                                                             // DeclaringTypeId
+                (byte)SpecialType.System_Array_T,                                                                             // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
@@ -356,7 +341,7 @@ namespace StarkPlatform.Compiler
 
                 // System_Array__GetUpperBound
                 (byte)MemberFlags.Method,                                                                                   // Flags
-                (byte)SpecialType.System_Array,                                                                             // DeclaringTypeId
+                (byte)SpecialType.System_Array_T,                                                                             // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
@@ -566,14 +551,11 @@ namespace StarkPlatform.Compiler
                 "op_GreaterThanOrEqual",                    // System_DateTime__op_GreaterThanOrEqual
                 "op_LessThan",                              // System_DateTime__op_LessThan
                 "op_LessThanOrEqual",                       // System_DateTime__op_LessThanOrEqual
-                "GetEnumerator",                            // System_Collections_IEnumerable__GetEnumerator
-                "Current",                                  // System_Collections_IEnumerator__Current
-                "get_Current",                              // System_Collections_IEnumerator__get_Current
-                "MoveNext",                                 // System_Collections_IEnumerator__MoveNext
-                "Reset",                                    // System_Collections_IEnumerator__Reset
-                "GetEnumerator",                            // System_Collections_Generic_IEnumerable_T__GetEnumerator
-                "Current",                                  // System_Collections_Generic_IEnumerator_T__Current
-                "get_Current",                              // System_Collections_Generic_IEnumerator_T__get_Current
+                "iterate_begin",                            // core_Iterable_T_TIterator__iterate_begin
+                "iterate_has_next",                         // core_Iterable_T_TIterator__iterate_has_next
+                "iterate_next",                             // core_Iterable_T_TIterator__iterate_next
+                "iterate_end",                              // core_Iterable_T_TIterator__iterate_end
+                "iterate_next",                             // core_MutableIterable_T_TIterator__iterate_next
                 "Dispose",                                  // System_IDisposable__Dispose
                 "Length",                                   // System_Array__Length
                 "LongLength",                               // System_Array__LongLength

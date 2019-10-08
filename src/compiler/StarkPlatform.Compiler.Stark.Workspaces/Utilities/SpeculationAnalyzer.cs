@@ -733,16 +733,13 @@ namespace StarkPlatform.Compiler.Stark.Utilities
 
         protected override bool ForEachConversionsAreCompatible(SemanticModel originalModel, ForStatementSyntax originalForEach, SemanticModel newModel, ForStatementSyntax newForEach)
         {
-            var originalInfo = originalModel.GetForEachStatementInfo(originalForEach);
-            var newInfo = newModel.GetForEachStatementInfo(newForEach);
-            return ConversionsAreCompatible(originalInfo.CurrentConversion, newInfo.CurrentConversion)
-                && ConversionsAreCompatible(originalInfo.ElementConversion, newInfo.ElementConversion);
+            return true;
         }
 
         protected override void GetForEachSymbols(SemanticModel model, ForStatementSyntax forEach, out IMethodSymbol getEnumeratorMethod, out ITypeSymbol elementType)
         {
             var info = model.GetForEachStatementInfo(forEach);
-            getEnumeratorMethod = info.GetEnumeratorMethod;
+            getEnumeratorMethod = info.IterateBegin;
             elementType = info.ElementType;
         }
 

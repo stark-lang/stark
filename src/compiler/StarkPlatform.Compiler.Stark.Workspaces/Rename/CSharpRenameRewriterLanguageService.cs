@@ -966,7 +966,7 @@ namespace StarkPlatform.Compiler.Stark.Rename
                 implicitReferencesMightConflict ||
                     (renameSymbol.Kind == SymbolKind.Method &&
                         (string.Compare(renameSymbol.Name, WellKnownMemberNames.MoveNextMethodName, StringComparison.OrdinalIgnoreCase) == 0 ||
-                        string.Compare(renameSymbol.Name, WellKnownMemberNames.GetEnumeratorMethodName, StringComparison.OrdinalIgnoreCase) == 0 ||
+                        string.Compare(renameSymbol.Name, WellKnownMemberNames.IteratorMethodName, StringComparison.OrdinalIgnoreCase) == 0 ||
                         string.Compare(renameSymbol.Name, WellKnownMemberNames.GetAwaiter, StringComparison.OrdinalIgnoreCase) == 0 ||
                         string.Compare(renameSymbol.Name, WellKnownMemberNames.DeconstructMethodName, StringComparison.OrdinalIgnoreCase) == 0));
 

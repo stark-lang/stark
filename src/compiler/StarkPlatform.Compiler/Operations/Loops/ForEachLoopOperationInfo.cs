@@ -12,51 +12,40 @@ namespace StarkPlatform.Compiler.Operations
         /// </summary>
         public readonly ITypeSymbol ElementType;
 
-        public readonly IMethodSymbol GetEnumeratorMethod;
-        public readonly IPropertySymbol CurrentProperty;
-        public readonly IMethodSymbol MoveNextMethod;
+        public readonly ITypeSymbol IteratorType;
 
-        public readonly bool NeedsDispose;
-        public readonly bool KnownToImplementIDisposable;
+        public readonly IMethodSymbol IterateBegin;
+        public readonly IMethodSymbol IterateHasNext;
+        public readonly IMethodSymbol IterateNext;
+        public readonly IMethodSymbol IterateEnd;
 
-        /// <summary>
-        /// The conversion from the type of the <see cref="CurrentProperty"/> to the <see cref="ElementType"/>.
-        /// </summary>
-        public readonly IConvertibleConversion CurrentConversion;
-
-        /// <summary>
-        /// The conversion from the <see cref="ElementType"/> to the iteration variable type.
-        /// </summary>
-        public readonly IConvertibleConversion ElementConversion;
-
-        public readonly ImmutableArray<IArgumentOperation> GetEnumeratorArguments;
-        public readonly ImmutableArray<IArgumentOperation> MoveNextArguments;
-        public readonly ImmutableArray<IArgumentOperation> CurrentArguments;
+        public readonly ImmutableArray<IArgumentOperation> IterateBeginArguments;
+        public readonly ImmutableArray<IArgumentOperation> IterateHasNextArguments;
+        public readonly ImmutableArray<IArgumentOperation> IterateNextArguments;
+        public readonly ImmutableArray<IArgumentOperation> IterateEndArguments;
 
         public ForEachLoopOperationInfo(
             ITypeSymbol elementType,
-            IMethodSymbol getEnumeratorMethod,
-            IPropertySymbol currentProperty,
-            IMethodSymbol moveNextMethod,
-            bool needsDispose,
-            bool knownToImplementIDisposable,
-            IConvertibleConversion currentConversion,
-            IConvertibleConversion elementConversion,
-            ImmutableArray<IArgumentOperation> getEnumeratorArguments = default,
-            ImmutableArray<IArgumentOperation> moveNextArguments = default,
-            ImmutableArray<IArgumentOperation> currentArguments = default)
+            ITypeSymbol iteratorType,
+            IMethodSymbol iterateBegin,
+            IMethodSymbol iterateHasNext,
+            IMethodSymbol iterateNext,
+            IMethodSymbol iterateEnd,
+            ImmutableArray<IArgumentOperation> iterateBeginArguments = default,
+            ImmutableArray<IArgumentOperation> iterateHasNextArguments = default,
+            ImmutableArray<IArgumentOperation> iterateNextArguments = default,
+            ImmutableArray<IArgumentOperation> iterateEndArguments = default)
         {
             ElementType = elementType;
-            GetEnumeratorMethod = getEnumeratorMethod;
-            CurrentProperty = currentProperty;
-            MoveNextMethod = moveNextMethod;
-            NeedsDispose = needsDispose;
-            KnownToImplementIDisposable = knownToImplementIDisposable;
-            CurrentConversion = currentConversion;
-            ElementConversion = elementConversion;
-            GetEnumeratorArguments = getEnumeratorArguments;
-            MoveNextArguments = moveNextArguments;
-            CurrentArguments = currentArguments;
+            IteratorType = iteratorType;
+            IterateBegin = iterateBegin;
+            IterateHasNext = iterateHasNext;
+            IterateNext = iterateNext;
+            IterateEnd = iterateEnd;
+            IterateBeginArguments = iterateBeginArguments;
+            IterateHasNextArguments = iterateHasNextArguments;
+            IterateNextArguments = iterateNextArguments;
+            IterateEndArguments = iterateEndArguments;
         }
     }
 }

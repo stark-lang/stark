@@ -43,13 +43,11 @@ namespace StarkPlatform.Compiler
             "core.String",
             "core.Int",
             "core.UInt",
-            "core.Array",
-            "core.Collections.IEnumerable",
-            "core.Collections.Generic.IEnumerable`1",
+            "core.Array`1",
+            "core.MutableIterable`2",  // core_MutableIterable_T_TIterator
+            "core.Iterable`2",         // core_Iterable_T_TIterator
             "core.Collections.Generic.IList`1",
             "core.Collections.Generic.ICollection`1",
-            "core.Collections.IEnumerator",
-            "core.Collections.Generic.IEnumerator`1",
             "core.Collections.Generic.IReadOnlyList`1",
             "core.Collections.Generic.IReadOnlyCollection`1",
             "core.Nullable`1",

@@ -4518,7 +4518,7 @@ namespace StarkPlatform.Compiler.Stark
             }
             else if (!initializerType.IsErrorType())
             {
-                TypeSymbol collectionsIEnumerableType = this.GetSpecialType(SpecialType.System_Collections_IEnumerable, diagnostics, node);
+                TypeSymbol collectionsIEnumerableType = this.GetSpecialType(SpecialType.core_Iterable_T_TIterator, diagnostics, node);
 
                 // NOTE:    Ideally, to check if the initializer type implements System.Collections.IEnumerable we can walk through
                 // NOTE:    its implemented interfaces. However the native compiler checks to see if there is conversion from initializer

@@ -51,9 +51,9 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     5,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
 
@@ -886,7 +886,7 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     2,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_RuntimeFieldHandle,
 
                 // System_Runtime_CompilerServices_RuntimeHelpers__get_OffsetToStringData
@@ -1013,7 +1013,7 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Linq_Expressions_ExpressionType,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
 
@@ -1036,7 +1036,7 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpBinderFlags,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
 
@@ -1050,7 +1050,7 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
 
@@ -1063,7 +1063,7 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpBinderFlags,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
 
@@ -1076,7 +1076,7 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpBinderFlags,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
 
@@ -1089,12 +1089,12 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpBinderFlags,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
 
@@ -1117,7 +1117,7 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpBinderFlags,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
 
@@ -1131,7 +1131,7 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
 
@@ -1145,7 +1145,7 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Linq_Expressions_ExpressionType,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Type,
                     (byte)SignatureTypeCode.GenericTypeInstance,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Collections_Generic_IEnumerable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Iterable_T_TIterator,
                     1,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
 
@@ -1907,9 +1907,9 @@ namespace StarkPlatform.Compiler
                 (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Utils,                                           // DeclaringTypeId
                 0,                                                                                                          // Arity
                     2,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T, // Return Type
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
 
                 // Microsoft_VisualBasic_CompilerServices_LikeOperator__LikeStringStringStringCompareMethod
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags

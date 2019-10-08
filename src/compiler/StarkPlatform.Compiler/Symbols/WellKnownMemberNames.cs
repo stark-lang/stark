@@ -251,7 +251,7 @@ namespace StarkPlatform.Compiler
         /// <summary>
         /// The required name for the <c>GetEnumerator</c> method used in a ForEach statement.
         /// </summary>
-        public const string GetEnumeratorMethodName = "GetEnumerator";
+        public const string IteratorMethodName = "iterator";
 
         /// <summary>
         /// The required name for the <c>GetAsyncEnumerator</c> method used in a ForEach statement.

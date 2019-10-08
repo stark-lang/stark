@@ -196,17 +196,8 @@ namespace StarkPlatform.Compiler.Stark
                 TypeSymbol originalDefinition = returnType.OriginalDefinition;
                 switch (originalDefinition.SpecialType)
                 {
-                    case SpecialType.System_Collections_IEnumerable:
-                    case SpecialType.System_Collections_IEnumerator:
-                        var objectType = compilation.GetSpecialType(SpecialType.System_Object);
-                        if (diagnostics != null)
-                        {
-                            ReportUseSiteDiagnostics(objectType, diagnostics, errorLocationNode);
-                        }
-                        return (TypeSymbolWithAnnotations.Create(objectType), false);
-
-                    case SpecialType.System_Collections_Generic_IEnumerable_T:
-                    case SpecialType.System_Collections_Generic_IEnumerator_T:
+                    case SpecialType.core_MutableIterable_T_TIterator:
+                    case SpecialType.core_Iterable_T_TIterator:
                         return (((NamedTypeSymbol)returnType).TypeArgumentsNoUseSiteDiagnostics[0], false);
                 }
 

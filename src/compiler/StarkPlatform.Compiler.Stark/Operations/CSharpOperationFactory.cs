@@ -1491,18 +1491,14 @@ namespace StarkPlatform.Compiler.Operations
                 var compilation = (CSharpCompilation)_semanticModel.Compilation;
 
                 info = new ForEachLoopOperationInfo(enumeratorInfoOpt.ElementType.TypeSymbol,
-                                                    enumeratorInfoOpt.GetEnumeratorMethod,
-                                                    (PropertySymbol)enumeratorInfoOpt.CurrentPropertyGetter.AssociatedSymbol,
-                                                    enumeratorInfoOpt.MoveNextMethod,
-                                                    enumeratorInfoOpt.NeedsDisposal,
-                                                    knownToImplementIDisposable: enumeratorInfoOpt.NeedsDisposal && (object)enumeratorInfoOpt.GetEnumeratorMethod != null ?
-                                                                                     compilation.Conversions.
-                                                                                         ClassifyImplicitConversionFromType(enumeratorInfoOpt.GetEnumeratorMethod.ReturnType.TypeSymbol,
-                                                                                                                            compilation.GetSpecialType(SpecialType.System_IDisposable),
-                                                                                                                            ref useSiteDiagnostics).IsImplicit :
-                                                                                     false,
-                                                    enumeratorInfoOpt.CurrentConversion,
-                                                    boundForEachStatement.ElementConversion);
+                                                    enumeratorInfoOpt.IteratorType,
+                                                    enumeratorInfoOpt.IterateBegin,
+                                                    enumeratorInfoOpt.IterateHasNext,
+                                                    enumeratorInfoOpt.IterateHasNext,
+                                                    enumeratorInfoOpt.IterateEnd,
+                                                    default,
+                                                    default,
+                                                    default);
             }
             else
             {

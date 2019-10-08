@@ -28,7 +28,7 @@ namespace StarkPlatform.Compiler.Stark
             // though it were a built-in type.
             switch (type.SpecialType)
             {
-                case SpecialType.System_Array:
+                case SpecialType.System_Array_T:
                 case SpecialType.System_Boolean:
                 case SpecialType.System_UInt8:
                 case SpecialType.System_Char:

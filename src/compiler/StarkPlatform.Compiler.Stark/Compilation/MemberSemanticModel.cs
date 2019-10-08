@@ -827,42 +827,14 @@ namespace StarkPlatform.Compiler.Stark
                 return default(ForEachStatementInfo);
             }
 
-            // Even though we usually pretend to be using System.Collection.IEnumerable
-            // for arrays, that doesn't make sense for pointer arrays since object
-            // (the type of System.Collections.IEnumerator.Current) isn't convertible
-            // to pointer types.
-            if (enumeratorInfoOpt.ElementType.IsPointerType())
-            {
-                Debug.Assert(!enumeratorInfoOpt.CurrentConversion.IsValid);
-                return default(ForEachStatementInfo);
-            }
-
-            // NOTE: we're going to list GetEnumerator, etc for array and string
-            // collections, even though we know that's not how the implementation
-            // actually enumerates them.
-            MethodSymbol disposeMethod = null;
-            if (enumeratorInfoOpt.NeedsDisposal)
-            {
-                if (!(enumeratorInfoOpt.DisposeMethod is null))
-                {
-                    disposeMethod = enumeratorInfoOpt.DisposeMethod;
-                }
-                else
-                {
-                    disposeMethod = enumeratorInfoOpt.IsAsync
-                    ? (MethodSymbol)Compilation.GetWellKnownTypeMember(WellKnownMember.System_IAsyncDisposable__DisposeAsync)
-                    : (MethodSymbol)Compilation.GetSpecialTypeMember(SpecialMember.System_IDisposable__Dispose);
-                }
-            }
-
             return new ForEachStatementInfo(
-                enumeratorInfoOpt.GetEnumeratorMethod,
-                enumeratorInfoOpt.MoveNextMethod,
-                currentProperty: (PropertySymbol)enumeratorInfoOpt.CurrentPropertyGetter?.AssociatedSymbol,
-                disposeMethod,
+                enumeratorInfoOpt.IterateBegin,
+                enumeratorInfoOpt.IterateHasNext,
+                enumeratorInfoOpt.IterateNext,
+                enumeratorInfoOpt.IterateEnd,
                 enumeratorInfoOpt.ElementType.TypeSymbol,
-                boundForEach.ElementConversion,
-                enumeratorInfoOpt.CurrentConversion);
+                enumeratorInfoOpt.IteratorType
+            );
         }
 
         public override DeconstructionInfo GetDeconstructionInfo(AssignmentExpressionSyntax node)
