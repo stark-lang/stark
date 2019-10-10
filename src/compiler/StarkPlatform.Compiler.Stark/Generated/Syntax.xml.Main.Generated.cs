@@ -4050,15 +4050,18 @@ namespace StarkPlatform.Compiler.Stark
     {
       var attributeLists = this.VisitList(node.AttributeLists);
       var modifiers = this.VisitList(node.Modifiers);
-      var implicitOrExplicitKeyword = this.VisitToken(node.ImplicitOrExplicitKeyword);
+      var funcKeyword = this.VisitToken(node.FuncKeyword);
       var operatorKeyword = this.VisitToken(node.OperatorKeyword);
-      var type = (TypeSyntax)this.Visit(node.Type);
+      var implicitOrExplicitKeyword = this.VisitToken(node.ImplicitOrExplicitKeyword);
+      var asKeyword = this.VisitToken(node.AsKeyword);
       var parameterList = (ParameterListSyntax)this.Visit(node.ParameterList);
+      var returnToken = this.VisitToken(node.ReturnToken);
+      var type = (TypeSyntax)this.Visit(node.Type);
       var contractClauses = this.VisitList(node.ContractClauses);
       var body = (BlockSyntax)this.Visit(node.Body);
       var expressionBody = (ArrowExpressionClauseSyntax)this.Visit(node.ExpressionBody);
       var eosToken = this.VisitToken(node.EosToken);
-      return node.Update(attributeLists, modifiers, implicitOrExplicitKeyword, operatorKeyword, type, parameterList, contractClauses, body, expressionBody, eosToken);
+      return node.Update(attributeLists, modifiers, funcKeyword, operatorKeyword, implicitOrExplicitKeyword, asKeyword, parameterList, returnToken, type, contractClauses, body, expressionBody, eosToken);
     }
 
     public override SyntaxNode VisitConstructorDeclaration(ConstructorDeclarationSyntax node)
@@ -9822,15 +9825,14 @@ namespace StarkPlatform.Compiler.Stark
     }
 
     /// <summary>Creates a new ConversionOperatorDeclarationSyntax instance.</summary>
-    public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, SyntaxToken implicitOrExplicitKeyword, SyntaxToken operatorKeyword, TypeSyntax type, ParameterListSyntax parameterList, SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
+    public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken implicitOrExplicitKeyword, SyntaxToken asKeyword, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax type, SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
     {
-      switch (implicitOrExplicitKeyword.Kind())
+      switch (funcKeyword.Kind())
       {
-        case SyntaxKind.ImplicitKeyword:
-        case SyntaxKind.ExplicitKeyword:
+        case SyntaxKind.FuncKeyword:
           break;
         default:
-          throw new ArgumentException(nameof(implicitOrExplicitKeyword));
+          throw new ArgumentException(nameof(funcKeyword));
       }
       switch (operatorKeyword.Kind())
       {
@@ -9839,10 +9841,31 @@ namespace StarkPlatform.Compiler.Stark
         default:
           throw new ArgumentException(nameof(operatorKeyword));
       }
-      if (type == null)
-        throw new ArgumentNullException(nameof(type));
+      switch (implicitOrExplicitKeyword.Kind())
+      {
+        case SyntaxKind.ImplicitKeyword:
+          break;
+        default:
+          throw new ArgumentException(nameof(implicitOrExplicitKeyword));
+      }
+      switch (asKeyword.Kind())
+      {
+        case SyntaxKind.AsKeyword:
+          break;
+        default:
+          throw new ArgumentException(nameof(asKeyword));
+      }
       if (parameterList == null)
         throw new ArgumentNullException(nameof(parameterList));
+      switch (returnToken.Kind())
+      {
+        case SyntaxKind.MinusGreaterThanToken:
+          break;
+        default:
+          throw new ArgumentException(nameof(returnToken));
+      }
+      if (type == null)
+        throw new ArgumentNullException(nameof(type));
       switch (eosToken.Kind())
       {
         case SyntaxKind.SemicolonToken:
@@ -9852,20 +9875,20 @@ namespace StarkPlatform.Compiler.Stark
         default:
           throw new ArgumentException(nameof(eosToken));
       }
-      return (ConversionOperatorDeclarationSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.ConversionOperatorDeclaration(attributeLists.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.AttributeSyntax>(), modifiers.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxToken>(), (Syntax.InternalSyntax.SyntaxToken)implicitOrExplicitKeyword.Node, (Syntax.InternalSyntax.SyntaxToken)operatorKeyword.Node, type == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.TypeSyntax)type.Green, parameterList == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ParameterListSyntax)parameterList.Green, contractClauses.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ContractClauseSyntax>(), body == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.BlockSyntax)body.Green, expressionBody == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ArrowExpressionClauseSyntax)expressionBody.Green, (Syntax.InternalSyntax.SyntaxToken)eosToken.Node).CreateRed();
+      return (ConversionOperatorDeclarationSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.ConversionOperatorDeclaration(attributeLists.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.AttributeSyntax>(), modifiers.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxToken>(), (Syntax.InternalSyntax.SyntaxToken)funcKeyword.Node, (Syntax.InternalSyntax.SyntaxToken)operatorKeyword.Node, (Syntax.InternalSyntax.SyntaxToken)implicitOrExplicitKeyword.Node, (Syntax.InternalSyntax.SyntaxToken)asKeyword.Node, parameterList == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ParameterListSyntax)parameterList.Green, (Syntax.InternalSyntax.SyntaxToken)returnToken.Node, type == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.TypeSyntax)type.Green, contractClauses.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ContractClauseSyntax>(), body == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.BlockSyntax)body.Green, expressionBody == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ArrowExpressionClauseSyntax)expressionBody.Green, (Syntax.InternalSyntax.SyntaxToken)eosToken.Node).CreateRed();
     }
 
 
     /// <summary>Creates a new ConversionOperatorDeclarationSyntax instance.</summary>
-    public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, SyntaxToken implicitOrExplicitKeyword, TypeSyntax type, ParameterListSyntax parameterList, SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
+    public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, ParameterListSyntax parameterList, TypeSyntax type, SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
     {
-      return SyntaxFactory.ConversionOperatorDeclaration(attributeLists, modifiers, implicitOrExplicitKeyword, SyntaxFactory.Token(SyntaxKind.OperatorKeyword), type, parameterList, contractClauses, body, expressionBody, eosToken);
+      return SyntaxFactory.ConversionOperatorDeclaration(attributeLists, modifiers, SyntaxFactory.Token(SyntaxKind.FuncKeyword), SyntaxFactory.Token(SyntaxKind.OperatorKeyword), SyntaxFactory.Token(SyntaxKind.ImplicitKeyword), SyntaxFactory.Token(SyntaxKind.AsKeyword), parameterList, SyntaxFactory.Token(SyntaxKind.MinusGreaterThanToken), type, contractClauses, body, expressionBody, eosToken);
     }
 
     /// <summary>Creates a new ConversionOperatorDeclarationSyntax instance.</summary>
-    public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(SyntaxToken implicitOrExplicitKeyword, TypeSyntax type)
+    public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(TypeSyntax type)
     {
-      return SyntaxFactory.ConversionOperatorDeclaration(default(SyntaxList<AttributeSyntax>), default(SyntaxTokenList), implicitOrExplicitKeyword, SyntaxFactory.Token(SyntaxKind.OperatorKeyword), type, SyntaxFactory.ParameterList(), default(SyntaxList<ContractClauseSyntax>), default(BlockSyntax), default(ArrowExpressionClauseSyntax), default(SyntaxToken));
+      return SyntaxFactory.ConversionOperatorDeclaration(default(SyntaxList<AttributeSyntax>), default(SyntaxTokenList), SyntaxFactory.Token(SyntaxKind.FuncKeyword), SyntaxFactory.Token(SyntaxKind.OperatorKeyword), SyntaxFactory.Token(SyntaxKind.ImplicitKeyword), SyntaxFactory.Token(SyntaxKind.AsKeyword), SyntaxFactory.ParameterList(), SyntaxFactory.Token(SyntaxKind.MinusGreaterThanToken), type, default(SyntaxList<ContractClauseSyntax>), default(BlockSyntax), default(ArrowExpressionClauseSyntax), default(SyntaxToken));
     }
 
     /// <summary>Creates a new ConstructorDeclarationSyntax instance.</summary>

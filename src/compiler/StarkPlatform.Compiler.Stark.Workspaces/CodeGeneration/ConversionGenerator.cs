@@ -65,13 +65,12 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
 
             var declaration = SyntaxFactory.ConversionOperatorDeclaration(
                 attributeLists: AttributeGenerator.GenerateAttributeLists(method.GetAttributes(), options),
-                modifiers: GenerateModifiers(method),
-                implicitOrExplicitKeyword: keyword,
+                modifiers: GenerateModifiers(method), funcKeyword: SyntaxFactory.Token(SyntaxKind.FuncKeyword),
                 operatorKeyword: SyntaxFactory.Token(SyntaxKind.OperatorKeyword),
+                implicitOrExplicitKeyword: keyword, asKeyword: SyntaxFactory.Token(SyntaxKind.AsKeyword),
+                parameterList: ParameterGenerator.GenerateParameterList(method.Parameters, isExplicit: false, options: options), minusGreaterThanToken: SyntaxFactory.Token(SyntaxKind.MinusGreaterThanToken),
                 type: method.ReturnType.GenerateTypeSyntax(),
-                parameterList: ParameterGenerator.GenerateParameterList(method.Parameters, isExplicit: false, options: options),
-                body: hasNoBody ? null : StatementGenerator.GenerateBlock(method),
-                semicolonToken: hasNoBody ? SyntaxFactory.Token(SyntaxKind.SemicolonToken) : new SyntaxToken());
+                body: hasNoBody ? null : StatementGenerator.GenerateBlock(method), semicolonToken: hasNoBody ? SyntaxFactory.Token(SyntaxKind.SemicolonToken) : new SyntaxToken());
 
             declaration = UseExpressionBodyIfDesired(workspace, declaration, parseOptions);
 

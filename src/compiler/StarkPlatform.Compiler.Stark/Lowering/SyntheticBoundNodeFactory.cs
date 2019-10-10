@@ -593,6 +593,20 @@ namespace StarkPlatform.Compiler.Stark
             return new BoundObjectCreationExpression(Syntax, ctor, null, args) { WasCompilerGenerated = true };
         }
 
+        
+        public BoundObjectCreationExpression New(WellKnownMember wellKnownMember, ImmutableArray<BoundExpression> args)
+        {
+            MethodSymbol methodSymbol = WellKnownMethod(wellKnownMember);
+            Binder.ReportUseSiteDiagnostics(methodSymbol, Diagnostics, Syntax);
+            return new BoundObjectCreationExpression(Syntax, methodSymbol, null, args) { WasCompilerGenerated = true };
+        }
+
+        public BoundObjectCreationExpression New(MethodSymbol ctor, ImmutableArray<BoundExpression> args)
+        {
+            // TODO: add diagnostics for when things fall apart
+            return new BoundObjectCreationExpression(Syntax, ctor, null, args) { WasCompilerGenerated = true };
+        }
+
         public BoundExpression InstanceCall(BoundExpression receiver, string name, BoundExpression arg)
         {
             return MakeInvocationExpression(BinderFlags.None, this.Syntax, receiver, name, ImmutableArray.Create(arg), this.Diagnostics);

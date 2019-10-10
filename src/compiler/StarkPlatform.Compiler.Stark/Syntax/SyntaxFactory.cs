@@ -613,7 +613,7 @@ namespace StarkPlatform.Compiler.Stark
         /// <param name="value">The character value to be represented by the returned token.</param>
         public static SyntaxToken Literal(string text, char value)
         {
-            return new SyntaxToken(Syntax.InternalSyntax.SyntaxFactory.Literal(ElasticMarker.UnderlyingNode, text, value, ElasticMarker.UnderlyingNode));
+            return new SyntaxToken(InternalSyntax.SyntaxFactory.Literal(ElasticMarker.UnderlyingNode, text, (Rune) value, ElasticMarker.UnderlyingNode));
         }
 
         /// <summary>
@@ -625,7 +625,7 @@ namespace StarkPlatform.Compiler.Stark
         /// <param name="trailing">A list of trivia immediately following the token.</param>
         public static SyntaxToken Literal(SyntaxTriviaList leading, string text, char value, SyntaxTriviaList trailing)
         {
-            return new SyntaxToken(Syntax.InternalSyntax.SyntaxFactory.Literal(leading.Node, text, value, trailing.Node));
+            return new SyntaxToken(InternalSyntax.SyntaxFactory.Literal(leading.Node, text, (Rune) value, trailing.Node));
         }
 
         /// <summary>
@@ -2445,21 +2445,26 @@ namespace StarkPlatform.Compiler.Stark
                 default(SyntaxToken));
         }
 
-        public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(
-            SyntaxList<AttributeSyntax> attributeLists,
+        public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(SyntaxList<AttributeSyntax> attributeLists,
             SyntaxTokenList modifiers,
-            SyntaxToken implicitOrExplicitKeyword,
+            SyntaxToken funcKeyword,
             SyntaxToken operatorKeyword,
-            TypeSyntax type,
+            SyntaxToken implicitOrExplicitKeyword,
+            SyntaxToken asKeyword,
             ParameterListSyntax parameterList,
+            SyntaxToken minusGreaterThanToken,
+            TypeSyntax type,
             BlockSyntax body,
             SyntaxToken semicolonToken)
         {
             return SyntaxFactory.ConversionOperatorDeclaration(
                 attributeLists: attributeLists,
                 modifiers: modifiers,
-                implicitOrExplicitKeyword: implicitOrExplicitKeyword,
+                funcKeyword: funcKeyword,
                 operatorKeyword: operatorKeyword,
+                implicitOrExplicitKeyword: implicitOrExplicitKeyword,
+                asKeyword: asKeyword,
+                returnToken: minusGreaterThanToken,
                 type: type,
                 parameterList: parameterList,
                 contractClauses: default,

@@ -3614,19 +3614,17 @@
     </Field>
   </Node>
   <Node Name="ConversionOperatorDeclarationSyntax" Base="BaseMethodDeclarationSyntax">
-    <!-- should be split into two kinds-->
     <TypeComment>
       <summary>Conversion operator declaration syntax.</summary>
     </TypeComment>
     <Kind Name="ConversionOperatorDeclaration"/>
     <Field Name="AttributeLists" Type="SyntaxList&lt;AttributeSyntax&gt;" Override="true"/>
     <Field Name="Modifiers" Type="SyntaxList&lt;SyntaxToken&gt;" Override="true"/>
-    <Field Name="ImplicitOrExplicitKeyword" Type="SyntaxToken">
+    <Field Name="FuncKeyword" Type="SyntaxToken">
       <PropertyComment>
-        <summary>Gets the "implicit" or "explicit" token.</summary>
+        <summary>Gets the func keyword.</summary>
       </PropertyComment>
-      <Kind Name="ImplicitKeyword"/>
-      <Kind Name="ExplicitKeyword"/>
+      <Kind Name="FuncKeyword"/>
     </Field>
     <Field Name="OperatorKeyword" Type="SyntaxToken">
       <PropertyComment>
@@ -3634,12 +3632,30 @@
       </PropertyComment>
       <Kind Name="OperatorKeyword"/>
     </Field>
+    <Field Name="ImplicitOrExplicitKeyword" Type="SyntaxToken">
+      <PropertyComment>
+        <summary>Gets the "implicit" or "explicit" token.</summary>
+      </PropertyComment>
+      <Kind Name="ImplicitKeyword"/>
+    </Field>
+    <Field Name="AsKeyword" Type="SyntaxToken">
+      <PropertyComment>
+        <summary>Gets the "as" keyword token.</summary>
+      </PropertyComment>
+      <Kind Name="AsKeyword"/>
+    </Field>
+    <Field Name="ParameterList" Type="ParameterListSyntax" Override="true"/>
+    <Field Name="ReturnToken" Type="SyntaxToken">
+      <PropertyComment>
+        <summary>Gets the arrow token.</summary>
+      </PropertyComment>
+      <Kind Name="MinusGreaterThanToken"/>
+    </Field>
     <Field Name="Type" Type="TypeSyntax">
       <PropertyComment>
         <summary>Gets the type.</summary>
       </PropertyComment>
     </Field>
-    <Field Name="ParameterList" Type="ParameterListSyntax" Override="true"/>
     <Field Name="ContractClauses" Type="SyntaxList&lt;ContractClauseSyntax&gt;" Override="true" Optional="true"/>
     <Field Name="Body" Type="BlockSyntax" Optional="true" Override="true"/>
     <Field Name="ExpressionBody" Type="ArrowExpressionClauseSyntax" Optional="true" Override="true"/>

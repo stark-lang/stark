@@ -203,9 +203,9 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
             if (kind == OperatorKind.ImplicitConversion || kind == OperatorKind.ExplicitConversion)
             {
                 return SyntaxFactory.ConversionOperatorDeclaration(
-                    attributes, modifierList, SyntaxFactory.Token(GetTokenKind(kind)),
+                    attributes, modifierList, SyntaxFactory.Token(SyntaxKind.FuncKeyword),
                     SyntaxFactory.Token(SyntaxKind.OperatorKeyword),
-                    returnTypeNode, parameterList, body, semicolon);
+                    SyntaxFactory.Token(GetTokenKind(kind)), SyntaxFactory.Token(SyntaxKind.AsKeyword), parameterList, SyntaxFactory.Token(SyntaxKind.MinusGreaterThanToken), returnTypeNode, body, semicolon);
             }
             else
             {

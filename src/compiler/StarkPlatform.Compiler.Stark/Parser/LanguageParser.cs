@@ -1798,8 +1798,6 @@ tryAgain:
                 case SyntaxKind.StructKeyword:
                 case SyntaxKind.UnsafeKeyword:
                 case SyntaxKind.VirtualKeyword:
-                case SyntaxKind.ImplicitKeyword:
-                case SyntaxKind.ExplicitKeyword:
                 case SyntaxKind.VarKeyword:
                 case SyntaxKind.InKeyword:
                 case SyntaxKind.LetKeyword:
@@ -1989,17 +1987,6 @@ tryAgain:
                     case SyntaxKind.FuncKeyword:
                         return this.ParseFuncDeclaration(attributes, modifiers, parentKind);
 
-                    case SyntaxKind.ExplicitKeyword:
-                    case SyntaxKind.ImplicitKeyword:
-                        return this.ParseConversionOperatorDeclaration(attributes, modifiers);
-
-                    case SyntaxKind.OperatorKeyword:
-                        if (!SyntaxFacts.IsAnyOverloadableOperator(this.PeekToken(1).Kind))
-                        {
-                            return this.ParseConversionOperatorDeclaration(attributes, modifiers);
-                        }
-                        break;
-
                     case SyntaxKind.ClassKeyword:
                     case SyntaxKind.DelegateKeyword:
                     case SyntaxKind.EnumKeyword:
@@ -2087,6 +2074,13 @@ tryAgain:
             if (CurrentToken.Kind == SyntaxKind.OperatorKeyword)
             {
                 operatorToken = EatToken();
+
+                if (CurrentToken.Kind ==  SyntaxKind.ExplicitKeyword ||
+                    CurrentToken.Kind == SyntaxKind.ImplicitKeyword ||
+                    CurrentToken.Kind == SyntaxKind.AsKeyword)
+                {
+                    return this.ParseConversionOperatorDeclaration(funcToken, operatorToken, attributes, modifiers);
+                }
             }
 
             // At this point we can either have indexers, methods, or 
@@ -2247,14 +2241,6 @@ tryAgain:
                 default:
                     return true;
             }
-        }
-
-        private bool IsOperatorKeyword()
-        {
-            return
-                this.CurrentToken.Kind == SyntaxKind.ImplicitKeyword ||
-                this.CurrentToken.Kind == SyntaxKind.ExplicitKeyword ||
-                this.CurrentToken.Kind == SyntaxKind.OperatorKeyword;
         }
 
         public static bool IsComplete(CSharpSyntaxNode node)
@@ -2592,24 +2578,25 @@ tryAgain:
             }
         }
 
-        private ConversionOperatorDeclarationSyntax ParseConversionOperatorDeclaration(SyntaxListBuilder<AttributeSyntax> attributes, SyntaxListBuilder modifiers)
+        private ConversionOperatorDeclarationSyntax ParseConversionOperatorDeclaration(SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxListBuilder<AttributeSyntax> attributes, SyntaxListBuilder modifiers)
         {
-            SyntaxToken style;
-            if (this.CurrentToken.Kind == SyntaxKind.ImplicitKeyword || this.CurrentToken.Kind == SyntaxKind.ExplicitKeyword)
+            SyntaxToken implicitKeyword = null;
+            if (this.CurrentToken.Kind == SyntaxKind.ImplicitKeyword)
             {
-                style = this.EatToken();
-            }
-            else
-            {
-                style = this.EatToken(SyntaxKind.ExplicitKeyword);
+                implicitKeyword = this.EatToken();
             }
 
-            SyntaxToken opKeyword = this.EatToken(SyntaxKind.OperatorKeyword);
+            // func operator implicit as(...) -> ReturnType
+            // func operator as(...) -> ReturnType
 
-            var type = this.ParseType();
+            var asKeyword = EatToken(SyntaxKind.AsKeyword);
 
             var paramList = this.ParseParenthesizedParameterList();
 
+            var minusGreaterThanForReturnType = ExpectMinusGreaterThanForReturnType();
+
+            var returnType = ParseType();
+            
             var contracts = default(SyntaxListBuilder<ContractClauseSyntax>);
             try
             {
@@ -2619,7 +2606,7 @@ tryAgain:
                     contracts = _pool.Allocate<ContractClauseSyntax>();
                     this.ParseContractClauses(contracts);
                 }
-
+                
                 BlockSyntax blockBody;
                 ArrowExpressionClauseSyntax expressionBody;
                 this.ParseBlockAndExpressionBodies(out blockBody, out expressionBody);
@@ -2643,10 +2630,13 @@ tryAgain:
                 return _syntaxFactory.ConversionOperatorDeclaration(
                     attributes,
                     modifiers.ToList(),
-                    style,
-                    opKeyword,
-                    type,
+                    funcKeyword,
+                    operatorKeyword,
+                    implicitKeyword,
+                    asKeyword,
                     paramList,
+                    minusGreaterThanForReturnType,
+                    returnType,
                     contracts,
                     blockBody,
                     expressionBody,
@@ -2684,7 +2674,6 @@ tryAgain:
                     // Grab the offset and width before we consume the invalid keyword and change our position.
                     GetDiagnosticSpanForMissingToken(out opTokenErrorOffset, out opTokenErrorWidth);
                     opToken = this.ConvertToMissingWithTrailingTrivia(this.EatToken(), SyntaxKind.PlusToken);
-                    Debug.Assert(opToken.IsMissing); //Which is why we used GetDiagnosticSpanForMissingToken above.
                 }
                 else
                 {
