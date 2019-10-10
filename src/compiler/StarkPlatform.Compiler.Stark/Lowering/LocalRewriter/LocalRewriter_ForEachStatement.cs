@@ -50,6 +50,7 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
+
         private bool CanRewriteForEachAsFor(SyntaxNode forEachSyntax, TypeSymbol nodeExpressionType, out MethodSymbol indexerGet, out MethodSymbol lengthGet)
         {
             lengthGet = indexerGet = null;
@@ -101,8 +102,8 @@ namespace StarkPlatform.Compiler.Stark
             ForEachEnumeratorInfo enumeratorInfo = node.EnumeratorInfoOpt;
             Debug.Assert(enumeratorInfo != null);
 
-            BoundExpression collectionExpression = GetUnconvertedCollectionExpression(node);
-            BoundExpression rewrittenExpression = (BoundExpression)Visit(collectionExpression);
+            //BoundExpression collectionExpression = GetUnconvertedCollectionExpression(node);
+            BoundExpression rewrittenExpression = (BoundExpression)Visit(node.Expression);
             BoundStatement rewrittenBody = (BoundStatement)Visit(node.Body);
 
             TypeSymbol iteratorType = enumeratorInfo.IteratorType;
@@ -117,19 +118,19 @@ namespace StarkPlatform.Compiler.Stark
             // e.iterate_begin();
             BoundExpression stateVarInitValue =  BoundCall.Synthesized(
                 syntax: forEachSyntax,
-                receiverOpt: collectionExpression,
+                receiverOpt: rewrittenExpression,
                 method: enumeratorInfo.IterateBegin);
 
             // TState state = e.iterate_begin();
-            BoundStatement stateVarDecl = MakeLocalDeclaration(forEachSyntax, iteratorVar, stateVarInitValue);
+            BoundStatement iteratorVarDecl = MakeLocalDeclaration(forEachSyntax, iteratorVar, stateVarInitValue);
             
             // TODO: instrument stateVarDecl?
-            InstrumentForEachStatementCollectionVarDeclaration(node, ref stateVarDecl);
+            InstrumentForEachStatementCollectionVarDeclaration(node, ref iteratorVarDecl);
 
             // (V)(T)e.iterate_item(ref state)
             BoundExpression iterationVarAssignValue = BoundCall.Synthesized(
                 syntax: forEachSyntax,
-                receiverOpt: collectionExpression,
+                receiverOpt: rewrittenExpression,
                 method: enumeratorInfo.IterateNext, boundIteratorVar);
 
             // V v = (V)(T)e.iterate_item(ref state);  -OR-  (D1 d1, ...) = (V)(T)e.iterate_item(ref state);
@@ -148,7 +149,7 @@ namespace StarkPlatform.Compiler.Stark
             var rewrittenBodyBlock = CreateBlockDeclaringIterationVariables(iterationVariables, iterationVarDecl, rewrittenBody, forEachSyntax);
             BoundExpression rewrittenCondition = SynthesizeCallWithArg(
                     syntax: forEachSyntax,
-                    receiver: collectionExpression,
+                    receiver: rewrittenExpression,
                     method: enumeratorInfo.IterateHasNext,
                     allowExtensionAndOptionalParameters: isAsync,
                     boundIteratorVar);
@@ -168,7 +169,7 @@ namespace StarkPlatform.Compiler.Stark
 
             var iterateEnd = new BoundExpressionStatement(forEachSyntax, BoundCall.Synthesized(
                 syntax: forEachSyntax,
-                receiverOpt: collectionExpression,
+                receiverOpt: rewrittenExpression,
                 method: enumeratorInfo.IterateEnd, boundIteratorVar));
 
             BoundStatement result;
@@ -184,7 +185,7 @@ namespace StarkPlatform.Compiler.Stark
                 result = new BoundBlock(
                     syntax: forEachSyntax,
                     locals: ImmutableArray.Create(iteratorVar),
-                    statements: ImmutableArray.Create<BoundStatement>(stateVarDecl, tryFinally));
+                    statements: ImmutableArray.Create<BoundStatement>(iteratorVarDecl, tryFinally));
             }
             else
             {
@@ -197,7 +198,7 @@ namespace StarkPlatform.Compiler.Stark
                 result = new BoundBlock(
                     syntax: forEachSyntax,
                     locals: ImmutableArray.Create(iteratorVar),
-                    statements: ImmutableArray.Create<BoundStatement>(stateVarDecl, whileLoop, iterateEnd));
+                    statements: ImmutableArray.Create<BoundStatement>(iteratorVarDecl, whileLoop, iterateEnd));
             }
 
             InstrumentForEachStatement(node, ref result);
