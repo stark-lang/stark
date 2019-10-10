@@ -428,15 +428,11 @@ namespace StarkPlatform.Compiler
         System_Math__FloorDouble,
         System_Math__TruncateDouble,
 
-        System_Index__ctor,
-        System_Index__FromEnd,
-        System_Index__Value,
-        System_Range__Start,
-        System_Range__End,
-        System_Range__Create,
-        System_Range__ToEnd,
-        System_Range__FromStart,
-        System_Range__All,
+        core_Index__ctor,
+        core_Index__value,
+        core_Range__ctor,
+        core_Range__begin,
+        core_Range__end,
 
         System_Runtime_CompilerServices_AsyncIteratorStateMachineAttribute__ctor,
 

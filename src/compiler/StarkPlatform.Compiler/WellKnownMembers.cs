@@ -2924,74 +2924,44 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64,
 
-                 // System_Index__ctor
+                 // core_Index__ctor
                  (byte)(MemberFlags.Constructor),                                                                                                               // Flags
                  (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
                  0,                                                                                                                                             // Arity
                      2,                                                                                                                                         // Method Signature
                      (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
-                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
+                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
                      (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
 
-                 // System_Index__FromEnd
+                 // core_Index__value
                  (byte)(MemberFlags.Property),                                                                                                                  // Flags
                  (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
                  0,                                                                                                                                             // Arity
                      0,                                                                                                                                         // Method Signature
-                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean, // Return Type
+                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int, // Return type
 
-                 // System_Index__Value
-                 (byte)(MemberFlags.Property),                                                                                                                  // Flags
-                 (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
-                 0,                                                                                                                                             // Arity
-                     0,                                                                                                                                         // Method Signature
-                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32, // Return type
-
-                 // System_Range__Start
-                 (byte)MemberFlags.Property,                                                                                                                    // Flags
-                 (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
-                 0,                                                                                                                                             // Arity
-                     0,                                                                                                                                         // Method Signature
-                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel), // Return Type: System.Index
-
-                 // System_Range__End
-                 (byte)MemberFlags.Property,                                                                                                                    // Flags
-                 (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
-                 0,                                                                                                                                             // Arity
-                     0,                                                                                                                                         // Method Signature
-                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel), // Return Type: System.Index
-
-                 // System_Range__Create
-                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                                                               // Flags
+                 // core_Range__ctor
+                 (byte)(MemberFlags.Constructor),                                                                                                               // Flags
                  (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
                  0,                                                                                                                                             // Arity
                      2,                                                                                                                                         // Method Signature
-                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),
+                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
                      (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),
                      (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),
 
-                 // System_Range__ToEnd
-                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                                                               // Flags
-                 (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
-                 0,                                                                                                                                             // Arity
-                     1,                                                                                                                                         // Method Signature
-                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),
-                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),
-
-                 // System_Range__FromStart
-                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                                                               // Flags
-                 (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
-                 0,                                                                                                                                             // Arity
-                     1,                                                                                                                                         // Method Signature
-                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),
-                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),
-
-                 // System_Range__All
-                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                                                               // Flags
-                 (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
+                 // core_Range__begin
+                 (byte)(MemberFlags.Property),                                                                                                                  // Flags
+                 (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
                  0,                                                                                                                                             // Arity
                      0,                                                                                                                                         // Method Signature
-                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Range - WellKnownType.ExtSentinel),
+                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),
+
+                 // core_Range__end
+                 (byte)(MemberFlags.Property),                                                                                                                  // Flags
+                 (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
+                 0,                                                                                                                                             // Arity
+                     0,                                                                                                                                         // Method Signature
+                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),
 
                 // System_Runtime_CompilerServices_AsyncIteratorStateMachineAttribute__ctor
                 (byte)MemberFlags.Constructor,                                                                              // Flags
@@ -3629,15 +3599,11 @@ namespace StarkPlatform.Compiler
                 "Floor",                                    // System_Math__FloorDouble
                 "Truncate",                                 // System_Math__TruncateDouble
 
-                ".ctor",                                    // System_Index__ctor
-                "FromEnd",                                  // System_Index__FromEnd
-                "Value",                                    // System_Index__Value
-                "Start",                                    // System_Range__Start
-                "End",                                      // System_Range__End
-                "Create",                                   // System_Range__Create
-                "ToEnd",                                    // System_Range__ToEnd
-                "FromStart",                                // System_Range__FromStart
-                "All",                                      // System_Range__All
+                ".ctor",                                    // core_Index__ctor
+                "value",                                    // core_Index__value
+                ".ctor",                                    // core_Range__ctor
+                "begin",                                    // core_Range__begin
+                "end",                                      // core_Range__end
 
                 ".ctor",                                    // System_Runtime_CompilerServices_AsyncIteratorStateMachineAttribute__ctor
 

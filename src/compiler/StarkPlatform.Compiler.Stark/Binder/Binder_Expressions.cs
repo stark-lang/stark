@@ -1972,7 +1972,7 @@ namespace StarkPlatform.Compiler.Stark
             GetSpecialType(SpecialType.System_Boolean, diagnostics, node);
 
             BoundExpression boundOperand = BindValue(node.Operand, diagnostics, BindValueKind.RValue);
-            TypeSymbol intType = GetSpecialType(SpecialType.System_Int32, diagnostics, node);
+            TypeSymbol intType = GetSpecialType(SpecialType.System_Int, diagnostics, node);
             TypeSymbol indexType = GetWellKnownType(WellKnownType.core_Index, diagnostics, node);
 
             if ((object)boundOperand.Type != null && boundOperand.Type.IsNullableType())
@@ -2000,7 +2000,7 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             BoundExpression boundConversion = CreateConversion(boundOperand, conversion, intType, diagnostics);
-            MethodSymbol symbolOpt = GetWellKnownTypeMember(Compilation, WellKnownMember.System_Index__ctor, diagnostics, syntax: node) as MethodSymbol;
+            MethodSymbol symbolOpt = GetWellKnownTypeMember(Compilation, WellKnownMember.core_Index__ctor, diagnostics, syntax: node) as MethodSymbol;
 
             return new BoundFromEndIndexExpression(node, boundConversion, symbolOpt, indexType);
         }
@@ -2014,18 +2014,11 @@ namespace StarkPlatform.Compiler.Stark
 
             if (!rangeType.IsErrorType())
             {
-                WellKnownMember requiredRangeMethod;
-
-                if (node.LeftOperand is null)
-                {
-                    requiredRangeMethod = node.RightOperand is null ? WellKnownMember.System_Range__All : WellKnownMember.System_Range__ToEnd;
-                }
-                else
-                {
-                    requiredRangeMethod = node.RightOperand is null ? WellKnownMember.System_Range__FromStart : WellKnownMember.System_Range__Create;
-                }
-
-                symbolOpt = GetWellKnownTypeMember(Compilation, requiredRangeMethod, diagnostics, syntax: node) as MethodSymbol;
+                symbolOpt = (MethodSymbol)GetWellKnownTypeMember(
+                    Compilation,
+                    WellKnownMember.core_Range__ctor,
+                    diagnostics,
+                    syntax: node);
             }
 
             BoundExpression left = BindRangeExpressionOperand(node.LeftOperand, diagnostics);
