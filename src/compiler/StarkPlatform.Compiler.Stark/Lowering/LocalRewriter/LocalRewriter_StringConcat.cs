@@ -373,9 +373,9 @@ namespace StarkPlatform.Compiler.Stark
                         if (operand.Kind == BoundKind.Literal)
                         {
                             ConstantValue cv = ((BoundLiteral)operand).ConstantValue;
-                            if (cv != null && cv.SpecialType == SpecialType.System_Char)
+                            if (cv != null && cv.SpecialType == SpecialType.System_Rune)
                             {
-                                return _factory.StringLiteral(cv.CharValue.ToString());
+                                return _factory.StringLiteral(cv.RuneValue.ToString());
                             }
                         }
 
@@ -430,7 +430,7 @@ namespace StarkPlatform.Compiler.Stark
             switch (symbol.SpecialType)
             {
                 case SpecialType.System_Boolean:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_Int:
                 case SpecialType.System_UInt:
                     return true;

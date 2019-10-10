@@ -12,6 +12,7 @@ using InternalSyntax = StarkPlatform.Compiler.Stark.Syntax.InternalSyntax;
 using System.Xml.Linq;
 using Roslyn.Utilities;
 using StarkPlatform.Compiler.Syntax;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark
 {
@@ -254,7 +255,7 @@ namespace StarkPlatform.Compiler.Stark
                 case SyntaxKind.IdentifierToken:
                     // Have a different representation.
                     throw new ArgumentException(CSharpResources.UseVerbatimIdentifier, nameof(kind));
-                case SyntaxKind.CharacterLiteralToken:
+                case SyntaxKind.RuneLiteralToken:
                     // Value should not have type string.
                     throw new ArgumentException(CSharpResources.UseLiteralForTokens, nameof(kind));
                 case SyntaxKind.NumericLiteralToken:

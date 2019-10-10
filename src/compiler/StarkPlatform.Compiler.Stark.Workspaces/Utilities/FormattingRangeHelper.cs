@@ -94,7 +94,7 @@ namespace StarkPlatform.Compiler.Stark.Utilities
                         // if we are called due to things in trivia or literals, don't bother
                         // finding a starting token
                         if (parent.Kind() == SyntaxKind.StringLiteralExpression ||
-                            parent.Kind() == SyntaxKind.CharacterLiteralExpression)
+                            parent.Kind() == SyntaxKind.RuneLiteralExpression)
                         {
                             return null;
                         }

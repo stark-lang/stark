@@ -27,7 +27,7 @@ namespace StarkPlatform.Compiler
                 case ConstantValueTypeDiscriminator.UInt32:
                 case ConstantValueTypeDiscriminator.Int64:
                 case ConstantValueTypeDiscriminator.UInt64:
-                case ConstantValueTypeDiscriminator.Char:
+                case ConstantValueTypeDiscriminator.Rune:
                 case ConstantValueTypeDiscriminator.Boolean:
                 case ConstantValueTypeDiscriminator.String:
                     return true;
@@ -82,7 +82,7 @@ namespace StarkPlatform.Compiler
                 case ConstantValueTypeDiscriminator.UInt16:
                 case ConstantValueTypeDiscriminator.UInt32:
                 case ConstantValueTypeDiscriminator.UInt64:
-                case ConstantValueTypeDiscriminator.Char:
+                case ConstantValueTypeDiscriminator.Rune:
                     return first.UInt64Value.CompareTo(second.UInt64Value);
 
                 case ConstantValueTypeDiscriminator.String:
@@ -145,7 +145,7 @@ namespace StarkPlatform.Compiler
                         case ConstantValueTypeDiscriminator.UInt16:
                         case ConstantValueTypeDiscriminator.UInt32:
                         case ConstantValueTypeDiscriminator.UInt64:
-                        case ConstantValueTypeDiscriminator.Char:
+                        case ConstantValueTypeDiscriminator.Rune:
                             return constant.UInt64Value.GetHashCode();
 
                         case ConstantValueTypeDiscriminator.String:

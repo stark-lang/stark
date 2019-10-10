@@ -8,6 +8,7 @@ using System.Text;
 using StarkPlatform.Compiler.Syntax.InternalSyntax;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 {
@@ -91,7 +92,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             internal bool RequiresTextForXmlEntity;
             internal bool HasIdentifierEscapeSequence;
             internal string StringValue;
-            internal char CharValue;
+            internal Rune RuneValue;
             internal int IntValue;
             internal uint UintValue;
             internal long LongValue;
@@ -380,8 +381,8 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                     case SyntaxKind.StringLiteralToken:
                         token = SyntaxFactory.Literal(leadingNode, info.Text, info.Kind, info.StringValue, trailingNode);
                         break;
-                    case SyntaxKind.CharacterLiteralToken:
-                        token = SyntaxFactory.Literal(leadingNode, info.Text, info.CharValue, trailingNode);
+                    case SyntaxKind.RuneLiteralToken:
+                        token = SyntaxFactory.Literal(leadingNode, info.Text, info.RuneValue, trailingNode);
                         break;
                     case SyntaxKind.XmlTextLiteralNewLineToken:
                         token = SyntaxFactory.XmlTextNewLine(leadingNode, info.Text, info.StringValue, trailingNode);

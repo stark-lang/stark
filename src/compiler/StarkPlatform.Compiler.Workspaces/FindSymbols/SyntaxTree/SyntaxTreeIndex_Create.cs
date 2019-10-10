@@ -164,7 +164,7 @@ $@"Invalid span in {nameof(declaredSymbolInfo)}.
                                 stringLiterals.Add(token.ValueText);
                             }
 
-                            if (syntaxFacts.IsCharacterLiteral(token))
+                            if (syntaxFacts.IsRuneLiteral(token))
                             {
                                 longLiterals.Add((char)token.Value);
                             }

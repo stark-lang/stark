@@ -40,9 +40,9 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
                 return SignatureTypeCode.Boolean;
             }
 
-            if (value.GetType() == typeof(char))
+            if (value.GetType() == typeof(Rune))
             {
-                return SignatureTypeCode.Char;
+                return SignatureTypeCode.Rune;
             }
 
             if (value.GetType() == typeof(byte))

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 {
@@ -124,7 +125,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         {
             Debug.Assert(SyntaxFacts.IsAnyToken(kind));
             Debug.Assert(kind != SyntaxKind.IdentifierToken);
-            Debug.Assert(kind != SyntaxKind.CharacterLiteralToken);
+            Debug.Assert(kind != SyntaxKind.RuneLiteralToken);
             Debug.Assert(kind != SyntaxKind.NumericLiteralToken);
 
             string defaultText = SyntaxFacts.GetText(kind);
@@ -203,9 +204,9 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             return SyntaxToken.WithValue(kind, leading, text, value, trailing);
         }
 
-        internal static SyntaxToken Literal(GreenNode leading, string text, char value, GreenNode trailing)
+        internal static SyntaxToken Literal(GreenNode leading, string text, Rune value, GreenNode trailing)
         {
-            return SyntaxToken.WithValue(SyntaxKind.CharacterLiteralToken, leading, text, value, trailing);
+            return SyntaxToken.WithValue(SyntaxKind.RuneLiteralToken, leading, text, value, trailing);
         }
 
         internal static SyntaxToken BadToken(GreenNode leading, string text, GreenNode trailing)

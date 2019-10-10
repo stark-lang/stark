@@ -180,7 +180,7 @@ namespace StarkPlatform.Compiler.FindSymbols
                 CheckToken(token, matches);
             }
             else if (_searchKind == SearchKind.CharacterLiterals &&
-                     syntaxFacts.IsCharacterLiteral(token))
+                     syntaxFacts.IsRuneLiteral(token))
             {
                 CheckToken(token, matches);
             }

@@ -89,7 +89,7 @@ namespace StarkPlatform.Compiler.Stark
                 //  Literals (including the null literal).
                 case SyntaxKind.NumericLiteralExpression:
                 case SyntaxKind.StringLiteralExpression:
-                case SyntaxKind.CharacterLiteralExpression:
+                case SyntaxKind.RuneLiteralExpression:
                 case SyntaxKind.TrueLiteralExpression:
                 case SyntaxKind.FalseLiteralExpression:
                 case SyntaxKind.NullLiteralExpression:

@@ -3843,8 +3843,8 @@ namespace StarkPlatform.Cci
                     encoder.SByte();
                     break;
 
-                case PrimitiveTypeCode.Char:
-                    encoder.Char();
+                case PrimitiveTypeCode.Rune:
+                    encoder.Rune();
                     break;
 
                 case PrimitiveTypeCode.Int16:
@@ -3964,8 +3964,8 @@ namespace StarkPlatform.Cci
                     encoder.SByte();
                     break;
 
-                case PrimitiveTypeCode.Char:
-                    encoder.Char();
+                case PrimitiveTypeCode.Rune:
+                    encoder.Rune();
                     break;
 
                 case PrimitiveTypeCode.Int16:

@@ -10,7 +10,7 @@ namespace StarkPlatform.Reflection.Metadata
 
         ELEMENT_TYPE_VOID = 0x1,
         ELEMENT_TYPE_BOOLEAN = 0x2,
-        ELEMENT_TYPE_CHAR = 0x3,
+        ELEMENT_TYPE_RUNE = 0x3,
         ELEMENT_TYPE_I1 = 0x4, // SByte
         ELEMENT_TYPE_U1 = 0x5, // Byte
         ELEMENT_TYPE_I2 = 0x6, // Int16

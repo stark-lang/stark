@@ -41065,7 +41065,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         case SyntaxKind.Float32Keyword:
         case SyntaxKind.Float64Keyword:
         case SyntaxKind.StringKeyword:
-        case SyntaxKind.CharKeyword:
+        case SyntaxKind.RuneKeyword:
         case SyntaxKind.ObjectKeyword:
           break;
         default:
@@ -41977,7 +41977,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         case SyntaxKind.ArgListExpression:
         case SyntaxKind.NumericLiteralExpression:
         case SyntaxKind.StringLiteralExpression:
-        case SyntaxKind.CharacterLiteralExpression:
+        case SyntaxKind.RuneLiteralExpression:
         case SyntaxKind.TrueLiteralExpression:
         case SyntaxKind.FalseLiteralExpression:
         case SyntaxKind.NullLiteralExpression:
@@ -41994,7 +41994,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         case SyntaxKind.ArgListKeyword:
         case SyntaxKind.NumericLiteralToken:
         case SyntaxKind.StringLiteralToken:
-        case SyntaxKind.CharacterLiteralToken:
+        case SyntaxKind.RuneLiteralToken:
         case SyntaxKind.TrueKeyword:
         case SyntaxKind.FalseKeyword:
         case SyntaxKind.NullKeyword:
@@ -48613,7 +48613,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         case SyntaxKind.Float32Keyword:
         case SyntaxKind.Float64Keyword:
         case SyntaxKind.StringKeyword:
-        case SyntaxKind.CharKeyword:
+        case SyntaxKind.RuneKeyword:
         case SyntaxKind.ObjectKeyword:
           break;
         default:
@@ -49525,7 +49525,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         case SyntaxKind.ArgListExpression:
         case SyntaxKind.NumericLiteralExpression:
         case SyntaxKind.StringLiteralExpression:
-        case SyntaxKind.CharacterLiteralExpression:
+        case SyntaxKind.RuneLiteralExpression:
         case SyntaxKind.TrueLiteralExpression:
         case SyntaxKind.FalseLiteralExpression:
         case SyntaxKind.NullLiteralExpression:
@@ -49542,7 +49542,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         case SyntaxKind.ArgListKeyword:
         case SyntaxKind.NumericLiteralToken:
         case SyntaxKind.StringLiteralToken:
-        case SyntaxKind.CharacterLiteralToken:
+        case SyntaxKind.RuneLiteralToken:
         case SyntaxKind.TrueKeyword:
         case SyntaxKind.FalseKeyword:
         case SyntaxKind.NullKeyword:

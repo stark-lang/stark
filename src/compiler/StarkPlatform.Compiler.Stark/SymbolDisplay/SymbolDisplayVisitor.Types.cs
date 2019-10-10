@@ -624,8 +624,8 @@ namespace StarkPlatform.Compiler.Stark
                     return "float";
                 case SpecialType.System_Float64:
                     return "double";
-                case SpecialType.System_Char:
-                    return "char";
+                case SpecialType.System_Rune:
+                    return "rune";
                 case SpecialType.System_Boolean:
                     return "bool";
                 case SpecialType.System_String:

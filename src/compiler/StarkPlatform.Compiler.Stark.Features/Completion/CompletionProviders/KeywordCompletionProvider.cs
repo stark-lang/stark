@@ -39,7 +39,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.Providers
                 new ByteKeywordRecommender(),
                 new CaseKeywordRecommender(),
                 new CatchKeywordRecommender(),
-                new CharKeywordRecommender(),
+                new RuneKeywordRecommender(),
                 new CheckedKeywordRecommender(),
                 new ChecksumKeywordRecommender(),
                 new ClassKeywordRecommender(),

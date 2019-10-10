@@ -181,7 +181,7 @@ namespace StarkPlatform.Compiler
                 case SignatureTypeCode.UInt64:
                 case SignatureTypeCode.Single:
                 case SignatureTypeCode.Double:
-                case SignatureTypeCode.Char:
+                case SignatureTypeCode.Rune:
                 case SignatureTypeCode.String:
                 case SignatureTypeCode.IntPtr:
                 case SignatureTypeCode.UIntPtr:
@@ -790,7 +790,7 @@ tryAgain:
                         case SignatureTypeCode.UInt64:
                         case SignatureTypeCode.Single:
                         case SignatureTypeCode.Double:
-                        case SignatureTypeCode.Char:
+                        case SignatureTypeCode.Rune:
                         case SignatureTypeCode.String:
                         case SignatureTypeCode.IntPtr:
                         case SignatureTypeCode.UIntPtr:
@@ -1036,9 +1036,9 @@ tryAgain:
                     isEnumTypeCode = true;
                     return ConstantValue.Create(sigReader.ReadBoolean());
 
-                case SignatureTypeCode.Char:
+                case SignatureTypeCode.Rune:
                     isEnumTypeCode = true;
-                    return ConstantValue.Create(sigReader.ReadChar());
+                    return ConstantValue.Create(sigReader.ReadRune());
 
                 case SignatureTypeCode.SByte:
                     isEnumTypeCode = true;
@@ -1319,7 +1319,7 @@ tryAgain:
 
                 case SignatureTypeCode.String:
                 case SignatureTypeCode.Boolean:
-                case SignatureTypeCode.Char:
+                case SignatureTypeCode.Rune:
                 case SignatureTypeCode.SByte:
                 case SignatureTypeCode.Byte:
                 case SignatureTypeCode.Int16:
@@ -1433,7 +1433,7 @@ tryAgain:
 
                 case SerializationTypeCode.String:
                 case SerializationTypeCode.Boolean:
-                case SerializationTypeCode.Char:
+                case SerializationTypeCode.Rune:
                 case SerializationTypeCode.SByte:
                 case SerializationTypeCode.Byte:
                 case SerializationTypeCode.Int16:
@@ -1556,8 +1556,8 @@ tryAgain:
                 case SerializationTypeCode.Double:
                     return CreateTypedConstant(type, GetPrimitiveOrEnumTypedConstantKind(type), argReader.ReadDouble());
 
-                case SerializationTypeCode.Char:
-                    return CreateTypedConstant(type, GetPrimitiveOrEnumTypedConstantKind(type), argReader.ReadChar());
+                case SerializationTypeCode.Rune:
+                    return CreateTypedConstant(type, GetPrimitiveOrEnumTypedConstantKind(type), argReader.ReadRune());
 
                 case SerializationTypeCode.String:
                     string s;

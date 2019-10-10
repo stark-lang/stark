@@ -179,9 +179,9 @@ namespace StarkPlatform.Reflection.Metadata
             {
                 writer.WriteByte((byte)value);
             }
-            else if (type == typeof(char))
+            else if (type == typeof(Rune))
             {
-                writer.WriteUInt16((char)value);
+                writer.WriteInt32((Rune)value);
             }
             else if (type == typeof(double))
             {
@@ -252,9 +252,9 @@ namespace StarkPlatform.Reflection.Metadata
             {
                 writer.WriteByte((byte)value);
             }
-            else if (type == typeof(char))
+            else if (type == typeof(Rune))
             {
-                writer.WriteUInt16((char)value);
+                writer.WriteInt32((Rune)value);
             }
             else if (type == typeof(double))
             {

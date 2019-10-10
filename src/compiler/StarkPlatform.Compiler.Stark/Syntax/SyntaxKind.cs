@@ -94,7 +94,7 @@ namespace StarkPlatform.Compiler.Stark
         Float32Keyword = 8314,
         // DecimalKeyword = 8315,
         StringKeyword = 8316,
-        CharKeyword = 8317,
+        RuneKeyword = 8317,
         VoidKeyword = 8318,
         ObjectKeyword = 8319,
         TypeOfKeyword = 8320,
@@ -259,7 +259,7 @@ namespace StarkPlatform.Compiler.Stark
         BadToken = 8507,
         IdentifierToken = 8508,
         NumericLiteralToken = 8509,
-        CharacterLiteralToken = 8510,
+        RuneLiteralToken = 8510,
         StringLiteralToken = 8511,
         XmlEntityLiteralToken = 8512,  // &lt; &gt; &quot; &amp; &apos; or &name; or &#nnnn; or &#xhhhh;
         XmlTextLiteralToken = 8513,    // xml text node text
@@ -434,7 +434,7 @@ namespace StarkPlatform.Compiler.Stark
         ArgListExpression = 8748,
         NumericLiteralExpression = 8749,
         StringLiteralExpression = 8750,
-        CharacterLiteralExpression = 8751,
+        RuneLiteralExpression = 8751,
         TrueLiteralExpression = 8752,
         FalseLiteralExpression = 8753,
         NullLiteralExpression = 8754,

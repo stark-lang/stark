@@ -610,7 +610,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     case SpecialType.System_Int16:
                     case SpecialType.System_Int32:
                     case SpecialType.System_Int64:
-                    case SpecialType.System_Char:
+                    case SpecialType.System_Rune:
                     case SpecialType.System_String:
                     case SpecialType.System_UInt16:
                     case SpecialType.System_UInt32:

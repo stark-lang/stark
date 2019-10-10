@@ -242,12 +242,12 @@ namespace StarkPlatform.Reflection.Metadata
             return *(byte*)GetCurrentPointerAndAdvance1();
         }
 
-        public char ReadChar()
+        public Rune ReadRune()
         {
             unchecked
             {
-                byte* ptr = GetCurrentPointerAndAdvance(sizeof(char));
-                return (char)(ptr[0] + (ptr[1] << 8));
+                byte* ptr = GetCurrentPointerAndAdvance(sizeof(int));
+                return (int)(ptr[0] + (ptr[1] << 8) + (ptr[2] << 16) + (ptr[3] << 24));
             }
         }
 
@@ -647,8 +647,8 @@ namespace StarkPlatform.Reflection.Metadata
                 case ConstantTypeCode.Boolean:
                     return ReadBoolean();
 
-                case ConstantTypeCode.Char:
-                    return ReadChar();
+                case ConstantTypeCode.Rune:
+                    return ReadRune();
 
                 case ConstantTypeCode.SByte:
                     return ReadSByte();

@@ -22,7 +22,7 @@ namespace StarkPlatform.Compiler
         UInt32,
         Int64,
         UInt64,
-        Char,
+        Rune,
         Boolean,
         Single,
         Double,
@@ -61,7 +61,7 @@ namespace StarkPlatform.Compiler
         public virtual long Int64Value { get { return Int32Value; } }
         public virtual ulong UInt64Value { get { return UInt32Value; } }
 
-        public virtual char CharValue { get { throw new InvalidOperationException(); } }
+        public virtual Rune RuneValue { get { throw new InvalidOperationException(); } }
 
         public virtual DateTime DateTimeValue { get { throw new InvalidOperationException(); } }
 
@@ -101,14 +101,14 @@ namespace StarkPlatform.Compiler
             return new ConstantValueString(value);
         }
 
-        public static ConstantValue Create(char value)
+        public static ConstantValue Create(Rune value)
         {
-            if (value == default(char))
+            if (value == default(Rune))
             {
-                return ConstantValueDefault.Char;
+                return ConstantValueDefault.Rune;
             }
 
-            return new ConstantValueI16(value);
+            return new ConstantValueI32(value);
         }
 
         public static ConstantValue Create(sbyte value)
@@ -356,7 +356,7 @@ namespace StarkPlatform.Compiler
                 case ConstantValueTypeDiscriminator.UInt32: return Create((uint)value);
                 case ConstantValueTypeDiscriminator.Int64: return Create((long)value);
                 case ConstantValueTypeDiscriminator.UInt64: return Create((ulong)value);
-                case ConstantValueTypeDiscriminator.Char: return Create((char)value);
+                case ConstantValueTypeDiscriminator.Rune: return Create((Rune)value);
                 case ConstantValueTypeDiscriminator.Boolean: return Create((bool)value);
                 case ConstantValueTypeDiscriminator.Single:
                     // values for singles may actually have double precision
@@ -392,7 +392,7 @@ namespace StarkPlatform.Compiler
                 case ConstantValueTypeDiscriminator.UInt32: return ConstantValueDefault.UInt32;
                 case ConstantValueTypeDiscriminator.Int64: return ConstantValueDefault.Int64;
                 case ConstantValueTypeDiscriminator.UInt64: return ConstantValueDefault.UInt64;
-                case ConstantValueTypeDiscriminator.Char: return ConstantValueDefault.Char;
+                case ConstantValueTypeDiscriminator.Rune: return ConstantValueDefault.Rune;
                 case ConstantValueTypeDiscriminator.Boolean: return ConstantValueDefault.Boolean;
                 case ConstantValueTypeDiscriminator.Single: return ConstantValueDefault.Float32;
                 case ConstantValueTypeDiscriminator.Double: return ConstantValueDefault.Float64;
@@ -419,7 +419,7 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_UInt32: return ConstantValueTypeDiscriminator.UInt32;
                 case SpecialType.System_Int64: return ConstantValueTypeDiscriminator.Int64;
                 case SpecialType.System_UInt64: return ConstantValueTypeDiscriminator.UInt64;
-                case SpecialType.System_Char: return ConstantValueTypeDiscriminator.Char;
+                case SpecialType.System_Rune: return ConstantValueTypeDiscriminator.Rune;
                 case SpecialType.System_Boolean: return ConstantValueTypeDiscriminator.Boolean;
                 case SpecialType.System_Float32: return ConstantValueTypeDiscriminator.Single;
                 case SpecialType.System_Float64: return ConstantValueTypeDiscriminator.Double;
@@ -444,7 +444,7 @@ namespace StarkPlatform.Compiler
                 case ConstantValueTypeDiscriminator.UInt32: return SpecialType.System_UInt32;
                 case ConstantValueTypeDiscriminator.Int64: return SpecialType.System_Int64;
                 case ConstantValueTypeDiscriminator.UInt64: return SpecialType.System_UInt64;
-                case ConstantValueTypeDiscriminator.Char: return SpecialType.System_Char;
+                case ConstantValueTypeDiscriminator.Rune: return SpecialType.System_Rune;
                 case ConstantValueTypeDiscriminator.Boolean: return SpecialType.System_Boolean;
                 case ConstantValueTypeDiscriminator.Single: return SpecialType.System_Float32;
                 case ConstantValueTypeDiscriminator.Double: return SpecialType.System_Float64;
@@ -472,7 +472,7 @@ namespace StarkPlatform.Compiler
                     case ConstantValueTypeDiscriminator.UInt32: return Boxes.Box(UInt32Value);
                     case ConstantValueTypeDiscriminator.Int64: return Boxes.Box(Int64Value);
                     case ConstantValueTypeDiscriminator.UInt64: return Boxes.Box(UInt64Value);
-                    case ConstantValueTypeDiscriminator.Char: return Boxes.Box(CharValue);
+                    case ConstantValueTypeDiscriminator.Rune: return Boxes.Box(RuneValue);
                     case ConstantValueTypeDiscriminator.Boolean: return Boxes.Box(BooleanValue);
                     case ConstantValueTypeDiscriminator.Single: return Boxes.Box(SingleValue);
                     case ConstantValueTypeDiscriminator.Double: return Boxes.Box(DoubleValue);
@@ -600,16 +600,16 @@ namespace StarkPlatform.Compiler
             }
         }
 
-        public static bool IsCharType(ConstantValueTypeDiscriminator discriminator)
+        public static bool IsRuneType(ConstantValueTypeDiscriminator discriminator)
         {
-            return discriminator == ConstantValueTypeDiscriminator.Char;
+            return discriminator == ConstantValueTypeDiscriminator.Rune;
         }
 
-        public bool IsChar
+        public bool IsRune
         {
             get
             {
-                return this.Discriminator == ConstantValueTypeDiscriminator.Char;
+                return this.Discriminator == ConstantValueTypeDiscriminator.Rune;
             }
         }
 
@@ -699,7 +699,6 @@ namespace StarkPlatform.Compiler
                     writer.WriteByte(this.ByteValue);
                     break;
 
-                case ConstantValueTypeDiscriminator.Char:
                 case ConstantValueTypeDiscriminator.Int16:
                     writer.WriteInt16(this.Int16Value);
                     break;
@@ -712,6 +711,7 @@ namespace StarkPlatform.Compiler
                     writer.WriteSingle(this.SingleValue);
                     break;
 
+                case ConstantValueTypeDiscriminator.Rune:
                 case ConstantValueTypeDiscriminator.Int32:
                     writer.WriteInt32(this.Int32Value);
                     break;

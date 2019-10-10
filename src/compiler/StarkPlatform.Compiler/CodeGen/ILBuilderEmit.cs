@@ -584,12 +584,10 @@ namespace StarkPlatform.Compiler.CodeGen
                 case ConstantValueTypeDiscriminator.UInt16:
                     EmitUShortConstant(value.UInt16Value);
                     break;
-                case ConstantValueTypeDiscriminator.Char:
-                    EmitUShortConstant(value.CharValue);
-                    break;
                 case ConstantValueTypeDiscriminator.Int16:
                     EmitShortConstant(value.Int16Value);
                     break;
+                case ConstantValueTypeDiscriminator.Rune:
                 case ConstantValueTypeDiscriminator.Int:
                 case ConstantValueTypeDiscriminator.UInt:
                 case ConstantValueTypeDiscriminator.Int32:

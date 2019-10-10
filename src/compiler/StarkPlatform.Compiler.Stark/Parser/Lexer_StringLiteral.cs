@@ -59,7 +59,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                 info.Text = TextWindow.GetText(true);
                 if (quoteCharacter == '\'')
                 {
-                    info.Kind = SyntaxKind.CharacterLiteralToken;
+                    info.Kind = SyntaxKind.RuneLiteralToken;
                     if (_builder.Length != 1)
                     {
                         this.AddError((_builder.Length != 0) ? ErrorCode.ERR_TooManyCharsInConst : ErrorCode.ERR_EmptyCharConst);
@@ -68,12 +68,12 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                     if (_builder.Length > 0)
                     {
                         info.StringValue = TextWindow.Intern(_builder);
-                        info.CharValue = info.StringValue[0];
+                        info.RuneValue = char.ConvertToUtf32(info.StringValue, 0);
                     }
                     else
                     {
                         info.StringValue = string.Empty;
-                        info.CharValue = SlidingTextWindow.InvalidCharacter;
+                        info.RuneValue = SlidingTextWindow.InvalidCharacter;
                     }
                 }
                 else

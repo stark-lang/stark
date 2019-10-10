@@ -16,8 +16,8 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     return PredefinedType.Void;
                 case SpecialType.System_Boolean:
                     return PredefinedType.Boolean;
-                case SpecialType.System_Char:
-                    return PredefinedType.Char;
+                case SpecialType.System_Rune:
+                    return PredefinedType.Rune;
                 case SpecialType.System_Int8:
                     return PredefinedType.Int8;
                 case SpecialType.System_UInt8:

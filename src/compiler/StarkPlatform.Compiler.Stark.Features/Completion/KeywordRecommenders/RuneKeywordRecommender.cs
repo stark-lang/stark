@@ -9,10 +9,10 @@ using StarkPlatform.Compiler.Shared.Extensions;
 
 namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
 {
-    internal class CharKeywordRecommender : AbstractSpecialTypePreselectingKeywordRecommender
+    internal class RuneKeywordRecommender : AbstractSpecialTypePreselectingKeywordRecommender
     {
-        public CharKeywordRecommender()
-            : base(SyntaxKind.CharKeyword)
+        public RuneKeywordRecommender()
+            : base(SyntaxKind.RuneKeyword)
         {
         }
 
@@ -48,6 +48,6 @@ namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
                     cancellationToken: cancellationToken);
         }
 
-        protected override SpecialType SpecialType => SpecialType.System_Char;
+        protected override SpecialType SpecialType => SpecialType.System_Rune;
     }
 }

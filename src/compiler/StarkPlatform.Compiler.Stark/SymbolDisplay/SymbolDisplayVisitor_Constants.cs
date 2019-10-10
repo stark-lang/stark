@@ -48,7 +48,7 @@ namespace StarkPlatform.Compiler.Stark
                     break;
 
                 case SpecialType.System_String:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                     kind = SymbolDisplayPartKind.StringLiteral;
                     break;
             }

@@ -60,13 +60,13 @@ namespace StarkPlatform.Compiler.CodeGen
                     }
                     break;
 
-                case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                 case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
                     switch (fromPredefTypeKind)
                     {
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt8:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
-                        case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                        case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                             break; // NOP
                         default:
                             if (@checked)
@@ -85,7 +85,7 @@ namespace StarkPlatform.Compiler.CodeGen
                         case StarkPlatform.Cci.PrimitiveTypeCode.Int16:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
                         case StarkPlatform.Cci.PrimitiveTypeCode.Int32:
-                        case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                        case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                             break; // NOP
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt32:
                             if (@checked)
@@ -106,7 +106,7 @@ namespace StarkPlatform.Compiler.CodeGen
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt8:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt32:
-                        case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                        case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                             break; // NOP
                         case StarkPlatform.Cci.PrimitiveTypeCode.Int8:
                         case StarkPlatform.Cci.PrimitiveTypeCode.Int16:
@@ -135,7 +135,7 @@ namespace StarkPlatform.Compiler.CodeGen
                             break;
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt8:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
-                        case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                        case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                             // Doesn't actually matter whether we sign extend, because
                             // bit 32 can't be set in any of these types.
                             this.EmitOpCode(ILOpCode.Conv_u); // potentially widening, so not NOP
@@ -164,7 +164,7 @@ namespace StarkPlatform.Compiler.CodeGen
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt8:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt32:
-                        case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                        case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                             this.EmitOpCode(ILOpCode.Conv_u); // potentially widening, so not NOP
                             break;
                         case StarkPlatform.Cci.PrimitiveTypeCode.Int8:
@@ -198,7 +198,7 @@ namespace StarkPlatform.Compiler.CodeGen
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt8:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt32:
-                        case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                        case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                             this.EmitOpCode(ILOpCode.Conv_u8); // 0 extend
                             break;
                         case StarkPlatform.Cci.PrimitiveTypeCode.Pointer:
@@ -232,7 +232,7 @@ namespace StarkPlatform.Compiler.CodeGen
                         case StarkPlatform.Cci.PrimitiveTypeCode.UInt32:
                         case StarkPlatform.Cci.PrimitiveTypeCode.Pointer:
                         case StarkPlatform.Cci.PrimitiveTypeCode.UIntPtr:
-                        case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                        case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                             this.EmitOpCode(ILOpCode.Conv_u8); // 0 extend
                             break;
                         case StarkPlatform.Cci.PrimitiveTypeCode.Int8:

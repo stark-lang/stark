@@ -17,7 +17,7 @@ namespace StarkPlatform.Reflection.Metadata
         Invalid = 0,
 
         Boolean = CorElementType.ELEMENT_TYPE_BOOLEAN,
-        Char = CorElementType.ELEMENT_TYPE_CHAR,
+        Rune = CorElementType.ELEMENT_TYPE_RUNE,
         SByte = CorElementType.ELEMENT_TYPE_I1,
         Byte = CorElementType.ELEMENT_TYPE_U1,
         Int16 = CorElementType.ELEMENT_TYPE_I2,

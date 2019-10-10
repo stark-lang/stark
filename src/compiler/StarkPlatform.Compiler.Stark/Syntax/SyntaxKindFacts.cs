@@ -177,7 +177,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 case SyntaxKind.IdentifierToken:
                 case SyntaxKind.StringLiteralToken:
-                case SyntaxKind.CharacterLiteralToken:
+                case SyntaxKind.RuneLiteralToken:
                 case SyntaxKind.NumericLiteralToken:
                 case SyntaxKind.XmlTextLiteralToken:
                 case SyntaxKind.XmlTextLiteralNewLineToken:
@@ -290,7 +290,7 @@ namespace StarkPlatform.Compiler.Stark
                 case SyntaxKind.Float32Keyword:
                 case SyntaxKind.Float64Keyword:
                 case SyntaxKind.StringKeyword:
-                case SyntaxKind.CharKeyword:
+                case SyntaxKind.RuneKeyword:
                 case SyntaxKind.ObjectKeyword:
                 case SyntaxKind.VoidKeyword:
                     return true;
@@ -541,8 +541,8 @@ namespace StarkPlatform.Compiler.Stark
             {
                 case SyntaxKind.StringLiteralToken:
                     return SyntaxKind.StringLiteralExpression;
-                case SyntaxKind.CharacterLiteralToken:
-                    return SyntaxKind.CharacterLiteralExpression;
+                case SyntaxKind.RuneLiteralToken:
+                    return SyntaxKind.RuneLiteralExpression;
                 case SyntaxKind.NumericLiteralToken:
                     return SyntaxKind.NumericLiteralExpression;
                 case SyntaxKind.NullKeyword:
@@ -815,6 +815,8 @@ namespace StarkPlatform.Compiler.Stark
             {
                 case "bool":
                     return SyntaxKind.BoolKeyword;
+                case "rune":
+                    return SyntaxKind.RuneKeyword;
                 case "i8":
                     return SyntaxKind.Int8Keyword;
                 case "u8":
@@ -1389,6 +1391,8 @@ namespace StarkPlatform.Compiler.Stark
                 // Keywords
                 case SyntaxKind.BoolKeyword:
                     return "bool";
+                case SyntaxKind.RuneKeyword:
+                    return "rune";
                 case SyntaxKind.UInt8Keyword:
                     return "u8";
                 case SyntaxKind.Int8Keyword:

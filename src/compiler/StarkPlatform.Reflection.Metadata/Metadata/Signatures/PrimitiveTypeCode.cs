@@ -12,7 +12,7 @@ namespace StarkPlatform.Reflection.Metadata
         Boolean = SignatureTypeCode.Boolean,
         Byte = SignatureTypeCode.Byte,
         SByte = SignatureTypeCode.SByte,
-        Char = SignatureTypeCode.Char,
+        Rune = SignatureTypeCode.Rune,
         Int16 = SignatureTypeCode.Int16,
         UInt16 = SignatureTypeCode.UInt16,
         Int32 = SignatureTypeCode.Int32,

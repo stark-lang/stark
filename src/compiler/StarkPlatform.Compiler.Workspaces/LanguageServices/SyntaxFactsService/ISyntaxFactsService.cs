@@ -77,7 +77,7 @@ namespace StarkPlatform.Compiler.LanguageServices
         bool IsStringLiteralOrInterpolatedStringLiteral(SyntaxToken token);
 
         bool IsNumericLiteral(SyntaxToken token);
-        bool IsCharacterLiteral(SyntaxToken token);
+        bool IsRuneLiteral(SyntaxToken token);
         bool IsStringLiteral(SyntaxToken token);
         bool IsVerbatimStringLiteral(SyntaxToken token);
         bool IsInterpolatedStringTextToken(SyntaxToken token);

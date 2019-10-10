@@ -89,7 +89,7 @@ namespace StarkPlatform.Compiler
             }
 
             s_typeIdToTypeCodeMap[(int)SpecialType.System_Boolean] = StarkPlatform.Cci.PrimitiveTypeCode.Boolean;
-            s_typeIdToTypeCodeMap[(int)SpecialType.System_Char] = StarkPlatform.Cci.PrimitiveTypeCode.Char;
+            s_typeIdToTypeCodeMap[(int)SpecialType.System_Rune] = StarkPlatform.Cci.PrimitiveTypeCode.Rune;
             s_typeIdToTypeCodeMap[(int)SpecialType.System_Void] = StarkPlatform.Cci.PrimitiveTypeCode.Void;
             s_typeIdToTypeCodeMap[(int)SpecialType.System_String] = StarkPlatform.Cci.PrimitiveTypeCode.String;
             s_typeIdToTypeCodeMap[(int)SpecialType.System_Int64] = StarkPlatform.Cci.PrimitiveTypeCode.Int64;
@@ -113,7 +113,7 @@ namespace StarkPlatform.Compiler
             }
 
             s_typeCodeToTypeIdMap[(int)StarkPlatform.Cci.PrimitiveTypeCode.Boolean] = SpecialType.System_Boolean;
-            s_typeCodeToTypeIdMap[(int)StarkPlatform.Cci.PrimitiveTypeCode.Char] = SpecialType.System_Char;
+            s_typeCodeToTypeIdMap[(int)StarkPlatform.Cci.PrimitiveTypeCode.Rune] = SpecialType.System_Rune;
             s_typeCodeToTypeIdMap[(int)StarkPlatform.Cci.PrimitiveTypeCode.Void] = SpecialType.System_Void;
             s_typeCodeToTypeIdMap[(int)StarkPlatform.Cci.PrimitiveTypeCode.String] = SpecialType.System_String;
             s_typeCodeToTypeIdMap[(int)StarkPlatform.Cci.PrimitiveTypeCode.Int64] = SpecialType.System_Int64;

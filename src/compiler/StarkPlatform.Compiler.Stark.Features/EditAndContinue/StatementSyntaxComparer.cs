@@ -453,7 +453,7 @@ namespace StarkPlatform.Compiler.Stark.EditAndContinue
                 case SyntaxKind.ArgListExpression:
                 case SyntaxKind.NumericLiteralExpression:
                 case SyntaxKind.StringLiteralExpression:
-                case SyntaxKind.CharacterLiteralExpression:
+                case SyntaxKind.RuneLiteralExpression:
                 case SyntaxKind.TrueLiteralExpression:
                 case SyntaxKind.FalseLiteralExpression:
                 case SyntaxKind.NullLiteralExpression:

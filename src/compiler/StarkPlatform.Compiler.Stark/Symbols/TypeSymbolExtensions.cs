@@ -151,9 +151,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             return type.SpecialType == SpecialType.System_String;
         }
 
-        public static bool IsCharType(this TypeSymbol type)
+        public static bool IsRuneType(this TypeSymbol type)
         {
-            return type.SpecialType == SpecialType.System_Char;
+            return type.SpecialType == SpecialType.System_Rune;
         }
 
         public static bool IsIntegralType(this TypeSymbol type)
@@ -523,7 +523,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     case SpecialType.System_UInt32:
                     case SpecialType.System_Int64:
                     case SpecialType.System_UInt64:
-                    case SpecialType.System_Char:
+                    case SpecialType.System_Rune:
                     case SpecialType.System_Boolean:
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
@@ -1034,7 +1034,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 case SpecialType.System_UInt32:
                 case SpecialType.System_Int64:
                 case SpecialType.System_UInt64:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_String:
                     return true;
 

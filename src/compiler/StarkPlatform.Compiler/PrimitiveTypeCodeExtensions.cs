@@ -20,7 +20,7 @@ namespace StarkPlatform.Compiler
                 case Cci.PrimitiveTypeCode.UInt32:
                 case Cci.PrimitiveTypeCode.Int64:
                 case Cci.PrimitiveTypeCode.UInt64:
-                case Cci.PrimitiveTypeCode.Char:
+                case Cci.PrimitiveTypeCode.Rune:
                 case Cci.PrimitiveTypeCode.Float32:
                 case Cci.PrimitiveTypeCode.Float64:
                 case Cci.PrimitiveTypeCode.IntPtr:
@@ -89,7 +89,7 @@ namespace StarkPlatform.Compiler
                 case Cci.PrimitiveTypeCode.UInt32:
                 case Cci.PrimitiveTypeCode.UInt64:
                 case Cci.PrimitiveTypeCode.UIntPtr:
-                case Cci.PrimitiveTypeCode.Char:
+                case Cci.PrimitiveTypeCode.Rune:
                 case Cci.PrimitiveTypeCode.Pointer:
                     return true;
                 default:
@@ -124,7 +124,7 @@ namespace StarkPlatform.Compiler
                 case Cci.PrimitiveTypeCode.UInt32: return ConstantValueTypeDiscriminator.UInt32;
                 case Cci.PrimitiveTypeCode.Int64: return ConstantValueTypeDiscriminator.Int64;
                 case Cci.PrimitiveTypeCode.UInt64: return ConstantValueTypeDiscriminator.UInt64;
-                case Cci.PrimitiveTypeCode.Char: return ConstantValueTypeDiscriminator.Char;
+                case Cci.PrimitiveTypeCode.Rune: return ConstantValueTypeDiscriminator.Rune;
                 case Cci.PrimitiveTypeCode.Boolean: return ConstantValueTypeDiscriminator.Boolean;
                 case Cci.PrimitiveTypeCode.Float32: return ConstantValueTypeDiscriminator.Single;
                 case Cci.PrimitiveTypeCode.Float64: return ConstantValueTypeDiscriminator.Double;

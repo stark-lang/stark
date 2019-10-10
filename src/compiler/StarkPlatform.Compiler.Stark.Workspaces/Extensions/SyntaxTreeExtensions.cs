@@ -370,7 +370,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions
 
         private static bool AtEndOfIncompleteStringOrCharLiteral(SyntaxToken token, int position, char lastChar)
         {
-            if (!token.IsKind(SyntaxKind.StringLiteralToken, SyntaxKind.CharacterLiteralToken))
+            if (!token.IsKind(SyntaxKind.StringLiteralToken, SyntaxKind.RuneLiteralToken))
             {
                 throw new ArgumentException(CSharpWorkspaceResources.Expected_string_or_char_literal, nameof(token));
             }
@@ -438,7 +438,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                 token = root.EndOfFileToken.GetPreviousToken(includeSkipped: true, includeDirectives: true);
             }
 
-            if (token.Kind() == SyntaxKind.CharacterLiteralToken)
+            if (token.Kind() == SyntaxKind.RuneLiteralToken)
             {
                 var span = token.Span;
 

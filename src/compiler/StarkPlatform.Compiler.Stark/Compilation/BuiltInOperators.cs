@@ -236,7 +236,7 @@ namespace StarkPlatform.Compiler.Stark
                 case UnaryOperatorKind.UInt32: opType = _compilation.GetSpecialType(SpecialType.System_UInt32); break;
                 case UnaryOperatorKind.Int64: opType = _compilation.GetSpecialType(SpecialType.System_Int64); break;
                 case UnaryOperatorKind.UInt64: opType = _compilation.GetSpecialType(SpecialType.System_UInt64); break;
-                case UnaryOperatorKind.Char: opType = _compilation.GetSpecialType(SpecialType.System_Char); break;
+                case UnaryOperatorKind.Rune: opType = _compilation.GetSpecialType(SpecialType.System_Rune); break;
                 case UnaryOperatorKind.Float32: opType = _compilation.GetSpecialType(SpecialType.System_Float32); break;
                 case UnaryOperatorKind.Float64: opType = _compilation.GetSpecialType(SpecialType.System_Float64); break;
                 case UnaryOperatorKind.Bool: opType = _compilation.GetSpecialType(SpecialType.System_Boolean); break;

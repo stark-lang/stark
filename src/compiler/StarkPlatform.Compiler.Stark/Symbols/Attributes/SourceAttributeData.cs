@@ -276,8 +276,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                             k += 1;
                             break;
 
-                        case (byte)SignatureTypeCode.Char:
-                            foundMatch = specType == SpecialType.System_Char;
+                        case (byte)SignatureTypeCode.Rune:
+                            foundMatch = specType == SpecialType.System_Rune;
                             k += 1;
                             break;
 

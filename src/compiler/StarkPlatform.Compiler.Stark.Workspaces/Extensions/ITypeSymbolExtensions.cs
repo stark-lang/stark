@@ -141,7 +141,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions
             switch (typeSymbol.SpecialType)
             {
                 case SpecialType.System_Boolean:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_Int8:
                 case SpecialType.System_Int16:
                 case SpecialType.System_Int32:

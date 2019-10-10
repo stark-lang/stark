@@ -66,7 +66,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
             switch (typeCode)
             {
                 case (int)SignatureTypeCode.Boolean:
-                case (int)SignatureTypeCode.Char:
+                case (int)SignatureTypeCode.Rune:
                 case (int)SignatureTypeCode.SByte:
                 case (int)SignatureTypeCode.Byte:
                 case (int)SignatureTypeCode.Int16:

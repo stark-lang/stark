@@ -5465,7 +5465,7 @@ tryAgain:
                 case SyntaxKind.NumericLiteralToken:
                 case SyntaxKind.StringKeyword:
                 case SyntaxKind.StringLiteralToken:
-                case SyntaxKind.CharacterLiteralToken:
+                case SyntaxKind.RuneLiteralToken:
                 case SyntaxKind.OpenParenToken:
                 case SyntaxKind.EqualsGreaterThanToken:
                 case SyntaxKind.InterpolatedStringToken:
@@ -5738,7 +5738,7 @@ tryAgain:
                      CurrentToken.Kind == SyntaxKind.NullKeyword ||
                      CurrentToken.Kind == SyntaxKind.NumericLiteralToken ||
                      CurrentToken.Kind == SyntaxKind.StringLiteralToken ||
-                     CurrentToken.Kind == SyntaxKind.CharacterLiteralToken)
+                     CurrentToken.Kind == SyntaxKind.RuneLiteralToken)
             {
                 var expression = _syntaxFactory.LiteralExpression(SyntaxFacts.GetLiteralExpression(CurrentToken.Kind), this.EatToken());
                 return _syntaxFactory.ConstLiteralType(expression);
@@ -7513,7 +7513,7 @@ tryAgain:
                 case SyntaxKind.StringLiteralToken:
                 case SyntaxKind.InterpolatedStringStartToken:
                 case SyntaxKind.InterpolatedStringToken:
-                case SyntaxKind.CharacterLiteralToken:
+                case SyntaxKind.RuneLiteralToken:
                 case SyntaxKind.NewKeyword:
                 case SyntaxKind.DelegateKeyword:
                 case SyntaxKind.ColonColonToken: // bad aliased name
@@ -7744,7 +7744,7 @@ tryAgain:
                     case SyntaxKind.InterpolatedStringToken:
                     case SyntaxKind.NumericLiteralToken:
                     case SyntaxKind.NullKeyword:
-                    case SyntaxKind.CharacterLiteralToken:
+                    case SyntaxKind.RuneLiteralToken:
                         return true;
                 }
             }
@@ -8124,7 +8124,7 @@ tryAgain:
                 case SyntaxKind.NullKeyword:
                 case SyntaxKind.NumericLiteralToken:
                 case SyntaxKind.StringLiteralToken:
-                case SyntaxKind.CharacterLiteralToken:
+                case SyntaxKind.RuneLiteralToken:
                     expr = _syntaxFactory.LiteralExpression(SyntaxFacts.GetLiteralExpression(tk), this.EatToken());
                     break;
                 case SyntaxKind.InterpolatedStringStartToken:

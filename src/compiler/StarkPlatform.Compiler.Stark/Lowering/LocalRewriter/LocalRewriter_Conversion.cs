@@ -339,8 +339,8 @@ namespace StarkPlatform.Compiler.Stark
             // integral to double or float is never checked, but float/double to integral 
             // may be checked.
             return (explicitCastInCode || sourceST != targetST) &&
-                IsInRange(sourceST, SpecialType.System_Char, SpecialType.System_Float64) &&
-                IsInRange(targetST, SpecialType.System_Char, SpecialType.System_UInt64);
+                IsInRange(sourceST, SpecialType.System_Rune, SpecialType.System_Float64) &&
+                IsInRange(targetST, SpecialType.System_Rune, SpecialType.System_UInt64);
         }
 
         /// <summary>
@@ -1118,7 +1118,7 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Int8:
                     case SpecialType.System_Int16:
                     case SpecialType.System_UInt16:
-                    case SpecialType.System_Char:
+                    case SpecialType.System_Rune:
                     case SpecialType.System_Int32:
                         return SpecialMember.System_IntPtr__op_Explicit_FromInt32;
                     case SpecialType.System_UInt32:
@@ -1140,7 +1140,7 @@ namespace StarkPlatform.Compiler.Stark
                 {
                     case SpecialType.System_UInt8:
                     case SpecialType.System_UInt16:
-                    case SpecialType.System_Char:
+                    case SpecialType.System_Rune:
                     case SpecialType.System_UInt32:
                         return SpecialMember.System_UIntPtr__op_Explicit_FromUInt32;
                     case SpecialType.System_Int8:
@@ -1166,7 +1166,7 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Int8:
                     case SpecialType.System_Int16:
                     case SpecialType.System_UInt16:
-                    case SpecialType.System_Char:
+                    case SpecialType.System_Rune:
                     case SpecialType.System_UInt32:
                     case SpecialType.System_Int32:
                         return SpecialMember.System_IntPtr__op_Explicit_ToInt32;
@@ -1191,7 +1191,7 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Int32:
                     case SpecialType.System_UInt8:
                     case SpecialType.System_UInt16:
-                    case SpecialType.System_Char:
+                    case SpecialType.System_Rune:
                     case SpecialType.System_UInt32:
                         return SpecialMember.System_UIntPtr__op_Explicit_ToUInt32;
                     case SpecialType.System_UInt64:

@@ -909,7 +909,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                         _builder.EmitOpCode(ILOpCode.Ldelem_i2);
                         break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                    case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                     case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
                         _builder.EmitOpCode(ILOpCode.Ldelem_u2);
                         break;
@@ -1187,7 +1187,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                 // case PT_LONG:
                 case SpecialType.System_Int64:
                 // case PT_CHAR:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 // case PT_BOOL:
                 case SpecialType.System_Boolean:
                 // case PT_SBYTE:
@@ -1296,7 +1296,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                     _builder.EmitOpCode(ILOpCode.Ldind_i2);
                     break;
 
-                case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                 case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
                     _builder.EmitOpCode(ILOpCode.Ldind_u2);
                     break;
@@ -2690,7 +2690,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                     _builder.EmitOpCode(ILOpCode.Stelem_i1);
                     break;
 
-                case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                 case StarkPlatform.Cci.PrimitiveTypeCode.Int16:
                 case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
                     _builder.EmitOpCode(ILOpCode.Stelem_i2);
@@ -2779,7 +2779,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                     _builder.EmitOpCode(ILOpCode.Stind_i1);
                     break;
 
-                case StarkPlatform.Cci.PrimitiveTypeCode.Char:
+                case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
                 case StarkPlatform.Cci.PrimitiveTypeCode.Int16:
                 case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
                     _builder.EmitOpCode(ILOpCode.Stind_i2);

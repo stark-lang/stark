@@ -1259,7 +1259,7 @@ namespace StarkPlatform.Compiler
                 (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char, // Return Type
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharArrayRankOneString
@@ -1348,7 +1348,7 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringObject
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -1459,7 +1459,7 @@ namespace StarkPlatform.Compiler
                 (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char, // Return Type
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharArrayRankOneObject
@@ -2310,7 +2310,7 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
 
                 // Microsoft_VisualBasic_Strings__AscStringInt32
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -2326,7 +2326,7 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
 
                 // Microsoft_VisualBasic_Strings__AscWStringInt32
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -2341,7 +2341,7 @@ namespace StarkPlatform.Compiler
                 (byte)WellKnownType.Microsoft_VisualBasic_Strings,                                                          // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
 
                 // Microsoft_VisualBasic_Strings__ChrWInt32Char
@@ -2349,7 +2349,7 @@ namespace StarkPlatform.Compiler
                 (byte)WellKnownType.Microsoft_VisualBasic_Strings,                                                          // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char, // Return Type
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
 
                 // System_Xml_Linq_XElement__ctor

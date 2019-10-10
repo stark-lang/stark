@@ -72,7 +72,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax
                     return ((Green.SyntaxToken)before).ValueText == ((Green.SyntaxToken)after).ValueText;
 
                 case SyntaxKind.NumericLiteralToken:
-                case SyntaxKind.CharacterLiteralToken:
+                case SyntaxKind.RuneLiteralToken:
                 case SyntaxKind.StringLiteralToken:
                 case SyntaxKind.InterpolatedStringTextToken:
                     return ((Green.SyntaxToken)before).Text == ((Green.SyntaxToken)after).Text;

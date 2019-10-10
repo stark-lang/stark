@@ -31,7 +31,7 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_Array_T:
                 case SpecialType.System_Boolean:
                 case SpecialType.System_UInt8:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_Delegate:
                 case SpecialType.System_Float64:
                 case SpecialType.System_Enum:

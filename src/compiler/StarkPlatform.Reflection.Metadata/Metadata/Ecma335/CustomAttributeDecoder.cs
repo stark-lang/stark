@@ -140,7 +140,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
             {
                 case SignatureTypeCode.Boolean:
                 case SignatureTypeCode.Byte:
-                case SignatureTypeCode.Char:
+                case SignatureTypeCode.Rune:
                 case SignatureTypeCode.Double:
                 case SignatureTypeCode.Int16:
                 case SignatureTypeCode.Int32:
@@ -197,7 +197,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
             {
                 case SerializationTypeCode.Boolean:
                 case SerializationTypeCode.Byte:
-                case SerializationTypeCode.Char:
+                case SerializationTypeCode.Rune:
                 case SerializationTypeCode.Double:
                 case SerializationTypeCode.Int16:
                 case SerializationTypeCode.Int32:
@@ -265,8 +265,8 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
                     value = valueReader.ReadByte();
                     break;
 
-                case SerializationTypeCode.Char:
-                    value = valueReader.ReadChar();
+                case SerializationTypeCode.Rune:
+                    value = valueReader.ReadRune();
                     break;
 
                 case SerializationTypeCode.Double:

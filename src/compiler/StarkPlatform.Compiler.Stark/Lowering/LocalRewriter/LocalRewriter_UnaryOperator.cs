@@ -819,8 +819,8 @@ namespace StarkPlatform.Compiler.Stark
                 case UnaryOperatorKind.UShort:
                     specialType = SpecialType.System_UInt16;
                     break;
-                case UnaryOperatorKind.Char:
-                    specialType = SpecialType.System_Char;
+                case UnaryOperatorKind.Rune:
+                    specialType = SpecialType.System_Rune;
                     break;
                 case UnaryOperatorKind.UInt32:
                     specialType = SpecialType.System_UInt32;
@@ -879,7 +879,7 @@ namespace StarkPlatform.Compiler.Stark
                     break;
                 case UnaryOperatorKind.UInt8:
                 case UnaryOperatorKind.UShort:
-                case UnaryOperatorKind.Char:
+                case UnaryOperatorKind.Rune:
                 case UnaryOperatorKind.UInt32:
                     result = BinaryOperatorKind.UInt32;
                     break;

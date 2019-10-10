@@ -9,6 +9,7 @@ using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark
 {
@@ -1080,7 +1081,7 @@ namespace StarkPlatform.Compiler.Stark
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)byteValue;
-                            case SpecialType.System_Char: return (char)byteValue;
+                            case SpecialType.System_Rune: return (int)byteValue;
                             case SpecialType.System_UInt16: return (ushort)byteValue;
                             case SpecialType.System_UInt32: return (uint)byteValue;
                             case SpecialType.System_UInt: return (uint)byteValue;
@@ -1094,15 +1095,15 @@ namespace StarkPlatform.Compiler.Stark
                             case SpecialType.System_Float64: return (double)byteValue;
                             default: throw ExceptionUtilities.UnexpectedValue(destinationType);
                         }
-                    case ConstantValueTypeDiscriminator.Char:
-                        char charValue = value.CharValue;
+                    case ConstantValueTypeDiscriminator.Rune:
+                        Rune charValue = value.RuneValue;
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)charValue;
-                            case SpecialType.System_Char: return (char)charValue;
+                            case SpecialType.System_Rune: return (int)charValue;
                             case SpecialType.System_UInt16: return (ushort)charValue;
-                            case SpecialType.System_UInt32: return (uint)charValue;
-                            case SpecialType.System_UInt64: return (ulong)charValue;
+                            case SpecialType.System_UInt32: return (uint)(int)charValue;
+                            case SpecialType.System_UInt64: return (ulong)(int)charValue;
                             case SpecialType.System_Int8: return (sbyte)charValue;
                             case SpecialType.System_Int16: return (short)charValue;
                             case SpecialType.System_Int32: return (int)charValue;
@@ -1116,7 +1117,7 @@ namespace StarkPlatform.Compiler.Stark
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)uint16Value;
-                            case SpecialType.System_Char: return (char)uint16Value;
+                            case SpecialType.System_Rune: return (int)uint16Value;
                             case SpecialType.System_UInt16: return (ushort)uint16Value;
                             case SpecialType.System_UInt32: return (uint)uint16Value;
                             case SpecialType.System_UInt: return (uint)uint16Value;
@@ -1135,7 +1136,7 @@ namespace StarkPlatform.Compiler.Stark
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)uint32Value;
-                            case SpecialType.System_Char: return (char)uint32Value;
+                            case SpecialType.System_Rune: return (int)uint32Value;
                             case SpecialType.System_UInt16: return (ushort)uint32Value;
                             case SpecialType.System_UInt32: return (uint)uint32Value;
                             case SpecialType.System_UInt: return (uint)uint32Value;
@@ -1154,7 +1155,7 @@ namespace StarkPlatform.Compiler.Stark
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)uint64Value;
-                            case SpecialType.System_Char: return (char)uint64Value;
+                            case SpecialType.System_Rune: return (int)uint64Value;
                             case SpecialType.System_UInt16: return (ushort)uint64Value;
                             case SpecialType.System_UInt32: return (uint)uint64Value;
                             case SpecialType.System_UInt64: return (ulong)uint64Value;
@@ -1171,7 +1172,7 @@ namespace StarkPlatform.Compiler.Stark
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)sbyteValue;
-                            case SpecialType.System_Char: return (char)sbyteValue;
+                            case SpecialType.System_Rune: return (int)sbyteValue;
                             case SpecialType.System_UInt16: return (ushort)sbyteValue;
                             case SpecialType.System_UInt32: return (uint)sbyteValue;
                             case SpecialType.System_UInt: return (uint)sbyteValue;
@@ -1190,7 +1191,7 @@ namespace StarkPlatform.Compiler.Stark
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)int16Value;
-                            case SpecialType.System_Char: return (char)int16Value;
+                            case SpecialType.System_Rune: return (int)int16Value;
                             case SpecialType.System_UInt16: return (ushort)int16Value;
                             case SpecialType.System_UInt: return (uint)int16Value;
                             case SpecialType.System_UInt32: return (uint)int16Value;
@@ -1209,7 +1210,7 @@ namespace StarkPlatform.Compiler.Stark
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)int32Value;
-                            case SpecialType.System_Char: return (char)int32Value;
+                            case SpecialType.System_Rune: return (int)int32Value;
                             case SpecialType.System_UInt16: return (ushort)int32Value;
                             case SpecialType.System_UInt32: return (uint)int32Value;
                             case SpecialType.System_UInt: return (uint)int32Value;
@@ -1228,7 +1229,7 @@ namespace StarkPlatform.Compiler.Stark
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)int64Value;
-                            case SpecialType.System_Char: return (char)int64Value;
+                            case SpecialType.System_Rune: return (int)int64Value;
                             case SpecialType.System_UInt16: return (ushort)int64Value;
                             case SpecialType.System_UInt32: return (uint)int64Value;
                             case SpecialType.System_UInt64: return (ulong)int64Value;
@@ -1253,7 +1254,7 @@ namespace StarkPlatform.Compiler.Stark
                         switch (destinationType)
                         {
                             case SpecialType.System_UInt8: return (byte)doubleValue;
-                            case SpecialType.System_Char: return (char)doubleValue;
+                            case SpecialType.System_Rune: return (int)doubleValue;
                             case SpecialType.System_UInt16: return (ushort)doubleValue;
                             case SpecialType.System_UInt32: return (uint)doubleValue;
                             case SpecialType.System_UInt64: return (ulong)doubleValue;
@@ -1298,7 +1299,7 @@ namespace StarkPlatform.Compiler.Stark
             switch (destinationType)
             {
                 case SpecialType.System_UInt8: return (byte.MinValue - 1D) < value && value < (byte.MaxValue + 1D);
-                case SpecialType.System_Char: return (char.MinValue - 1D) < value && value < (char.MaxValue + 1D);
+                case SpecialType.System_Rune: return (Rune.MinValue - 1D) < value && value < (Rune.MaxValue + 1D);
                 case SpecialType.System_UInt16: return (ushort.MinValue - 1D) < value && value < (ushort.MaxValue + 1D);
                 case SpecialType.System_UInt32: return (uint.MinValue - 1D) < value && value < (uint.MaxValue + 1D);
                 case SpecialType.System_UInt64: return (ulong.MinValue - 1D) < value && value < (ulong.MaxValue + 1D);
@@ -1319,7 +1320,7 @@ namespace StarkPlatform.Compiler.Stark
             switch (destinationType)
             {
                 case SpecialType.System_UInt8: return (byte.MinValue - 1M) < value && value < (byte.MaxValue + 1M);
-                case SpecialType.System_Char: return (char.MinValue - 1M) < value && value < (char.MaxValue + 1M);
+                case SpecialType.System_Rune: return (Rune.MinValue - 1M) < value && value < (Rune.MaxValue + 1M);
                 case SpecialType.System_UInt16: return (ushort.MinValue - 1M) < value && value < (ushort.MaxValue + 1M);
                 case SpecialType.System_UInt32: return (uint.MinValue - 1M) < value && value < (uint.MaxValue + 1M);
                 case SpecialType.System_UInt64: return (ulong.MinValue - 1M) < value && value < (ulong.MaxValue + 1M);
@@ -1342,7 +1343,7 @@ namespace StarkPlatform.Compiler.Stark
                 case ConstantValueTypeDiscriminator.Int32: return (decimal)value.Int32Value;
                 case ConstantValueTypeDiscriminator.Int64: return (decimal)value.Int64Value;
                 case ConstantValueTypeDiscriminator.UInt8: return (decimal)value.ByteValue;
-                case ConstantValueTypeDiscriminator.Char: return (decimal)value.CharValue;
+                case ConstantValueTypeDiscriminator.Rune: return (decimal)value.RuneValue;
                 case ConstantValueTypeDiscriminator.UInt16: return (decimal)value.UInt16Value;
                 case ConstantValueTypeDiscriminator.UInt32: return (decimal)value.UInt32Value;
                 case ConstantValueTypeDiscriminator.UInt64: return (decimal)value.UInt64Value;

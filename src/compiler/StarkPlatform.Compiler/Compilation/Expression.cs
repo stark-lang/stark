@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using StarkPlatform.Reflection.Metadata;
+
 namespace StarkPlatform.Compiler.Operations
 {
     internal class Expression
@@ -24,8 +26,8 @@ namespace StarkPlatform.Compiler.Operations
                     return ConstantValue.Create((sbyte)value);
                 case SpecialType.System_UInt8:
                     return ConstantValue.Create((byte)value);
-                case SpecialType.System_Char:
-                    return ConstantValue.Create((char)value);
+                case SpecialType.System_Rune:
+                    return ConstantValue.Create((Rune)value);
                 case SpecialType.System_Boolean:
                     return ConstantValue.Create(value != 0);
                 case SpecialType.System_Float32:

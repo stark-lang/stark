@@ -3,6 +3,7 @@
 using System;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {
@@ -237,7 +238,7 @@ namespace StarkPlatform.Compiler
             public static readonly ConstantValueDefault UInt32 = new ConstantValueDefault(ConstantValueTypeDiscriminator.UInt32);
             public static readonly ConstantValueDefault Int64 = new ConstantValueDefault(ConstantValueTypeDiscriminator.Int64);
             public static readonly ConstantValueDefault UInt64 = new ConstantValueDefault(ConstantValueTypeDiscriminator.UInt64);
-            public static readonly ConstantValueDefault Char = new ConstantValueDefault(ConstantValueTypeDiscriminator.Char);
+            public static readonly ConstantValueDefault Rune = new ConstantValueDefault(ConstantValueTypeDiscriminator.Rune);
             public static readonly ConstantValueDefault Float32 = new ConstantValueSingleZero();
             public static readonly ConstantValueDefault Float64 = new ConstantValueDoubleZero();
             public static readonly ConstantValueDefault DateTime = new ConstantValueDefault(ConstantValueTypeDiscriminator.DateTime);
@@ -288,11 +289,11 @@ namespace StarkPlatform.Compiler
                 }
             }
 
-            public override char CharValue
+            public override Rune RuneValue
             {
                 get
                 {
-                    return default(char);
+                    return default(Rune);
                 }
             }
 
@@ -499,12 +500,6 @@ namespace StarkPlatform.Compiler
                 _value = unchecked((short)value);
             }
 
-            public ConstantValueI16(char value)
-                : base(ConstantValueTypeDiscriminator.Char)
-            {
-                _value = unchecked((short)value);
-            }
-
             public override short Int16Value
             {
                 get
@@ -518,14 +513,6 @@ namespace StarkPlatform.Compiler
                 get
                 {
                     return unchecked((ushort)_value);
-                }
-            }
-
-            public override char CharValue
-            {
-                get
-                {
-                    return unchecked((char)_value);
                 }
             }
 
@@ -555,12 +542,28 @@ namespace StarkPlatform.Compiler
             {
                 _value = unchecked((int)value);
             }
+            
+            public ConstantValueI32(Rune value)
+                : base(ConstantValueTypeDiscriminator.Rune)
+            {
+                _value = value;
+            }
+
 
             public override int Int32Value
             {
                 get
                 {
                     return _value;
+                }
+            }
+
+
+            public override Rune RuneValue
+            {
+                get
+                {
+                    return new Rune(_value);
                 }
             }
 

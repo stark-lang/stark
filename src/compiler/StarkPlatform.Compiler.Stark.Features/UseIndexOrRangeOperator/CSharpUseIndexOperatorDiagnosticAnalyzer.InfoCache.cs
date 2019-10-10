@@ -45,7 +45,7 @@ namespace StarkPlatform.Compiler.Stark.UseIndexOrRangeOperator
                 {
                     var indexer = GetIndexer(stringType,
                         compilation.GetSpecialType(SpecialType.System_Int32),
-                        compilation.GetSpecialType(SpecialType.System_Char));
+                        compilation.GetSpecialType(SpecialType.System_Rune));
 
                     _methodToMemberInfo[indexer.GetMethod] = ComputeMemberInfo(indexer.GetMethod, requireIndexMember: false);
                 }

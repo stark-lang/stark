@@ -115,7 +115,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
         {
             var literal = SymbolDisplay.FormatLiteral(val, quote: true);
             return SyntaxFactory.LiteralExpression(
-                SyntaxKind.CharacterLiteralExpression, SyntaxFactory.Literal(literal, val));
+                SyntaxKind.RuneLiteralExpression, SyntaxFactory.Literal(literal, val));
         }
 
         private static string DetermineSuffix(ITypeSymbol type, object value)

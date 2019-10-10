@@ -14,7 +14,7 @@ namespace StarkPlatform.Compiler.Stark
             private const UnaryOperatorKind ERR = UnaryOperatorKind.Error;
 
             private const UnaryOperatorKind BOL = UnaryOperatorKind.Bool;
-            private const UnaryOperatorKind CHR = UnaryOperatorKind.Char;
+            private const UnaryOperatorKind CHR = UnaryOperatorKind.Rune;
             private const UnaryOperatorKind I08 = UnaryOperatorKind.Int8;
             private const UnaryOperatorKind U08 = UnaryOperatorKind.UInt8;
             private const UnaryOperatorKind I16 = UnaryOperatorKind.Int16;
@@ -28,7 +28,7 @@ namespace StarkPlatform.Compiler.Stark
             private const UnaryOperatorKind INT = UnaryOperatorKind.Int;
             private const UnaryOperatorKind UNT = UnaryOperatorKind.UInt;
             private const UnaryOperatorKind LBOL = UnaryOperatorKind.Lifted | UnaryOperatorKind.Bool;
-            private const UnaryOperatorKind LCHR = UnaryOperatorKind.Lifted | UnaryOperatorKind.Char;
+            private const UnaryOperatorKind LCHR = UnaryOperatorKind.Lifted | UnaryOperatorKind.Rune;
             private const UnaryOperatorKind LI08 = UnaryOperatorKind.Lifted | UnaryOperatorKind.Int8;
             private const UnaryOperatorKind LU08 = UnaryOperatorKind.Lifted | UnaryOperatorKind.UInt8;
             private const UnaryOperatorKind LI16 = UnaryOperatorKind.Lifted | UnaryOperatorKind.Int16;
@@ -88,7 +88,7 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Object: return 0;
                     case SpecialType.System_String: return 1;
                     case SpecialType.System_Boolean: return 2;
-                    case SpecialType.System_Char: return 3;
+                    case SpecialType.System_Rune: return 3;
                     case SpecialType.System_Int8: return 4;
                     case SpecialType.System_Int16: return 5;
                     case SpecialType.System_Int32: return 6;
@@ -110,7 +110,7 @@ namespace StarkPlatform.Compiler.Stark
                             switch (underlyingType.GetSpecialTypeSafe())
                             {
                                 case SpecialType.System_Boolean: return 17;
-                                case SpecialType.System_Char: return 18;
+                                case SpecialType.System_Rune: return 18;
                                 case SpecialType.System_Int8: return 19;
                                 case SpecialType.System_Int16: return 20;
                                 case SpecialType.System_Int32: return 21;

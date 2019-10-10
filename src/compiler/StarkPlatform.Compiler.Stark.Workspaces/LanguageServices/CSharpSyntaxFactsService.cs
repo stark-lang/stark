@@ -378,8 +378,8 @@ namespace StarkPlatform.Compiler.Stark
                     return PredefinedType.Float64;
                 case SyntaxKind.StringKeyword:
                     return PredefinedType.String;
-                case SyntaxKind.CharKeyword:
-                    return PredefinedType.Char;
+                case SyntaxKind.RuneKeyword:
+                    return PredefinedType.Rune;
                 case SyntaxKind.ObjectKeyword:
                     return PredefinedType.Object;
                 case SyntaxKind.VoidKeyword:
@@ -525,7 +525,7 @@ namespace StarkPlatform.Compiler.Stark
             switch (token.Kind())
             {
                 case SyntaxKind.NumericLiteralToken:
-                case SyntaxKind.CharacterLiteralToken:
+                case SyntaxKind.RuneLiteralToken:
                 case SyntaxKind.StringLiteralToken:
                 case SyntaxKind.NullKeyword:
                 case SyntaxKind.TrueKeyword:
@@ -1408,8 +1408,8 @@ namespace StarkPlatform.Compiler.Stark
         public bool IsNumericLiteral(SyntaxToken token)
             => token.Kind() == SyntaxKind.NumericLiteralToken;
 
-        public bool IsCharacterLiteral(SyntaxToken token)
-            => token.Kind() == SyntaxKind.CharacterLiteralToken;
+        public bool IsRuneLiteral(SyntaxToken token)
+            => token.Kind() == SyntaxKind.RuneLiteralToken;
 
         public SeparatedSyntaxList<SyntaxNode> GetArgumentsOfInvocationExpression(SyntaxNode invocationExpression)
             => GetArgumentsOfArgumentList((invocationExpression as InvocationExpressionSyntax)?.ArgumentList);

@@ -297,7 +297,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions
         public static bool IsAnyLiteralExpression(this ExpressionSyntax expression)
         {
             return
-                expression.IsKind(SyntaxKind.CharacterLiteralExpression) ||
+                expression.IsKind(SyntaxKind.RuneLiteralExpression) ||
                 expression.IsKind(SyntaxKind.FalseLiteralExpression) ||
                 expression.IsKind(SyntaxKind.NullLiteralExpression) ||
                 expression.IsKind(SyntaxKind.NumericLiteralExpression) ||
@@ -2594,8 +2594,8 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                     return SyntaxKind.Float64Keyword;
                 case SpecialType.System_String:
                     return SyntaxKind.StringKeyword;
-                case SpecialType.System_Char:
-                    return SyntaxKind.CharKeyword;
+                case SpecialType.System_Rune:
+                    return SyntaxKind.RuneKeyword;
                 case SpecialType.System_Object:
                     return SyntaxKind.ObjectKeyword;
                 case SpecialType.System_Void:

@@ -1663,7 +1663,7 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_UInt32: return 5;
                 case SpecialType.System_Int64: return 6;
                 case SpecialType.System_UInt64: return 7;
-                case SpecialType.System_Char: return 8;
+                case SpecialType.System_Rune: return 8;
                 case SpecialType.System_Float32: return 9;
                 case SpecialType.System_Float64: return 10;
                 default: return -1;
@@ -1743,7 +1743,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             switch (specialType)
             {
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_Int8:
                 case SpecialType.System_UInt8:
                 case SpecialType.System_Int16:
@@ -1825,7 +1825,7 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_UInt8:
                 case SpecialType.System_Int16:
                 case SpecialType.System_UInt16:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_Int32:
                 case SpecialType.System_UInt32:
                 case SpecialType.System_Int64:

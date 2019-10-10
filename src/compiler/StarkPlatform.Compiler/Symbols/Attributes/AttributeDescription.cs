@@ -52,7 +52,7 @@ namespace StarkPlatform.Compiler
         // shortcuts for signature elements supported by our signature comparer:
         private const byte Void = (byte)SignatureTypeCode.Void;
         private const byte Boolean = (byte)SignatureTypeCode.Boolean;
-        private const byte Char = (byte)SignatureTypeCode.Char;
+        private const byte Char = (byte)SignatureTypeCode.Rune;
         private const byte SByte = (byte)SignatureTypeCode.SByte;
         private const byte Byte = (byte)SignatureTypeCode.Byte;
         private const byte Int16 = (byte)SignatureTypeCode.Int16;

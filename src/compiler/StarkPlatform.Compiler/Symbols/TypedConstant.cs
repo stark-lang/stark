@@ -135,7 +135,7 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_UInt64:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_String:
                 case SpecialType.System_Object:
                     return TypedConstantKind.Primitive;

@@ -3696,8 +3696,8 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.BoolKeyword));
                 case SpecialType.System_UInt8:
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.UInt8Keyword));
-                case SpecialType.System_Char:
-                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.CharKeyword));
+                case SpecialType.System_Rune:
+                    return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.RuneKeyword));
                 case SpecialType.System_Float64:
                     return SyntaxFactory.PredefinedType(SyntaxFactory.Token(SyntaxKind.Float64Keyword));
                 case SpecialType.System_Int16:

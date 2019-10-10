@@ -133,7 +133,7 @@ namespace StarkPlatform.Compiler.Stark.Classification
         private static bool IsStringToken(SyntaxToken token)
         {
             return token.IsKind(SyntaxKind.StringLiteralToken)
-                || token.IsKind(SyntaxKind.CharacterLiteralToken)
+                || token.IsKind(SyntaxKind.RuneLiteralToken)
                 || token.IsKind(SyntaxKind.InterpolatedStringStartToken)
                 || token.IsKind(SyntaxKind.InterpolatedVerbatimStringStartToken)
                 || token.IsKind(SyntaxKind.InterpolatedStringTextToken)

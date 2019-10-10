@@ -20,7 +20,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions
         {
             switch (token.Kind())
             {
-                case SyntaxKind.CharacterLiteralToken:
+                case SyntaxKind.RuneLiteralToken:
                 case SyntaxKind.FalseKeyword:
                 case SyntaxKind.NumericLiteralToken:
                 case SyntaxKind.StringLiteralToken:

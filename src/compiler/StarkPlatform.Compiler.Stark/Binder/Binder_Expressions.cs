@@ -503,7 +503,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 case SyntaxKind.NumericLiteralExpression:
                 case SyntaxKind.StringLiteralExpression:
-                case SyntaxKind.CharacterLiteralExpression:
+                case SyntaxKind.RuneLiteralExpression:
                 case SyntaxKind.TrueLiteralExpression:
                 case SyntaxKind.FalseLiteralExpression:
                 case SyntaxKind.NullLiteralExpression:
@@ -5336,7 +5336,7 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
                 case SpecialType.System_Boolean:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                     return ConstantValue.Default(specialType);
             }
 
@@ -7265,7 +7265,7 @@ namespace StarkPlatform.Compiler.Stark
                         TypeSymbol resultType = null;
                         if (TypeSymbol.Equals(argType, Compilation.GetWellKnownType(WellKnownType.core_Index), TypeCompareKind.ConsiderEverything2))
                         {
-                            resultType = GetSpecialType(SpecialType.System_Char, diagnostics, syntax);
+                            resultType = GetSpecialType(SpecialType.System_Rune, diagnostics, syntax);
                         }
                         else if (TypeSymbol.Equals(argType, Compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything2))
                         {

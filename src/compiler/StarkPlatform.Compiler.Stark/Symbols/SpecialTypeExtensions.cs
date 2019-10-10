@@ -47,7 +47,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             switch (specialType)
             {
                 case SpecialType.System_Boolean:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_Int:
                 case SpecialType.System_Int8:
                 case SpecialType.System_Int16:
@@ -75,7 +75,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             switch (specialType)
             {
                 case SpecialType.System_Boolean:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_Int:
                 case SpecialType.System_Int8:
                 case SpecialType.System_Int16:
@@ -104,7 +104,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 case SpecialType.System_UInt16:
                 case SpecialType.System_Int32:
                 case SpecialType.System_UInt32:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Boolean:
                 case SpecialType.System_Int:

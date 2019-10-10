@@ -244,7 +244,7 @@ namespace StarkPlatform.Cci
 
             if (value.GetType() == typeof(char))
             {
-                return SignatureTypeCode.Char;
+                return SignatureTypeCode.Rune;
             }
 
             if (value.GetType() == typeof(byte))

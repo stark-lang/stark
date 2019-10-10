@@ -1131,7 +1131,7 @@ namespace StarkPlatform.Compiler.Stark
                         ((object)fixedPatternMethod == null || fixedPatternMethod.ContainingType.SpecialType != SpecialType.System_String))
                     {
                         fixedPatternMethod = null;
-                        elementType = this.GetSpecialType(SpecialType.System_Char, diagnostics, initializerSyntax);
+                        elementType = this.GetSpecialType(SpecialType.System_Rune, diagnostics, initializerSyntax);
                         additionalDiagnostics.Free();
                         break;
                     }

@@ -50,8 +50,8 @@ namespace StarkPlatform.Compiler
                 case SignatureTypeCode.Double:
                     return SpecialType.System_Float64;
 
-                case SignatureTypeCode.Char:
-                    return SpecialType.System_Char;
+                case SignatureTypeCode.Rune:
+                    return SpecialType.System_Rune;
 
                 case SignatureTypeCode.String:
                     return SpecialType.System_String;
@@ -102,7 +102,7 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_Object:
                 case SpecialType.System_Void:
                 case SpecialType.System_Boolean:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_UInt8:
                 case SpecialType.System_Int8:
                 case SpecialType.System_Int16:
@@ -159,8 +159,8 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_Float64:
                     return SerializationTypeCode.Double;
 
-                case SpecialType.System_Char:
-                    return SerializationTypeCode.Char;
+                case SpecialType.System_Rune:
+                    return SerializationTypeCode.Rune;
 
                 case SpecialType.System_String:
                     return SerializationTypeCode.String;

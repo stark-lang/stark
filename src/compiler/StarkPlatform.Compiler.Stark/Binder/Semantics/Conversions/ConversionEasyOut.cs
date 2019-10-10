@@ -108,7 +108,7 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Object: return 0;
                     case SpecialType.System_String: return 1;
                     case SpecialType.System_Boolean: return 2;
-                    case SpecialType.System_Char: return 3;
+                    case SpecialType.System_Rune: return 3;
                     case SpecialType.System_Int8: return 4;
                     case SpecialType.System_Int16: return 5;
                     case SpecialType.System_Int32: return 6;
@@ -130,7 +130,7 @@ namespace StarkPlatform.Compiler.Stark
                             switch (underlyingType.GetSpecialTypeSafe())
                             {
                                 case SpecialType.System_Boolean: return 17;
-                                case SpecialType.System_Char: return 18;
+                                case SpecialType.System_Rune: return 18;
                                 case SpecialType.System_Int8: return 19;
                                 case SpecialType.System_Int16: return 20;
                                 case SpecialType.System_Int32: return 21;

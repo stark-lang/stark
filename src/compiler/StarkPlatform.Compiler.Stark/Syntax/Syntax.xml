@@ -165,7 +165,7 @@
       <Kind Name="Float32Keyword"/>
       <Kind Name="Float64Keyword"/>
       <Kind Name="StringKeyword"/>
-      <Kind Name="CharKeyword"/>
+      <Kind Name="RuneKeyword"/>
       <Kind Name="ObjectKeyword"/>
       <PropertyComment>
         <summary>SyntaxToken which represents the keyword corresponding to the predefined type.</summary>
@@ -823,7 +823,7 @@
     <Kind Name="ArgListExpression"/>
     <Kind Name="NumericLiteralExpression"/>
     <Kind Name="StringLiteralExpression"/>
-    <Kind Name="CharacterLiteralExpression"/>
+    <Kind Name="RuneLiteralExpression"/>
     <Kind Name="TrueLiteralExpression"/>
     <Kind Name="FalseLiteralExpression"/>
     <Kind Name="NullLiteralExpression"/>
@@ -832,7 +832,7 @@
       <Kind Name="ArgListKeyword"/>
       <Kind Name="NumericLiteralToken"/>
       <Kind Name="StringLiteralToken"/>
-      <Kind Name="CharacterLiteralToken"/>
+      <Kind Name="RuneLiteralToken"/>
       <Kind Name="TrueKeyword"/>
       <Kind Name="FalseKeyword"/>
       <Kind Name="NullKeyword"/>

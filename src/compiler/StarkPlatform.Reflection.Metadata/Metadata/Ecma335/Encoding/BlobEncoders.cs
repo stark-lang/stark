@@ -752,7 +752,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         }
 
         public void Boolean() => WriteTypeCode(SerializationTypeCode.Boolean);
-        public void Char() => WriteTypeCode(SerializationTypeCode.Char);
+        public void Rune() => WriteTypeCode(SerializationTypeCode.Rune);
         public void SByte() => WriteTypeCode(SerializationTypeCode.SByte);
         public void Byte() => WriteTypeCode(SerializationTypeCode.Byte);
         public void Int16() => WriteTypeCode(SerializationTypeCode.Int16);
@@ -772,7 +772,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
                 case PrimitiveSerializationTypeCode.Boolean:
                 case PrimitiveSerializationTypeCode.Byte:
                 case PrimitiveSerializationTypeCode.SByte:
-                case PrimitiveSerializationTypeCode.Char:
+                case PrimitiveSerializationTypeCode.Rune:
                 case PrimitiveSerializationTypeCode.Int16:
                 case PrimitiveSerializationTypeCode.UInt16:
                 case PrimitiveSerializationTypeCode.Int32:
@@ -826,7 +826,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         }
 
         public void Boolean() => WriteTypeCode(SignatureTypeCode.Boolean);
-        public void Char() => WriteTypeCode(SignatureTypeCode.Char);
+        public void Rune() => WriteTypeCode(SignatureTypeCode.Rune);
         public void SByte() => WriteTypeCode(SignatureTypeCode.SByte);
         public void Byte() => WriteTypeCode(SignatureTypeCode.Byte);
         public void Int16() => WriteTypeCode(SignatureTypeCode.Int16);
@@ -854,7 +854,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
                 case PrimitiveTypeCode.Boolean:
                 case PrimitiveTypeCode.Byte:
                 case PrimitiveTypeCode.SByte:
-                case PrimitiveTypeCode.Char:
+                case PrimitiveTypeCode.Rune:
                 case PrimitiveTypeCode.Int16:
                 case PrimitiveTypeCode.UInt16:
                 case PrimitiveTypeCode.Int32:

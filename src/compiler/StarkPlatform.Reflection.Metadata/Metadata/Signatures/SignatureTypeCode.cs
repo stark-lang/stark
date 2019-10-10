@@ -29,7 +29,7 @@ namespace StarkPlatform.Reflection.Metadata
         /// <summary>
         /// Represents <see cref="System.Char"/> in signatures.
         /// </summary>
-        Char = CorElementType.ELEMENT_TYPE_CHAR,
+        Rune = CorElementType.ELEMENT_TYPE_RUNE,
 
         /// <summary>
         /// Represents <see cref="System.SByte"/> in signatures.

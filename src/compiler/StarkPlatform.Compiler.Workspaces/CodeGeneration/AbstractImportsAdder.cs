@@ -76,7 +76,7 @@ namespace StarkPlatform.Compiler.CodeGeneration
                 case StarkPlatform.Compiler.SpecialType.System_Object:
                 case StarkPlatform.Compiler.SpecialType.System_Void:
                 case StarkPlatform.Compiler.SpecialType.System_Boolean:
-                case StarkPlatform.Compiler.SpecialType.System_Char:
+                case StarkPlatform.Compiler.SpecialType.System_Rune:
                 case StarkPlatform.Compiler.SpecialType.System_Int8:
                 case StarkPlatform.Compiler.SpecialType.System_UInt8:
                 case StarkPlatform.Compiler.SpecialType.System_Int16:

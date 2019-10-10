@@ -2856,8 +2856,8 @@ namespace StarkPlatform.Compiler
                 case ConstantTypeCode.Boolean:
                     return ConstantValue.Create(reader.ReadBoolean());
 
-                case ConstantTypeCode.Char:
-                    return ConstantValue.Create(reader.ReadChar());
+                case ConstantTypeCode.Rune:
+                    return ConstantValue.Create(reader.ReadRune());
 
                 case ConstantTypeCode.SByte:
                     return ConstantValue.Create(reader.ReadSByte());

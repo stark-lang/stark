@@ -40,8 +40,8 @@ namespace StarkPlatform.Compiler.Stark
                     return SpecialType.System_Float32;
                 case SyntaxKind.StringKeyword:
                     return SpecialType.System_String;
-                case SyntaxKind.CharKeyword:
-                    return SpecialType.System_Char;
+                case SyntaxKind.RuneKeyword:
+                    return SpecialType.System_Rune;
                 case SyntaxKind.ObjectKeyword:
                     return SpecialType.System_Object;
                 default:

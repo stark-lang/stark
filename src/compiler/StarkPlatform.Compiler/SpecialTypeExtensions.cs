@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {
@@ -15,7 +16,7 @@ namespace StarkPlatform.Compiler
             switch (specialType)
             {
                 case SpecialType.System_Boolean:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_UInt8:
                 case SpecialType.System_Int8:
                 case SpecialType.System_Int16:
@@ -40,7 +41,7 @@ namespace StarkPlatform.Compiler
             switch (specialType)
             {
                 case SpecialType.System_Boolean:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_UInt8:
                 case SpecialType.System_Int:
                 case SpecialType.System_UInt:
@@ -65,7 +66,7 @@ namespace StarkPlatform.Compiler
             {
                 case SpecialType.System_Void:
                 case SpecialType.System_Boolean:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_UInt8:
                 case SpecialType.System_Int8:
                 case SpecialType.System_Int16:
@@ -112,7 +113,7 @@ namespace StarkPlatform.Compiler
                     return sizeof(long);
                 case SpecialType.System_UInt64:
                     return sizeof(ulong);
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                     return sizeof(char);
                 case SpecialType.System_Float32:
                     return sizeof(float);
@@ -137,7 +138,7 @@ namespace StarkPlatform.Compiler
             {
                 case SpecialType.System_Boolean:
                 case SpecialType.System_UInt8:
-                case SpecialType.System_Char:
+                case SpecialType.System_Rune:
                 case SpecialType.System_Float64:
                 case SpecialType.System_Int16:
                 case SpecialType.System_Int32:
@@ -269,9 +270,9 @@ namespace StarkPlatform.Compiler
                 return SpecialType.System_Boolean;
             }
 
-            if (value.GetType() == typeof(char))
+            if (value.GetType() == typeof(Rune))
             {
-                return SpecialType.System_Char;
+                return SpecialType.System_Rune;
             }
 
             if (value.GetType() == typeof(long))

@@ -61,9 +61,9 @@ namespace StarkPlatform.Compiler
         System_Boolean = 7,
 
         /// <summary>
-        /// Indicates that the type is <see cref="char"/>.
+        /// Indicates that the type is rune
         /// </summary>
-        System_Char = 8,
+        System_Rune = 8,
 
         /// <summary>
         /// Indicates that the type is <see cref="sbyte"/>.

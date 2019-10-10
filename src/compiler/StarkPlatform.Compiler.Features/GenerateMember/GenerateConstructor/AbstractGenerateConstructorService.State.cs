@@ -248,7 +248,7 @@ namespace StarkPlatform.Compiler.GenerateMember.GenerateConstructor
                 {
                     case SpecialType.System_Boolean:
                     case SpecialType.System_UInt8:
-                    case SpecialType.System_Char:
+                    case SpecialType.System_Rune:
                     case SpecialType.System_Int16:
                     case SpecialType.System_Int32:
                     case SpecialType.System_Int64:

@@ -7,7 +7,7 @@ namespace StarkPlatform.Compiler.LanguageServices
         None = 0,
         Boolean = 1,
         UInt8 = 1 << 1,
-        Char = 1 << 2,
+        Rune = 1 << 2,
         DateTime = 1 << 3,
         Decimal = 1 << 4,
         Float64 = 1 << 5,

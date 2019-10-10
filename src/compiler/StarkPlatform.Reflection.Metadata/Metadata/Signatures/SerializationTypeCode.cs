@@ -20,9 +20,9 @@ namespace StarkPlatform.Reflection.Metadata
         Boolean = SignatureTypeCode.Boolean,
 
         /// <summary>
-        /// Equivalent to <see cref="SignatureTypeCode.Char"/>.
+        /// Equivalent to <see cref="SignatureTypeCode.Rune"/>.
         /// </summary>
-        Char = SignatureTypeCode.Char,
+        Rune = SignatureTypeCode.Rune,
 
         /// <summary>
         /// Equivalent to <see cref="SignatureTypeCode.SByte"/>.

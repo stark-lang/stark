@@ -102,7 +102,7 @@ namespace StarkPlatform.Compiler.Stark
                 case UnaryOperatorKind.UInt32:
                 case UnaryOperatorKind.Int64:
                 case UnaryOperatorKind.UInt64:
-                case UnaryOperatorKind.Char:
+                case UnaryOperatorKind.Rune:
                 case UnaryOperatorKind.Enum:
                 case UnaryOperatorKind.Pointer:
                     return true;

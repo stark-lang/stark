@@ -640,7 +640,7 @@ namespace StarkPlatform.Cci
         /// <summary>
         /// An unsigned 16 bit integer representing a Unicode UTF16 code point.
         /// </summary>
-        Char,
+        Rune,
 
         /// <summary>
         /// A signed 8 bit integer.

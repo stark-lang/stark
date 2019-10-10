@@ -242,7 +242,7 @@ namespace StarkPlatform.Compiler.ConvertForEachToFor
             // check string case
             if (collectionType.SpecialType == SpecialType.System_String)
             {
-                var charType = model.Compilation.GetSpecialType(SpecialType.System_Char);
+                var charType = model.Compilation.GetSpecialType(SpecialType.System_Rune);
                 if (!IsExchangable(semanticFact, charType, foreachType, model.Compilation))
                 {
                     return;

@@ -933,45 +933,6 @@ namespace StarkPlatform.Reflection.Metadata
         /// </summary>
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
         /// <exception cref="InvalidOperationException">Builder is not writable, it has been linked with another one.</exception>
-        public unsafe void WriteUTF16(char[] value)
-        {
-            if (value == null)
-            {
-                Throw.ArgumentNull(nameof(value));
-            }
-
-            if (!IsHead)
-            {
-                Throw.InvalidOperationBuilderAlreadyLinked();
-            }
-
-            if (value.Length == 0)
-            {
-                return;
-            }
-
-            if (BitConverter.IsLittleEndian)
-            {
-                fixed (char* ptr = &value[0])
-                {
-                    WriteBytesUnchecked((byte*)ptr, value.Length * sizeof(char));
-                }
-            }
-            else
-            {
-                byte[] bytes = Encoding.Unicode.GetBytes(value);
-                fixed (byte* ptr = &bytes[0])
-                {
-                    WriteBytesUnchecked((byte*)ptr, bytes.Length);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Writes UTF16 (little-endian) encoded string at the current position.
-        /// </summary>
-        /// <exception cref="ArgumentNullException"><paramref name="value"/> is null.</exception>
-        /// <exception cref="InvalidOperationException">Builder is not writable, it has been linked with another one.</exception>
         public unsafe void WriteUTF16(string value)
         {
             if (value == null)

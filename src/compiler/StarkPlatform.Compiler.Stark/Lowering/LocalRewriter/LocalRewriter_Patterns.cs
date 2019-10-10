@@ -280,7 +280,7 @@ namespace StarkPlatform.Compiler.Stark
                     case SpecialType.System_Boolean:
                         return _localRewriter.MakeBinaryOperator(_factory.Syntax, BinaryOperatorKind.BoolEqual, input, loweredLiteral, booleanType, method: null);
                     case SpecialType.System_UInt8:
-                    case SpecialType.System_Char:
+                    case SpecialType.System_Rune:
                     case SpecialType.System_Int16:
                     case SpecialType.System_Int8:
                     case SpecialType.System_UInt16:
