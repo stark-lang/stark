@@ -6922,24 +6922,26 @@ namespace StarkPlatform.Compiler.Stark
                 TryImplicitConversionToArrayIndex(index, SpecialType.System_Int64, node, diagnostics) ??
                 TryImplicitConversionToArrayIndex(index, SpecialType.System_UInt64, node, diagnostics);
 
-            if (result is null && allowIndexAndRange)
-            {
-                result =
-                    TryImplicitConversionToArrayIndex(index, WellKnownType.core_Index, node, diagnostics) ??
-                    TryImplicitConversionToArrayIndex(index, WellKnownType.core_Range, node, diagnostics);
-            }
+            // TODO: Disable temporarily
+
+            //if (result is null && allowIndexAndRange)
+            //{
+            //    result =
+            //        TryImplicitConversionToArrayIndex(index, WellKnownType.core_Index, node, diagnostics) ??
+            //        TryImplicitConversionToArrayIndex(index, WellKnownType.core_Range, node, diagnostics);
+            //}
 
             if (result is null)
             {
                 // Give the error that would be given upon conversion to int32.
-                NamedTypeSymbol int32 = GetSpecialType(SpecialType.System_Int32, diagnostics, node);
+                NamedTypeSymbol intType = GetSpecialType(SpecialType.System_Int, diagnostics, node);
                 HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-                Conversion failedConversion = this.Conversions.ClassifyConversionFromExpression(index, int32, ref useSiteDiagnostics);
+                Conversion failedConversion = this.Conversions.ClassifyConversionFromExpression(index, intType, ref useSiteDiagnostics);
                 diagnostics.Add(node, useSiteDiagnostics);
-                GenerateImplicitConversionError(diagnostics, node, failedConversion, index, int32);
+                GenerateImplicitConversionError(diagnostics, node, failedConversion, index, intType);
 
                 // Suppress any additional diagnostics
-                return CreateConversion(index.Syntax, index, failedConversion, isCast: false, conversionGroupOpt: null, destination: int32, diagnostics: new DiagnosticBag());
+                return CreateConversion(index.Syntax, index, failedConversion, isCast: false, conversionGroupOpt: null, destination: intType, diagnostics: new DiagnosticBag());
             }
 
             return result;
