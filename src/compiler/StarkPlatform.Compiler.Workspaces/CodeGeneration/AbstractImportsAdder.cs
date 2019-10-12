@@ -88,7 +88,7 @@ namespace StarkPlatform.Compiler.CodeGeneration
                 case StarkPlatform.Compiler.SpecialType.System_Float32:
                 case StarkPlatform.Compiler.SpecialType.System_Float64:
                 case StarkPlatform.Compiler.SpecialType.System_String:
-                case StarkPlatform.Compiler.SpecialType.System_Nullable_T:
+                case StarkPlatform.Compiler.SpecialType.core_Option_T:
                     return true;
             }
 

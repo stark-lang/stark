@@ -584,7 +584,7 @@ namespace StarkPlatform.Compiler.Stark
             TypeSymbol type = node.MethodOpt.ParameterTypes[0].TypeSymbol;
             if (isLifted)
             {
-                type = _compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(type);
+                type = _compilation.GetSpecialType(SpecialType.core_Option_T).Construct(type);
                 Debug.Assert(TypeSymbol.Equals(node.MethodOpt.ParameterTypes[0].TypeSymbol, node.MethodOpt.ReturnType.TypeSymbol, TypeCompareKind.ConsiderEverything2));
             }
 
@@ -694,7 +694,7 @@ namespace StarkPlatform.Compiler.Stark
 
             if (binaryOperatorKind.IsLifted())
             {
-                binaryOperandType = _compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(binaryOperandType);
+                binaryOperandType = _compilation.GetSpecialType(SpecialType.core_Option_T).Construct(binaryOperandType);
                 MethodSymbol ctor = UnsafeGetNullableMethod(node.Syntax, binaryOperandType, SpecialMember.System_Nullable_T__ctor);
                 boundOne = new BoundObjectCreationExpression(node.Syntax, ctor, null, boundOne);
             }
@@ -854,7 +854,7 @@ namespace StarkPlatform.Compiler.Stark
             NamedTypeSymbol type = _compilation.GetSpecialType(specialType);
             if (node.OperatorKind.IsLifted())
             {
-                type = _compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(type);
+                type = _compilation.GetSpecialType(SpecialType.core_Option_T).Construct(type);
             }
 
             return type;

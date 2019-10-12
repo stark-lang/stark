@@ -79,7 +79,7 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_Float64:
                 case SpecialType.System_Int:
                 case SpecialType.System_UInt:
-                case SpecialType.System_Nullable_T:
+                case SpecialType.core_Option_T:
                 case SpecialType.System_DateTime:
                 case SpecialType.System_TypedReference:
                 case SpecialType.System_ArgIterator:

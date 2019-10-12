@@ -834,7 +834,7 @@ namespace StarkPlatform.Compiler.Stark
 
         private BoundExpression MakeNullableHasValue(SyntaxNode syntax, BoundExpression expression)
         {
-            return BoundCall.Synthesized(syntax, expression, UnsafeGetNullableMethod(syntax, expression.Type, SpecialMember.System_Nullable_T_get_HasValue));
+            return BoundCall.Synthesized(syntax, expression, UnsafeGetNullableMethod(syntax, expression.Type, SpecialMember.core_Option_T_get_has_value));
         }
 
         private BoundExpression LowerLiftedBuiltInComparisonOperator(
@@ -1470,7 +1470,7 @@ namespace StarkPlatform.Compiler.Stark
 
         private BoundExpression MakeNewNullableBoolean(SyntaxNode syntax, bool? value)
         {
-            NamedTypeSymbol nullableType = _compilation.GetSpecialType(SpecialType.System_Nullable_T);
+            NamedTypeSymbol nullableType = _compilation.GetSpecialType(SpecialType.core_Option_T);
             TypeSymbol boolType = _compilation.GetSpecialType(SpecialType.System_Boolean);
             NamedTypeSymbol nullableBoolType = nullableType.Construct(boolType);
             if (value == null)

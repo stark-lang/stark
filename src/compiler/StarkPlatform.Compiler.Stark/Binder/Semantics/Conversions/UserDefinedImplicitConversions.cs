@@ -812,7 +812,7 @@ namespace StarkPlatform.Compiler.Stark
 
         private NamedTypeSymbol MakeNullableType(TypeSymbol type)
         {
-            var nullable = this.corLibrary.GetDeclaredSpecialType(SpecialType.System_Nullable_T);
+            var nullable = this.corLibrary.GetDeclaredSpecialType(SpecialType.core_Option_T);
             return nullable.Construct(type);
         }
 

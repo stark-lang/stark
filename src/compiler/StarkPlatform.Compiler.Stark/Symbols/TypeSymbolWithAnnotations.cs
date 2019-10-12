@@ -522,7 +522,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 }
                 else
                 {
-                    return Create(compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(ImmutableArray.Create(typeSymbol)));
+                    return Create(compilation.GetSpecialType(SpecialType.core_Option_T).Construct(ImmutableArray.Create(typeSymbol)));
                 }
             }
 
@@ -1244,7 +1244,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     else
                     {
                         Interlocked.CompareExchange(ref _resolved,
-                            _compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(ImmutableArray.Create(_underlying)),
+                            _compilation.GetSpecialType(SpecialType.core_Option_T).Construct(ImmutableArray.Create(_underlying)),
                             null);
                     }
                 }

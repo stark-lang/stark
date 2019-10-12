@@ -445,7 +445,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 SyntaxNode exprSyntax = collectionExpr.Syntax;
 
-                MethodSymbol nullableValueGetter = (MethodSymbol)GetSpecialTypeMember(SpecialMember.System_Nullable_T_get_Value, diagnostics, exprSyntax);
+                MethodSymbol nullableValueGetter = (MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Option_T_get_value, diagnostics, exprSyntax);
                 if ((object)nullableValueGetter != null)
                 {
                     nullableValueGetter = nullableValueGetter.AsMember((NamedTypeSymbol)collectionExprType);

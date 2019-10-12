@@ -136,7 +136,7 @@ namespace StarkPlatform.Compiler
     {
         internal static bool IsNullableType(ITypeSymbol typeOpt)
         {
-            return typeOpt?.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
+            return typeOpt?.OriginalDefinition.SpecialType == SpecialType.core_Option_T;
         }
 
         internal static bool IsNullableOfBoolean(ITypeSymbol type)

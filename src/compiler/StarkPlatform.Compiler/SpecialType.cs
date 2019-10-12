@@ -178,7 +178,7 @@ namespace StarkPlatform.Compiler
         /// <summary>
         /// Indicates that the type is <see cref="Nullable{T}"/>.
         /// </summary>
-        System_Nullable_T,
+        core_Option_T,
 
         /// <summary>
         /// Indicates that the type is <see cref="DateTime"/>.

@@ -79,7 +79,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.Providers
                     cancellationToken: cancellationToken);
 
                 // If we have a Nullable<T>, unwrap it.
-                if (type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
+                if (type.OriginalDefinition.SpecialType == SpecialType.core_Option_T)
                 {
                     type = type.GetTypeArguments().FirstOrDefault();
 

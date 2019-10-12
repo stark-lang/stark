@@ -475,50 +475,50 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt64,
 
-                // System_Nullable_T_GetValueOrDefault
+                // core_Option_T_GetValueOrDefault
                 (byte)MemberFlags.Method,                                                                                   // Flags
-                (byte)SpecialType.System_Nullable_T,                                                                        // DeclaringTypeId
+                (byte)SpecialType.core_Option_T,                                                                        // DeclaringTypeId
                 0,                                                                                                          // Arity
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.GenericTypeParameter, 0,
 
-                // System_Nullable_T_get_Value
+                // core_Option_T_get_value
                 (byte)MemberFlags.PropertyGet,                                                                              // Flags
-                (byte)SpecialType.System_Nullable_T,                                                                        // DeclaringTypeId
+                (byte)SpecialType.core_Option_T,                                                                        // DeclaringTypeId
                 0,                                                                                                          // Arity
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.GenericTypeParameter, 0,
 
-                // System_Nullable_T_get_HasValue
+                // core_Option_T_get_has_value
                 (byte)MemberFlags.PropertyGet,                                                                              // Flags
-                (byte)SpecialType.System_Nullable_T,                                                                        // DeclaringTypeId
+                (byte)SpecialType.core_Option_T,                                                                        // DeclaringTypeId
                 0,                                                                                                          // Arity
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
 
-                // System_Nullable_T__ctor
+                // core_Option_T__ctor
                 (byte)MemberFlags.Constructor,                                                                              // Flags
-                (byte)SpecialType.System_Nullable_T,                                                                        // DeclaringTypeId
+                (byte)SpecialType.core_Option_T,                                                                        // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
                     (byte)SignatureTypeCode.GenericTypeParameter, 0,
 
-                // System_Nullable_T__op_Implicit_FromT
+                // core_Option_T__op_Implicit_FromT
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)SpecialType.System_Nullable_T,                                                                        // DeclaringTypeId
+                (byte)SpecialType.core_Option_T,                                                                        // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Nullable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Option_T,
                     (byte)SignatureTypeCode.GenericTypeParameter, 0,
 
-                // System_Nullable_T__op_Explicit_ToT
+                // core_Option_T__op_Explicit_ToT
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)SpecialType.System_Nullable_T,                                                                        // DeclaringTypeId
+                (byte)SpecialType.core_Option_T,                                                                        // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.GenericTypeParameter, 0,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Nullable_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Option_T,
             };
 
             string[] allNames = new string[(int)SpecialMember.Count]
@@ -578,12 +578,12 @@ namespace StarkPlatform.Compiler
                 "op_Explicit",                              // System_UIntPtr__op_Explicit_FromPointer
                 "op_Explicit",                              // System_UIntPtr__op_Explicit_FromUInt32
                 "op_Explicit",                              // System_UIntPtr__op_Explicit_FromUInt64
-                "GetValueOrDefault",                        // System_Nullable_T_GetValueOrDefault
-                "get_Value",                                // System_Nullable_T_get_Value
-                "get_HasValue",                             // System_Nullable_T_get_HasValue
-                ".ctor",                                    // System_Nullable_T__ctor
-                "op_Implicit",                              // System_Nullable_T__op_Implicit_FromT
-                "op_Explicit",                              // System_Nullable_T__op_Explicit_ToT
+                "GetValueOrDefault",                        // core_Option_T_GetValueOrDefault
+                "get_value",                                // core_Option_T_get_value
+                "get_has_value",                            // core_Option_T_get_has_value
+                ".ctor",                                    // core_Option_T__ctor
+                "op_Implicit",                              // core_Option_T__op_Implicit_FromT
+                "op_Explicit",                              // core_Option_T__op_Explicit_ToT
             };
 
             s_descriptors = MemberDescriptor.InitializeFromStream(new System.IO.MemoryStream(initializationBytes, writable: false), allNames);

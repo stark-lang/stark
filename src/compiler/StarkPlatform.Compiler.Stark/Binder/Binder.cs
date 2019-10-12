@@ -224,14 +224,7 @@ namespace StarkPlatform.Compiler.Stark
         /// </summary>
         internal bool IsNullableEnabled(SyntaxTree syntaxTree, int position)
         {
-            bool? fromTree = ((CSharpSyntaxTree)syntaxTree).GetNullableDirectiveState(position);
-
-            if (fromTree != null)
-            {
-                return fromTree.GetValueOrDefault();
-            }
-
-            return IsNullableGloballyEnabled();
+            return true;
         }
 
         internal bool IsNullableEnabled(SyntaxToken token)

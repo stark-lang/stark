@@ -1080,7 +1080,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 return rightTypes
                     .Select(x => x.InferredType.IsValueType
-                                     ? new TypeInferenceInfo(this.Compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(x.InferredType)) // Goo() ?? 0
+                                     ? new TypeInferenceInfo(this.Compilation.GetSpecialType(SpecialType.core_Option_T).Construct(x.InferredType)) // Goo() ?? 0
                                      : x); // Goo() ?? ""
             }
 

@@ -348,7 +348,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     case SpecialType.System_Float32:
                     case SpecialType.System_Float64:
                     case SpecialType.System_String:
-                    case SpecialType.System_Nullable_T:
+                    case SpecialType.core_Option_T:
                     case SpecialType.System_DateTime:
                         return true;
                 }

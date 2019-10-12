@@ -1697,8 +1697,8 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                 var originalMethod = method.OriginalDefinition;
 
                 if ((object)originalMethod == this._module.Compilation.GetSpecialTypeMember(SpecialMember.System_Nullable_T_GetValueOrDefault) ||
-                    (object)originalMethod == this._module.Compilation.GetSpecialTypeMember(SpecialMember.System_Nullable_T_get_Value) ||
-                    (object)originalMethod == this._module.Compilation.GetSpecialTypeMember(SpecialMember.System_Nullable_T_get_HasValue))
+                    (object)originalMethod == this._module.Compilation.GetSpecialTypeMember(SpecialMember.core_Option_T_get_value) ||
+                    (object)originalMethod == this._module.Compilation.GetSpecialTypeMember(SpecialMember.core_Option_T_get_has_value))
                 {
                     return true;
                 }

@@ -100,7 +100,7 @@ namespace StarkPlatform.Compiler.Stark
             _ignoreAccessibility = compilationState.ModuleBuilderOpt.IgnoreAccessibility;
             _int32Type = _bound.SpecialType(SpecialType.System_Int32);
             _objectType = _bound.SpecialType(SpecialType.System_Object);
-            _nullableType = _bound.SpecialType(SpecialType.System_Nullable_T);
+            _nullableType = _bound.SpecialType(SpecialType.core_Option_T);
             _IEnumerableType = _bound.SpecialType(SpecialType.core_Iterable_T_TIterator);
 
             _typeMap = typeMap;

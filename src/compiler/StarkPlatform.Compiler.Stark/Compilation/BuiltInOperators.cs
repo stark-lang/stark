@@ -247,7 +247,7 @@ namespace StarkPlatform.Compiler.Stark
 
             if (kind.IsLifted())
             {
-                opType = _compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(opType);
+                opType = _compilation.GetSpecialType(SpecialType.core_Option_T).Construct(opType);
             }
 
             return new UnaryOperatorSignature(kind, opType, opType);
@@ -625,7 +625,7 @@ namespace StarkPlatform.Compiler.Stark
 
                     if (kind.IsLifted())
                     {
-                        returnType = _compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(returnType);
+                        returnType = _compilation.GetSpecialType(SpecialType.core_Option_T).Construct(returnType);
                     }
 
                     return new BinaryOperatorSignature(kind, left, returnType, left);
@@ -737,7 +737,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             Debug.Assert(kind.IsLifted());
 
-            var nullable = _compilation.GetSpecialType(SpecialType.System_Nullable_T);
+            var nullable = _compilation.GetSpecialType(SpecialType.core_Option_T);
 
             switch (kind.OperandTypes())
             {

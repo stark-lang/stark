@@ -52,7 +52,7 @@ namespace StarkPlatform.Compiler
             "core.Collections.Generic.ICollection`1",
             "core.Collections.Generic.IReadOnlyList`1",
             "core.Collections.Generic.IReadOnlyCollection`1",
-            "core.Nullable`1",
+            "core.Option`1",
             "core.DateTime",
             "core.runtime.compiler.IsVolatile",
             "core.IDisposable",

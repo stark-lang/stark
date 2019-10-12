@@ -1747,7 +1747,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 }
                 else
                 {
-                    isOrdinaryStruct = (this.SpecialType == StarkPlatform.Compiler.SpecialType.System_Nullable_T);
+                    isOrdinaryStruct = (this.SpecialType == StarkPlatform.Compiler.SpecialType.core_Option_T);
                 }
             }
 

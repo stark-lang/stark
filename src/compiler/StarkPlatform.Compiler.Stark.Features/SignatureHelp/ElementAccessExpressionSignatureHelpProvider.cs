@@ -57,7 +57,7 @@ namespace StarkPlatform.Compiler.Stark.SignatureHelp
             // goo?[$$]
             if (expressionSymbol is INamedTypeSymbol namedType)
             {
-                if (namedType.ConstructedFrom.SpecialType == SpecialType.System_Nullable_T &&
+                if (namedType.ConstructedFrom.SpecialType == SpecialType.core_Option_T &&
                     expression.IsKind(SyntaxKind.NullableType) &&
                     expression.IsChildNode<ArrayTypeSyntax>(a => a.ElementType))
                 {

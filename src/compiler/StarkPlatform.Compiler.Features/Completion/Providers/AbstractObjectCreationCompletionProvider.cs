@@ -85,7 +85,7 @@ namespace StarkPlatform.Compiler.Completion.Providers
             }
 
             // Unwrap nullable
-            if (type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
+            if (type.OriginalDefinition.SpecialType == SpecialType.core_Option_T)
             {
                 type = type.GetTypeArguments().FirstOrDefault();
             }

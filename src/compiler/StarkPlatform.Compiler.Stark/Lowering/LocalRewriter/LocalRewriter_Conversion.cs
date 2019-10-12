@@ -696,7 +696,7 @@ namespace StarkPlatform.Compiler.Stark
                 {
                     // (If the source is known to be possibly null then we need to keep the call to get Value 
                     // in place so that it throws at runtime.)
-                    MethodSymbol get_Value = UnsafeGetNullableMethod(syntax, rewrittenOperandType, SpecialMember.System_Nullable_T_get_Value);
+                    MethodSymbol get_Value = UnsafeGetNullableMethod(syntax, rewrittenOperandType, SpecialMember.core_Option_T_get_value);
                     value = BoundCall.Synthesized(syntax, rewrittenOperand, get_Value);
                 }
 

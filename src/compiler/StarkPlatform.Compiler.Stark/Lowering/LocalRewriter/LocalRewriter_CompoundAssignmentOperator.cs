@@ -758,7 +758,7 @@ namespace StarkPlatform.Compiler.Stark
                     if (method.ContainingType?.IsNullableType() == true)
                     {
                         if (IsSpecialMember(method, SpecialMember.System_Nullable_T_GetValueOrDefault) ||
-                            IsSpecialMember(method, SpecialMember.System_Nullable_T_get_HasValue))
+                            IsSpecialMember(method, SpecialMember.core_Option_T_get_has_value))
                         {
                             return ReadIsSideeffecting(call.ReceiverOpt);
                         }

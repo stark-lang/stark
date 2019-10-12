@@ -3609,7 +3609,7 @@ namespace StarkPlatform.Compiler.Stark
 
         private void TrackNullableStateOfNullableValue(int containingSlot, TypeSymbol containingType, BoundExpression value, TypeSymbolWithAnnotations valueType, int valueSlot)
         {
-            Debug.Assert(containingType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T);
+            Debug.Assert(containingType.OriginalDefinition.SpecialType == SpecialType.core_Option_T);
             Debug.Assert(containingSlot > 0);
             Debug.Assert(valueSlot > 0);
 
@@ -3858,7 +3858,7 @@ namespace StarkPlatform.Compiler.Stark
                         {
                             operandType = TypeSymbolWithAnnotations.Create(
                                 methodReturnType.IsValueType && !methodReturnType.IsNullableType() ?
-                                    compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(ImmutableArray.Create(methodReturnType)) :
+                                    compilation.GetSpecialType(SpecialType.core_Option_T).Construct(ImmutableArray.Create(methodReturnType)) :
                                     methodReturnType.TypeSymbol,
                                 methodReturnType.NullableAnnotation.IsAnyNullable() || operandAnnotation.IsAnyNullable() ?
                                     NullableAnnotation.Nullable :
@@ -4587,7 +4587,7 @@ namespace StarkPlatform.Compiler.Stark
                     nullableOfTMember = GetNullableOfTMember(compilation, member);
                     // https://github.com/dotnet/roslyn/issues/30598: For l-values, mark receiver as not null
                     // after RHS has been visited, and only if the receiver has not changed.
-                    bool allowValueType = nullableOfTMember == SpecialMember.System_Nullable_T_get_Value;
+                    bool allowValueType = nullableOfTMember == SpecialMember.core_Option_T_get_value;
                     CheckPossibleNullReceiver(receiverOpt, allowValueType, (allowValueType ? node : (receiverOpt ?? node)).Syntax);
                 }
 
@@ -4612,7 +4612,7 @@ namespace StarkPlatform.Compiler.Stark
                     }
 
                     Debug.Assert(!IsConditionalState);
-                    if (nullableOfTMember == SpecialMember.System_Nullable_T_get_HasValue)
+                    if (nullableOfTMember == SpecialMember.core_Option_T_get_has_value)
                     {
                         int containingSlot = getReceiverSlot();
                         if (containingSlot > 0)
@@ -4636,15 +4636,15 @@ namespace StarkPlatform.Compiler.Stark
             if (member.Kind == SymbolKind.Property)
             {
                 var getMethod = ((PropertySymbol)member.OriginalDefinition).GetMethod;
-                if ((object)getMethod != null && getMethod.ContainingType.SpecialType == SpecialType.System_Nullable_T)
+                if ((object)getMethod != null && getMethod.ContainingType.SpecialType == SpecialType.core_Option_T)
                 {
-                    if (getMethod == compilation.GetSpecialTypeMember(SpecialMember.System_Nullable_T_get_Value))
+                    if (getMethod == compilation.GetSpecialTypeMember(SpecialMember.core_Option_T_get_value))
                     {
-                        return SpecialMember.System_Nullable_T_get_Value;
+                        return SpecialMember.core_Option_T_get_value;
                     }
-                    if (getMethod == compilation.GetSpecialTypeMember(SpecialMember.System_Nullable_T_get_HasValue))
+                    if (getMethod == compilation.GetSpecialTypeMember(SpecialMember.core_Option_T_get_has_value))
                     {
-                        return SpecialMember.System_Nullable_T_get_HasValue;
+                        return SpecialMember.core_Option_T_get_has_value;
                     }
                 }
             }
@@ -4656,7 +4656,7 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert(containingType.IsNullableType());
             Debug.Assert(TypeSymbol.Equals(GetSlotType(containingSlot), containingType, TypeCompareKind.ConsiderEverything2));
 
-            var getValue = (MethodSymbol)compilation.GetSpecialTypeMember(SpecialMember.System_Nullable_T_get_Value);
+            var getValue = (MethodSymbol)compilation.GetSpecialTypeMember(SpecialMember.core_Option_T_get_value);
             valueProperty = getValue?.AsMember((NamedTypeSymbol)containingType)?.AssociatedSymbol;
             return (valueProperty is null) ? -1 : GetOrCreateSlot(valueProperty, containingSlot);
         }

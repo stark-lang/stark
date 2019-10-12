@@ -1979,7 +1979,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 // Used in lowering to construct the nullable
                 GetSpecialTypeMember(SpecialMember.System_Nullable_T__ctor, diagnostics, node);
-                NamedTypeSymbol nullableType = GetSpecialType(SpecialType.System_Nullable_T, diagnostics, node);
+                NamedTypeSymbol nullableType = GetSpecialType(SpecialType.core_Option_T, diagnostics, node);
 
                 if (!indexType.IsNonNullableValueType())
                 {
@@ -2029,7 +2029,7 @@ namespace StarkPlatform.Compiler.Stark
                 // Used in lowering to construct the nullable
                 GetSpecialType(SpecialType.System_Boolean, diagnostics, node);
                 GetSpecialTypeMember(SpecialMember.System_Nullable_T__ctor, diagnostics, node);
-                NamedTypeSymbol nullableType = GetSpecialType(SpecialType.System_Nullable_T, diagnostics, node);
+                NamedTypeSymbol nullableType = GetSpecialType(SpecialType.core_Option_T, diagnostics, node);
 
                 if (!rangeType.IsNonNullableValueType())
                 {
@@ -2056,7 +2056,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 // Used in lowering to construct the nullable
                 GetSpecialTypeMember(SpecialMember.System_Nullable_T__ctor, diagnostics, operand);
-                NamedTypeSymbol nullableType = GetSpecialType(SpecialType.System_Nullable_T, diagnostics, operand);
+                NamedTypeSymbol nullableType = GetSpecialType(SpecialType.core_Option_T, diagnostics, operand);
 
                 if (!indexType.IsNonNullableValueType())
                 {
@@ -7631,7 +7631,7 @@ namespace StarkPlatform.Compiler.Stark
             // if access has value type, the type of the conditional access is nullable of that
             if (accessType.IsValueType && !accessType.IsNullableType() && accessType.SpecialType != SpecialType.System_Void)
             {
-                accessType = GetSpecialType(SpecialType.System_Nullable_T, diagnostics, node).Construct(accessType);
+                accessType = GetSpecialType(SpecialType.core_Option_T, diagnostics, node).Construct(accessType);
             }
 
             return new BoundConditionalAccess(node, receiver, access, accessType);

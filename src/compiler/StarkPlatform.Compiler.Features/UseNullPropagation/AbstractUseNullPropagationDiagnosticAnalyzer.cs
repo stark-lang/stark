@@ -150,7 +150,7 @@ namespace StarkPlatform.Compiler.UseNullPropagation
             var type = semanticModel.GetTypeInfo(conditionalExpression).Type;
             if (type?.IsValueType == true)
             {
-                if (!(type is INamedTypeSymbol namedType) || namedType.ConstructedFrom.SpecialType != SpecialType.System_Nullable_T)
+                if (!(type is INamedTypeSymbol namedType) || namedType.ConstructedFrom.SpecialType != SpecialType.core_Option_T)
                 {
                     // User has something like:  If(str is nothing, nothing, str.Length)
                     // In this case, converting to str?.Length changes the type of this from
@@ -172,7 +172,7 @@ namespace StarkPlatform.Compiler.UseNullPropagation
                 whenPartToCheck.GetLocation());
 
             var properties = ImmutableDictionary<string, string>.Empty;
-            var whenPartIsNullable = semanticModel.GetTypeInfo(whenPartMatch).Type?.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
+            var whenPartIsNullable = semanticModel.GetTypeInfo(whenPartMatch).Type?.OriginalDefinition.SpecialType == SpecialType.core_Option_T;
             if (whenPartIsNullable)
             {
                 properties = properties.Add(UseNullPropagationConstants.WhenPartIsNullable, "");

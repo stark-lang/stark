@@ -69,7 +69,7 @@ namespace StarkPlatform.Compiler.Stark
             StrongNameProvider strongNameProvider = null,
             bool publicSign = false,
             MetadataImportOptions metadataImportOptions = MetadataImportOptions.Public,
-            NullableContextOptions nullableContextOptions = NullableContextOptions.Disable)
+            NullableContextOptions nullableContextOptions = NullableContextOptions.Enable)
             : this(outputKind, reportSuppressedDiagnostics, moduleName, mainTypeName, scriptClassName,
                    usings, optimizationLevel, checkOverflow, allowUnsafe,
                    cryptoKeyContainer, cryptoKeyFile, cryptoPublicKey, delaySign, platform,

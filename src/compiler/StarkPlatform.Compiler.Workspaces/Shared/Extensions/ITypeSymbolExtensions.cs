@@ -47,7 +47,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
         }
 
         public static bool IsNullable(this ITypeSymbol symbol)
-            => symbol?.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
+            => symbol?.OriginalDefinition.SpecialType == SpecialType.core_Option_T;
 
         public static bool IsModuleType(this ITypeSymbol symbol)
         {
@@ -583,7 +583,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 return DefaultParameterName;
             }
 
-            if (type.IsSpecialType() || type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T)
+            if (type.IsSpecialType() || type.OriginalDefinition.SpecialType == SpecialType.core_Option_T)
             {
                 return DefaultBuiltInParameterName;
             }

@@ -293,7 +293,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
             // SPEC: * S0 and T0 are different types:
 
-            if ((ContainingType.SpecialType == SpecialType.System_Nullable_T)
+            if ((ContainingType.SpecialType == SpecialType.core_Option_T)
                     ? source.Equals(target, TypeCompareKind.IgnoreTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes)
                     : source0.Equals(target0, TypeCompareKind.IgnoreTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes))
             {

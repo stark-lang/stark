@@ -201,7 +201,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.Providers
                 if (originalDefinition == taskOfTType ||
                     originalDefinition == valueTaskType ||
                     originalDefinition == lazyOfTType ||
-                    originalDefinition.SpecialType == SpecialType.System_Nullable_T)
+                    originalDefinition.SpecialType == SpecialType.core_Option_T)
                 {
                     return UnwrapType(namedType.TypeArguments[0], compilation, wasPlural: wasPlural, seenTypes: seenTypes);
                 }

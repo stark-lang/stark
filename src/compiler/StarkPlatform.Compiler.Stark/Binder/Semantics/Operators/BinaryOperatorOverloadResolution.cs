@@ -246,7 +246,7 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert((object)underlying != null);
             Debug.Assert(underlying.SpecialType != SpecialType.None);
 
-            var nullable = Compilation.GetSpecialType(SpecialType.System_Nullable_T);
+            var nullable = Compilation.GetSpecialType(SpecialType.core_Option_T);
             var nullableEnum = nullable.Construct(enumType);
             var nullableUnderlying = nullable.Construct(underlying);
 

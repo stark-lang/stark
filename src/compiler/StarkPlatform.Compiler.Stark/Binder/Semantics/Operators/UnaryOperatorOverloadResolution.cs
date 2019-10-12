@@ -13,7 +13,7 @@ namespace StarkPlatform.Compiler.Stark
     {
         private NamedTypeSymbol MakeNullable(TypeSymbol type)
         {
-            return Compilation.GetSpecialType(SpecialType.System_Nullable_T).Construct(type);
+            return Compilation.GetSpecialType(SpecialType.core_Option_T).Construct(type);
         }
 
         public void UnaryOperatorOverloadResolution(UnaryOperatorKind kind, BoundExpression operand, UnaryOperatorOverloadResolutionResult result, ref HashSet<DiagnosticInfo> useSiteDiagnostics)

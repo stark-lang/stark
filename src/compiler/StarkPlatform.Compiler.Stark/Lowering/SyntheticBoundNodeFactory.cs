@@ -1201,7 +1201,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 // A conversion to unbox a nullable value is produced when binding a pattern-matching
                 // operation from an operand of type T? to a pattern of type T.
-                return this.Call(arg, this.SpecialMethod(Compiler.SpecialMember.System_Nullable_T_get_Value).AsMember((NamedTypeSymbol)arg.Type));
+                return this.Call(arg, this.SpecialMethod(Compiler.SpecialMember.core_Option_T_get_value).AsMember((NamedTypeSymbol)arg.Type));
             }
 
             return new BoundConversion(Syntax, arg, conversion, @checked: isChecked, explicitCastInCode: true, conversionGroupOpt: null, null, type) { WasCompilerGenerated = true };

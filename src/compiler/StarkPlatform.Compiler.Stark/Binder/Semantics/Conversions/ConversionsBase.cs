@@ -977,7 +977,7 @@ namespace StarkPlatform.Compiler.Stark
             if (destination.Kind == SymbolKind.NamedType)
             {
                 var nt = (NamedTypeSymbol)destination;
-                if (nt.OriginalDefinition.GetSpecialTypeSafe() == SpecialType.System_Nullable_T &&
+                if (nt.OriginalDefinition.GetSpecialTypeSafe() == SpecialType.core_Option_T &&
                     HasImplicitConstantExpressionConversion(source, nt.TypeArgumentsNoUseSiteDiagnostics[0].TypeSymbol))
                 {
                     return new Conversion(ConversionKind.ImplicitNullable, Conversion.ImplicitConstantUnderlying);
@@ -1002,7 +1002,7 @@ namespace StarkPlatform.Compiler.Stark
             if (destination.Kind == SymbolKind.NamedType)
             {
                 var nt = (NamedTypeSymbol)destination;
-                if (nt.OriginalDefinition.GetSpecialTypeSafe() == SpecialType.System_Nullable_T)
+                if (nt.OriginalDefinition.GetSpecialTypeSafe() == SpecialType.core_Option_T)
                 {
                     var underlyingTupleConversion = GetImplicitTupleLiteralConversion(source, nt.TypeArgumentsNoUseSiteDiagnostics[0].TypeSymbol, ref useSiteDiagnostics);
 
@@ -1031,7 +1031,7 @@ namespace StarkPlatform.Compiler.Stark
             if (destination.Kind == SymbolKind.NamedType)
             {
                 var nt = (NamedTypeSymbol)destination;
-                if (nt.OriginalDefinition.GetSpecialTypeSafe() == SpecialType.System_Nullable_T)
+                if (nt.OriginalDefinition.GetSpecialTypeSafe() == SpecialType.core_Option_T)
                 {
                     var underlyingTupleConversion = GetExplicitTupleLiteralConversion(source, nt.TypeArgumentsNoUseSiteDiagnostics[0].TypeSymbol, ref useSiteDiagnostics, forCast);
 

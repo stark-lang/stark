@@ -75,8 +75,8 @@ namespace StarkPlatform.Compiler
         System_UIntPtr__op_Explicit_FromUInt64,
 
         System_Nullable_T_GetValueOrDefault,
-        System_Nullable_T_get_Value,
-        System_Nullable_T_get_HasValue,
+        core_Option_T_get_value,
+        core_Option_T_get_has_value,
         System_Nullable_T__ctor,
         System_Nullable_T__op_Implicit_FromT,
         System_Nullable_T__op_Explicit_ToT,

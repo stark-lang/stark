@@ -421,7 +421,7 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             // Any violated constraints on nullable tuples would have been reported already
-            NamedTypeSymbol nullableT = GetSpecialType(SpecialType.System_Nullable_T, diagnostics, syntax);
+            NamedTypeSymbol nullableT = GetSpecialType(SpecialType.core_Option_T, diagnostics, syntax);
             return nullableT.Construct(tuple);
         }
     }

@@ -270,7 +270,7 @@ namespace StarkPlatform.Compiler.Stark
                 if (enumeratorType.IsValueType)
                 {
                     // No way for the struct to be nullable and disposable.
-                    Debug.Assert(enumeratorType.OriginalDefinition.SpecialType != SpecialType.System_Nullable_T);
+                    Debug.Assert(enumeratorType.OriginalDefinition.SpecialType != SpecialType.core_Option_T);
 
                     // For non-nullable structs, no null check is required.
                     alwaysOrMaybeDisposeStmt = disposeCallStatement;

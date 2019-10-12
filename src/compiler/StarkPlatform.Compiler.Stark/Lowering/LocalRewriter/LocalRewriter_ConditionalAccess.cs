@@ -146,7 +146,7 @@ namespace StarkPlatform.Compiler.Stark
                         node.Syntax,
                         loweredReceiver,
                         receiverType.IsNullableType() ?
-                                 UnsafeGetNullableMethod(node.Syntax, loweredReceiver.Type, SpecialMember.System_Nullable_T_get_HasValue) :
+                                 UnsafeGetNullableMethod(node.Syntax, loweredReceiver.Type, SpecialMember.core_Option_T_get_has_value) :
                                  null,
                         loweredAccessExpression,
                         null,

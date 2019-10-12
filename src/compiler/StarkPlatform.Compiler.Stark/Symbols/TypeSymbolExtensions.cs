@@ -109,7 +109,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         public static bool IsNullableType(this TypeSymbol type)
         {
-            return type.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
+            return type.OriginalDefinition.SpecialType == SpecialType.core_Option_T;
         }
 
         public static TypeSymbol GetNullableUnderlyingType(this TypeSymbol type)
