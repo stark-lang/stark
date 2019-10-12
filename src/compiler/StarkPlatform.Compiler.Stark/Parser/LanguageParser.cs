@@ -2075,8 +2075,8 @@ tryAgain:
             {
                 operatorToken = EatToken();
 
-                if (CurrentToken.Kind ==  SyntaxKind.ExplicitKeyword ||
-                    CurrentToken.Kind == SyntaxKind.ImplicitKeyword ||
+                if (CurrentToken.Kind == SyntaxKind.ImplicitKeyword ||
+                    CurrentToken.Kind == SyntaxKind.ExplicitKeyword || // we let it through to generate an error later
                     CurrentToken.Kind == SyntaxKind.AsKeyword)
                 {
                     return this.ParseConversionOperatorDeclaration(funcToken, operatorToken, attributes, modifiers);
@@ -2669,7 +2669,7 @@ tryAgain:
             }
             else
             {
-                if (this.CurrentToken.Kind == SyntaxKind.ImplicitKeyword || this.CurrentToken.Kind == SyntaxKind.ExplicitKeyword)
+                if (this.CurrentToken.Kind == SyntaxKind.ImplicitKeyword)
                 {
                     // Grab the offset and width before we consume the invalid keyword and change our position.
                     GetDiagnosticSpanForMissingToken(out opTokenErrorOffset, out opTokenErrorWidth);

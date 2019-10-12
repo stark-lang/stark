@@ -9839,6 +9839,7 @@ namespace StarkPlatform.Compiler.Stark
       switch (implicitOrExplicitKeyword.Kind())
       {
         case SyntaxKind.ImplicitKeyword:
+        case SyntaxKind.None:
           break;
         default:
           throw new ArgumentException(nameof(implicitOrExplicitKeyword));
@@ -9877,13 +9878,13 @@ namespace StarkPlatform.Compiler.Stark
     /// <summary>Creates a new ConversionOperatorDeclarationSyntax instance.</summary>
     public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, ParameterListSyntax parameterList, TypeSyntax type, SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
     {
-      return SyntaxFactory.ConversionOperatorDeclaration(attributeLists, modifiers, SyntaxFactory.Token(SyntaxKind.FuncKeyword), SyntaxFactory.Token(SyntaxKind.OperatorKeyword), SyntaxFactory.Token(SyntaxKind.ImplicitKeyword), SyntaxFactory.Token(SyntaxKind.AsKeyword), parameterList, SyntaxFactory.Token(SyntaxKind.MinusGreaterThanToken), type, contractClauses, body, expressionBody, eosToken);
+      return SyntaxFactory.ConversionOperatorDeclaration(attributeLists, modifiers, SyntaxFactory.Token(SyntaxKind.FuncKeyword), SyntaxFactory.Token(SyntaxKind.OperatorKeyword), default(SyntaxToken), SyntaxFactory.Token(SyntaxKind.AsKeyword), parameterList, SyntaxFactory.Token(SyntaxKind.MinusGreaterThanToken), type, contractClauses, body, expressionBody, eosToken);
     }
 
     /// <summary>Creates a new ConversionOperatorDeclarationSyntax instance.</summary>
     public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(TypeSyntax type)
     {
-      return SyntaxFactory.ConversionOperatorDeclaration(default(SyntaxList<AttributeSyntax>), default(SyntaxTokenList), SyntaxFactory.Token(SyntaxKind.FuncKeyword), SyntaxFactory.Token(SyntaxKind.OperatorKeyword), SyntaxFactory.Token(SyntaxKind.ImplicitKeyword), SyntaxFactory.Token(SyntaxKind.AsKeyword), SyntaxFactory.ParameterList(), SyntaxFactory.Token(SyntaxKind.MinusGreaterThanToken), type, default(SyntaxList<ContractClauseSyntax>), default(BlockSyntax), default(ArrowExpressionClauseSyntax), default(SyntaxToken));
+      return SyntaxFactory.ConversionOperatorDeclaration(default(SyntaxList<AttributeSyntax>), default(SyntaxTokenList), SyntaxFactory.Token(SyntaxKind.FuncKeyword), SyntaxFactory.Token(SyntaxKind.OperatorKeyword), default(SyntaxToken), SyntaxFactory.Token(SyntaxKind.AsKeyword), SyntaxFactory.ParameterList(), SyntaxFactory.Token(SyntaxKind.MinusGreaterThanToken), type, default(SyntaxList<ContractClauseSyntax>), default(BlockSyntax), default(ArrowExpressionClauseSyntax), default(SyntaxToken));
     }
 
     /// <summary>Creates a new ConstructorDeclarationSyntax instance.</summary>

@@ -195,7 +195,7 @@ repository:
         match: \bnull\b
   keywords:
     name: keyword.type.sk
-    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b
+    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b
   comment:
     patterns:
     - name: comment.block.sk

@@ -1021,7 +1021,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions.ContextQuery
             if (token.IsKind(SyntaxKind.OperatorKeyword))
             {
                 if (token.GetPreviousToken(includeSkipped: true).IsKind(SyntaxKind.ImplicitKeyword) ||
-                    token.GetPreviousToken(includeSkipped: true).IsKind(SyntaxKind.ExplicitKeyword))
+                    token.GetPreviousToken(includeSkipped: true).IsKind(SyntaxKind.AsKeyword))
                 {
                     return true;
                 }

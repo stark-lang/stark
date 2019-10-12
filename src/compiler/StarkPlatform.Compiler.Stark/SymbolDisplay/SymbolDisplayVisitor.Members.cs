@@ -446,12 +446,13 @@ namespace StarkPlatform.Compiler.Stark
                     {
                         // "System.IntPtr.explicit operator System.IntPtr(int)"
 
-                        if (symbol.MetadataName == WellKnownMemberNames.ExplicitConversionName)
+                        // TODO: rewrite this part
+                        AddSpace();
+                        AddKeyword(SyntaxKind.OperatorKeyword);
+
+                        if (symbol.MetadataName == WellKnownMemberNames.ImplicitConversionName)
                         {
-                            AddKeyword(SyntaxKind.ExplicitKeyword);
-                        }
-                        else if (symbol.MetadataName == WellKnownMemberNames.ImplicitConversionName)
-                        {
+                            AddSpace();
                             AddKeyword(SyntaxKind.ImplicitKeyword);
                         }
                         else
@@ -459,9 +460,9 @@ namespace StarkPlatform.Compiler.Stark
                             builder.Add(CreatePart(SymbolDisplayPartKind.MethodName, symbol,
                                 SyntaxFacts.GetText(SyntaxFacts.GetOperatorKind(symbol.MetadataName))));
                         }
-
                         AddSpace();
-                        AddKeyword(SyntaxKind.OperatorKeyword);
+                        AddKeyword(SyntaxKind.AsKeyword);
+
                         AddSpace();
                         AddReturnType(symbol);
                     }

@@ -678,7 +678,7 @@
         <key>name</key>
         <string>keyword.type.sk</string>
         <key>match</key>
-        <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b</string>
+        <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b</string>
       </dict>
       <key>comment</key>
       <dict>

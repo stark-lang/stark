@@ -11,5 +11,7 @@ namespace core
         public static func operator implicit as(value: i32) -> Index => new Index(value)
 
         public static func operator implicit as(value: int) -> Index => new Index(value)
+
+        public static func operator as(index: Index) -> int => index.value
     }
 }

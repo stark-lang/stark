@@ -671,9 +671,8 @@ namespace StarkPlatform.Compiler.Stark
 
                 case SyntaxKind.ConversionOperatorDeclaration:
                     anyNonTypeMembers = true;
-                    set.Add(((Syntax.InternalSyntax.ConversionOperatorDeclarationSyntax)member).ImplicitOrExplicitKeyword.Kind == SyntaxKind.ImplicitKeyword
-                        ? WellKnownMemberNames.ImplicitConversionName
-                        : WellKnownMemberNames.ExplicitConversionName);
+                    set.Add(((Syntax.InternalSyntax.ConversionOperatorDeclarationSyntax)member).ImplicitOrExplicitKeyword == null ? WellKnownMemberNames.ExplicitConversionName
+                        : WellKnownMemberNames.ImplicitConversionName);
                     break;
 
                 case SyntaxKind.GlobalStatement:

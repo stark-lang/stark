@@ -61,7 +61,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
             var operatorToken = SyntaxFactory.Token(SyntaxFacts.GetOperatorKind(method.MetadataName));
             var keyword = method.MetadataName == WellKnownMemberNames.ImplicitConversionName
                 ? SyntaxFactory.Token(SyntaxKind.ImplicitKeyword)
-                : SyntaxFactory.Token(SyntaxKind.ExplicitKeyword);
+                : default;
 
             var declaration = SyntaxFactory.ConversionOperatorDeclaration(
                 attributeLists: AttributeGenerator.GenerateAttributeLists(method.GetAttributes(), options),

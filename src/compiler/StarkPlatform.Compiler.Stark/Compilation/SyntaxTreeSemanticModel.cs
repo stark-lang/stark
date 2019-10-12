@@ -1577,13 +1577,13 @@ namespace StarkPlatform.Compiler.Stark
                     return OperatorFacts.OperatorNameFromDeclaration(operatorDecl);
 
                 case SyntaxKind.ConversionOperatorDeclaration:
-                    if (((ConversionOperatorDeclarationSyntax)declaration).ImplicitOrExplicitKeyword.Kind() == SyntaxKind.ExplicitKeyword)
+                    if (((ConversionOperatorDeclarationSyntax)declaration).ImplicitOrExplicitKeyword.Kind() == SyntaxKind.ImplicitKeyword)
                     {
-                        return WellKnownMemberNames.ExplicitConversionName;
+                        return WellKnownMemberNames.ImplicitConversionName;
                     }
                     else
                     {
-                        return WellKnownMemberNames.ImplicitConversionName;
+                        return WellKnownMemberNames.ExplicitConversionName;
                     }
 
                 case SyntaxKind.EventFieldDeclaration:

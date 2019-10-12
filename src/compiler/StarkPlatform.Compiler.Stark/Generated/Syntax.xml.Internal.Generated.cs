@@ -26816,8 +26816,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         this.funcKeyword = funcKeyword;
         this.AdjustFlagsAndWidth(operatorKeyword);
         this.operatorKeyword = operatorKeyword;
-        this.AdjustFlagsAndWidth(implicitOrExplicitKeyword);
-        this.implicitOrExplicitKeyword = implicitOrExplicitKeyword;
+        if (implicitOrExplicitKeyword != null)
+        {
+            this.AdjustFlagsAndWidth(implicitOrExplicitKeyword);
+            this.implicitOrExplicitKeyword = implicitOrExplicitKeyword;
+        }
         this.AdjustFlagsAndWidth(asKeyword);
         this.asKeyword = asKeyword;
         this.AdjustFlagsAndWidth(parameterList);
@@ -26868,8 +26871,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         this.funcKeyword = funcKeyword;
         this.AdjustFlagsAndWidth(operatorKeyword);
         this.operatorKeyword = operatorKeyword;
-        this.AdjustFlagsAndWidth(implicitOrExplicitKeyword);
-        this.implicitOrExplicitKeyword = implicitOrExplicitKeyword;
+        if (implicitOrExplicitKeyword != null)
+        {
+            this.AdjustFlagsAndWidth(implicitOrExplicitKeyword);
+            this.implicitOrExplicitKeyword = implicitOrExplicitKeyword;
+        }
         this.AdjustFlagsAndWidth(asKeyword);
         this.asKeyword = asKeyword;
         this.AdjustFlagsAndWidth(parameterList);
@@ -26919,8 +26925,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         this.funcKeyword = funcKeyword;
         this.AdjustFlagsAndWidth(operatorKeyword);
         this.operatorKeyword = operatorKeyword;
-        this.AdjustFlagsAndWidth(implicitOrExplicitKeyword);
-        this.implicitOrExplicitKeyword = implicitOrExplicitKeyword;
+        if (implicitOrExplicitKeyword != null)
+        {
+            this.AdjustFlagsAndWidth(implicitOrExplicitKeyword);
+            this.implicitOrExplicitKeyword = implicitOrExplicitKeyword;
+        }
         this.AdjustFlagsAndWidth(asKeyword);
         this.asKeyword = asKeyword;
         this.AdjustFlagsAndWidth(parameterList);
@@ -46475,14 +46484,16 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         default:
           throw new ArgumentException(nameof(operatorKeyword));
       }
-      if (implicitOrExplicitKeyword == null)
-        throw new ArgumentNullException(nameof(implicitOrExplicitKeyword));
+      if (implicitOrExplicitKeyword != null)
+      {
       switch (implicitOrExplicitKeyword.Kind)
       {
         case SyntaxKind.ImplicitKeyword:
+        case SyntaxKind.None:
           break;
         default:
           throw new ArgumentException(nameof(implicitOrExplicitKeyword));
+      }
       }
       if (asKeyword == null)
         throw new ArgumentNullException(nameof(asKeyword));
@@ -54050,14 +54061,16 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         default:
           throw new ArgumentException(nameof(operatorKeyword));
       }
-      if (implicitOrExplicitKeyword == null)
-        throw new ArgumentNullException(nameof(implicitOrExplicitKeyword));
+      if (implicitOrExplicitKeyword != null)
+      {
       switch (implicitOrExplicitKeyword.Kind)
       {
         case SyntaxKind.ImplicitKeyword:
+        case SyntaxKind.None:
           break;
         default:
           throw new ArgumentException(nameof(implicitOrExplicitKeyword));
+      }
       }
       if (asKeyword == null)
         throw new ArgumentNullException(nameof(asKeyword));

@@ -3633,7 +3633,7 @@
       </PropertyComment>
       <Kind Name="OperatorKeyword"/>
     </Field>
-    <Field Name="ImplicitOrExplicitKeyword" Type="SyntaxToken">
+    <Field Name="ImplicitOrExplicitKeyword" Type="SyntaxToken" Optional="true">
       <PropertyComment>
         <summary>Gets the "implicit" or "explicit" token.</summary>
       </PropertyComment>

@@ -945,7 +945,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                     return ParseIndexerMemberCref();
                 case SyntaxKind.OperatorKeyword:
                     return ParseOperatorMemberCref();
-                case SyntaxKind.ExplicitKeyword:
                 case SyntaxKind.ImplicitKeyword:
                     return ParseConversionOperatorMemberCref();
                 default:
@@ -1071,7 +1070,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         /// </summary>
         private ConversionOperatorMemberCrefSyntax ParseConversionOperatorMemberCref()
         {
-            Debug.Assert(CurrentToken.Kind == SyntaxKind.ExplicitKeyword ||
+            Debug.Assert(CurrentToken.Kind == SyntaxKind.None ||
                 CurrentToken.Kind == SyntaxKind.ImplicitKeyword);
             SyntaxToken implicitOrExplicit = EatToken();
 

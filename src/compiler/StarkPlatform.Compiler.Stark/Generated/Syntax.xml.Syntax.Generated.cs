@@ -17340,7 +17340,14 @@ namespace StarkPlatform.Compiler.Stark.Syntax
     /// <summary>Gets the "implicit" or "explicit" token.</summary>
     public SyntaxToken ImplicitOrExplicitKeyword 
     {
-      get { return new SyntaxToken(this, ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ConversionOperatorDeclarationSyntax)this.Green).implicitOrExplicitKeyword, this.GetChildPosition(4), this.GetChildIndex(4)); }
+        get
+        {
+            var slot = ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ConversionOperatorDeclarationSyntax)this.Green).implicitOrExplicitKeyword;
+            if (slot != null)
+                return new SyntaxToken(this, slot, this.GetChildPosition(4), this.GetChildIndex(4));
+
+            return default(SyntaxToken);
+        }
     }
 
     /// <summary>Gets the "as" keyword token.</summary>
