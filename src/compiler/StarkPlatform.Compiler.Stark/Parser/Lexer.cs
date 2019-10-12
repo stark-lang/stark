@@ -457,7 +457,8 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                         if (TextWindow.PeekChar() == '.')
                         {
                             TextWindow.AdvanceChar();
-                            if (TextWindow.PeekChar() == '.')
+                            var nextPeek = TextWindow.PeekChar();
+                            if (nextPeek == '.')
                             {
                                 // Triple-dot: explicitly reject this, to allow triple-dot
                                 // to be added to the language without a breaking change.
@@ -465,7 +466,15 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                                 this.AddError(ErrorCode.ERR_TripleDotNotAllowed);
                             }
 
-                            info.Kind = SyntaxKind.DotDotToken;
+                            if (nextPeek == '<')
+                            {
+                                TextWindow.AdvanceChar();
+                                info.Kind = SyntaxKind.DotDotLessThanToken;
+                            }
+                            else
+                            {
+                                info.Kind = SyntaxKind.DotDotToken;
+                            }
                         }
                         else
                         {
@@ -3992,13 +4001,22 @@ top:
                 case '.':
                     if (AdvanceIfMatches('.'))
                     {
-                        if (TextWindow.PeekChar() == '.')
+                        var nextChar = TextWindow.PeekChar();
+                        if (nextChar == '.')
                         {
                             // See documentation in ScanSyntaxToken
                             this.AddCrefError(ErrorCode.ERR_UnexpectedCharacter, ".");
                         }
 
-                        info.Kind = SyntaxKind.DotDotToken;
+                        if (nextChar == '<')
+                        {
+                            AdvanceIfMatches('<');
+                            info.Kind = SyntaxKind.DotDotLessThanToken;
+                        }
+                        else
+                        {
+                            info.Kind = SyntaxKind.DotDotToken;
+                        }
                     }
                     else
                     {

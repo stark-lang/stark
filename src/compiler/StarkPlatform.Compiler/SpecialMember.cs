@@ -54,6 +54,7 @@ namespace StarkPlatform.Compiler
 
         core_Array__size,
         core_Array_T__item,
+        core_Index__value,
 
         System_Object__GetHashCode,
         System_Object__Equals,

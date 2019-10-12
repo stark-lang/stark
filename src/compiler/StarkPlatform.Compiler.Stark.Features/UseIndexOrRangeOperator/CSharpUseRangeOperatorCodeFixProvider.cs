@@ -174,6 +174,7 @@ namespace StarkPlatform.Compiler.Stark.UseIndexOrRangeOperator
 
             return RangeExpression(
                 startExpr != null && startFromEnd ? IndexExpression(startExpr) : startExpr,
+                SyntaxFactory.Token(SyntaxKind.DotDotToken),
                 endExpr != null && endFromEnd ? IndexExpression(endExpr) : endExpr);
         }
 
@@ -196,6 +197,7 @@ namespace StarkPlatform.Compiler.Stark.UseIndexOrRangeOperator
             var endExpr = (ExpressionSyntax)CSharpSyntaxGenerator.Instance.LiteralExpression(constant2 - constant1);
             return RangeExpression(
                 constant1Syntax,
+                SyntaxFactory.Token(SyntaxKind.DotDotToken),
                 IndexExpression(endExpr));
         }
 

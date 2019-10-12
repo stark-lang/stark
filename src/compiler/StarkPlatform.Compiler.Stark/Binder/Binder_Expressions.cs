@@ -2021,8 +2021,8 @@ namespace StarkPlatform.Compiler.Stark
                     syntax: node);
             }
 
-            BoundExpression left = BindRangeExpressionOperand(node.LeftOperand, diagnostics);
-            BoundExpression right = BindRangeExpressionOperand(node.RightOperand, diagnostics);
+            BoundExpression left = BindRangeExpressionOperand(node.LeftOperand, diagnostics, false);
+            BoundExpression right = BindRangeExpressionOperand(node.RightOperand, diagnostics, node.OperatorToken.Kind() == SyntaxKind.DotDotLessThanToken);
 
             if (left?.Type.IsNullableType() == true || right?.Type.IsNullableType() == true)
             {
@@ -2042,7 +2042,7 @@ namespace StarkPlatform.Compiler.Stark
             return new BoundRangeExpression(node, left, right, symbolOpt, rangeType);
         }
 
-        private BoundExpression BindRangeExpressionOperand(ExpressionSyntax operand, DiagnosticBag diagnostics)
+        private BoundExpression BindRangeExpressionOperand(ExpressionSyntax operand, DiagnosticBag diagnostics, bool reduceByOne)
         {
             if (operand is null)
             {
@@ -2075,7 +2075,39 @@ namespace StarkPlatform.Compiler.Stark
                 GenerateImplicitConversionError(diagnostics, operand, conversion, boundOperand, indexType);
             }
 
-            return CreateConversion(boundOperand, conversion, indexType, diagnostics);
+            var result = CreateConversion(boundOperand, conversion, indexType, diagnostics);
+
+            // If this index is not inclusive, reduce it by one
+            if (reduceByOne && conversion.IsValid)
+            {
+                // Convert result to (Index)((int)result - (int)1)
+                // TODO: Is this the correct place to do that conversion?
+
+                var intType = GetSpecialType(SpecialType.System_Int, diagnostics, operand);
+
+                var coreIndexField = (FieldSymbol)GetSpecialTypeMember(SpecialMember.core_Index__value, diagnostics, operand);
+                var intValue = new BoundFieldAccess(operand, result, coreIndexField, null) { WasCompilerGenerated = true };
+
+                var int1 = new BoundLiteral(
+                        operand,
+                        ConstantValue.CreateInt(1),
+                        GetSpecialType(SpecialType.System_Int, diagnostics, operand))
+                    { WasCompilerGenerated = true };
+                result = new BoundBinaryOperator(operand, BinaryOperatorKind.IntSubtraction, null, null, LookupResultKind.Viable, intValue, int1, intType) { WasCompilerGenerated = true };
+
+                useSiteDiagnostics = null;
+                conversion = this.Conversions.ClassifyImplicitConversionFromExpression(result, indexType, ref useSiteDiagnostics);
+                diagnostics.Add(operand, useSiteDiagnostics);
+
+                if (!conversion.IsValid)
+                {
+                    GenerateImplicitConversionError(diagnostics, operand, conversion, boundOperand, indexType);
+                }
+
+                result = CreateConversion(result, conversion, indexType, diagnostics);
+            }
+
+            return result;
         }
 
         private BoundExpression BindCastCore(ExpressionSyntax node, BoundExpression operand, TypeSymbolWithAnnotations targetTypeWithNullability, bool wasCompilerGenerated, DiagnosticBag diagnostics)

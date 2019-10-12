@@ -39,7 +39,8 @@ namespace StarkPlatform.Compiler.Stark
         HashToken = 8220,
         SlashToken = 8221,
         DotDotToken = 8222,
-        AtToken = 8223,
+        DotDotLessThanToken = 8223,
+        AtToken = 8224,
 
         // additional xml tokens
         SlashGreaterThanToken = 8232, // xml empty element end

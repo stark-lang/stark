@@ -5265,6 +5265,7 @@ namespace StarkPlatform.Compiler.Stark
       switch (operatorToken.Kind())
       {
         case SyntaxKind.DotDotToken:
+        case SyntaxKind.DotDotLessThanToken:
           break;
         default:
           throw new ArgumentException(nameof(operatorToken));
@@ -5274,15 +5275,9 @@ namespace StarkPlatform.Compiler.Stark
 
 
     /// <summary>Creates a new RangeExpressionSyntax instance.</summary>
-    public static RangeExpressionSyntax RangeExpression(ExpressionSyntax leftOperand, ExpressionSyntax rightOperand)
+    public static RangeExpressionSyntax RangeExpression(SyntaxToken operatorToken)
     {
-      return SyntaxFactory.RangeExpression(leftOperand, SyntaxFactory.Token(SyntaxKind.DotDotToken), rightOperand);
-    }
-
-    /// <summary>Creates a new RangeExpressionSyntax instance.</summary>
-    public static RangeExpressionSyntax RangeExpression()
-    {
-      return SyntaxFactory.RangeExpression(default(ExpressionSyntax), SyntaxFactory.Token(SyntaxKind.DotDotToken), default(ExpressionSyntax));
+      return SyntaxFactory.RangeExpression(default(ExpressionSyntax), operatorToken, default(ExpressionSyntax));
     }
 
     /// <summary>Creates a new ImplicitElementAccessSyntax instance.</summary>

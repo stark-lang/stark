@@ -594,6 +594,7 @@
     </Field>
     <Field Name="OperatorToken" Type="SyntaxToken">
       <Kind Name="DotDotToken"/>
+      <Kind Name="DotDotLessThanToken"/>
       <PropertyComment>
         <summary>SyntaxToken representing the operator of the range expression.</summary>
       </PropertyComment>

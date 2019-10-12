@@ -141,6 +141,11 @@ namespace StarkPlatform.Compiler
         core_Array_T,
 
         /// <summary>
+        /// Indicates that the type is <see cref="Index"/>.
+        /// </summary>
+        core_Index,
+
+        /// <summary>
         /// Indicates that the type is <see cref="IEnumerable{T}"/>.
         /// </summary>
         core_MutableIterable_T_TIterator, // Note: Iterable<int> (i.e. constructed type) has no special type

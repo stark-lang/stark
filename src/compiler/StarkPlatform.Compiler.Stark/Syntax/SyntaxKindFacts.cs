@@ -1387,6 +1387,8 @@ namespace StarkPlatform.Compiler.Stark
                     return "??=";
                 case SyntaxKind.DotDotToken:
                     return "..";
+                case SyntaxKind.DotDotLessThanToken:
+                    return "..<";
 
                 // Keywords
                 case SyntaxKind.BoolKeyword:

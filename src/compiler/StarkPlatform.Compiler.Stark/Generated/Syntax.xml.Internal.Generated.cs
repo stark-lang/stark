@@ -41752,6 +41752,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       switch (operatorToken.Kind)
       {
         case SyntaxKind.DotDotToken:
+        case SyntaxKind.DotDotLessThanToken:
           break;
         default:
           throw new ArgumentException(nameof(operatorToken));
@@ -49326,6 +49327,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       switch (operatorToken.Kind)
       {
         case SyntaxKind.DotDotToken:
+        case SyntaxKind.DotDotLessThanToken:
           break;
         default:
           throw new ArgumentException(nameof(operatorToken));

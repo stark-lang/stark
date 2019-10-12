@@ -7509,6 +7509,7 @@ tryAgain:
                 case SyntaxKind.ThrowKeyword:
                 case SyntaxKind.StackAllocKeyword:
                 case SyntaxKind.DotDotToken:
+                case SyntaxKind.DotDotLessThanToken:
                     return true;
                 case SyntaxKind.IdentifierToken:
                     // Specifically allow the from contextual keyword, because it can always be the start of an
@@ -7785,7 +7786,7 @@ tryAgain:
                 var operand = this.ParseSubExpression(newPrecedence);
                 leftOperand = _syntaxFactory.PrefixUnaryExpression(opKind, opToken, operand);
             }
-            else if (tk == SyntaxKind.DotDotToken)
+            else if (tk == SyntaxKind.DotDotToken || tk == SyntaxKind.DotDotLessThanToken)
             {
                 // Operator ".." here can either be a prefix unary operator or a stand alone empty range:
                 var opToken = this.EatToken();
@@ -7866,7 +7867,7 @@ tryAgain:
                     opKind = SyntaxFacts.GetAssignmentExpression(tk);
                     isAssignmentOperator = true;
                 }
-                else if (tk == SyntaxKind.DotDotToken)
+                else if (tk == SyntaxKind.DotDotToken || tk == SyntaxKind.DotDotLessThanToken)
                 {
                     opKind = SyntaxKind.RangeExpression;
                 }
@@ -7954,7 +7955,7 @@ tryAgain:
                     }
                     else
                     {
-                        if (tk == SyntaxKind.DotDotToken)
+                        if (tk == SyntaxKind.DotDotToken || tk == SyntaxKind.DotDotLessThanToken)
                         {
                             // Operator ".." here can either be a binary or a postfix unary operator:
                             Debug.Assert(opKind == SyntaxKind.RangeExpression);

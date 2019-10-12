@@ -45,6 +45,7 @@ namespace StarkPlatform.Compiler
             "core.UInt",
             "core.Array",
             "core.Array`1",
+            "core.Index",
             "core.MutableIterable`2",  // core_MutableIterable_T_TIterator
             "core.Iterable`2",         // core_Iterable_T_TIterator
             "core.Collections.Generic.IList`1",

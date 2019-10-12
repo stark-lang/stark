@@ -342,6 +342,12 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.GenericTypeParameter, 0,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
 
+                // core_Index__value
+                (byte)MemberFlags.Field,                                                                                    // Flags
+                (byte)SpecialType.core_Index,                                                                               // DeclaringTypeId
+                0,                                                                                                          // Arity
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
+                    
                 // System_Object__GetHashCode
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
                 (byte)SpecialType.System_Object,                                                                            // DeclaringTypeId
@@ -555,6 +561,7 @@ namespace StarkPlatform.Compiler
                 "Dispose",                                  // System_IDisposable__Dispose
                 "size",                                     // core_Array__size
                 "this[]",                                   // core_Array_T__item
+                "value",                                    // core_Index__value
                 "GetHashCode",                              // System_Object__GetHashCode
                 "Equals",                                   // System_Object__Equals
                 "ToString",                                 // System_Object__ToString
