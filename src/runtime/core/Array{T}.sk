@@ -1,0 +1,91 @@
+import core.runtime
+
+namespace core {
+
+    public class Array<T> extends Array implements IArray<T>
+    {
+        // The array cannot be initialized by using directly this class
+        private constructor() {}
+
+        /// ref indexer #2, not readonly
+        public extern func operator [index: int] -> ref T { 
+            @Intrinsic
+            get 
+        }
+
+        // // in indexer #3, readonly
+        // public extern func operator [index: int] -> in T {
+        //     @Intrinsic
+        //     get 
+        // }
+
+        readonly func Iterable<T, int>.iterate_begin() -> int => 0
+
+        readonly func Iterable<T, int>.iterate_has_current(index: ref int) -> bool => index < size
+
+        readonly func Iterable<T, int>.iterate_current(index: ref int) -> T => this[index]
+
+        readonly func Iterable<T, int>.iterate_next(index: ref int) => index++
+
+        readonly func Iterable<T, int>.iterate_end(state: ref int) {}
+
+        func MutableIterable<T, int>.iterate_current(index: ref int) -> ref T => ref this[index]
+
+
+        // readonly func Iterable<T, int>.iterate_begin() -> int => -1
+
+        // @FuncImpl(FuncImplOptions.AGGRESSIVE_INLINING)
+        // readonly func Iterable<T, int>.iterate_next(index: ref int) -> bool {
+        //     var nextIndex = index + 1
+        //     if nextIndex < size then {
+        //         index = nextIndex
+        //         return true   
+        //     }
+        //     return false
+        // }
+
+        // func Iterable<T, int>.iterate_item(index: ref int) -> T => this[index] 
+
+        // func MutableIterable<T, int>.iterate_item(index: ref int) -> ref T => ref this[index] 
+
+        // readonly func Iterable<T, int>.iterate_end(state: ref int) {}
+    }
+
+    public module array_playground
+    {
+        static func get_new_array_with_initializer() -> []u8
+        {
+            return new []u8 { 1, 2, 3, 4}
+        }
+
+        static func get_new_array_with_size_and_initializer() -> []u8
+        {
+            return new [4]u8 { 1, 2, 3, 4}
+        }
+
+        static func get_array_element_int(array: []u8) -> u8
+        {
+            return array[0]
+        }
+
+        static func get_array_element_int(array: []u8, index: int) -> u8
+        {
+            return array[index]
+        }
+
+        static func get_array_class_element_int(array: Array<u8>) -> u8
+        {
+            return array[0]
+        }
+
+        static func get_array_class_element_int(array: Array<u8>, index: int) -> u8
+        {
+            return array[index]
+        }
+
+        static func get_array_to_array_class(array: []u8) -> Array<u8> => array
+
+        static func get_array_class_to_array(array: Array<u8>) -> []u8 => array
+
+    }    
+}

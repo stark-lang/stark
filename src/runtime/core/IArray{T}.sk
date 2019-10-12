@@ -1,0 +1,22 @@
+import core.runtime
+
+namespace core
+{
+    public interface IArray<T> extends ISizeable, MutableIterable<T, int>
+    {
+        /// ref indexer #2, not readonly
+        func operator [index: int] -> ref T 
+            requires index >= 0 && index < size
+        { 
+            get 
+        }
+
+        // // in indexer #3, readonly
+        // func operator [index: int] -> in T
+        //     requires index >= 0 && index < size
+        // {            
+        //     readonly get 
+        // }
+    }
+}
+

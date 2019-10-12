@@ -1,0 +1,12 @@
+namespace core {
+    public abstract class Array implements ISizeable
+    {
+        private let _size : int
+        private var _firstElement : int
+
+        private protected constructor() {}
+
+        // size is readonly
+        public func size -> int { readonly get => _size }
+    }
+}
