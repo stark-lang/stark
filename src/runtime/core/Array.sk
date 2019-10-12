@@ -1,8 +1,11 @@
 namespace core {
     public abstract class Array implements ISizeable
     {
+#pragma warning disable CS0169
+#pragma warning disable CS0649
         private let _size : int
         private var _firstElement : int
+#pragma warning restore
 
         private protected constructor() {}
 
