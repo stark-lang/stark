@@ -524,7 +524,7 @@ namespace StarkPlatform.Compiler.Stark
             switch (type.TypeKind)
             {
                 case TypeKind.Array:
-                    return ContainsNestedTypeOfUnconstructedGenericType(((ArrayTypeSymbol)type).ElementType.TypeSymbol);
+                    return ContainsNestedTypeOfUnconstructedGenericType(type.GetArrayElementType().TypeSymbol);
                 case TypeKind.Pointer:
                     return ContainsNestedTypeOfUnconstructedGenericType(((PointerTypeSymbol)type).PointedAtType.TypeSymbol);
                 case TypeKind.Delegate:

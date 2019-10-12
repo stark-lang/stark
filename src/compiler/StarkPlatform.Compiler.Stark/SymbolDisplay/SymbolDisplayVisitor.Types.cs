@@ -115,38 +115,7 @@ namespace StarkPlatform.Compiler.Stark
 
         private void AddArrayRank(IArrayTypeSymbol symbol)
         {
-            bool insertStars = format.MiscellaneousOptions.IncludesOption(SymbolDisplayMiscellaneousOptions.UseAsterisksInMultiDimensionalArrays);
-
             AddPunctuation(SyntaxKind.OpenBracketToken);
-
-            if (symbol.Rank > 1)
-            {
-                if (insertStars)
-                {
-                    AddPunctuation(SyntaxKind.AsteriskToken);
-                }
-            }
-            else
-            {
-                var array = symbol as ArrayTypeSymbol;
-
-                if ((object)array != null && !array.IsSZArray)
-                {
-                    // Always add an asterisk in this case in order to distinguish between SZArray and MDArray.
-                    AddPunctuation(SyntaxKind.AsteriskToken);
-                }
-            }
-
-            for (int i = 0; i < symbol.Rank - 1; i++)
-            {
-                AddPunctuation(SyntaxKind.CommaToken);
-
-                if (insertStars)
-                {
-                    AddPunctuation(SyntaxKind.AsteriskToken);
-                }
-            }
-
             AddPunctuation(SyntaxKind.CloseBracketToken);
         }
 

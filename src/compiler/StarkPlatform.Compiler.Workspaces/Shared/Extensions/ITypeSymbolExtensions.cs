@@ -488,7 +488,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
 
             switch (typeSymbol.SpecialType)
             {
-                case SpecialType.System_Array_T:
+                case SpecialType.core_Array_T:
                 case SpecialType.System_Delegate:
                 case SpecialType.System_MulticastDelegate:
                 case SpecialType.System_Enum:

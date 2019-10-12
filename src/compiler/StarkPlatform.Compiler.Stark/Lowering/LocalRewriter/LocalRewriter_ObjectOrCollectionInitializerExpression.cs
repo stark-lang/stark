@@ -335,11 +335,11 @@ namespace StarkPlatform.Compiler.Stark
                     {
                         var arrayAccess = (BoundArrayAccess)rewrittenLeft;
                         var indices = EvaluateSideEffectingArgumentsToTemps(
-                            arrayAccess.Indices,
+                            ImmutableArray.Create(arrayAccess.Index),
                             paramRefKindsOpt: default,
                             result,
                             ref temps);
-                        rewrittenAccess = arrayAccess.Update(rewrittenReceiver, indices, arrayAccess.Type);
+                        rewrittenAccess = arrayAccess.Update(rewrittenReceiver, indices[0], arrayAccess.Type);
 
                         if (!isRhsNestedInitializer)
                         {

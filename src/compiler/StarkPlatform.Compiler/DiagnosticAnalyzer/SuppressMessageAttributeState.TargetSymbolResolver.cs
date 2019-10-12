@@ -687,19 +687,13 @@ namespace StarkPlatform.Compiler.Diagnostics
             {
                 Debug.Assert(PeekNextChar() == '[');
                 ++_index;
-                int rank = 1;
-
                 while (true)
                 {
                     var nextChar = PeekNextChar();
-                    if (nextChar == ',')
-                    {
-                        ++rank;
-                    }
-                    else if (nextChar == ']')
+                    if (nextChar == ']')
                     {
                         ++_index;
-                        return _compilation.CreateArrayTypeSymbol(typeSymbol, rank);
+                        return _compilation.CreateArrayTypeSymbol(typeSymbol);
                     }
                     else if (!char.IsDigit(nextChar) && nextChar != '.')
                     {

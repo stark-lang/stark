@@ -14,9 +14,9 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 _compilation = compilation;
             }
 
-            public ITypeSymbol CreateArrayTypeSymbol(ITypeSymbol elementType, int rank)
+            public ITypeSymbol CreateArrayTypeSymbol(ITypeSymbol elementType)
             {
-                return _compilation.CreateArrayTypeSymbol(elementType, rank);
+                return _compilation.CreateArrayTypeSymbol(elementType);
             }
 
             public ITypeSymbol CreatePointerTypeSymbol(ITypeSymbol pointedAtType)

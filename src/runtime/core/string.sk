@@ -1,12 +1,76 @@
 namespace core
 {
-    public struct String
+    /// A string is a struct wrapping an array of u8
+    /// Can be mutable or immutable/readonly and sharing
+    /// the same interface as arrays
+    public struct String implements IArray<u8>
     {
         private let _buffer : []u8
+
+        public constructor(size: int)
+            requires size >= 0
+        {
+            _buffer = new [size]u8
+        }
 
         public constructor(buffer: readonly []u8)
         {
             _buffer = buffer
         }
+
+        public func size -> int { readonly get => _buffer.size }
+
+        public func operator [index: int] -> ref u8 => ref _buffer[index]
+
+        // public func operator [index: int] -> in u8  => in _buffer[index]
+
+        readonly func Iterable<u8, int>.iterate_begin() -> int => 0
+
+        readonly func Iterable<u8, int>.iterate_has_current(index: ref int) -> bool => index < size
+
+        readonly func Iterable<u8, int>.iterate_current(index: ref int) -> u8 => this[index]
+
+        func MutableIterable<u8, int>.iterate_current(index: ref int) -> ref u8 => ref this[index]
+
+        readonly func Iterable<u8, int>.iterate_next(index: ref int) => index++
+
+        readonly func Iterable<u8, int>.iterate_end(index: ref int) {}
+    }
+
+    public module test
+    {
+        // public static func Iterate(list: List<int>)
+        // {
+        //     // don't prefetch
+        //     var iterator = list.iterate_create()
+
+        //     try {
+        //         // starts to use the iterator, can start async (if async iterator would be used)
+        //         // can prefetch if necessary to let has_next working immediately
+        //         list.iterate_begin(ref iterator)
+
+        //         // has_next is only checking
+        //         while list.iterate_has_next(ref iterator)
+        //         {
+        //             // Get the next element (might have been prefetched by begin, might prefetch the next-next)
+        //             var next = list.iterate_next(ref iterator)
+
+        //             // 
+        //         }
+        //         // Ends the iterator
+        //         list.iterate_end(ref iterator)
+        //     } finally {
+        //         list.iterate_destroy(ref iterator);
+        //     }
+        // }
+
+        // public static func IterateWithForEach(list: List<int>)
+        // {
+        //     // implementation equivalent of the verbose loop above
+        //     for item in list
+        //     {
+             
+        //     }
+        // }
     }
 }

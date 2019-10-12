@@ -570,7 +570,7 @@ namespace StarkPlatform.Compiler.Stark
                 ParameterSymbol parameter = parameters[i];
                 TypedConstant reorderedArgument;
 
-                if (parameter.IsParams && parameter.Type.TypeSymbol.IsSZArray() && i + 1 == parameterCount)
+                if (parameter.IsParams && parameter.Type.TypeSymbol.IsArray() && i + 1 == parameterCount)
                 {
                     reorderedArgument = GetParamArrayArgument(parameter, constructorArgsArray, constructorArgumentNamesOpt, argumentsCount,
                         argsConsumedCount, this.Conversions, out bool foundNamed);
@@ -1108,7 +1108,7 @@ namespace StarkPlatform.Compiler.Stark
                 {
                     if (type.SpecialType == SpecialType.System_Object ||
                         operandType.IsArray() && type.IsArray() &&
-                        ((ArrayTypeSymbol)type).ElementType.SpecialType == SpecialType.System_Object)
+                        type.GetArrayElementType().SpecialType == SpecialType.System_Object)
                     {
                         var typedConstantKind = operandType.GetAttributeParameterTypedConstantKind(_binder.Compilation);
                         return VisitExpression(operand, typedConstantKind, diagnostics, ref attrHasErrors, curArgumentHasErrors);
@@ -1156,13 +1156,8 @@ namespace StarkPlatform.Compiler.Stark
 
             private TypedConstant VisitArrayCreation(BoundArrayCreation node, DiagnosticBag diagnostics, ref bool attrHasErrors, bool curArgumentHasErrors)
             {
-                ImmutableArray<BoundExpression> bounds = node.Bounds;
-                int boundsCount = bounds.Length;
-
-                if (boundsCount > 1)
-                {
-                    return CreateTypedConstant(node, TypedConstantKind.Error, diagnostics, ref attrHasErrors, curArgumentHasErrors);
-                }
+                BoundExpression size = node.Size;
+                int boundsCount = size != null ? 1 : 0;
 
                 var type = (ArrayTypeSymbol)node.Type;
                 var typedConstantKind = type.GetAttributeParameterTypedConstantKind(_binder.Compilation);
@@ -1176,7 +1171,7 @@ namespace StarkPlatform.Compiler.Stark
                     }
                     else
                     {
-                        if (bounds[0].IsDefaultValue())
+                        if (size != null && size.IsDefaultValue())
                         {
                             initializer = ImmutableArray<TypedConstant>.Empty;
                         }

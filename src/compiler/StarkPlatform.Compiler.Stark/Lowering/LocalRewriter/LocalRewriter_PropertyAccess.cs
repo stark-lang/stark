@@ -34,16 +34,12 @@ namespace StarkPlatform.Compiler.Stark
             // we have a special node for such cases.
             if (rewrittenReceiverOpt != null && rewrittenReceiverOpt.Type.IsArray() && !isLeftOfAssignment)
             {
-                var asArrayType = (ArrayTypeSymbol)rewrittenReceiverOpt.Type;
-                if (asArrayType.IsSZArray)
+                // NOTE: we are not interested in potential badness of Array.Length property.
+                // If it is bad reference compare will not succeed.
+
+                if (ReferenceEquals(propertySymbol, _compilation.GetSpecialTypeMember(SpecialMember.core_Array__size)))
                 {
-                    // NOTE: we are not interested in potential badness of Array.Length property.
-                    // If it is bad reference compare will not succeed.
-                    if (ReferenceEquals(propertySymbol, _compilation.GetSpecialTypeMember(SpecialMember.System_Array__Length)) ||
-                        !_inExpressionLambda && ReferenceEquals(propertySymbol, _compilation.GetSpecialTypeMember(SpecialMember.System_Array__LongLength)))
-                    {
-                        return new BoundArrayLength(syntax, rewrittenReceiverOpt, type);
-                    }
+                    return new BoundArraySize(syntax, rewrittenReceiverOpt, type);
                 }
             }
 

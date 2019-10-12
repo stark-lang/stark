@@ -332,9 +332,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 
             return TypeSymbol.Equals(transformedElementType, arrayType.ElementType.TypeSymbol, TypeCompareKind.ConsiderEverything2) ?
                 arrayType :
-                arrayType.IsSZArray ?
-                    ArrayTypeSymbol.CreateSZArray(_containingAssembly, arrayType.ElementType.WithTypeAndModifiers(transformedElementType, arrayType.ElementType.CustomModifiers)) :
-                    ArrayTypeSymbol.CreateMDArray(_containingAssembly, arrayType.ElementType.WithTypeAndModifiers(transformedElementType, arrayType.ElementType.CustomModifiers), arrayType.Rank, arrayType.Sizes, arrayType.LowerBounds);
+                    ArrayTypeSymbol.CreateArray(_containingAssembly, arrayType.ElementType.WithTypeAndModifiers(transformedElementType, arrayType.ElementType.CustomModifiers));
         }
 
         private PointerTypeSymbol TransformPointerType(PointerTypeSymbol pointerType)

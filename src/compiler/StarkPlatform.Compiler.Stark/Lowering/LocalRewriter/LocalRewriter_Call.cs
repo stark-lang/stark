@@ -906,14 +906,13 @@ namespace StarkPlatform.Compiler.Stark
             // of expression lambdas will appropriately understand Array.Empty<T>().
             if (arrayArgs.Length == 0 && !_inExpressionLambda)
             {
-                ArrayTypeSymbol ats = paramArrayType as ArrayTypeSymbol;
-                if ((object)ats != null) // could be null if there's a semantic error, e.g. the params parameter type isn't an array
+                if (paramArrayType.IsArray()) // could be null if there's a semantic error, e.g. the params parameter type isn't an array
                 {
                     MethodSymbol arrayEmpty = _compilation.GetWellKnownTypeMember(WellKnownMember.System_Array__Empty) as MethodSymbol;
                     if (arrayEmpty != null) // will be null if Array.Empty<T> doesn't exist in reference assemblies
                     {
                         // return an invocation of "Array.Empty<T>()"
-                        arrayEmpty = arrayEmpty.Construct(ImmutableArray.Create(ats.ElementType.TypeSymbol));
+                        arrayEmpty = arrayEmpty.Construct(ImmutableArray.Create(paramArrayType.GetArrayElementType().TypeSymbol));
                         return new BoundCall(
                             syntax,
                             null,
@@ -948,7 +947,7 @@ namespace StarkPlatform.Compiler.Stark
 
             return new BoundArrayCreation(
                 syntax,
-                ImmutableArray.Create(arraySize),
+                arraySize,
                 new BoundArrayInitialization(syntax, arrayArgs) { WasCompilerGenerated = true },
                 paramArrayType)
             { WasCompilerGenerated = true };

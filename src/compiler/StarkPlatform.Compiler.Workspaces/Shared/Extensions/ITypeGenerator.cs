@@ -5,7 +5,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
 {
     internal interface ITypeGenerator
     {
-        ITypeSymbol CreateArrayTypeSymbol(ITypeSymbol elementType, int rank);
+        ITypeSymbol CreateArrayTypeSymbol(ITypeSymbol elementType);
         ITypeSymbol CreatePointerTypeSymbol(ITypeSymbol pointedAtType);
         ITypeSymbol Construct(INamedTypeSymbol namedType, ITypeSymbol[] typeArguments);
     }

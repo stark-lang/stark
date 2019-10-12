@@ -404,9 +404,8 @@ namespace StarkPlatform.Compiler.Stark
                         }
 
                         var boundAccess = (BoundArrayAccess)expr;
-                        if (boundAccess.Indices.Length == 1 &&
-                            TypeSymbol.Equals(
-                                boundAccess.Indices[0].Type,
+                        if (TypeSymbol.Equals(
+                                boundAccess.Index.Type,
                                 Compilation.GetWellKnownType(WellKnownType.core_Range),
                                 TypeCompareKind.ConsiderEverything))
                         {
@@ -2880,7 +2879,7 @@ moreArguments:
                     //                case BoundKind.Dup:
                     //                case BoundKind.TypeOrValueExpression:
                     //                case BoundKind.BadExpression:
-                    //                case BoundKind.ArrayLength:
+                    //                case BoundKind.ArraySize:
                     //                case BoundKind.MethodInfo:
                     //                case BoundKind.FieldInfo:
                     //                case BoundKind.SequencePoint:

@@ -1238,10 +1238,9 @@ namespace StarkPlatform.Compiler.Stark
             // We only try to unwrap parameters if they are a parameter array and are on the last position
             if (parameter.IsParams && isLastParameter)
             {
-                ArrayTypeSymbol arrayType = parameter.Type.TypeSymbol as ArrayTypeSymbol;
-                if ((object)arrayType != null && arrayType.IsSZArray)
+                if (parameter.Type.TypeSymbol.IsArray())
                 {
-                    return arrayType.ElementType.TypeSymbol;
+                    return parameter.Type.TypeSymbol.GetArrayElementType().TypeSymbol;
                 }
             }
             return parameter;

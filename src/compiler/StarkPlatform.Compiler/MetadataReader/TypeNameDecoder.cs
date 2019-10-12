@@ -63,11 +63,6 @@ namespace StarkPlatform.Compiler
             return _factory.GetSZArrayTypeSymbol(this.moduleSymbol, elementType, customModifiers);
         }
 
-        protected TypeSymbol GetMDArrayTypeSymbol(int rank, TypeSymbol elementType, ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers, ImmutableArray<int> sizes, ImmutableArray<int> lowerBounds)
-        {
-            return _factory.GetMDArrayTypeSymbol(this.moduleSymbol, rank, elementType, customModifiers, sizes, lowerBounds);
-        }
-
         protected TypeSymbol MakePointerTypeSymbol(TypeSymbol type, ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers)
         {
             return _factory.MakePointerTypeSymbol(this.moduleSymbol, type, customModifiers);
@@ -214,10 +209,8 @@ namespace StarkPlatform.Compiler
             {
                 foreach (int rank in fullName.ArrayRanks)
                 {
-                    Debug.Assert(rank >= 0);
-                    container = rank == 0 ?
-                                GetSZArrayTypeSymbol(container, default(ImmutableArray<ModifierInfo<TypeSymbol>>)) :
-                                GetMDArrayTypeSymbol(rank, container, default(ImmutableArray<ModifierInfo<TypeSymbol>>), ImmutableArray<int>.Empty, default(ImmutableArray<int>));
+                    Debug.Assert(rank == 0);
+                    container = GetSZArrayTypeSymbol(container, default(ImmutableArray<ModifierInfo<TypeSymbol>>));
                 }
             }
 

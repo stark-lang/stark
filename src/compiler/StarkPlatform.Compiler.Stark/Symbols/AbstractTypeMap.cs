@@ -244,38 +244,30 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 return t;
             }
 
-            if (t.IsSZArray)
+            ImmutableArray<NamedTypeSymbol> interfaces = t.InterfacesNoUseSiteDiagnostics();
+            Debug.Assert(0 <= interfaces.Length && interfaces.Length <= 2);
+
+            if (interfaces.Length == 1)
             {
-                ImmutableArray<NamedTypeSymbol> interfaces = t.InterfacesNoUseSiteDiagnostics();
-                Debug.Assert(0 <= interfaces.Length && interfaces.Length <= 2);
-
-                if (interfaces.Length == 1)
-                {
-                    Debug.Assert(interfaces[0] is NamedTypeSymbol); // IList<T>
-                    interfaces = ImmutableArray.Create<NamedTypeSymbol>(SubstituteNamedType(interfaces[0]));
-                }
-                else if (interfaces.Length == 2)
-                {
-                    Debug.Assert(interfaces[0] is NamedTypeSymbol); // IList<T>
-                    interfaces = ImmutableArray.Create<NamedTypeSymbol>(SubstituteNamedType(interfaces[0]), SubstituteNamedType(interfaces[1]));
-                }
-                else if (interfaces.Length != 0)
-                {
-                    throw ExceptionUtilities.Unreachable;
-                }
-
-                return ArrayTypeSymbol.CreateSZArray(
-                    element,
-                    t.BaseTypeNoUseSiteDiagnostics,
-                    interfaces);
+                Debug.Assert(interfaces[0] is NamedTypeSymbol); // IList<T>
+                interfaces = ImmutableArray.Create<NamedTypeSymbol>(SubstituteNamedType(interfaces[0]));
+            }
+            else if (interfaces.Length == 2)
+            {
+                Debug.Assert(interfaces[0] is NamedTypeSymbol); // IList<T>
+                interfaces = ImmutableArray.Create<NamedTypeSymbol>(SubstituteNamedType(interfaces[0]), SubstituteNamedType(interfaces[1]));
+            }
+            else if (interfaces.Length != 0)
+            {
+                throw ExceptionUtilities.Unreachable;
             }
 
-            return ArrayTypeSymbol.CreateMDArray(
+            var arrayType = t.DeclaringCompilation.GetSpecialType(SpecialType.core_Array_T).Construct(element.TypeSymbol);
+
+            return ArrayTypeSymbol.CreateArray(
                 element,
-                t.Rank,
-                t.Sizes,
-                t.LowerBounds,
-                t.BaseTypeNoUseSiteDiagnostics);
+                arrayType,
+                interfaces);
         }
 
         private PointerTypeSymbol SubstitutePointerType(PointerTypeSymbol t)

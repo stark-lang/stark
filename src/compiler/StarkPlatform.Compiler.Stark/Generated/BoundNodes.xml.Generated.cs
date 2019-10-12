@@ -57,7 +57,7 @@ namespace StarkPlatform.Compiler.Stark
         NullCoalescingAssignmentOperator,
         ConditionalOperator,
         ArrayAccess,
-        ArrayLength,
+        ArraySize,
         AwaitExpression,
         TryExpression,
         TypeOfOperator,
@@ -1890,33 +1890,33 @@ namespace StarkPlatform.Compiler.Stark
 
     internal sealed partial class BoundArrayAccess : BoundExpression
     {
-        public BoundArrayAccess(SyntaxNode syntax, BoundExpression expression, ImmutableArray<BoundExpression> indices, TypeSymbol type, bool hasErrors = false)
-            : base(BoundKind.ArrayAccess, syntax, type, hasErrors || expression.HasErrors() || indices.HasErrors())
+        public BoundArrayAccess(SyntaxNode syntax, BoundExpression expression, BoundExpression index, TypeSymbol type, bool hasErrors = false)
+            : base(BoundKind.ArrayAccess, syntax, type, hasErrors || expression.HasErrors() || index.HasErrors())
         {
 
             Debug.Assert((object)expression != null, "Field 'expression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(!indices.IsDefault, "Field 'indices' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
+            Debug.Assert((object)index != null, "Field 'index' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
             Debug.Assert((object)type != null, "Field 'type' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
 
             this.Expression = expression;
-            this.Indices = indices;
+            this.Index = index;
         }
 
 
         public BoundExpression Expression { get; }
 
-        public ImmutableArray<BoundExpression> Indices { get; }
+        public BoundExpression Index { get; }
 
         public override BoundNode Accept(BoundTreeVisitor visitor)
         {
             return visitor.VisitArrayAccess(this);
         }
 
-        public BoundArrayAccess Update(BoundExpression expression, ImmutableArray<BoundExpression> indices, TypeSymbol type)
+        public BoundArrayAccess Update(BoundExpression expression, BoundExpression index, TypeSymbol type)
         {
-            if (expression != this.Expression || indices != this.Indices || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
+            if (expression != this.Expression || index != this.Index || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
             {
-                var result = new BoundArrayAccess(this.Syntax, expression, indices, type, this.HasErrors);
+                var result = new BoundArrayAccess(this.Syntax, expression, index, type, this.HasErrors);
                 result.CopyAttributes(this);
                 return result;
             }
@@ -1925,16 +1925,16 @@ namespace StarkPlatform.Compiler.Stark
 
         protected override BoundExpression ShallowClone()
         {
-            var result = new BoundArrayAccess(this.Syntax, this.Expression, this.Indices, this.Type, this.HasErrors);
+            var result = new BoundArrayAccess(this.Syntax, this.Expression, this.Index, this.Type, this.HasErrors);
             result.CopyAttributes(this);
             return result;
         }
     }
 
-    internal sealed partial class BoundArrayLength : BoundExpression
+    internal sealed partial class BoundArraySize : BoundExpression
     {
-        public BoundArrayLength(SyntaxNode syntax, BoundExpression expression, TypeSymbol type, bool hasErrors = false)
-            : base(BoundKind.ArrayLength, syntax, type, hasErrors || expression.HasErrors())
+        public BoundArraySize(SyntaxNode syntax, BoundExpression expression, TypeSymbol type, bool hasErrors = false)
+            : base(BoundKind.ArraySize, syntax, type, hasErrors || expression.HasErrors())
         {
 
             Debug.Assert((object)expression != null, "Field 'expression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
@@ -1948,14 +1948,14 @@ namespace StarkPlatform.Compiler.Stark
 
         public override BoundNode Accept(BoundTreeVisitor visitor)
         {
-            return visitor.VisitArrayLength(this);
+            return visitor.VisitArraySize(this);
         }
 
-        public BoundArrayLength Update(BoundExpression expression, TypeSymbol type)
+        public BoundArraySize Update(BoundExpression expression, TypeSymbol type)
         {
             if (expression != this.Expression || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
             {
-                var result = new BoundArrayLength(this.Syntax, expression, type, this.HasErrors);
+                var result = new BoundArraySize(this.Syntax, expression, type, this.HasErrors);
                 result.CopyAttributes(this);
                 return result;
             }
@@ -1964,7 +1964,7 @@ namespace StarkPlatform.Compiler.Stark
 
         protected override BoundExpression ShallowClone()
         {
-            var result = new BoundArrayLength(this.Syntax, this.Expression, this.Type, this.HasErrors);
+            var result = new BoundArraySize(this.Syntax, this.Expression, this.Type, this.HasErrors);
             result.CopyAttributes(this);
             return result;
         }
@@ -6917,19 +6917,19 @@ namespace StarkPlatform.Compiler.Stark
 
     internal sealed partial class BoundArrayCreation : BoundExpression
     {
-        public BoundArrayCreation(SyntaxNode syntax, ImmutableArray<BoundExpression> bounds, BoundArrayInitialization initializerOpt, TypeSymbol type, bool hasErrors = false)
-            : base(BoundKind.ArrayCreation, syntax, type, hasErrors || bounds.HasErrors() || initializerOpt.HasErrors())
+        public BoundArrayCreation(SyntaxNode syntax, BoundExpression size, BoundArrayInitialization initializerOpt, TypeSymbol type, bool hasErrors = false)
+            : base(BoundKind.ArrayCreation, syntax, type, hasErrors || size.HasErrors() || initializerOpt.HasErrors())
         {
 
-            Debug.Assert(!bounds.IsDefault, "Field 'bounds' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
+            Debug.Assert((object)size != null, "Field 'size' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
             Debug.Assert((object)type != null, "Field 'type' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
 
-            this.Bounds = bounds;
+            this.Size = size;
             this.InitializerOpt = initializerOpt;
         }
 
 
-        public ImmutableArray<BoundExpression> Bounds { get; }
+        public BoundExpression Size { get; }
 
         public BoundArrayInitialization InitializerOpt { get; }
 
@@ -6938,11 +6938,11 @@ namespace StarkPlatform.Compiler.Stark
             return visitor.VisitArrayCreation(this);
         }
 
-        public BoundArrayCreation Update(ImmutableArray<BoundExpression> bounds, BoundArrayInitialization initializerOpt, TypeSymbol type)
+        public BoundArrayCreation Update(BoundExpression size, BoundArrayInitialization initializerOpt, TypeSymbol type)
         {
-            if (bounds != this.Bounds || initializerOpt != this.InitializerOpt || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
+            if (size != this.Size || initializerOpt != this.InitializerOpt || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
             {
-                var result = new BoundArrayCreation(this.Syntax, bounds, initializerOpt, type, this.HasErrors);
+                var result = new BoundArrayCreation(this.Syntax, size, initializerOpt, type, this.HasErrors);
                 result.CopyAttributes(this);
                 return result;
             }
@@ -6951,7 +6951,7 @@ namespace StarkPlatform.Compiler.Stark
 
         protected override BoundExpression ShallowClone()
         {
-            var result = new BoundArrayCreation(this.Syntax, this.Bounds, this.InitializerOpt, this.Type, this.HasErrors);
+            var result = new BoundArrayCreation(this.Syntax, this.Size, this.InitializerOpt, this.Type, this.HasErrors);
             result.CopyAttributes(this);
             return result;
         }
@@ -8418,8 +8418,8 @@ namespace StarkPlatform.Compiler.Stark
                     return VisitConditionalOperator(node as BoundConditionalOperator, arg);
                 case BoundKind.ArrayAccess: 
                     return VisitArrayAccess(node as BoundArrayAccess, arg);
-                case BoundKind.ArrayLength: 
-                    return VisitArrayLength(node as BoundArrayLength, arg);
+                case BoundKind.ArraySize: 
+                    return VisitArraySize(node as BoundArraySize, arg);
                 case BoundKind.AwaitExpression: 
                     return VisitAwaitExpression(node as BoundAwaitExpression, arg);
                 case BoundKind.TryExpression: 
@@ -8866,7 +8866,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             return this.DefaultVisit(node, arg);
         }
-        public virtual R VisitArrayLength(BoundArrayLength node, A arg)
+        public virtual R VisitArraySize(BoundArraySize node, A arg)
         {
             return this.DefaultVisit(node, arg);
         }
@@ -9602,7 +9602,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             return this.DefaultVisit(node);
         }
-        public virtual BoundNode VisitArrayLength(BoundArrayLength node)
+        public virtual BoundNode VisitArraySize(BoundArraySize node)
         {
             return this.DefaultVisit(node);
         }
@@ -10377,10 +10377,10 @@ namespace StarkPlatform.Compiler.Stark
         public override BoundNode VisitArrayAccess(BoundArrayAccess node)
         {
             this.Visit(node.Expression);
-            this.VisitList(node.Indices);
+            this.Visit(node.Index);
             return null;
         }
-        public override BoundNode VisitArrayLength(BoundArrayLength node)
+        public override BoundNode VisitArraySize(BoundArraySize node)
         {
             this.Visit(node.Expression);
             return null;
@@ -10969,7 +10969,7 @@ namespace StarkPlatform.Compiler.Stark
         }
         public override BoundNode VisitArrayCreation(BoundArrayCreation node)
         {
-            this.VisitList(node.Bounds);
+            this.Visit(node.Size);
             this.Visit(node.InitializerOpt);
             return null;
         }
@@ -11366,11 +11366,11 @@ namespace StarkPlatform.Compiler.Stark
         public override BoundNode VisitArrayAccess(BoundArrayAccess node)
         {
             BoundExpression expression = (BoundExpression)this.Visit(node.Expression);
-            ImmutableArray<BoundExpression> indices = (ImmutableArray<BoundExpression>)this.VisitList(node.Indices);
+            BoundExpression index = (BoundExpression)this.Visit(node.Index);
             TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(expression, indices, type);
+            return node.Update(expression, index, type);
         }
-        public override BoundNode VisitArrayLength(BoundArrayLength node)
+        public override BoundNode VisitArraySize(BoundArraySize node)
         {
             BoundExpression expression = (BoundExpression)this.Visit(node.Expression);
             TypeSymbol type = this.VisitType(node.Type);
@@ -12030,10 +12030,10 @@ namespace StarkPlatform.Compiler.Stark
         }
         public override BoundNode VisitArrayCreation(BoundArrayCreation node)
         {
-            ImmutableArray<BoundExpression> bounds = (ImmutableArray<BoundExpression>)this.VisitList(node.Bounds);
+            BoundExpression size = (BoundExpression)this.Visit(node.Size);
             BoundArrayInitialization initializerOpt = (BoundArrayInitialization)this.Visit(node.InitializerOpt);
             TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(bounds, initializerOpt, type);
+            return node.Update(size, initializerOpt, type);
         }
         public override BoundNode VisitArrayInitialization(BoundArrayInitialization node)
         {
@@ -12657,15 +12657,15 @@ namespace StarkPlatform.Compiler.Stark
             return new TreeDumperNode("arrayAccess", null, new TreeDumperNode[]
             {
                 new TreeDumperNode("expression", null, new TreeDumperNode[] { Visit(node.Expression, null) }),
-                new TreeDumperNode("indices", null, from x in node.Indices select Visit(x, null)),
+                new TreeDumperNode("index", null, new TreeDumperNode[] { Visit(node.Index, null) }),
                 new TreeDumperNode("type", node.Type, null),
                 new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
             }
             );
         }
-        public override TreeDumperNode VisitArrayLength(BoundArrayLength node, object arg)
+        public override TreeDumperNode VisitArraySize(BoundArraySize node, object arg)
         {
-            return new TreeDumperNode("arrayLength", null, new TreeDumperNode[]
+            return new TreeDumperNode("arraySize", null, new TreeDumperNode[]
             {
                 new TreeDumperNode("expression", null, new TreeDumperNode[] { Visit(node.Expression, null) }),
                 new TreeDumperNode("type", node.Type, null),
@@ -13893,7 +13893,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             return new TreeDumperNode("arrayCreation", null, new TreeDumperNode[]
             {
-                new TreeDumperNode("bounds", null, from x in node.Bounds select Visit(x, null)),
+                new TreeDumperNode("size", null, new TreeDumperNode[] { Visit(node.Size, null) }),
                 new TreeDumperNode("initializerOpt", null, new TreeDumperNode[] { Visit(node.InitializerOpt, null) }),
                 new TreeDumperNode("type", node.Type, null),
                 new TreeDumperNode("isSuppressed", node.IsSuppressed, null)

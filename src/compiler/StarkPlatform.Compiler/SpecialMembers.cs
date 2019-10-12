@@ -20,7 +20,7 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
-                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char,
+                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
 
                 // System_String__ConcatStringString
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -273,7 +273,7 @@ namespace StarkPlatform.Compiler
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.GenericTypeParameter, 1,
 
-                // core_Iterable_T_TIterator__iterate_has_next
+                // core_Iterable_T_TIterator__iterate_has_current
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
                 (byte)SpecialType.core_Iterable_T_TIterator,                                                               // DeclaringTypeId
                 0,                                                                                                          // Arity
@@ -282,12 +282,21 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.ByReference,
                     (byte)SignatureTypeCode.GenericTypeParameter, 1,
 
-                // core_Iterable_T_TIterator__iterate_next
+                // core_Iterable_T_TIterator__iterate_current
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
                 (byte)SpecialType.core_Iterable_T_TIterator,                                                           // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.GenericTypeParameter, 0,
+                    (byte)SignatureTypeCode.ByReference,
+                    (byte)SignatureTypeCode.GenericTypeParameter, 1,
+
+                // core_Iterable_T_TIterator__iterate_next
+                (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
+                (byte)SpecialType.core_Iterable_T_TIterator,                                                           // DeclaringTypeId
+                0,                                                                                                          // Arity
+                    1,                                                                                                      // Method Signature
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
                     (byte)SignatureTypeCode.ByReference,
                     (byte)SignatureTypeCode.GenericTypeParameter, 1,
 
@@ -300,7 +309,7 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.ByReference,
                     (byte)SignatureTypeCode.GenericTypeParameter, 1,
 
-                // core_MutableIterable_T_TIterator__iterate_next
+                // core_MutableIterable_T_TIterator__iterate_current
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
                 (byte)SpecialType.core_MutableIterable_T_TIterator,                                                        // DeclaringTypeId
                 0,                                                                                                          // Arity
@@ -317,35 +326,21 @@ namespace StarkPlatform.Compiler
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
 
-                // System_Array__Length
+                // core_Array__size
                 (byte)MemberFlags.Property,                                                                                 // Flags
-                (byte)SpecialType.System_Array_T,                                                                             // DeclaringTypeId
+                (byte)SpecialType.core_Array,                                                                             // DeclaringTypeId
                 0,                                                                                                          // Arity
                     0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
 
-                // System_Array__LongLength
+                // core_Array_T__item
                 (byte)MemberFlags.Property,                                                                                 // Flags
-                (byte)SpecialType.System_Array_T,                                                                             // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int64,
-
-                // System_Array__GetLowerBound
-                (byte)MemberFlags.Method,                                                                                   // Flags
-                (byte)SpecialType.System_Array_T,                                                                             // DeclaringTypeId
+                (byte)SpecialType.core_Array_T,                                                                             // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
-
-                // System_Array__GetUpperBound
-                (byte)MemberFlags.Method,                                                                                   // Flags
-                (byte)SpecialType.System_Array_T,                                                                             // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
+                    (byte)SignatureTypeCode.ByReference,
+                    (byte)SignatureTypeCode.GenericTypeParameter, 0,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
 
                 // System_Object__GetHashCode
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
@@ -552,15 +547,14 @@ namespace StarkPlatform.Compiler
                 "op_LessThan",                              // System_DateTime__op_LessThan
                 "op_LessThanOrEqual",                       // System_DateTime__op_LessThanOrEqual
                 "iterate_begin",                            // core_Iterable_T_TIterator__iterate_begin
-                "iterate_has_next",                         // core_Iterable_T_TIterator__iterate_has_next
+                "iterate_has_current",                      // core_Iterable_T_TIterator__iterate_has_current
+                "iterate_current",                          // core_Iterable_T_TIterator__iterate_current
                 "iterate_next",                             // core_Iterable_T_TIterator__iterate_next
                 "iterate_end",                              // core_Iterable_T_TIterator__iterate_end
-                "iterate_next",                             // core_MutableIterable_T_TIterator__iterate_next
+                "iterate_current",                          // core_MutableIterable_T_TIterator__iterate_current
                 "Dispose",                                  // System_IDisposable__Dispose
-                "Length",                                   // System_Array__Length
-                "LongLength",                               // System_Array__LongLength
-                "GetLowerBound",                            // System_Array__GetLowerBound
-                "GetUpperBound",                            // System_Array__GetUpperBound
+                "size",                                     // core_Array__size
+                "this[]",                                   // core_Array_T__item
                 "GetHashCode",                              // System_Object__GetHashCode
                 "Equals",                                   // System_Object__Equals
                 "ToString",                                 // System_Object__ToString

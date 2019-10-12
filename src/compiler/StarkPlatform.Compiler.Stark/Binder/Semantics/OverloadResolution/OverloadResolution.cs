@@ -890,7 +890,7 @@ namespace StarkPlatform.Compiler.Stark
             // Note: we need to confirm the "arrayness" on the original definition because
             // it's possible that the type becomes an array as a result of substitution.
             ParameterSymbol final = member.GetParameters().Last();
-            return final.IsParams && ((ParameterSymbol)final.OriginalDefinition).Type.TypeSymbol.IsSZArray();
+            return final.IsParams && ((ParameterSymbol)final.OriginalDefinition).Type.TypeSymbol.IsArray();
         }
 
         private static bool IsOverride(Symbol overridden, Symbol overrider)
@@ -1514,9 +1514,9 @@ namespace StarkPlatform.Compiler.Stark
         {
             var type = parameter.Type.TypeSymbol;
             if (result.Kind == MemberResolutionKind.ApplicableInExpandedForm &&
-                parameter.IsParams && type.IsSZArray())
+                parameter.IsParams && type.IsArray())
             {
-                return ((ArrayTypeSymbol)type).ElementType.TypeSymbol;
+                return type.GetArrayElementType().TypeSymbol;
             }
             else
             {
@@ -2089,14 +2089,7 @@ namespace StarkPlatform.Compiler.Stark
 
             if (t1.IsArray())
             {
-                var arr1 = (ArrayTypeSymbol)t1;
-                var arr2 = (ArrayTypeSymbol)t2;
-
-                // We should not have gotten here unless there were identity conversions
-                // between the two types.
-                Debug.Assert(arr1.HasSameShapeAs(arr2));
-
-                return MoreSpecificType(arr1.ElementType.TypeSymbol, arr2.ElementType.TypeSymbol, ref useSiteDiagnostics);
+                return MoreSpecificType(t1.GetArrayElementType().TypeSymbol, t2.GetArrayElementType().TypeSymbol, ref useSiteDiagnostics);
             }
 
             // SPEC EXTENSION: We apply the same rule to pointer types. 

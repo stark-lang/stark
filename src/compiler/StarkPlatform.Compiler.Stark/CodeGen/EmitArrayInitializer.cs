@@ -36,10 +36,10 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
         /// in either case it is expected that number of leaf values will match number 
         /// of elements in the array and nesting level should match the rank of the array.
         /// </summary>
-        private void EmitArrayInitializers(ArrayTypeSymbol arrayType, BoundArrayInitialization inits)
+        private void EmitArrayInitializers(TypeSymbol arrayType, BoundArrayInitialization inits)
         {
             var initExprs = inits.Initializers;
-            var initializationStyle = ShouldEmitBlockInitializer(arrayType.ElementType.TypeSymbol, initExprs);
+            var initializationStyle = ShouldEmitBlockInitializer(arrayType.GetArrayElementType().TypeSymbol, initExprs);
 
             if (initializationStyle == ArrayInitializerStyle.Element)
             {
@@ -57,21 +57,14 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             }
         }
 
-        private void EmitElementInitializers(ArrayTypeSymbol arrayType,
+        private void EmitElementInitializers(TypeSymbol arrayType,
                                             ImmutableArray<BoundExpression> inits,
                                             bool includeConstants)
         {
-            if (!IsMultidimensionalInitializer(inits))
-            {
-                EmitVectorElementInitializers(arrayType, inits, includeConstants);
-            }
-            else
-            {
-                EmitMultidimensionalElementInitializers(arrayType, inits, includeConstants);
-            }
+            EmitVectorElementInitializers(arrayType, inits, includeConstants);
         }
 
-        private void EmitVectorElementInitializers(ArrayTypeSymbol arrayType,
+        private void EmitVectorElementInitializers(TypeSymbol arrayType,
                     ImmutableArray<BoundExpression> inits,
                     bool includeConstants)
         {
@@ -83,7 +76,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                     _builder.EmitOpCode(ILOpCode.Dup);
                     _builder.EmitIntConstant(i);
                     EmitExpression(init, true);
-                    EmitVectorElementStore(arrayType, init.Syntax);
+                    EmitArrayElementStore(arrayType, init.Syntax);
                 }
             }
         }
@@ -99,111 +92,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             }
 
             return includeConstants || init.ConstantValue == null;
-        }
-
-        /// <summary>
-        /// To handle array initialization of arbitrary rank it is convenient to 
-        /// approach multidimensional initialization as a recursively nested.
-        /// 
-        /// ForAll{i, j, k} Init(i, j, k) ===> 
-        /// ForAll{i} ForAll{j, k} Init(i, j, k) ===>
-        /// ForAll{i} ForAll{j} ForAll{k} Init(i, j, k)
-        /// 
-        /// This structure is used for capturing initializers of a given index and 
-        /// the index value itself.
-        /// </summary>
-        private struct IndexDesc
-        {
-            public IndexDesc(int index, ImmutableArray<BoundExpression> initializers)
-            {
-                this.Index = index;
-                this.Initializers = initializers;
-            }
-
-            public readonly int Index;
-            public readonly ImmutableArray<BoundExpression> Initializers;
-        }
-
-        private void EmitMultidimensionalElementInitializers(ArrayTypeSymbol arrayType,
-                                                            ImmutableArray<BoundExpression> inits,
-                                                            bool includeConstants)
-        {
-            // Using a List for the stack instead of the framework Stack because IEnumerable from Stack is top to bottom.
-            // This algorithm requires the IEnumerable to be from bottom to top. See extensions for List in CollectionExtensions.vb.
-
-            var indices = new ArrayBuilder<IndexDesc>();
-
-            // emit initializers for all values of the leftmost index.
-            for (int i = 0; i < inits.Length; i++)
-            {
-                indices.Push(new IndexDesc(i, ((BoundArrayInitialization)inits[i]).Initializers));
-                EmitAllElementInitializersRecursive(arrayType, indices, includeConstants);
-            }
-
-            Debug.Assert(!indices.Any());
-        }
-
-        /// <summary>
-        /// Emits all initializers that match indices on the stack recursively.
-        /// 
-        /// Example: 
-        ///  if array has [0..2, 0..3, 0..2] shape
-        ///  and we have {1, 2} indices on the stack
-        ///  initializers for 
-        ///              [1, 2, 0]
-        ///              [1, 2, 1]
-        ///              [1, 2, 2]
-        /// 
-        ///  will be emitted and the top index will be pushed off the stack 
-        ///  as at that point we would be completely done with emitting initializers 
-        ///  corresponding to that index.
-        /// </summary>
-        private void EmitAllElementInitializersRecursive(ArrayTypeSymbol arrayType,
-                                                         ArrayBuilder<IndexDesc> indices,
-                                                         bool includeConstants)
-        {
-            var top = indices.Peek();
-            var inits = top.Initializers;
-
-            if (IsMultidimensionalInitializer(inits))
-            {
-                // emit initializers for the less significant indices recursively
-                for (int i = 0; i < inits.Length; i++)
-                {
-                    indices.Push(new IndexDesc(i, ((BoundArrayInitialization)inits[i]).Initializers));
-                    EmitAllElementInitializersRecursive(arrayType, indices, includeConstants);
-                }
-            }
-            else
-            {
-                // leaf case
-                for (int i = 0; i < inits.Length; i++)
-                {
-                    var init = inits[i];
-                    if (ShouldEmitInitExpression(includeConstants, init))
-                    {
-                        // emit array ref
-                        _builder.EmitOpCode(ILOpCode.Dup);
-
-                        Debug.Assert(indices.Count == arrayType.Rank - 1);
-
-                        // emit values of all indices that are in progress
-                        foreach (var row in indices)
-                        {
-                            _builder.EmitIntConstant(row.Index);
-                        }
-
-                        // emit the leaf index
-                        _builder.EmitIntConstant(i);
-
-                        var initExpr = inits[i];
-                        EmitExpression(initExpr, true);
-                        EmitArrayElementStore(arrayType, init.Syntax);
-                    }
-                }
-            }
-
-            indices.Pop();
         }
 
         private static ConstantValue AsConstOrDefault(BoundExpression init)
@@ -367,8 +255,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
 
             if (wrappedExpression is BoundArrayCreation ac)
             {
-                var arrayType = (ArrayTypeSymbol)ac.Type;
-                elementType = arrayType.ElementType.TypeSymbol.EnumUnderlyingType();
+                elementType = ac.Type.GetArrayElementType().TypeSymbol.EnumUnderlyingType();
 
                 // NB: we cannot use this approach for element types larger than one byte
                 //     the issue is that metadata stores blobs in little-endian format

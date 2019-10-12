@@ -231,11 +231,6 @@ namespace StarkPlatform.Compiler.GenerateMember.GenerateConstructor
                 if (type.Kind == SymbolKind.ArrayType)
                 {
                     var arrayType = (IArrayTypeSymbol)type;
-                    if (arrayType.Rank != 1)
-                    {
-                        return false;
-                    }
-
                     type = arrayType.ElementType;
                 }
 

@@ -96,7 +96,7 @@ namespace StarkPlatform.Compiler.Operations
 
         protected override ImmutableArray<IOperation> CreateDimensionSizes()
         {
-            return _operationFactory.CreateFromArray<BoundExpression, IOperation>(_arrayCreation.Bounds);
+            return _operationFactory.CreateFromArray<BoundExpression, IOperation>(ImmutableArray.Create(_arrayCreation.Size));
         }
 
         protected override IArrayInitializerOperation CreateInitializer()
@@ -141,7 +141,7 @@ namespace StarkPlatform.Compiler.Operations
 
         protected override ImmutableArray<IOperation> CreateIndices()
         {
-            return _operationFactory.CreateFromArray<BoundExpression, IOperation>(_arrayAccess.Indices);
+            return _operationFactory.CreateFromArray<BoundExpression, IOperation>(ImmutableArray.Create(_arrayAccess.Index));
         }
     }
 

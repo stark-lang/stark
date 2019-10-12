@@ -895,12 +895,12 @@ namespace StarkPlatform.Compiler
         /// Returns a new ArrayTypeSymbol representing an array type tied to the base types of the
         /// COR Library in this Compilation.
         /// </summary>
-        public IArrayTypeSymbol CreateArrayTypeSymbol(ITypeSymbol elementType, int rank = 1)
+        public IArrayTypeSymbol CreateArrayTypeSymbol(ITypeSymbol elementType)
         {
-            return CommonCreateArrayTypeSymbol(elementType, rank);
+            return CommonCreateArrayTypeSymbol(elementType);
         }
 
-        protected abstract IArrayTypeSymbol CommonCreateArrayTypeSymbol(ITypeSymbol elementType, int rank);
+        protected abstract IArrayTypeSymbol CommonCreateArrayTypeSymbol(ITypeSymbol elementType);
 
         /// <summary>
         /// Returns a new PointerTypeSymbol representing a pointer type tied to a type in this

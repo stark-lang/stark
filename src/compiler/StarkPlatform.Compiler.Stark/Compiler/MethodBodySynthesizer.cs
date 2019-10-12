@@ -98,7 +98,7 @@ namespace StarkPlatform.Compiler.Stark
                 new BoundAssignmentOperator(syntax,
                     new BoundArrayAccess(syntax,
                         submissionArrayReference,
-                        ImmutableArray.Create<BoundExpression>(new BoundLiteral(syntax, ConstantValue.Create(slotIndex), intType) { WasCompilerGenerated = true }),
+                        new BoundLiteral(syntax, ConstantValue.Create(slotIndex), intType) { WasCompilerGenerated = true },
                         objectType)
                     { WasCompilerGenerated = true },
                     thisReference,
@@ -118,7 +118,7 @@ namespace StarkPlatform.Compiler.Stark
                             BoundConversion.Synthesized(syntax,
                                 new BoundArrayAccess(syntax,
                                     submissionArrayReference,
-                                    ImmutableArray.Create<BoundExpression>(new BoundLiteral(syntax, ConstantValue.Create(0), intType) { WasCompilerGenerated = true }),
+                                    new BoundLiteral(syntax, ConstantValue.Create(0), intType) { WasCompilerGenerated = true },
                                     objectType),
                                 Conversion.ExplicitReference,
                                 false,
@@ -146,7 +146,7 @@ namespace StarkPlatform.Compiler.Stark
                             BoundConversion.Synthesized(syntax,
                                 new BoundArrayAccess(syntax,
                                     submissionArrayReference,
-                                    ImmutableArray.Create<BoundExpression>(new BoundLiteral(syntax, ConstantValue.Create(targetSubmissionIndex), intType) { WasCompilerGenerated = true }),
+                                    new BoundLiteral(syntax, ConstantValue.Create(targetSubmissionIndex), intType) { WasCompilerGenerated = true },
                                     objectType)
                                 { WasCompilerGenerated = true },
                                 Conversion.ExplicitReference,

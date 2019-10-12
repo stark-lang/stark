@@ -138,8 +138,8 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                     EmitArrayElementLoad((BoundArrayAccess)expression, used);
                     break;
 
-                case BoundKind.ArrayLength:
-                    EmitArrayLength((BoundArrayLength)expression, used);
+                case BoundKind.ArraySize:
+                    EmitArrayLength((BoundArraySize)expression, used);
                     break;
 
                 case BoundKind.ThisReference:
@@ -883,95 +883,88 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
         private void EmitArrayElementLoad(BoundArrayAccess arrayAccess, bool used)
         {
             EmitExpression(arrayAccess.Expression, used: true);
-            EmitArrayIndices(arrayAccess.Indices);
+            EmitArrayIndex(arrayAccess.Index);
 
-            if (((ArrayTypeSymbol)arrayAccess.Expression.Type).IsSZArray)
+            var elementType = arrayAccess.Type;
+            if (elementType.IsEnumType())
             {
-                var elementType = arrayAccess.Type;
-                if (elementType.IsEnumType())
-                {
-                    //underlying primitives do not need type tokens.
-                    elementType = ((NamedTypeSymbol)elementType).EnumUnderlyingType;
-                }
+                //underlying primitives do not need type tokens.
+                elementType = ((NamedTypeSymbol)elementType).EnumUnderlyingType;
+            }
 
-                switch (elementType.PrimitiveTypeCode)
-                {
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Int8:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_i1);
-                        break;
+            switch (elementType.PrimitiveTypeCode)
+            {
+                case StarkPlatform.Cci.PrimitiveTypeCode.Int8:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_i1);
+                    break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Boolean:
-                    case StarkPlatform.Cci.PrimitiveTypeCode.UInt8:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_u1);
-                        break;
+                case StarkPlatform.Cci.PrimitiveTypeCode.Boolean:
+                case StarkPlatform.Cci.PrimitiveTypeCode.UInt8:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_u1);
+                    break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Int16:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_i2);
-                        break;
+                case StarkPlatform.Cci.PrimitiveTypeCode.Int16:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_i2);
+                    break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
-                    case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_u2);
-                        break;
+                case StarkPlatform.Cci.PrimitiveTypeCode.Rune:
+                case StarkPlatform.Cci.PrimitiveTypeCode.UInt16:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_u2);
+                    break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Int32:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_i4);
-                        break;
+                case StarkPlatform.Cci.PrimitiveTypeCode.Int32:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_i4);
+                    break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.UInt32:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_u4);
-                        break;
+                case StarkPlatform.Cci.PrimitiveTypeCode.UInt32:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_u4);
+                    break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Int64:
-                    case StarkPlatform.Cci.PrimitiveTypeCode.UInt64:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_i8);
-                        break;
+                case StarkPlatform.Cci.PrimitiveTypeCode.Int64:
+                case StarkPlatform.Cci.PrimitiveTypeCode.UInt64:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_i8);
+                    break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.IntPtr:
-                    case StarkPlatform.Cci.PrimitiveTypeCode.UIntPtr:
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Pointer:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_i);
-                        break;
+                case StarkPlatform.Cci.PrimitiveTypeCode.IntPtr:
+                case StarkPlatform.Cci.PrimitiveTypeCode.UIntPtr:
+                case StarkPlatform.Cci.PrimitiveTypeCode.Pointer:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_i);
+                    break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Float32:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_r4);
-                        break;
+                case StarkPlatform.Cci.PrimitiveTypeCode.Float32:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_r4);
+                    break;
 
-                    case StarkPlatform.Cci.PrimitiveTypeCode.Float64:
-                        _builder.EmitOpCode(ILOpCode.Ldelem_r8);
-                        break;
+                case StarkPlatform.Cci.PrimitiveTypeCode.Float64:
+                    _builder.EmitOpCode(ILOpCode.Ldelem_r8);
+                    break;
 
-                    default:
-                        if (elementType.IsVerifierReference())
+                default:
+                    if (elementType.IsVerifierReference())
+                    {
+                        _builder.EmitOpCode(ILOpCode.Ldelem_ref);
+                    }
+                    else
+                    {
+                        if (used)
                         {
-                            _builder.EmitOpCode(ILOpCode.Ldelem_ref);
+                            _builder.EmitOpCode(ILOpCode.Ldelem);
                         }
                         else
                         {
-                            if (used)
+                            // no need to read whole element of nontrivial type/size here
+                            // just take a reference to an element for array access side-effects 
+                            if (elementType.TypeKind == TypeKind.TypeParameter)
                             {
-                                _builder.EmitOpCode(ILOpCode.Ldelem);
-                            }
-                            else
-                            {
-                                // no need to read whole element of nontrivial type/size here
-                                // just take a reference to an element for array access side-effects 
-                                if (elementType.TypeKind == TypeKind.TypeParameter)
-                                {
-                                    _builder.EmitOpCode(ILOpCode.Readonly);
-                                }
-
-                                _builder.EmitOpCode(ILOpCode.Ldelema);
+                                _builder.EmitOpCode(ILOpCode.Readonly);
                             }
 
-                            EmitSymbolToken(elementType, arrayAccess.Syntax);
+                            _builder.EmitOpCode(ILOpCode.Ldelema);
                         }
-                        break;
-                }
-            }
-            else
-            {
-                _builder.EmitArrayElementLoad(Emit.PEModuleBuilder.Translate((ArrayTypeSymbol)arrayAccess.Expression.Type), arrayAccess.Expression.Syntax, _diagnostics);
+
+                        EmitSymbolToken(elementType, arrayAccess.Syntax);
+                    }
+                    break;
             }
 
             EmitPopIfUnused(used);
@@ -1840,7 +1833,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             }
         }
 
-        private void EmitArrayLength(BoundArrayLength expression, bool used)
+        private void EmitArrayLength(BoundArraySize expression, bool used)
         {
             // The binder recognizes Array.Length and Array.LongLength and creates BoundArrayLength for them.
             // 
@@ -1849,8 +1842,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             //      int64 for Array.LongLength
             //      UIntPtr for synthetic code that needs just check if length != 0 - 
             //                  this is used in "fixed(int* ptr = arr)"
-            Debug.Assert(expression.Type.SpecialType == SpecialType.System_Int32 ||
-                expression.Type.SpecialType == SpecialType.System_Int64 ||
+            Debug.Assert(expression.Type.SpecialType == SpecialType.System_Int ||
                 expression.Type.SpecialType == SpecialType.System_UInt);
 
             // ldlen will null-check the expression so it must be "used"
@@ -1876,19 +1868,12 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
 
         private void EmitArrayCreationExpression(BoundArrayCreation expression, bool used)
         {
-            var arrayType = (ArrayTypeSymbol)expression.Type;
+            var arrayType = expression.Type;
 
-            EmitArrayIndices(expression.Bounds);
+            EmitArrayIndex(expression.Size);
 
-            if (arrayType.IsSZArray)
-            {
-                _builder.EmitOpCode(ILOpCode.Newarr);
-                EmitSymbolToken(arrayType.ElementType.TypeSymbol, expression.Syntax);
-            }
-            else
-            {
-                _builder.EmitArrayCreation(Emit.PEModuleBuilder.Translate(arrayType), expression.Syntax, _diagnostics);
-            }
+            _builder.EmitOpCode(ILOpCode.Newarr);
+            EmitSymbolToken(arrayType.GetArrayElementType().TypeSymbol, expression.Syntax);
 
             if (expression.InitializerOpt != null)
             {
@@ -2343,7 +2328,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                     {
                         var left = (BoundArrayAccess)assignmentTarget;
                         EmitExpression(left.Expression, used: true);
-                        EmitArrayIndices(left.Indices);
+                        EmitArrayIndex(left.Index);
                         lhsUsesStack = true;
                     }
                     break;
@@ -2657,24 +2642,12 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             EmitSymbolToken(thisRef.Type, thisRef.Syntax);
         }
 
-        private void EmitArrayElementStore(ArrayTypeSymbol arrayType, SyntaxNode syntaxNode)
-        {
-            if (arrayType.IsSZArray)
-            {
-                EmitVectorElementStore(arrayType, syntaxNode);
-            }
-            else
-            {
-                _builder.EmitArrayElementStore(Emit.PEModuleBuilder.Translate(arrayType), syntaxNode, _diagnostics);
-            }
-        }
-
         /// <summary>
         /// Emit an element store instruction for a single dimensional array.
         /// </summary>
-        private void EmitVectorElementStore(ArrayTypeSymbol arrayType, SyntaxNode syntaxNode)
+        private void EmitArrayElementStore(TypeSymbol arrayType, SyntaxNode syntaxNode)
         {
-            var elementType = arrayType.ElementType.TypeSymbol;
+            var elementType = arrayType.GetArrayElementType().TypeSymbol;
 
             if (elementType.IsEnumType())
             {
@@ -3340,7 +3313,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             // unless the element types are converted via variance.
             if (to.IsArray())
             {
-                return IsVarianceCast(((ArrayTypeSymbol)to).ElementType.TypeSymbol, ((ArrayTypeSymbol)from).ElementType.TypeSymbol);
+                return IsVarianceCast(to.GetArrayElementType().TypeSymbol, from.GetArrayElementType().TypeSymbol);
             }
 
             return (to.IsDelegateType() && !TypeSymbol.Equals(to, from, TypeCompareKind.ConsiderEverything2)) ||

@@ -347,7 +347,7 @@ namespace StarkPlatform.Compiler.Stark
                     CheckFeatureAvailability(syntax, MessageID.IDS_FeatureObjectGenericTypeConstraint, diagnostics);
                     break;
 
-                case SpecialType.System_Array_T:
+                case SpecialType.core_Array_T:
                     // "Constraint cannot be special class '{0}'"
                     Error(diagnostics, ErrorCode.ERR_SpecialTypeAsBound, syntax, type);
                     return false;

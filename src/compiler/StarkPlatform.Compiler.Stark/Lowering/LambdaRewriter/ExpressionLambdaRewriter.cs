@@ -182,8 +182,8 @@ namespace StarkPlatform.Compiler.Stark
                     return VisitArrayAccess((BoundArrayAccess)node);
                 case BoundKind.ArrayCreation:
                     return VisitArrayCreation((BoundArrayCreation)node);
-                case BoundKind.ArrayLength:
-                    return VisitArrayLength((BoundArrayLength)node);
+                case BoundKind.ArraySize:
+                    return VisitArrayLength((BoundArraySize)node);
                 case BoundKind.AsOperator:
                     return VisitAsOperator((BoundAsOperator)node);
                 case BoundKind.BaseReference:
@@ -289,20 +289,13 @@ namespace StarkPlatform.Compiler.Stark
         private BoundExpression VisitArrayAccess(BoundArrayAccess node)
         {
             var array = Visit(node.Expression);
-            if (node.Indices.Length == 1)
+            var arg = node.Index;
+            var index = Visit(arg);
+            if (!TypeSymbol.Equals(index.Type, _int32Type, TypeCompareKind.ConsiderEverything2))
             {
-                var arg = node.Indices[0];
-                var index = Visit(arg);
-                if (!TypeSymbol.Equals(index.Type, _int32Type, TypeCompareKind.ConsiderEverything2))
-                {
-                    index = ConvertIndex(index, arg.Type, _int32Type);
-                }
-                return ExprFactory("ArrayIndex", array, index);
+                index = ConvertIndex(index, arg.Type, _int32Type);
             }
-            else
-            {
-                return ExprFactory("ArrayIndex", array, Indices(node.Indices));
-            }
+            return ExprFactory("ArrayIndex", array, index);
         }
 
         private BoundExpression Indices(ImmutableArray<BoundExpression> expressions)
@@ -334,28 +327,19 @@ namespace StarkPlatform.Compiler.Stark
 
         private BoundExpression VisitArrayCreation(BoundArrayCreation node)
         {
-            var arrayType = (ArrayTypeSymbol)node.Type;
-            var boundType = _bound.Typeof(arrayType.ElementType.TypeSymbol);
+            var arrayType = node.Type;
+            var boundType = _bound.Typeof(arrayType.GetArrayElementType().TypeSymbol);
             if (node.InitializerOpt != null)
             {
-                if (arrayType.IsSZArray)
-                {
-                    return ExprFactory("NewArrayInit", boundType, Expressions(node.InitializerOpt.Initializers));
-                }
-                else
-                {
-                    // error should have been reported earlier
-                    // Bound.Diagnostics.Add(ErrorCode.ERR_ExpressionTreeContainsMultiDimensionalArrayInitializer, node.Syntax.Location);
-                    return new BoundBadExpression(node.Syntax, default(LookupResultKind), ImmutableArray<Symbol>.Empty, ImmutableArray.Create<BoundExpression>(node), ExpressionType);
-                }
+                return ExprFactory("NewArrayInit", boundType, Expressions(node.InitializerOpt.Initializers));
             }
             else
             {
-                return ExprFactory("NewArrayBounds", boundType, Expressions(node.Bounds));
+                return ExprFactory("NewArrayBounds", boundType, Visit(node.Size));
             }
         }
 
-        private BoundExpression VisitArrayLength(BoundArrayLength node)
+        private BoundExpression VisitArrayLength(BoundArraySize node)
         {
             return ExprFactory("ArrayLength", Visit(node.Expression));
         }

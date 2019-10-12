@@ -181,18 +181,8 @@ namespace StarkPlatform.Compiler.RuntimeMembers
                     short expectedType = ReadTypeId(signature, ref position);
                     return MatchTypeToTypeId(type, expectedType);
 
-                case SignatureTypeCode.Array:
-                    if (!MatchType(GetMDArrayElementType(type), signature, ref position))
-                    {
-                        return false;
-                    }
-
-                    int countOfDimensions = signature[position++];
-
-                    return MatchArrayRank(type, countOfDimensions);
-
                 case SignatureTypeCode.SZArray:
-                    return MatchType(GetSZArrayElementType(type), signature, ref position);
+                    return MatchType(GetArrayElementType(type), signature, ref position);
 
                 case SignatureTypeCode.Pointer:
                     return MatchType(GetPointedToType(type), signature, ref position);
@@ -268,18 +258,7 @@ namespace StarkPlatform.Compiler.RuntimeMembers
         /// <summary>
         /// Should return null in case of error.
         /// </summary>
-        protected abstract TypeSymbol GetSZArrayElementType(TypeSymbol type);
-
-        /// <summary>
-        /// Should only accept multi-dimensional arrays.
-        /// </summary>
-        protected abstract bool MatchArrayRank(TypeSymbol type, int countOfDimensions);
-
-        /// <summary>
-        /// Should only accept multi-dimensional arrays.
-        /// Should return null in case of error.
-        /// </summary>
-        protected abstract TypeSymbol GetMDArrayElementType(TypeSymbol type);
+        protected abstract TypeSymbol GetArrayElementType(TypeSymbol type);
 
         protected abstract bool MatchTypeToTypeId(TypeSymbol type, int typeId);
 

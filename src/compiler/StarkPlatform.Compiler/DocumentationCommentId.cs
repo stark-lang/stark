@@ -577,20 +577,7 @@ namespace StarkPlatform.Compiler
             {
                 this.Visit(symbol.ElementType);
 
-                _builder.Append("[");
-
-                for (int i = 0, n = symbol.Rank; i < n; i++)
-                {
-                    // TODO: bounds info goes here
-
-                    if (i > 0)
-                    {
-                        _builder.Append(",");
-                    }
-                }
-
-                _builder.Append("]");
-
+                _builder.Append("[]");
                 return true;
             }
 
@@ -896,8 +883,8 @@ namespace StarkPlatform.Compiler
                         {
                             if (PeekNextChar(id, index) == '[')
                             {
-                                var bounds = ParseArrayBounds(id, ref index);
-                                typeSymbol = compilation.CreateArrayTypeSymbol(typeSymbol, bounds);
+                                ParseArrayBounds(id, ref index);
+                                typeSymbol = compilation.CreateArrayTypeSymbol(typeSymbol);
                                 continue;
                             }
 
@@ -1025,11 +1012,9 @@ namespace StarkPlatform.Compiler
                 }
             }
 
-            private static int ParseArrayBounds(string id, ref int index)
+            private static void ParseArrayBounds(string id, ref int index)
             {
                 index++;  // skip '['
-
-                int bounds = 0;
 
                 while (true)
                 {
@@ -1048,8 +1033,6 @@ namespace StarkPlatform.Compiler
                         }
                     }
 
-                    bounds++;
-
                     if (PeekNextChar(id, index) == ',')
                     {
                         index++;
@@ -1063,8 +1046,6 @@ namespace StarkPlatform.Compiler
                 {
                     index++;
                 }
-
-                return bounds;
             }
 
             private static bool ParseTypeArguments(string id, ref int index, Compilation compilation, ISymbol typeParameterContext, List<ITypeSymbol> typeArguments)

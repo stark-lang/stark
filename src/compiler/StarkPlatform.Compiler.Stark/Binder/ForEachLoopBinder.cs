@@ -199,7 +199,7 @@ namespace StarkPlatform.Compiler.Stark
             if (IsAsync)
             {
                 throw new NotImplementedException("Async Foreach not implemented");
-                var placeholder = new BoundAwaitableValuePlaceholder(_syntax.Expression, builder.IterateHasNext?.ReturnType.TypeSymbol ?? CreateErrorType());
+                var placeholder = new BoundAwaitableValuePlaceholder(_syntax.Expression, builder.IterateHasCurrent?.ReturnType.TypeSymbol ?? CreateErrorType());
                 awaitInfo = BindAwaitInfo(placeholder, _syntax.Expression, _syntax.AwaitKeyword.GetLocation(), diagnostics, ref hasErrors);
 
                 if (!hasErrors && awaitInfo.GetResult?.ReturnType.SpecialType != SpecialType.System_Boolean)
@@ -345,7 +345,7 @@ namespace StarkPlatform.Compiler.Stark
 
             var foreachKeyword = _syntax.ForEachKeyword;
             ReportDiagnosticsIfObsolete(diagnostics, builder.IterateBegin, foreachKeyword, hasBaseReceiver: false);
-            ReportDiagnosticsIfObsolete(diagnostics, builder.IterateHasNext, foreachKeyword, hasBaseReceiver: false);
+            ReportDiagnosticsIfObsolete(diagnostics, builder.IterateHasCurrent, foreachKeyword, hasBaseReceiver: false);
             ReportDiagnosticsIfObsolete(diagnostics, builder.IterateNext, foreachKeyword, hasBaseReceiver: false);
             ReportDiagnosticsIfObsolete(diagnostics, builder.IterateEnd, foreachKeyword, hasBaseReceiver: false);
 
@@ -642,13 +642,14 @@ namespace StarkPlatform.Compiler.Stark
 
                     if ((object)moveNextAsync != null)
                     {
-                        builder.IterateHasNext = moveNextAsync.AsMember((NamedTypeSymbol)builder.IterableType);
+                        builder.IterateHasCurrent = moveNextAsync.AsMember((NamedTypeSymbol)builder.IterableType);
                     }
                 }
                 else
                 {
                     builder.IterateBegin = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_begin, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
-                    builder.IterateHasNext = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_has_next, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+                    builder.IterateHasCurrent = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_has_current, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+                    builder.IterateCurrent = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_current, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
                     builder.IterateNext = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_next, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
                     builder.IterateEnd = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_end, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
                 }
@@ -701,7 +702,7 @@ namespace StarkPlatform.Compiler.Stark
         private ForEachEnumeratorInfo.Builder GetDefaultEnumeratorInfo(ForEachEnumeratorInfo.Builder builder, DiagnosticBag diagnostics, TypeSymbol collectionExprType)
         {
             // NOTE: for arrays, we won't actually use any of these members - they're just for the API.
-            builder.ElementType = ((ArrayTypeSymbol)collectionExprType).ElementType;
+            builder.ElementType = collectionExprType.GetArrayElementType();
             builder.IteratorType =  GetSpecialType(SpecialType.System_Int, diagnostics, _syntax);
 
             // Construct the collection type
@@ -711,7 +712,8 @@ namespace StarkPlatform.Compiler.Stark
             // For arrays and string none of these members will actually be emitted, so it seems strange to prevent compilation if they can't be found.
             // skip this work in the batch case?
             builder.IterateBegin = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_begin, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
-            builder.IterateHasNext = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_has_next, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+            builder.IterateHasCurrent = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_has_current, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
+            builder.IterateCurrent = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_current, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
             builder.IterateNext = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_next, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
             builder.IterateEnd = ((MethodSymbol)GetSpecialTypeMember(SpecialMember.core_Iterable_T_TIterator__iterate_end, diagnostics, _syntax)).AsMember((NamedTypeSymbol)builder.IterableType);
 

@@ -519,14 +519,9 @@ namespace StarkPlatform.Compiler.Stark
                     {
                         var array = (BoundArrayAccess)expr;
                         BoundExpression expression = HoistExpression(array.Expression, awaitSyntaxOpt, syntaxOffset, RefKind.None, sideEffects, hoistedFields, ref needsSacrificialEvaluation);
-                        var indices = ArrayBuilder<BoundExpression>.GetInstance();
-                        foreach (var index in array.Indices)
-                        {
-                            indices.Add(HoistExpression(index, awaitSyntaxOpt, syntaxOffset, RefKind.None, sideEffects, hoistedFields, ref needsSacrificialEvaluation));
-                        }
-
+                        var index = HoistExpression(array.Index, awaitSyntaxOpt, syntaxOffset, RefKind.None, sideEffects, hoistedFields, ref needsSacrificialEvaluation);
                         needsSacrificialEvaluation = true; // need to force array index out of bounds exceptions
-                        return array.Update(expression, indices.ToImmutableAndFree(), array.Type);
+                        return array.Update(expression, index, array.Type);
                     }
 
                 case BoundKind.FieldAccess:

@@ -548,7 +548,7 @@ namespace StarkPlatform.Compiler.Stark
                             //   T value = t_array[t_index];
                             //   t_array[t_index] = value op R;
                             var loweredArray = VisitExpression(arrayAccess.Expression);
-                            var loweredIndices = VisitList(arrayAccess.Indices);
+                            var loweredIndices = VisitExpression(arrayAccess.Index);
 
                             return SpillArrayElementAccess(loweredArray, loweredIndices, stores, temps);
                         }
@@ -627,12 +627,12 @@ namespace StarkPlatform.Compiler.Stark
 
         private static bool IsInvariantArray(TypeSymbol type)
         {
-            return (type as ArrayTypeSymbol)?.ElementType.TypeSymbol.IsSealed == true;
+            return type.IsArray() && type.GetArrayElementType().TypeSymbol.IsSealed;
         }
 
         private BoundExpression SpillArrayElementAccess(
             BoundExpression loweredExpression,
-            ImmutableArray<BoundExpression> loweredIndices,
+            BoundExpression loweredIndex,
             ArrayBuilder<BoundExpression> stores,
             ArrayBuilder<LocalSymbol> temps)
         {
@@ -642,24 +642,16 @@ namespace StarkPlatform.Compiler.Stark
             temps.Add(arrayTemp.LocalSymbol);
             var boundTempArray = arrayTemp;
 
-            var boundTempIndices = new BoundExpression[loweredIndices.Length];
-            for (int i = 0; i < boundTempIndices.Length; i++)
+            BoundExpression boundTempIndex = loweredIndex;
+            if (CanChangeValueBetweenReads(loweredIndex))
             {
-                if (CanChangeValueBetweenReads(loweredIndices[i]))
-                {
-                    BoundAssignmentOperator assignmentToTemp;
-                    var temp = _factory.StoreToTemp(loweredIndices[i], out assignmentToTemp);
-                    stores.Add(assignmentToTemp);
-                    temps.Add(temp.LocalSymbol);
-                    boundTempIndices[i] = temp;
-                }
-                else
-                {
-                    boundTempIndices[i] = loweredIndices[i];
-                }
+                BoundAssignmentOperator assignmentToTemp;
+                var temp = _factory.StoreToTemp(loweredIndex, out assignmentToTemp);
+                stores.Add(assignmentToTemp);
+                temps.Add(temp.LocalSymbol);
+                boundTempIndex = temp;
             }
-
-            return _factory.ArrayAccess(boundTempArray, boundTempIndices);
+            return _factory.ArrayAccess(boundTempArray, boundTempIndex);
         }
 
         /// <summary>

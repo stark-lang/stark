@@ -105,9 +105,6 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
                     MethodSignature<TType> methodSignature = DecodeMethodSignature(ref blobReader);
                     return _provider.GetFunctionPointerType(methodSignature);
 
-                case (int)SignatureTypeCode.Array:
-                    return DecodeArrayType(ref blobReader);
-
                 case (int)SignatureTypeCode.RequiredModifier:
                     return DecodeModifiedType(ref blobReader, isRequired: true);
 

@@ -1708,8 +1708,8 @@ namespace StarkPlatform.Compiler.Stark
                 return (false, returnsTaskOrTaskOfInt);
             }
 
-            var array = (ArrayTypeSymbol)firstType.TypeSymbol;
-            return (array.IsSZArray && array.ElementType.SpecialType == SpecialType.System_String, returnsTaskOrTaskOfInt);
+            var array = firstType.TypeSymbol;
+            return (array.GetArrayElementType().SpecialType == SpecialType.System_String, returnsTaskOrTaskOfInt);
         }
 
         internal override bool IsUnreferencedAssemblyIdentityDiagnosticCode(int code)
@@ -1810,14 +1810,14 @@ namespace StarkPlatform.Compiler.Stark
         /// Returns a new ArrayTypeSymbol representing an array type tied to the base types of the
         /// COR Library in this Compilation.
         /// </summary>
-        internal ArrayTypeSymbol CreateArrayTypeSymbol(TypeSymbol elementType, int rank = 1)
+        internal ArrayTypeSymbol CreateArrayTypeSymbol(TypeSymbol elementType)
         {
             if ((object)elementType == null)
             {
                 throw new ArgumentNullException(nameof(elementType));
             }
 
-            return ArrayTypeSymbol.CreateCSharpArray(this.Assembly, TypeSymbolWithAnnotations.Create(elementType), rank);
+            return ArrayTypeSymbol.CreateArray(this.Assembly, TypeSymbolWithAnnotations.Create(elementType));
         }
 
         /// <summary>
@@ -2984,9 +2984,9 @@ namespace StarkPlatform.Compiler.Stark
             get { return this.ScriptClass; }
         }
 
-        protected override IArrayTypeSymbol CommonCreateArrayTypeSymbol(ITypeSymbol elementType, int rank)
+        protected override IArrayTypeSymbol CommonCreateArrayTypeSymbol(ITypeSymbol elementType)
         {
-            return CreateArrayTypeSymbol(elementType.EnsureCSharpSymbolOrNull<ITypeSymbol, TypeSymbol>(nameof(elementType)), rank);
+            return CreateArrayTypeSymbol(elementType.EnsureCSharpSymbolOrNull<ITypeSymbol, TypeSymbol>(nameof(elementType)));
         }
 
         protected override IPointerTypeSymbol CommonCreatePointerTypeSymbol(ITypeSymbol elementType)

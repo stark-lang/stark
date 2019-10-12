@@ -23,213 +23,218 @@ namespace StarkPlatform.Compiler
         /// <summary>
         /// Indicates a non-special type (default value).
         /// </summary>
-        None = 0,
+        None,
 
         /// <summary>
         /// Indicates that the type is <see cref="object"/>.
         /// </summary>
-        System_Object = 1,
+        System_Object,
 
         /// <summary>
         /// Indicates that the type is <see cref="Enum"/>.
         /// </summary>
-        System_Enum = 2,
+        System_Enum,
 
         /// <summary>
         /// Indicates that the type is <see cref="MulticastDelegate"/>.
         /// </summary>
-        System_MulticastDelegate = 3,
+        System_MulticastDelegate,
 
         /// <summary>
         /// Indicates that the type is <see cref="Delegate"/>.
         /// </summary>
-        System_Delegate = 4,
+        System_Delegate,
 
         /// <summary>
         /// Indicates that the type is <see cref="ValueType"/>.
         /// </summary>
-        System_ValueType = 5,
+        System_ValueType,
 
         /// <summary>
         /// Indicates that the type is <see cref="void"/>.
         /// </summary>
-        System_Void = 6,
+        System_Void,
 
         /// <summary>
         /// Indicates that the type is <see cref="bool"/>.
         /// </summary>
-        System_Boolean = 7,
+        System_Boolean,
 
         /// <summary>
         /// Indicates that the type is rune
         /// </summary>
-        System_Rune = 8,
+        System_Rune,
 
         /// <summary>
         /// Indicates that the type is <see cref="sbyte"/>.
         /// </summary>
-        System_Int8 = 9,
+        System_Int8,
 
         /// <summary>
         /// Indicates that the type is <see cref="byte"/>.
         /// </summary>
-        System_UInt8 = 10,
+        System_UInt8,
 
         /// <summary>
         /// Indicates that the type is <see cref="short"/>.
         /// </summary>
-        System_Int16 = 11,
+        System_Int16,
 
         /// <summary>
         /// Indicates that the type is <see cref="ushort"/>.
         /// </summary>
-        System_UInt16 = 12,
+        System_UInt16,
 
         /// <summary>
         /// Indicates that the type is <see cref="int"/>.
         /// </summary>
-        System_Int32 = 13,
+        System_Int32,
 
         /// <summary>
         /// Indicates that the type is <see cref="uint"/>.
         /// </summary>
-        System_UInt32 = 14,
+        System_UInt32,
 
         /// <summary>
         /// Indicates that the type is <see cref="long"/>.
         /// </summary>
-        System_Int64 = 15,
+        System_Int64,
 
         /// <summary>
         /// Indicates that the type is <see cref="ulong"/>.
         /// </summary>
-        System_UInt64 = 16,
+        System_UInt64,
 
         /// <summary>
         /// Indicates that the type is <see cref="float"/>.
         /// </summary>
-        System_Float32 = 17,
+        System_Float32,
 
         /// <summary>
         /// Indicates that the type is <see cref="double"/>.
         /// </summary>
-        System_Float64 = 18,
+        System_Float64,
 
         /// <summary>
         /// Indicates that the type is <see cref="string"/>.
         /// </summary>
-        System_String = 19,
+        System_String,
 
         /// <summary>
         /// Indicates that the type is <see cref="IntPtr" />.
         /// </summary>
-        System_Int = 20,
+        System_Int,
 
         /// <summary>
         /// Indicates that the type is <see cref="UIntPtr"/>.
         /// </summary>
-        System_UInt = 21,
+        System_UInt,
 
         /// <summary>
         /// Indicates that the type is <see cref="Array"/>.
         /// </summary>
-        System_Array_T = 22,
+        core_Array,
+
+        /// <summary>
+        /// Indicates that the type is <see cref="Array{T}"/>.
+        /// </summary>
+        core_Array_T,
 
         /// <summary>
         /// Indicates that the type is <see cref="IEnumerable{T}"/>.
         /// </summary>
-        core_MutableIterable_T_TIterator = 23, // Note: Iterable<int> (i.e. constructed type) has no special type
+        core_MutableIterable_T_TIterator, // Note: Iterable<int> (i.e. constructed type) has no special type
 
         /// <summary>
         /// Indicates that the type is <see cref="IEnumerable{T}"/>.
         /// </summary>
-        core_Iterable_T_TIterator = 24, // Note: Iterable<int> (i.e. constructed type) has no special type
+        core_Iterable_T_TIterator, // Note: Iterable<int> (i.e. constructed type) has no special type
 
         /// <summary>
         /// Indicates that the type is <see cref="IList{T}"/>.
         /// </summary>
-        System_Collections_Generic_IList_T = 25,
+        System_Collections_Generic_IList_T,
 
         /// <summary>
         /// Indicates that the type is <see cref="ICollection{T}"/>.
         /// </summary>
-        System_Collections_Generic_ICollection_T = 26,
+        System_Collections_Generic_ICollection_T,
 
         /// <summary>
         /// Indicates that the type is <see cref="IReadOnlyList{T}"/>.
         /// </summary>
-        System_Collections_Generic_IReadOnlyList_T = 27,
+        System_Collections_Generic_IReadOnlyList_T,
 
         /// <summary>
         /// Indicates that the type is <see cref="IReadOnlyCollection{T}"/>.
         /// </summary>
-        System_Collections_Generic_IReadOnlyCollection_T = 28,
+        System_Collections_Generic_IReadOnlyCollection_T,
 
         /// <summary>
         /// Indicates that the type is <see cref="Nullable{T}"/>.
         /// </summary>
-        System_Nullable_T = 29,
+        System_Nullable_T,
 
         /// <summary>
         /// Indicates that the type is <see cref="DateTime"/>.
         /// </summary>
-        System_DateTime = 30,
+        System_DateTime,
 
         /// <summary>
         /// Indicates that the type is <see cref="IsVolatile"/>.
         /// </summary>
-        System_Runtime_CompilerServices_IsVolatile = 31,
+        System_Runtime_CompilerServices_IsVolatile,
 
         /// <summary>
         /// Indicates that the type is <see cref="IDisposable"/>.
         /// </summary>
-        System_IDisposable = 32,
+        System_IDisposable,
 
 #pragma warning disable CA1200 // Avoid using cref tags with a prefix
         /// <summary>
         /// Indicates that the type is <see cref="T:System.TypedReference"/>.
         /// </summary>
 #pragma warning restore CA1200 // Avoid using cref tags with a prefix
-        System_TypedReference = 33,
+        System_TypedReference,
 
 #pragma warning disable CA1200 // Avoid using cref tags with a prefix
         /// <summary>
         /// Indicates that the type is <see cref="T:System.ArgIterator"/>.
         /// </summary>
 #pragma warning restore CA1200 // Avoid using cref tags with a prefix
-        System_ArgIterator = 34,
+        System_ArgIterator,
 
 #pragma warning disable CA1200 // Avoid using cref tags with a prefix
         /// <summary>
         /// Indicates that the type is <see cref="T:System.RuntimeArgumentHandle"/>.
         /// </summary>
 #pragma warning restore CA1200 // Avoid using cref tags with a prefix
-        System_RuntimeArgumentHandle = 35,
+        System_RuntimeArgumentHandle,
 
         /// <summary>
         /// Indicates that the type is <see cref="RuntimeFieldHandle"/>.
         /// </summary>
-        System_RuntimeFieldHandle = 36,
+        System_RuntimeFieldHandle,
 
         /// <summary>
         /// Indicates that the type is <see cref="RuntimeMethodHandle"/>.
         /// </summary>
-        System_RuntimeMethodHandle = 37,
+        System_RuntimeMethodHandle,
 
         /// <summary>
         /// Indicates that the type is <see cref="RuntimeTypeHandle"/>.
         /// </summary>
-        System_RuntimeTypeHandle = 38,
+        System_RuntimeTypeHandle,
 
         /// <summary>
         /// Indicates that the type is <see cref="IAsyncResult"/>.
         /// </summary>
-        System_IAsyncResult = 39,
+        System_IAsyncResult,
 
         /// <summary>
         /// Indicates that the type is <see cref="AsyncCallback"/>.
         /// </summary>
-        System_AsyncCallback = 40,
+        System_AsyncCallback,
 
         /// <summary>
         /// Count of special types. This is not a count of enum members.

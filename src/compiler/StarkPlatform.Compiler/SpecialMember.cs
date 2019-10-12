@@ -43,18 +43,17 @@ namespace StarkPlatform.Compiler
         System_DateTime__op_LessThanOrEqual,
 
         core_Iterable_T_TIterator__iterate_begin,
-        core_Iterable_T_TIterator__iterate_has_next,
+        core_Iterable_T_TIterator__iterate_has_current,
+        core_Iterable_T_TIterator__iterate_current,
         core_Iterable_T_TIterator__iterate_next,
         core_Iterable_T_TIterator__iterate_end,
 
-        core_MutableIterable_T_TIterator__iterate_item,
+        core_MutableIterable_T_TIterator__iterate_current,
 
         System_IDisposable__Dispose,
 
-        System_Array__Length,
-        System_Array__LongLength,
-        System_Array__GetLowerBound,
-        System_Array__GetUpperBound,
+        core_Array__size,
+        core_Array_T__item,
 
         System_Object__GetHashCode,
         System_Object__Equals,

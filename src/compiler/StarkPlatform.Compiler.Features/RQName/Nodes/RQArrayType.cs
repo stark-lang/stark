@@ -6,18 +6,14 @@ namespace StarkPlatform.Compiler.Features.RQName.Nodes
 {
     internal class RQArrayType : RQArrayOrPointerType
     {
-        public readonly int Rank;
-
-        public RQArrayType(int rank, RQType elementType)
+        public RQArrayType(RQType elementType)
             : base(elementType)
         {
-            this.Rank = rank;
         }
 
         public override SimpleTreeNode ToSimpleTree()
         {
-            var rankNode = new SimpleLeafNode(Rank.ToString());
-            return new SimpleGroupNode(RQNameStrings.Array, rankNode, ElementType.ToSimpleTree());
+            return new SimpleGroupNode(RQNameStrings.Array,ElementType.ToSimpleTree());
         }
     }
 }

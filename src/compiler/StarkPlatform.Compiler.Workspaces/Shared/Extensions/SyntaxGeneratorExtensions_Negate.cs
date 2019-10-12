@@ -236,7 +236,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     if ((property.Name == nameof(Array.Length) || property.Name == LongLength))
                     {
                         var containingType = property.ContainingType;
-                        if (containingType?.SpecialType == SpecialType.System_Array_T ||
+                        if (containingType?.SpecialType == SpecialType.core_Array_T ||
                             containingType.SpecialType == SpecialType.System_String)
                         {
                             return true;

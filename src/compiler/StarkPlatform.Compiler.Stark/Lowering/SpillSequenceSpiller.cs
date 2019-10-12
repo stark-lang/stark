@@ -579,7 +579,7 @@ namespace StarkPlatform.Compiler.Stark
             var expression = VisitExpression(ref builder, node.Expression);
 
             BoundSpillSequenceBuilder indicesBuilder = null;
-            var indices = this.VisitExpressionList(ref indicesBuilder, node.Indices);
+            var index = this.VisitExpression(ref indicesBuilder, node.Index);
 
             if (indicesBuilder != null)
             {
@@ -599,28 +599,28 @@ namespace StarkPlatform.Compiler.Stark
                 builder = null;
             }
 
-            return UpdateExpression(indicesBuilder, node.Update(expression, indices, node.Type));
+            return UpdateExpression(indicesBuilder, node.Update(expression, index, node.Type));
         }
 
         public override BoundNode VisitArrayCreation(BoundArrayCreation node)
         {
             BoundSpillSequenceBuilder builder = null;
             var init = (BoundArrayInitialization)VisitExpression(ref builder, node.InitializerOpt);
-            ImmutableArray<BoundExpression> bounds;
+            BoundExpression bound;
             if (builder == null)
             {
-                bounds = VisitExpressionList(ref builder, node.Bounds);
+                bound = VisitExpression(ref builder, node.Size);
             }
             else
             {
                 // spill bounds expressions if initializers contain await
                 var boundsBuilder = new BoundSpillSequenceBuilder();
-                bounds = VisitExpressionList(ref boundsBuilder, node.Bounds, forceSpill: true);
+                bound = VisitExpression(ref boundsBuilder, node.Size);
                 boundsBuilder.Include(builder);
                 builder = boundsBuilder;
             }
 
-            return UpdateExpression(builder, node.Update(bounds, init, node.Type));
+            return UpdateExpression(builder, node.Update(bound, init, node.Type));
         }
 
         public override BoundNode VisitArrayInitialization(BoundArrayInitialization node)
@@ -630,7 +630,7 @@ namespace StarkPlatform.Compiler.Stark
             return UpdateExpression(builder, node.Update(initializers));
         }
 
-        public override BoundNode VisitArrayLength(BoundArrayLength node)
+        public override BoundNode VisitArraySize(BoundArraySize node)
         {
             BoundSpillSequenceBuilder builder = null;
             var expression = VisitExpression(ref builder, node.Expression);
@@ -682,8 +682,8 @@ namespace StarkPlatform.Compiler.Stark
                         // array and indices are pushed on stack so need to spill that
                         var expression = VisitExpression(ref leftBuilder, arrayAccess.Expression);
                         expression = Spill(builder, expression, RefKind.None);
-                        var indices = this.VisitExpressionList(ref builder, arrayAccess.Indices, forceSpill: true);
-                        left = arrayAccess.Update(expression, indices, arrayAccess.Type);
+                        var index = this.VisitExpression(ref builder, arrayAccess.Index);
+                        left = arrayAccess.Update(expression, index, arrayAccess.Type);
                         break;
 
                     default:

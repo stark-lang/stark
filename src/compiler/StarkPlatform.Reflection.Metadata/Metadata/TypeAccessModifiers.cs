@@ -9,12 +9,16 @@ namespace StarkPlatform.Reflection.Metadata
 
         Ref = 1 << 0,
 
-        ReadOnly = 1 << 1,
+        ReadOnlyRef = Ref | 1 << 1,
 
-        Transient = 1 << 2,
+        RetainableRef = Ref | 1 << 2,
 
-        Immutable = 1 << 3,
+        ReadOnly = 1 << 3,
 
-        Isolated = 1 << 4,
+        Transient = 1 << 4,
+
+        Immutable = 1 << 5,
+
+        Isolated = 1 << 6,
     }
 }

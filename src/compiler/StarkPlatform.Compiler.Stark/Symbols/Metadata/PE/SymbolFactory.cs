@@ -11,17 +11,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
     {
         internal static readonly SymbolFactory Instance = new SymbolFactory();
 
-        internal override TypeSymbol GetMDArrayTypeSymbol(PEModuleSymbol moduleSymbol, int rank, TypeSymbol elementType, ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers,
-                                                          ImmutableArray<int> sizes, ImmutableArray<int> lowerBounds)
-        {
-            if (elementType is UnsupportedMetadataTypeSymbol)
-            {
-                return elementType;
-            }
-
-            return ArrayTypeSymbol.CreateMDArray(moduleSymbol.ContainingAssembly, CreateType(elementType, customModifiers), rank, sizes, lowerBounds);
-        }
-
         internal override TypeSymbol GetSpecialType(PEModuleSymbol moduleSymbol, SpecialType specialType)
         {
             return moduleSymbol.ContainingAssembly.GetSpecialType(specialType);
@@ -74,7 +63,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 return elementType;
             }
 
-            return ArrayTypeSymbol.CreateSZArray(moduleSymbol.ContainingAssembly, CreateType(elementType, customModifiers));
+            return ArrayTypeSymbol.CreateArray(moduleSymbol.ContainingAssembly, CreateType(elementType, customModifiers));
         }
 
         internal override TypeSymbol GetUnsupportedMetadataTypeSymbol(PEModuleSymbol moduleSymbol, BadImageFormatException exception)

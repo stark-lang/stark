@@ -196,15 +196,9 @@ namespace StarkPlatform.Compiler.CodeGen
 
             protected override ImmutableArray<ArrayMethodParameterInfo> MakeParameters()
             {
-                int rank = (int)arrayType.Rank;
-                var parameters = ArrayBuilder<ArrayMethodParameterInfo>.GetInstance(rank + 1);
-
-                for (int i = 0; i < rank; i++)
-                {
-                    parameters.Add(ArrayMethodParameterInfo.GetIndexParameter((ushort)i));
-                }
-
-                parameters.Add(new ArraySetValueParameterInfo((ushort)rank, arrayType));
+                var parameters = ArrayBuilder<ArrayMethodParameterInfo>.GetInstance(2);
+                parameters.Add(ArrayMethodParameterInfo.GetIndexParameter(0));
+                parameters.Add(new ArraySetValueParameterInfo(1, arrayType));
                 return parameters.ToImmutableAndFree();
             }
         }
@@ -304,14 +298,8 @@ namespace StarkPlatform.Compiler.CodeGen
         // Set overrides this to include "value" parameter.
         protected virtual ImmutableArray<ArrayMethodParameterInfo> MakeParameters()
         {
-            int rank = (int)arrayType.Rank;
-            var parameters = ArrayBuilder<ArrayMethodParameterInfo>.GetInstance(rank);
-
-            for (int i = 0; i < rank; i++)
-            {
-                parameters.Add(ArrayMethodParameterInfo.GetIndexParameter((ushort)i));
-            }
-
+            var parameters = ArrayBuilder<ArrayMethodParameterInfo>.GetInstance(1);
+            parameters.Add(ArrayMethodParameterInfo.GetIndexParameter((ushort)0));
             return parameters.ToImmutableAndFree();
         }
 

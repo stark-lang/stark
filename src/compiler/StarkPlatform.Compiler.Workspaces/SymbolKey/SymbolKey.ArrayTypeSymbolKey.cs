@@ -12,16 +12,13 @@ namespace StarkPlatform.Compiler
             public static void Create(IArrayTypeSymbol symbol, SymbolKeyWriter visitor)
             {
                 visitor.WriteSymbolKey(symbol.ElementType);
-                visitor.WriteInteger(symbol.Rank);
             }
 
             public static SymbolKeyResolution Resolve(SymbolKeyReader reader)
             {
                 var elementTypeResolution = reader.ReadSymbolKey();
-                var rank = reader.ReadInteger();
-
                 return CreateSymbolInfo(GetAllSymbols<ITypeSymbol>(elementTypeResolution)
-                            .Select(s => reader.Compilation.CreateArrayTypeSymbol(s, rank)));
+                            .Select(s => reader.Compilation.CreateArrayTypeSymbol(s)));
             }
         }
     }

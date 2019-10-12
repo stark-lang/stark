@@ -611,8 +611,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 }
 
                 int rank = typeInfo.GetArrayRank();
+                if (rank != 1) throw new NotSupportedException($"An array of rank {rank} is not supported in stark via reflection");
 
-                return ArrayTypeSymbol.CreateCSharpArray(this, TypeSymbolWithAnnotations.Create(symbol), rank);
+                return ArrayTypeSymbol.CreateArray(this, TypeSymbolWithAnnotations.Create(symbol));
             }
             else if (typeInfo.IsPointer)
             {

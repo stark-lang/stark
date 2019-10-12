@@ -377,12 +377,9 @@ namespace StarkPlatform.Compiler.CodeGen
         /// </summary>
         internal void EmitArrayCreation(StarkPlatform.Cci.IArrayTypeReference arrayType, SyntaxNode syntaxNode, DiagnosticBag diagnostics)
         {
-            Debug.Assert(!arrayType.IsSZArray, "should be used only with multidimensional arrays");
-
             var ctor = module.ArrayMethods.GetArrayConstructor(arrayType);
-
-            // idx1, idx2 --> array
-            this.EmitOpCode(ILOpCode.Newobj, 1 - (int)arrayType.Rank);
+            // idx1 --> array
+            this.EmitOpCode(ILOpCode.Newobj);
             this.EmitToken(ctor, syntaxNode, diagnostics);
         }
 
@@ -391,12 +388,9 @@ namespace StarkPlatform.Compiler.CodeGen
         /// </summary>
         internal void EmitArrayElementLoad(StarkPlatform.Cci.IArrayTypeReference arrayType, SyntaxNode syntaxNode, DiagnosticBag diagnostics)
         {
-            Debug.Assert(!arrayType.IsSZArray, "should be used only with multidimensional arrays");
-
             var load = module.ArrayMethods.GetArrayGet(arrayType);
-
-            // this, idx1, idx2 --> value
-            this.EmitOpCode(ILOpCode.Call, -(int)arrayType.Rank);
+            // this, idx1 --> value
+            this.EmitOpCode(ILOpCode.Call, -1);
             this.EmitToken(load, syntaxNode, diagnostics);
         }
 
@@ -405,12 +399,9 @@ namespace StarkPlatform.Compiler.CodeGen
         /// </summary>
         internal void EmitArrayElementAddress(StarkPlatform.Cci.IArrayTypeReference arrayType, SyntaxNode syntaxNode, DiagnosticBag diagnostics)
         {
-            Debug.Assert(!arrayType.IsSZArray, "should be used only with multidimensional arrays");
-
             var address = module.ArrayMethods.GetArrayAddress(arrayType);
-
-            // this, idx1, idx2 --> &value
-            this.EmitOpCode(ILOpCode.Call, -(int)arrayType.Rank);
+            // this, idx1 --> &value
+            this.EmitOpCode(ILOpCode.Call, -1);
             this.EmitToken(address, syntaxNode, diagnostics);
         }
 
@@ -419,12 +410,10 @@ namespace StarkPlatform.Compiler.CodeGen
         /// </summary>
         internal void EmitArrayElementStore(Cci.IArrayTypeReference arrayType, SyntaxNode syntaxNode, DiagnosticBag diagnostics)
         {
-            Debug.Assert(!arrayType.IsSZArray, "should be used only with multidimensional arrays");
-
             var store = module.ArrayMethods.GetArraySet(arrayType);
 
-            // this, idx1, idx2, value --> void
-            this.EmitOpCode(ILOpCode.Call, -(2 + (int)arrayType.Rank));
+            // this, idx1, value --> void
+            this.EmitOpCode(ILOpCode.Call, -3);
             this.EmitToken(store, syntaxNode, diagnostics);
         }
 

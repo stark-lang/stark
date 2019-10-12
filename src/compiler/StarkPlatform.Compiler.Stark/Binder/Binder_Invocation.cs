@@ -936,18 +936,20 @@ namespace StarkPlatform.Compiler.Stark
             TypeAccessModifiers destModifiers;
             var requiredModifiers = source.GetRequiredAccessModifiers(destination, out destModifiers);
 
-            if (requiredModifiers != TypeAccessModifiers.None)
-            {
-                // We are trying to call a transient method while the source is not transient
-                if (destModifiers == TypeAccessModifiers.None)
-                {
-                    Error(diagnostics, ErrorCode.ERR_AccessInvalidEmpty, call.Syntax, (object)call.Syntax, requiredModifiers);
-                }
-                else
-                {
-                    Error(diagnostics, ErrorCode.ERR_AccessInvalid, call.Syntax, (object)call.Syntax, destModifiers, requiredModifiers);
-                }
-            }
+            // TODO: access modifiers disabled until we can restore them
+
+            //if (requiredModifiers != TypeAccessModifiers.None)
+            //{
+            //    // We are trying to call a transient method while the source is not transient
+            //    if (destModifiers == TypeAccessModifiers.None)
+            //    {
+            //        Error(diagnostics, ErrorCode.ERR_AccessInvalidEmpty, call.Syntax, (object)call.Syntax, requiredModifiers);
+            //    }
+            //    else
+            //    {
+            //        Error(diagnostics, ErrorCode.ERR_AccessInvalid, call.Syntax, (object)call.Syntax, destModifiers, requiredModifiers);
+            //    }
+            //}
         }
 
         /// <summary>

@@ -47,10 +47,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
         {
             var typeTo = (NamedTypeSymbol)conversion.Type;
 
-            Debug.Assert((operand.Type.IsArray()) &&
-                         this._module.Compilation.IsReadOnlySpanType(typeTo),
-                         "only special kinds of conversions involving ReadOnlySpan may be handled in emit");
-
             if (!TryEmitReadonlySpanAsBlobWrapper(typeTo, operand, used, inPlace: false))
             {
                 // there are several reasons that could prevent us from emitting a wrapper

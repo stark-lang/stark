@@ -251,7 +251,7 @@ namespace StarkPlatform.Compiler.Features.RQName
             }
             else if (symbol.TypeKind == TypeKind.Array)
             {
-                return new RQArrayType((symbol as IArrayTypeSymbol).Rank, BuildType((symbol as IArrayTypeSymbol).ElementType));
+                return new RQArrayType(BuildType((symbol as IArrayTypeSymbol).ElementType));
             }
             else if (symbol.TypeKind == TypeKind.TypeParameter)
             {

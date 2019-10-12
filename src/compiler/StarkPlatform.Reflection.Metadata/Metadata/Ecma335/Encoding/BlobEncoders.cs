@@ -879,37 +879,6 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         }
 
         /// <summary>
-        /// Encodes an array type.
-        /// Returns a pair of encoders that must be used in the order they appear in the parameter list.
-        /// </summary>
-        /// <param name="elementType">Use first, to encode the type of the element.</param>
-        /// <param name="arrayShape">Use second, to encode the shape of the array.</param>
-        public void Array(out SignatureTypeEncoder elementType, out ArrayShapeEncoder arrayShape)
-        {
-            Builder.WriteByte((byte)SignatureTypeCode.Array);
-            elementType = this;
-            arrayShape = new ArrayShapeEncoder(Builder);
-        }
-
-        /// <summary>
-        /// Encodes an array type.
-        /// </summary>
-        /// <param name="elementType">Called first, to encode the type of the element.</param>
-        /// <param name="arrayShape">Called second, to encode the shape of the array.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="elementType"/> or <paramref name="arrayShape"/> is null.</exception>
-        public void Array(Action<SignatureTypeEncoder> elementType, Action<ArrayShapeEncoder> arrayShape)
-        {
-            if (elementType == null) Throw.ArgumentNull(nameof(elementType));
-            if (arrayShape == null) Throw.ArgumentNull(nameof(arrayShape));
-
-            SignatureTypeEncoder elementTypeEncoder;
-            ArrayShapeEncoder arrayShapeEncoder;
-            Array(out elementTypeEncoder, out arrayShapeEncoder);
-            elementType(elementTypeEncoder);
-            arrayShape(arrayShapeEncoder);
-        }
-
-        /// <summary>
         /// Encodes a reference to a type.
         /// </summary>
         /// <param name="type"><see cref="TypeDefinitionHandle"/> or <see cref="TypeReferenceHandle"/>.</param>

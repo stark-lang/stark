@@ -685,12 +685,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Retargeting
                     return type;
                 }
 
-                if (type.IsSZArray)
-                {
-                    return ArrayTypeSymbol.CreateSZArray(this.RetargetingAssembly, newElement);
-                }
-
-                return ArrayTypeSymbol.CreateMDArray(this.RetargetingAssembly, newElement, type.Rank, type.Sizes, type.LowerBounds);
+                return ArrayTypeSymbol.CreateArray(this.RetargetingAssembly, newElement);
             }
 
             internal ImmutableArray<CustomModifier> RetargetModifiers(ImmutableArray<CustomModifier> oldModifiers, out bool modifiersHaveChanged)

@@ -219,15 +219,6 @@ namespace StarkPlatform.Compiler.ConvertForEachToFor
             // check array case
             if (collectionType is IArrayTypeSymbol array)
             {
-                if (array.Rank != 1)
-                {
-                    // array type supports IList and other interfaces, but implementation
-                    // only supports Rank == 1 case. other case, it will throw on runtime
-                    // even if there is no error on compile time.
-                    // we explicitly mark that we only support Rank == 1 case
-                    return;
-                }
-
                 if (!IsExchangable(semanticFact, array.ElementType, foreachType, model.Compilation))
                 {
                     return;

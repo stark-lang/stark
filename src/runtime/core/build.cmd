@@ -1,4 +1,4 @@
 @echo off
 pushd %~dp0
-dotnet ..\..\compiler\starkc\Bin\Debug\netcoreapp2.1\starkc.dll -nostdlib -target:library -unsafe -langversion:8.0 -recurse:*.sk -runtimemetadataversion:v1.0.0 -out:core.sklib
+dotnet ..\..\compiler\starkc\Bin\Debug\netcoreapp2.1\starkc.dll -parallel- -nostdlib -target:library -unsafe -langversion:8.0 -recurse:*.sk -runtimemetadataversion:v1.0.0 -out:core.sklib
 popd

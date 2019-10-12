@@ -676,7 +676,7 @@ namespace StarkPlatform.Compiler.Stark
                 NamedTypeSymbol booleanType = GetSpecialType(SpecialType.System_Boolean);
                 Debug.Assert((object)booleanType != null);
                 var transformFlags = DynamicTransformsEncoder.Encode(type, refKindOpt, customModifiersCount, booleanType);
-                var boolArray = ArrayTypeSymbol.CreateSZArray(booleanType.ContainingAssembly, TypeSymbolWithAnnotations.Create(booleanType));
+                var boolArray = ArrayTypeSymbol.CreateArray(booleanType.ContainingAssembly, TypeSymbolWithAnnotations.Create(booleanType));
                 var arguments = ImmutableArray.Create<TypedConstant>(new TypedConstant(boolArray, transformFlags));
                 return TrySynthesizeAttribute(WellKnownMember.System_Runtime_CompilerServices_DynamicAttribute__ctorTransformFlags, arguments);
             }
@@ -693,7 +693,7 @@ namespace StarkPlatform.Compiler.Stark
 
             Debug.Assert(!names.IsDefault, "should not need the attribute when no tuple names");
 
-            var stringArray = ArrayTypeSymbol.CreateSZArray(stringType.ContainingAssembly, TypeSymbolWithAnnotations.Create(stringType));
+            var stringArray = ArrayTypeSymbol.CreateArray(stringType.ContainingAssembly, TypeSymbolWithAnnotations.Create(stringType));
             var args = ImmutableArray.Create(new TypedConstant(stringArray, names));
             return TrySynthesizeAttribute(WellKnownMember.System_Runtime_CompilerServices_TupleElementNamesAttribute__ctorTransformNames, args);
         }
@@ -880,20 +880,6 @@ namespace StarkPlatform.Compiler.Stark
             {
             }
 
-            protected override TypeSymbol GetMDArrayElementType(TypeSymbol type)
-            {
-                if (type.Kind != SymbolKind.ArrayType)
-                {
-                    return null;
-                }
-                ArrayTypeSymbol array = (ArrayTypeSymbol)type;
-                if (array.IsSZArray)
-                {
-                    return null;
-                }
-                return array.ElementType.TypeSymbol;
-            }
-
             protected override TypeSymbol GetFieldType(FieldSymbol field)
             {
                 return field.Type.TypeSymbol;
@@ -965,18 +951,13 @@ namespace StarkPlatform.Compiler.Stark
                 return method.ReturnType.TypeSymbol;
             }
 
-            protected override TypeSymbol GetSZArrayElementType(TypeSymbol type)
+            protected override TypeSymbol GetArrayElementType(TypeSymbol type)
             {
-                if (type.Kind != SymbolKind.ArrayType)
+                if (!type.IsArray())
                 {
                     return null;
                 }
-                ArrayTypeSymbol array = (ArrayTypeSymbol)type;
-                if (!array.IsSZArray)
-                {
-                    return null;
-                }
-                return array.ElementType.TypeSymbol;
+                return type.GetArrayElementType().TypeSymbol;
             }
 
             protected override bool IsByRefParam(ParameterSymbol parameter)
@@ -1020,17 +1001,6 @@ namespace StarkPlatform.Compiler.Stark
                     return false;
                 }
                 return (typeParam.Ordinal == paramPosition);
-            }
-
-            protected override bool MatchArrayRank(TypeSymbol type, int countOfDimensions)
-            {
-                if (type.Kind != SymbolKind.ArrayType)
-                {
-                    return false;
-                }
-
-                ArrayTypeSymbol array = (ArrayTypeSymbol)type;
-                return (array.Rank == countOfDimensions);
             }
 
             protected override bool MatchTypeToTypeId(TypeSymbol type, int typeId)

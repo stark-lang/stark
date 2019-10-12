@@ -12,7 +12,7 @@ namespace StarkPlatform.Compiler.CodeGeneration
 
         public int Rank { get; }
 
-        public bool IsSZArray
+        public bool IsArray
         {
             get
             {

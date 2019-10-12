@@ -334,12 +334,7 @@ namespace StarkPlatform.Compiler.Stark.Emit
                 }
                 var otherModifiers = VisitCustomModifiers(symbol.ElementType.CustomModifiers);
 
-                if (symbol.IsSZArray)
-                {
-                    return ArrayTypeSymbol.CreateSZArray(_otherAssembly, symbol.ElementType.WithTypeAndModifiers(otherElementType, otherModifiers));
-                }
-
-                return ArrayTypeSymbol.CreateMDArray(_otherAssembly, symbol.ElementType.WithTypeAndModifiers(otherElementType, otherModifiers), symbol.Rank, symbol.Sizes, symbol.LowerBounds);
+                return ArrayTypeSymbol.CreateArray(_otherAssembly, symbol.ElementType.WithTypeAndModifiers(otherElementType, otherModifiers));
             }
 
             public override Symbol VisitEvent(EventSymbol symbol)
@@ -678,8 +673,7 @@ namespace StarkPlatform.Compiler.Stark.Emit
                 Debug.Assert(type.ElementType.CustomModifiers.IsEmpty);
                 Debug.Assert(other.ElementType.CustomModifiers.IsEmpty);
 
-                return type.HasSameShapeAs(other) &&
-                    AreTypesEqual(type.ElementType.TypeSymbol, other.ElementType.TypeSymbol);
+                return AreTypesEqual(type.ElementType.TypeSymbol, other.ElementType.TypeSymbol);
             }
 
             private bool AreEventsEqual(EventSymbol @event, EventSymbol other)
@@ -882,12 +876,7 @@ namespace StarkPlatform.Compiler.Stark.Emit
                 var translatedElementType = (TypeSymbol)this.Visit(symbol.ElementType.TypeSymbol);
                 var translatedModifiers = VisitCustomModifiers(symbol.ElementType.CustomModifiers);
 
-                if (symbol.IsSZArray)
-                {
-                    return ArrayTypeSymbol.CreateSZArray(symbol.BaseTypeNoUseSiteDiagnostics.ContainingAssembly, symbol.ElementType.WithTypeAndModifiers(translatedElementType, translatedModifiers));
-                }
-
-                return ArrayTypeSymbol.CreateMDArray(symbol.BaseTypeNoUseSiteDiagnostics.ContainingAssembly, symbol.ElementType.WithTypeAndModifiers(translatedElementType, translatedModifiers), symbol.Rank, symbol.Sizes, symbol.LowerBounds);
+                return ArrayTypeSymbol.CreateArray(symbol.BaseTypeNoUseSiteDiagnostics.ContainingAssembly, symbol.ElementType.WithTypeAndModifiers(translatedElementType, translatedModifiers));
             }
 
             public override Symbol VisitDynamicType(DynamicTypeSymbol symbol)

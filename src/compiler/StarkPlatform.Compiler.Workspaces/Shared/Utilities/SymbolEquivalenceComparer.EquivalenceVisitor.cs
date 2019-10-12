@@ -149,9 +149,7 @@ namespace StarkPlatform.Compiler.Shared.Utilities
 
             private bool ArrayTypesAreEquivalent(IArrayTypeSymbol x, IArrayTypeSymbol y, Dictionary<INamedTypeSymbol, INamedTypeSymbol> equivalentTypesWithDifferingAssemblies)
             {
-                return
-                    x.Rank == y.Rank &&
-                    AreEquivalent(x.CustomModifiers, y.CustomModifiers, equivalentTypesWithDifferingAssemblies) &&
+                return AreEquivalent(x.CustomModifiers, y.CustomModifiers, equivalentTypesWithDifferingAssemblies) &&
                     AreEquivalent(x.ElementType, y.ElementType, equivalentTypesWithDifferingAssemblies);
             }
 

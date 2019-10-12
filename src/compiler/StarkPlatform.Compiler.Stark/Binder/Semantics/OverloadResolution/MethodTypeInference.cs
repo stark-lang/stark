@@ -1458,14 +1458,7 @@ namespace StarkPlatform.Compiler.Stark
                 return false;
             }
 
-            var arraySource = (ArrayTypeSymbol)source.TypeSymbol;
-            var arrayTarget = (ArrayTypeSymbol)target.TypeSymbol;
-            if (!arraySource.HasSameShapeAs(arrayTarget))
-            {
-                return false;
-            }
-
-            ExactInference(arraySource.ElementType, arrayTarget.ElementType, ref useSiteDiagnostics);
+            ExactInference(source.TypeSymbol.GetArrayElementType(), target.TypeSymbol.GetArrayElementType(), ref useSiteDiagnostics);
             return true;
         }
 
@@ -1713,27 +1706,14 @@ namespace StarkPlatform.Compiler.Stark
             return false;
         }
 
-        private static TypeSymbolWithAnnotations GetMatchingElementType(ArrayTypeSymbol source, TypeSymbol target, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
+        private static TypeSymbolWithAnnotations GetMatchingElementType(TypeSymbol target, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
-            Debug.Assert((object)source != null);
             Debug.Assert((object)target != null);
 
             // It might be an array of same rank.
             if (target.IsArray())
             {
-                var arrayTarget = (ArrayTypeSymbol)target;
-                if (!arrayTarget.HasSameShapeAs(source))
-                {
-                    return default;
-                }
-                return arrayTarget.ElementType;
-            }
-
-            // Or it might be IEnum<T> and source is rank one.
-
-            if (!source.IsSZArray)
-            {
-                return default;
+                return target.GetArrayElementType();
             }
 
             // Arrays are specified as being convertible to IEnumerable<T>, ICollection<T> and
@@ -1766,9 +1746,8 @@ namespace StarkPlatform.Compiler.Stark
                 return false;
             }
 
-            var arraySource = (ArrayTypeSymbol)source;
-            var elementSource = arraySource.ElementType;
-            var elementTarget = GetMatchingElementType(arraySource, target, ref useSiteDiagnostics);
+            var elementSource = source.GetArrayElementType();
+            var elementTarget = GetMatchingElementType(elementSource.TypeSymbol, ref useSiteDiagnostics);
             if (elementTarget.IsNull)
             {
                 return false;
@@ -2092,9 +2071,8 @@ namespace StarkPlatform.Compiler.Stark
             {
                 return false;
             }
-            var arrayTarget = (ArrayTypeSymbol)target.TypeSymbol;
-            var elementTarget = arrayTarget.ElementType;
-            var elementSource = GetMatchingElementType(arrayTarget, source.TypeSymbol, ref useSiteDiagnostics);
+            var elementTarget = target.TypeSymbol.GetArrayElementType();
+            var elementSource = GetMatchingElementType(source.TypeSymbol, ref useSiteDiagnostics);
             if (elementSource.IsNull)
             {
                 return false;

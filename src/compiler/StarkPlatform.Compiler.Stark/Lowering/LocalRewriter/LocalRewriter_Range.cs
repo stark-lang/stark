@@ -21,13 +21,15 @@ namespace StarkPlatform.Compiler.Stark
             var left = node.LeftOperand;
             if (left != null)
             {
-                operandsBuilder.Add(tryOptimizeOperand(left));
+                left = tryOptimizeOperand(left);
+                operandsBuilder.Add(left);
             }
 
             var right = node.RightOperand;
             if (right != null)
             {
-                operandsBuilder.Add(tryOptimizeOperand(right));
+                right = tryOptimizeOperand(right);
+                operandsBuilder.Add(right);
             }
 
             ImmutableArray<BoundExpression> operands = operandsBuilder.ToImmutable();

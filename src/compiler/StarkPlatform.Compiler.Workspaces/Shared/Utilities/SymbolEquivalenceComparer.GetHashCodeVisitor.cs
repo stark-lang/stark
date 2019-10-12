@@ -96,9 +96,7 @@ namespace StarkPlatform.Compiler.Shared.Utilities
 
             private int CombineHashCodes(IArrayTypeSymbol x, int currentHash)
             {
-                return
-                    Hash.Combine(x.Rank,
-                    GetHashCode(x.ElementType, currentHash));
+                return GetHashCode(x.ElementType, currentHash);
             }
 
             private int CombineHashCodes(IAssemblySymbol x, int currentHash)

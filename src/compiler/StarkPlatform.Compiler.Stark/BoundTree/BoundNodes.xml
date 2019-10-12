@@ -495,7 +495,7 @@
     <Field Name="Type" Type="TypeSymbol" Override="true" Null="disallow"/>
 
     <Field Name="Expression" Type="BoundExpression"/>
-    <Field Name="Indices" Type="ImmutableArray&lt;BoundExpression&gt;"/>
+    <Field Name="Index" Type="BoundExpression"/>
   </Node>
 
   <!--
@@ -506,7 +506,7 @@
   language (.Length is just a property on System.Array) 
   and is normally introduced during the lowering phases.
   -->
-  <Node Name="BoundArrayLength" Base="BoundExpression">
+  <Node Name="BoundArraySize" Base="BoundExpression">
     <!-- Non-null type is required for this node kind -->
     <Field Name="Type" Type="TypeSymbol" Override="true" Null="disallow"/>
 
@@ -1657,7 +1657,7 @@
     <!-- Non-null type is required for this node kind -->
     <Field Name="Type" Type="TypeSymbol" Override="true" Null="disallow"/>
 
-    <Field Name="Bounds" Type="ImmutableArray&lt;BoundExpression&gt;"/>
+    <Field Name="Size" Type="BoundExpression"/>
     <Field Name="InitializerOpt" Type="BoundArrayInitialization" Null="allow"/>
   </Node>
 

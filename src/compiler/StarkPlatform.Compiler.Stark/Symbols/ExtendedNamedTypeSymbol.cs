@@ -25,6 +25,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             return UnderlyingNamedType;
         }
 
+        public override SpecialType SpecialType => _underlyingType.SpecialType;
+
         public override TypeAccessModifiers AccessModifiers => _accessModifiers;
 
         public override Symbol ContainingSymbol => _underlyingType.ContainingSymbol;

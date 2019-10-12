@@ -215,16 +215,10 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 return TypedConstantKind.Error;
             }
 
-            if (type.Kind == SymbolKind.ArrayType)
+            if (type.IsArray())
             {
-                var arrayType = (ArrayTypeSymbol)type;
-                if (!arrayType.IsSZArray)
-                {
-                    return TypedConstantKind.Error;
-                }
-
                 kind = TypedConstantKind.Array;
-                type = arrayType.ElementType.TypeSymbol;
+                type = type.GetArrayElementType().TypeSymbol;
             }
 
             // enum or enum[]
@@ -328,14 +322,24 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         public static bool IsArray(this TypeSymbol type)
         {
             Debug.Assert((object)type != null);
-            return type.TypeKind == TypeKind.Array;
+            return type.TypeKind == TypeKind.Array || type.SpecialType == SpecialType.core_Array_T
+                                                   || type.BaseTypeNoUseSiteDiagnostics?.SpecialType == SpecialType.core_Array;
         }
 
-        public static bool IsSZArray(this TypeSymbol type)
+        public static TypeSymbolWithAnnotations GetArrayElementType(this TypeSymbol type)
         {
-            Debug.Assert((object)type != null);
-            return type.TypeKind == TypeKind.Array && ((ArrayTypeSymbol)type).IsSZArray;
+            Debug.Assert(IsArray(type));
+            if (type.TypeKind == TypeKind.Array)
+            {
+                return ((ArrayTypeSymbol)type).ElementType;
+            }
+            else
+            {
+                Debug.Assert(((NamedTypeSymbol)type).TypeArgumentsNoUseSiteDiagnostics.Length == 1);
+                return ((NamedTypeSymbol) type).TypeArgumentsNoUseSiteDiagnostics[0];
+            }
         }
+
 
         // If the type is a delegate type, it returns it. If the type is an
         // expression tree type associated with a delegate type, it returns

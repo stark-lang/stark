@@ -829,7 +829,8 @@ namespace StarkPlatform.Compiler.Stark
 
             return new ForEachStatementInfo(
                 enumeratorInfoOpt.IterateBegin,
-                enumeratorInfoOpt.IterateHasNext,
+                enumeratorInfoOpt.IterateHasCurrent,
+                enumeratorInfoOpt.IterateCurrent,
                 enumeratorInfoOpt.IterateNext,
                 enumeratorInfoOpt.IterateEnd,
                 enumeratorInfoOpt.ElementType.TypeSymbol,

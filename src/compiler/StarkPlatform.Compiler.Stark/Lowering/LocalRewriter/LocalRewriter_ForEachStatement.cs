@@ -36,8 +36,6 @@ namespace StarkPlatform.Compiler.Stark
             TypeSymbol nodeExpressionType = collectionExpression.Type;
             if (nodeExpressionType.Kind == SymbolKind.ArrayType)
             {
-                ArrayTypeSymbol arrayType = (ArrayTypeSymbol)nodeExpressionType;
-                Debug.Assert(arrayType.IsSZArray);
                 return RewriteSingleDimensionalArrayForEachStatement(node);
             }
             else if (CanRewriteForEachAsFor(node.Syntax, nodeExpressionType, out var indexerGet, out var lengthGetter))
@@ -80,126 +78,108 @@ namespace StarkPlatform.Compiler.Stark
         /// <summary>
         /// Lower a foreach loop that will enumerate a collection using an enumerator.
         ///
+        /// TODO: Add try/finally
+        /// 
         /// <![CDATA[
-        /// TIterator iterator = x.iterate_begin();
-        /// try {
-        ///     while (x.iterate_has_next(ref iterator))  OR  while (await x.async_iterate_has_next(ref iterator))
-        ///     {
-        ///         V v = x.iterate_next(ref iterator);  -OR-  (D1 d1, ...) = e.async_iterate_next(ref iterator);
-        ///         // body
-        ///     }
+        /// for(TIterable x = e, TIterator iterator = x.iterate_begin(); x.iterate_has_current(ref iterator); x.iterate_next(ref iterator))
+        /// {
+        ///      V v = x.iterate_current(ref iterator);
+        ///
         /// }
-        /// finally {
-        ///     x.iterate_end(ref iterator);
-        /// }
+        /// x.iterate_end(ref iterator);
         /// ]]>
         /// </summary>
         private BoundStatement RewriteIteratorForEachStatement(BoundForEachStatement node)
         {
             var forEachSyntax = (ForStatementSyntax)node.Syntax;
-            bool isAsync = node.AwaitOpt != null;
 
             ForEachEnumeratorInfo enumeratorInfo = node.EnumeratorInfoOpt;
             Debug.Assert(enumeratorInfo != null);
 
             //BoundExpression collectionExpression = GetUnconvertedCollectionExpression(node);
+
             BoundExpression rewrittenExpression = (BoundExpression)Visit(node.Expression);
             BoundStatement rewrittenBody = (BoundStatement)Visit(node.Body);
 
             TypeSymbol iteratorType = enumeratorInfo.IteratorType;
             TypeSymbol elementType = enumeratorInfo.ElementType.TypeSymbol;
 
+            // TIterable x
+            LocalSymbol iterableVar = _factory.SynthesizedLocal(rewrittenExpression.Type, forEachSyntax, kind: SynthesizedLocalKind.ForEachArray);
+
+            // TIterable x = /*node.Expression*/;
+            BoundStatement iterableVarDecl = MakeLocalDeclaration(forEachSyntax, iterableVar, rewrittenExpression);
+
+            // Reference to iterator.
+            BoundLocal boundIterableVar = MakeBoundLocal(forEachSyntax, iterableVar, iterableVar.Type.TypeSymbol);
+            
             // TIterator iterator
             LocalSymbol iteratorVar = _factory.SynthesizedLocal(iteratorType, syntax: forEachSyntax, kind: SynthesizedLocalKind.ForEachEnumerator, refKind: RefKind.Ref);
 
             // Reference to iterator.
             BoundLocal boundIteratorVar = MakeBoundLocal(forEachSyntax, iteratorVar, iteratorType);
 
-            // e.iterate_begin();
-            BoundExpression stateVarInitValue =  BoundCall.Synthesized(
+            // TIterator iterator = x.iterate_begin()
+            BoundStatement iteratorVarDecl = MakeLocalDeclaration(forEachSyntax, iteratorVar, BoundCall.Synthesized(
                 syntax: forEachSyntax,
-                receiverOpt: rewrittenExpression,
-                method: enumeratorInfo.IterateBegin);
+                receiverOpt: boundIterableVar,
+                method: enumeratorInfo.IterateBegin));
 
-            // TState state = e.iterate_begin();
-            BoundStatement iteratorVarDecl = MakeLocalDeclaration(forEachSyntax, iteratorVar, stateVarInitValue);
+            // e.iterate_has_current(ref iterator)
+            BoundExpression iterateHasCurrent = BoundCall.Synthesized(
+                syntax: forEachSyntax,
+                receiverOpt: boundIterableVar,
+                method: enumeratorInfo.IterateHasCurrent, boundIteratorVar);
             
-            // TODO: instrument stateVarDecl?
-            InstrumentForEachStatementCollectionVarDeclaration(node, ref iteratorVarDecl);
-
-            // (V)(T)e.iterate_item(ref state)
-            BoundExpression iterationVarAssignValue = BoundCall.Synthesized(
+            // e.iterate_current(ref iterator)
+            BoundExpression iterateCurrent = BoundCall.Synthesized(
                 syntax: forEachSyntax,
-                receiverOpt: rewrittenExpression,
-                method: enumeratorInfo.IterateNext, boundIteratorVar);
+                receiverOpt: boundIterableVar,
+                method: enumeratorInfo.IterateCurrent, boundIteratorVar);
 
-            // V v = (V)(T)e.iterate_item(ref state);  -OR-  (D1 d1, ...) = (V)(T)e.iterate_item(ref state);
-
-            ImmutableArray<LocalSymbol> iterationVariables = node.IterationVariables;
-            BoundStatement iterationVarDecl = LocalOrDeconstructionDeclaration(node, iterationVariables, iterationVarAssignValue);
-
-            InstrumentForEachStatementIterationVarDeclaration(node, ref iterationVarDecl);
-
-            // while (x.iterate_has_next(ref iterator))  OR  while (await x.async_iterate_has_next(ref iterator))
-            // {
-            //     V v = x.iterate_next(ref iterator);  -OR-  (D1 d1, ...) = e.async_iterate_next(ref iterator);
-            //     // body
-            // }
-
-            var rewrittenBodyBlock = CreateBlockDeclaringIterationVariables(iterationVariables, iterationVarDecl, rewrittenBody, forEachSyntax);
-            BoundExpression rewrittenCondition = SynthesizeCallWithArg(
-                    syntax: forEachSyntax,
-                    receiver: rewrittenExpression,
-                    method: enumeratorInfo.IterateHasNext,
-                    allowExtensionAndOptionalParameters: isAsync,
-                    boundIteratorVar);
-
-            if (isAsync)
-            {
-                rewrittenCondition = RewriteAwaitExpression(forEachSyntax, rewrittenCondition, node.AwaitOpt, node.AwaitOpt.GetResult.ReturnType.TypeSymbol, used: true);
-            }
-
-            BoundStatement whileLoop = RewriteWhileStatement(
-                loop: node,
-                rewrittenCondition,
-                rewrittenBody: rewrittenBodyBlock,
-                breakLabel: node.BreakLabel,
-                continueLabel: node.ContinueLabel,
-                hasErrors: false);
+            // e.iterate_next(ref iterator)
+            BoundStatement iterateNext = new BoundSequencePoint(null,
+                statementOpt: new BoundExpressionStatement(forEachSyntax, BoundCall.Synthesized(
+                syntax: forEachSyntax,
+                receiverOpt: boundIterableVar,
+                method: enumeratorInfo.IterateNext, boundIteratorVar)));
 
             var iterateEnd = new BoundExpressionStatement(forEachSyntax, BoundCall.Synthesized(
                 syntax: forEachSyntax,
-                receiverOpt: rewrittenExpression,
+                receiverOpt: boundIterableVar,
                 method: enumeratorInfo.IterateEnd, boundIteratorVar));
 
-            BoundStatement result;
+            // V v = (V)a[p];   /* OR */   (D1 d1, ...) = (V)a[p];
+            ImmutableArray<LocalSymbol> iterationVariables = node.IterationVariables;
+            BoundStatement iterationVariableDecl = LocalOrDeconstructionDeclaration(node, iterationVariables, iterateCurrent);
 
-            if (enumeratorInfo.NeedsDisposal)
-            {
-                BoundStatement tryFinally = WrapWithTryFinallyDispose(forEachSyntax, enumeratorInfo, iteratorType, boundIteratorVar, whileLoop, iterateEnd);
+            InstrumentForEachStatementIterationVarDeclaration(node, ref iterationVariableDecl);
 
-                // E e = ((C)(x)).iterator()  OR((C)(x)).async_iterator()
-                // TState state = e.iterate_begin();
-                // try {
-                //     /* as above */
-                result = new BoundBlock(
-                    syntax: forEachSyntax,
-                    locals: ImmutableArray.Create(iteratorVar),
-                    statements: ImmutableArray.Create<BoundStatement>(iteratorVarDecl, tryFinally));
-            }
-            else
-            {
-                // E e = ((C)(x)).GetEnumerator();
-                // TState state = e.iterate_begin();
-                // while (e.iterator_next(ref state)) {
-                //     V v = (V)(T)e.iterate_item(ref state);  -OR-  (D1 d1, ...) = (V)(T)e.iterate_item(ref state);
-                //     /* loop body */
-                // }
-                result = new BoundBlock(
-                    syntax: forEachSyntax,
-                    locals: ImmutableArray.Create(iteratorVar),
-                    statements: ImmutableArray.Create<BoundStatement>(iteratorVarDecl, whileLoop, iterateEnd));
-            }
+            BoundStatement initializer = new BoundStatementList(forEachSyntax,
+                        statements: ImmutableArray.Create<BoundStatement>(iterableVarDecl, iteratorVarDecl));
+
+            // {
+            //     V v = (V)a[p];    /* OR */   (D1 d1, ...) = (V)a[p];
+            //     /*node.Body*/
+            // }
+
+            BoundStatement loopBody = CreateBlockDeclaringIterationVariables(iterationVariables, iterationVariableDecl, rewrittenBody, forEachSyntax);
+
+            // for (Collection a = /*node.Expression*/, int p = 0; p < a.Length; p = p + 1) {
+            //     V v = (V)a[p];   /* OR */   (D1 d1, ...) = (V)a[p];
+            //     /*node.Body*/
+            // }
+            BoundStatement result = RewriteForStatementWithoutInnerLocals(
+                original: node,
+                outerLocals: ImmutableArray.Create<LocalSymbol>(iterableVar, iteratorVar),
+                rewrittenInitializer: initializer,
+                rewrittenCondition: iterateHasCurrent,
+                rewrittenIncrement: iterateNext,
+                rewrittenBody: loopBody,
+                afterBreak: iterateEnd,
+                breakLabel: node.BreakLabel,
+                continueLabel: node.ContinueLabel,
+                hasErrors: node.HasErrors);
 
             InstrumentForEachStatement(node, ref result);
 
@@ -602,6 +582,7 @@ namespace StarkPlatform.Compiler.Stark
                 rewrittenCondition: exitCondition,
                 rewrittenIncrement: positionIncrement,
                 rewrittenBody: loopBody,
+                afterBreak: null,
                 breakLabel: node.BreakLabel,
                 continueLabel: node.ContinueLabel,
                 hasErrors: node.HasErrors);
@@ -719,9 +700,7 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression collectionExpression = GetUnconvertedCollectionExpression(node);
             Debug.Assert(collectionExpression.Type.IsArray());
 
-            ArrayTypeSymbol arrayType = (ArrayTypeSymbol)collectionExpression.Type;
-
-            Debug.Assert(arrayType.IsSZArray);
+            TypeSymbol arrayType = collectionExpression.Type;
 
             TypeSymbol intType = _compilation.GetSpecialType(SpecialType.System_Int32);
             TypeSymbol boolType = _compilation.GetSpecialType(SpecialType.System_Boolean);
@@ -756,8 +735,8 @@ namespace StarkPlatform.Compiler.Stark
                 rewrittenOperand: new BoundArrayAccess(
                     syntax: forEachSyntax,
                     expression: boundArrayVar,
-                    indices: ImmutableArray.Create<BoundExpression>(boundPositionVar),
-                    type: arrayType.ElementType.TypeSymbol),
+                    index: boundPositionVar,
+                    type: arrayType.GetArrayElementType().TypeSymbol),
                 conversion: node.ElementConversion,
                 rewrittenType: node.IterationVariableType.Type,
                 @checked: node.Checked);
@@ -772,7 +751,7 @@ namespace StarkPlatform.Compiler.Stark
                         statements: ImmutableArray.Create<BoundStatement>(arrayVarDecl, positionVarDecl));
 
             // a.Length
-            BoundExpression arrayLength = new BoundArrayLength(
+            BoundExpression arrayLength = new BoundArraySize(
                 syntax: forEachSyntax,
                 expression: boundArrayVar,
                 type: intType);
@@ -809,6 +788,7 @@ namespace StarkPlatform.Compiler.Stark
                 rewrittenCondition: exitCondition,
                 rewrittenIncrement: positionIncrement,
                 rewrittenBody: loopBody,
+                afterBreak: null,
                 breakLabel: node.BreakLabel,
                 continueLabel: node.ContinueLabel,
                 hasErrors: node.HasErrors);

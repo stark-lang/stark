@@ -108,10 +108,6 @@ namespace StarkPlatform.Reflection.Metadata
         GenericTypeParameter = CorElementType.ELEMENT_TYPE_VAR,        // a class type variable VAR <U1>
 
         /// <summary>
-        /// Represents a generalized <see cref="System.Array"/> in signatures.
-        /// </summary>
-        Array = CorElementType.ELEMENT_TYPE_ARRAY,                     // MDARRAY <type> <rank> <bcount> <bound1> ... <lbcount> <lb1> ...
-        /// <summary>
         /// Represents the instantiation of a generic type in signatures.
         /// </summary>
         GenericTypeInstance = CorElementType.ELEMENT_TYPE_GENERICINST, // GENERICINST <generic type> <argCnt> <arg1> ... <argn>

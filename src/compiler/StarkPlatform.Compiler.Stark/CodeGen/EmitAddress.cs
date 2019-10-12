@@ -354,37 +354,25 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             return null;
         }
 
-        private void EmitArrayIndices(ImmutableArray<BoundExpression> indices)
+        private void EmitArrayIndex(BoundExpression index)
         {
-            for (int i = 0; i < indices.Length; ++i)
-            {
-                BoundExpression index = indices[i];
-                EmitExpression(index, used: true);
-                TreatLongsAsNative(index.Type.PrimitiveTypeCode);
-            }
+            EmitExpression(index, used: true);
+            TreatLongsAsNative(index.Type.PrimitiveTypeCode);
         }
 
         private void EmitArrayElementAddress(BoundArrayAccess arrayAccess, AddressKind addressKind)
         {
             EmitExpression(arrayAccess.Expression, used: true);
-            EmitArrayIndices(arrayAccess.Indices);
+            EmitArrayIndex(arrayAccess.Index);
 
             if (ShouldEmitReadOnlyPrefix(arrayAccess, addressKind))
             {
                 _builder.EmitOpCode(ILOpCode.Readonly);
             }
 
-            if (((ArrayTypeSymbol)arrayAccess.Expression.Type).IsSZArray)
-            {
-                _builder.EmitOpCode(ILOpCode.Ldelema);
-                var elementType = arrayAccess.Type;
-                EmitSymbolToken(elementType, arrayAccess.Syntax);
-            }
-            else
-            {
-                _builder.EmitArrayElementAddress(Emit.PEModuleBuilder.Translate((ArrayTypeSymbol)arrayAccess.Expression.Type),
-                                                arrayAccess.Syntax, _diagnostics);
-            }
+            _builder.EmitOpCode(ILOpCode.Ldelema);
+            var elementType = arrayAccess.Type;
+            EmitSymbolToken(elementType, arrayAccess.Syntax);
         }
 
         private bool ShouldEmitReadOnlyPrefix(BoundArrayAccess arrayAccess, AddressKind addressKind)

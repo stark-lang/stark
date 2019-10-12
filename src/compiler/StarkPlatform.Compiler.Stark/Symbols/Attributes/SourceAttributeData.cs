@@ -266,7 +266,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     }
                     else if (parameterType.IsArray())
                     {
-                        specType = ((ArrayTypeSymbol)parameterType).ElementType.SpecialType;
+                        specType = parameterType.GetArrayElementType().SpecialType;
                     }
 
                     switch (targetType)

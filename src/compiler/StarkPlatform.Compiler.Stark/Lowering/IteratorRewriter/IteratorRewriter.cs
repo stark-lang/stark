@@ -93,13 +93,14 @@ namespace StarkPlatform.Compiler.Stark
             // Iterator<T, TIterator>
             EnsureSpecialType(SpecialType.core_Iterable_T_TIterator, bag);
             EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_begin, bag);
-            EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_has_next, bag);
+            EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_has_current, bag);
+            EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_current, bag);
             EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_next, bag);
             EnsureSpecialMember(SpecialMember.core_Iterable_T_TIterator__iterate_end, bag);
 
             // MutableIterator<T, TIterator>
             EnsureSpecialType(SpecialType.core_MutableIterable_T_TIterator, bag);
-            EnsureSpecialMember(SpecialMember.core_MutableIterable_T_TIterator__iterate_item, bag);
+            EnsureSpecialMember(SpecialMember.core_MutableIterable_T_TIterator__iterate_current, bag);
 
             bool hasErrors = bag.HasAnyErrors();
             if (hasErrors)
@@ -185,7 +186,7 @@ namespace StarkPlatform.Compiler.Stark
             var IDisposable_Dispose = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_end);
 
             var IEnumerator_Reset = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_begin);
-            var IEnumerator_MoveNext = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_has_next);
+            var IEnumerator_MoveNext = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_has_current);
             var IEnumerator_get_Current = F.SpecialMethod(SpecialMember.core_Iterable_T_TIterator__iterate_next);
 
             var IEnumeratorOfElementType = F.SpecialType(SpecialType.core_Iterable_T_TIterator).Construct(_elementType);

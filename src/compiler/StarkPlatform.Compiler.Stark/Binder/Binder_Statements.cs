@@ -1117,7 +1117,7 @@ namespace StarkPlatform.Compiler.Stark
                     if (initializerType.IsArray())
                     {
                         // See ExpressionBinder::BindPtrToArray (though most of that functionality is now in LocalRewriter).
-                        elementType = ((ArrayTypeSymbol)initializerType).ElementType.TypeSymbol;
+                        elementType = initializerType.GetArrayElementType().TypeSymbol;
                         break;
                     }
 
@@ -1521,9 +1521,7 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression result;
             if (destinationType.Kind == SymbolKind.ArrayType)
             {
-                result = BindArrayCreationWithInitializer(diagnostics, null,
-                    (InitializerExpressionSyntax)node, (ArrayTypeSymbol)destinationType,
-                    ImmutableArray<BoundExpression>.Empty);
+                result = BindArrayCreationWithInitializer(diagnostics, null, (InitializerExpressionSyntax)node, (ArrayTypeSymbol)destinationType, null);
             }
             else
             {

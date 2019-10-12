@@ -1527,7 +1527,7 @@ namespace StarkPlatform.Compiler.Stark.Emit
                     constantsBuilder.Add(new TypedConstant(byteType, TypedConstantKind.Primitive, flag));
                 }
 
-                var byteArray = ArrayTypeSymbol.CreateSZArray(byteType.ContainingAssembly, TypeSymbolWithAnnotations.Create(byteType));
+                var byteArray = ArrayTypeSymbol.CreateArray(byteType.ContainingAssembly, TypeSymbolWithAnnotations.Create(byteType));
                 constructor = WellKnownMember.System_Runtime_CompilerServices_NullableAttribute__ctorTransformFlags;
                 arguments = ImmutableArray.Create(new TypedConstant(byteArray, constantsBuilder.ToImmutableAndFree()));
             }

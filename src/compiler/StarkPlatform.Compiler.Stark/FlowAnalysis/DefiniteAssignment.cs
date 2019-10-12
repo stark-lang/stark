@@ -1953,6 +1953,12 @@ namespace StarkPlatform.Compiler.Stark
 
                 case TypeKind.Class:
                 case TypeKind.Struct:
+                    if (type.IsArray())
+                    {
+                        MarkFieldsUsed(type.GetArrayElementType().TypeSymbol);
+                        return;
+                    }
+
                     if (!type.IsFromCompilation(this.compilation))
                     {
                         return;

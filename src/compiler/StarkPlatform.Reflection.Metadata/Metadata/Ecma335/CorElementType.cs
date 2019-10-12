@@ -31,7 +31,7 @@ namespace StarkPlatform.Reflection.Metadata
         ELEMENT_TYPE_VALUETYPE = 0x11,     // VALUETYPE <class Token>
         ELEMENT_TYPE_CLASS = 0x12,     // CLASS <class Token>
         ELEMENT_TYPE_VAR = 0x13,     // a class type variable VAR <U1>
-        ELEMENT_TYPE_ARRAY = 0x14,     // MDARRAY <type> <rank> <bcount> <bound1> ... <lbcount> <lb1> ...
+        // ELEMENT_TYPE_ARRAY = 0x14,     // MDARRAY <type> <rank> <bcount> <bound1> ... <lbcount> <lb1> ...
         ELEMENT_TYPE_GENERICINST = 0x15,     // GENERICINST <generic type> <argCnt> <arg1> ... <argn>
         ELEMENT_TYPE_TYPEDBYREF = 0x16,     // TYPEDREF  (it takes no args) a typed reference to some other type
 

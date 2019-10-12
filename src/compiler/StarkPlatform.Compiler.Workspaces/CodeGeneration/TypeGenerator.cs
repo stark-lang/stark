@@ -10,9 +10,9 @@ namespace StarkPlatform.Compiler.CodeGeneration
         {
         }
 
-        public ITypeSymbol CreateArrayTypeSymbol(ITypeSymbol elementType, int rank)
+        public ITypeSymbol CreateArrayTypeSymbol(ITypeSymbol elementType)
         {
-            return CodeGenerationSymbolFactory.CreateArrayTypeSymbol(elementType, rank);
+            return CodeGenerationSymbolFactory.CreateArrayTypeSymbol(elementType);
         }
 
         public ITypeSymbol CreatePointerTypeSymbol(ITypeSymbol pointedAtType)

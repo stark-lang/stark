@@ -36,8 +36,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 {
                     return symbol;
                 }
-
-                return _compilation.CreateArrayTypeSymbol(elementType, symbol.Rank);
+                return _compilation.CreateArrayTypeSymbol(elementType);
             }
 
             public override ITypeSymbol VisitNamedType(INamedTypeSymbol symbol)

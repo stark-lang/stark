@@ -17,8 +17,6 @@ namespace StarkPlatform.Compiler
         internal abstract TypeSymbol MakeUnboundIfGeneric(ModuleSymbol moduleSymbol, TypeSymbol type);
 
         internal abstract TypeSymbol GetSZArrayTypeSymbol(ModuleSymbol moduleSymbol, TypeSymbol elementType, ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers);
-        internal abstract TypeSymbol GetMDArrayTypeSymbol(ModuleSymbol moduleSymbol, int rank, TypeSymbol elementType, ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers,
-                                                          ImmutableArray<int> sizes, ImmutableArray<int> lowerBounds);
 
         /// <summary>
         /// Produce constructed type symbol.

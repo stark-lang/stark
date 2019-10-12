@@ -31,13 +31,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64,
 
-                // System_Array__get_Length
-                (byte)MemberFlags.PropertyGet,                                                                              // Flags
-                (byte)WellKnownType.core_Array,                                                                           // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32, // Return Type
-
                 // System_Array__Empty
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
                 (byte)WellKnownType.core_Array,                                                                           // DeclaringTypeId
@@ -51,9 +44,9 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     5,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Array_T,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Array_T,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
 
@@ -886,7 +879,7 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     2,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Array_T,
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_RuntimeFieldHandle,
 
                 // System_Runtime_CompilerServices_RuntimeHelpers__get_OffsetToStringData
@@ -1267,7 +1260,7 @@ namespace StarkPlatform.Compiler
                 (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char,
+                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringBoolean
@@ -1467,7 +1460,7 @@ namespace StarkPlatform.Compiler
                 (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Char,
+                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToGenericParameter_T_Object
@@ -1907,9 +1900,9 @@ namespace StarkPlatform.Compiler
                 (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Utils,                                           // DeclaringTypeId
                 0,                                                                                                          // Arity
                     2,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Array_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Array_T, // Return Type
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Array_T,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.core_Array_T,
 
                 // Microsoft_VisualBasic_CompilerServices_LikeOperator__LikeStringStringStringCompareMethod
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -3237,7 +3230,6 @@ namespace StarkPlatform.Compiler
             {
                 "Round",                                    // System_Math__RoundDouble
                 "Pow",                                      // System_Math__PowDoubleDouble
-                "get_Length",                               // System_Array__get_Length
                 "Empty",                                    // System_Array__Empty
                 "Copy",                                     // System_Array__Copy
                 "ToBoolean",                                // System_Convert__ToBooleanInt32

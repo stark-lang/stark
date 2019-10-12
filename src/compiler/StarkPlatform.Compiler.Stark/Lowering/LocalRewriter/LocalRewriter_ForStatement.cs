@@ -18,6 +18,7 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression rewrittenCondition,
             BoundStatement rewrittenIncrement,
             BoundStatement rewrittenBody,
+            BoundStatement afterBreak,
             GeneratedLabelSymbol breakLabel,
             GeneratedLabelSymbol continueLabel,
             bool hasErrors)
@@ -132,6 +133,11 @@ namespace StarkPlatform.Compiler.Stark
             // break:
             statementBuilder.Add(new BoundLabelStatement(syntax, breakLabel));
 
+            if (afterBreak != null)
+            {
+                statementBuilder.Add(afterBreak);
+            }
+
             var statements = statementBuilder.ToImmutableAndFree();
             return new BoundBlock(syntax, outerLocals, statements, hasErrors);
         }
@@ -152,6 +158,7 @@ namespace StarkPlatform.Compiler.Stark
                     rewrittenCondition,
                     rewrittenIncrement,
                     rewrittenBody,
+                    null,
                     node.BreakLabel,
                     node.ContinueLabel, node.HasErrors);
             }

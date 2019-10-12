@@ -839,6 +839,11 @@ namespace StarkPlatform.Compiler.Stark
                 return Conversion.ImplicitEnumeration;
             }
 
+            if ((object)sourceExpression.Type != null && HasImplicitArrayConversion(sourceExpression.Type, destination, ref useSiteDiagnostics))
+            {
+                return Conversion.Identity;
+            }
+
             var constantConversion = ClassifyImplicitConstantExpressionConversion(sourceExpression, destination);
             if (constantConversion.Exists)
             {
@@ -2103,28 +2108,6 @@ namespace StarkPlatform.Compiler.Stark
             return Conversion.NoConversion;
         }
 
-        private bool HasCovariantArrayConversion(TypeSymbol source, TypeSymbol destination, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
-        {
-            Debug.Assert((object)source != null);
-            Debug.Assert((object)destination != null);
-            var s = source as ArrayTypeSymbol;
-            var d = destination as ArrayTypeSymbol;
-            if ((object)s == null || (object)d == null)
-            {
-                return false;
-            }
-
-            // * S and T differ only in element type. In other words, S and T have the same number of dimensions.
-            if (!s.HasSameShapeAs(d))
-            {
-                return false;
-            }
-
-            // * Both SE and TE are reference types.
-            // * An implicit reference conversion exists from SE to TE.
-            return HasImplicitReferenceConversion(s.ElementType, d.ElementType, ref useSiteDiagnostics);
-        }
-
         public bool HasIdentityOrImplicitReferenceConversion(TypeSymbol source, TypeSymbol destination, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             Debug.Assert((object)source != null);
@@ -2157,15 +2140,10 @@ namespace StarkPlatform.Compiler.Stark
             return source.Kind == SymbolKind.DynamicType && !destination.IsPointerType();
         }
 
-        private bool HasArrayConversionToInterface(ArrayTypeSymbol source, TypeSymbol destination, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
+        private bool HasArrayConversionToInterface(TypeSymbol source, TypeSymbol destination, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             Debug.Assert((object)source != null);
             Debug.Assert((object)destination != null);
-
-            if (!source.IsSZArray)
-            {
-                return false;
-            }
 
             if (!destination.IsInterfaceType())
             {
@@ -2186,7 +2164,7 @@ namespace StarkPlatform.Compiler.Stark
 
             TypeSymbol argument0 = destinationAgg.TypeArgumentWithDefinitionUseSiteDiagnostics(0, ref useSiteDiagnostics).TypeSymbol;
 
-            return HasIdentityOrImplicitReferenceConversion(source.ElementType.TypeSymbol, argument0, ref useSiteDiagnostics);
+            return HasIdentityOrImplicitReferenceConversion(source.GetArrayElementType().TypeSymbol, argument0, ref useSiteDiagnostics);
         }
 
         private bool HasImplicitReferenceConversion(TypeSymbolWithAnnotations source, TypeSymbolWithAnnotations destination, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
@@ -2307,14 +2285,13 @@ namespace StarkPlatform.Compiler.Stark
 
         private bool HasImplicitConversionFromArray(TypeSymbol source, TypeSymbol destination, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
-            ArrayTypeSymbol s = source as ArrayTypeSymbol;
-            if ((object)s == null)
+            if (source.IsArray())
             {
                 return false;
             }
 
             //var arrayOfT = this.corLibrary.GetDeclaredSpecialType(SpecialType.System_Array_T).Construct(s.ElementType.TypeSymbol);
-            if (IsBaseInterface(destination, s.BaseTypeNoUseSiteDiagnostics, ref useSiteDiagnostics))
+            if (IsBaseInterface(destination, source.BaseTypeNoUseSiteDiagnostics, ref useSiteDiagnostics))
             {
                 return true;
             }
@@ -2323,7 +2300,7 @@ namespace StarkPlatform.Compiler.Stark
             //   interfaces, provided that there is an implicit identity or reference
             //   conversion from S to T.
 
-            if (HasArrayConversionToInterface(s, destination, ref useSiteDiagnostics))
+            if (HasArrayConversionToInterface(source, destination, ref useSiteDiagnostics))
             {
                 return true;
             }
@@ -3037,93 +3014,17 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert((object)source != null);
             Debug.Assert((object)destination != null);
 
-            var sourceArray = source as ArrayTypeSymbol;
-            var destinationArray = destination as ArrayTypeSymbol;
-
-            // SPEC: From an array-type S with an element type SE to an array-type T with an element type TE, provided all of the following are true:
-            // SPEC: S and T differ only in element type. (In other words, S and T have the same number of dimensions.)
-            // SPEC: Both SE and TE are reference-types.
-            // SPEC: An explicit reference conversion exists from SE to TE.
-            if ((object)sourceArray != null && (object)destinationArray != null)
-            {
-                // HasExplicitReferenceConversion checks that SE and TE are reference types so
-                // there's no need for that check here. Moreover, it's not as simple as checking
-                // IsReferenceType, at least not in the case of type parameters, since SE will be
-                // considered a reference type implicitly in the case of "where TE : class, SE" even
-                // though SE.IsReferenceType may be false. Again, HasExplicitReferenceConversion
-                // already handles these cases.
-                return sourceArray.HasSameShapeAs(destinationArray) &&
-                    HasExplicitReferenceConversion(sourceArray.ElementType.TypeSymbol, destinationArray.ElementType.TypeSymbol, ref useSiteDiagnostics);
-            }
-
-            // SPEC: From System.Array and the interfaces it implements to any array-type.
-            if ((object)destinationArray != null)
-            {
-                if (source.SpecialType == SpecialType.System_Array_T)
-                {
-                    return true;
-                }
-
-                foreach (var iface in this.corLibrary.GetDeclaredSpecialType(SpecialType.System_Array_T).AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics))
-                {
-                    if (HasIdentityConversionInternal(iface, source))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            // SPEC: From a single-dimensional array type S[] to System.Collections.Generic.IList<T> and its base interfaces
-            // SPEC: provided that there is an explicit reference conversion from S to T.
-
-            // The framework now also allows arrays to be converted to IReadOnlyList<T> and IReadOnlyCollection<T>; we 
-            // honor that as well.
-
-            if ((object)sourceArray != null && sourceArray.IsSZArray && destination.IsPossibleArrayGenericInterface())
-            {
-                if (HasExplicitReferenceConversion(sourceArray.ElementType.TypeSymbol, ((NamedTypeSymbol)destination).TypeArgumentWithDefinitionUseSiteDiagnostics(0, ref useSiteDiagnostics).TypeSymbol, ref useSiteDiagnostics))
-                {
-                    return true;
-                }
-            }
-
-            // SPEC: From System.Collections.Generic.IList<S> and its base interfaces to a single-dimensional array type T[], 
-            // provided that there is an explicit identity or reference conversion from S to T.
-
-            // Similarly, we honor IReadOnlyList<S> and IReadOnlyCollection<S> in the same way.
-            if ((object)destinationArray != null && destinationArray.IsSZArray)
-            {
-                var specialDefinition = ((TypeSymbol)source.OriginalDefinition).SpecialType;
-
-                if (specialDefinition == SpecialType.System_Collections_Generic_IList_T ||
-                    specialDefinition == SpecialType.System_Collections_Generic_ICollection_T ||
-                    specialDefinition == SpecialType.core_Iterable_T_TIterator ||
-                    specialDefinition == SpecialType.System_Collections_Generic_IReadOnlyList_T ||
-                    specialDefinition == SpecialType.System_Collections_Generic_IReadOnlyCollection_T)
-                {
-                    var sourceElement = ((NamedTypeSymbol)source).TypeArgumentWithDefinitionUseSiteDiagnostics(0, ref useSiteDiagnostics).TypeSymbol;
-                    var destinationElement = destinationArray.ElementType.TypeSymbol;
-
-                    if (HasIdentityConversionInternal(sourceElement, destinationElement))
-                    {
-                        return true;
-                    }
-
-                    if (HasImplicitReferenceConversion(sourceElement, destinationElement, ref useSiteDiagnostics))
-                    {
-                        return true;
-                    }
-
-                    if (HasExplicitReferenceConversion(sourceElement, destinationElement, ref useSiteDiagnostics))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return source.IsArray() && destination.IsArray() && HasIdentityConversion(source.GetArrayElementType().TypeSymbol, destination.GetArrayElementType().TypeSymbol);
         }
-       
+        
+        private bool HasImplicitArrayConversion(TypeSymbol source, TypeSymbol destination, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
+        {
+            Debug.Assert((object)source != null);
+            Debug.Assert((object)destination != null);
+
+            return source.IsArray() && destination.IsArray() && HasIdentityConversion(source.GetArrayElementType().TypeSymbol, destination.GetArrayElementType().TypeSymbol);
+        }
+
         private static bool HasPointerToPointerConversion(TypeSymbol source, TypeSymbol destination)
         {
             Debug.Assert((object)source != null);

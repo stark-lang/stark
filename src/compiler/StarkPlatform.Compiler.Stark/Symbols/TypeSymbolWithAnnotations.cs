@@ -608,7 +608,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         public bool IsStatic => _extensions.IsStatic(_defaultType);
         public bool IsNullableTypeOrTypeParameter() => TypeSymbol.IsNullableTypeOrTypeParameter();
         public bool IsVoid => _extensions.IsVoid(_defaultType);
-        public bool IsSZArray() => _extensions.IsSZArray(_defaultType);
         public TypeSymbolWithAnnotations GetNullableUnderlyingType() =>
             TypeSymbol.GetNullableUnderlyingTypeWithAnnotations();
 
@@ -1112,7 +1111,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             internal abstract bool IsRestrictedType(TypeSymbol typeSymbol, bool ignoreSpanLikeTypes);
             internal abstract bool IsStatic(TypeSymbol typeSymbol);
             internal abstract bool IsVoid(TypeSymbol typeSymbol);
-            internal abstract bool IsSZArray(TypeSymbol typeSymbol);
+            internal abstract bool IsArray(TypeSymbol typeSymbol);
 
             internal abstract TypeSymbolWithAnnotations WithTypeAndModifiers(TypeSymbolWithAnnotations type, TypeSymbol typeSymbol, ImmutableArray<CustomModifier> customModifiers);
 
@@ -1139,7 +1138,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             internal override bool IsRestrictedType(TypeSymbol typeSymbol, bool ignoreSpanLikeTypes) => typeSymbol.IsRestrictedType(ignoreSpanLikeTypes);
             internal override bool IsStatic(TypeSymbol typeSymbol) => typeSymbol.IsStatic;
             internal override bool IsVoid(TypeSymbol typeSymbol) => typeSymbol.SpecialType == SpecialType.System_Void;
-            internal override bool IsSZArray(TypeSymbol typeSymbol) => typeSymbol.IsSZArray();
+            internal override bool IsArray(TypeSymbol typeSymbol) => typeSymbol.IsArray();
 
             internal override TypeSymbol GetNullableUnderlyingTypeOrSelf(TypeSymbol typeSymbol) => typeSymbol.StrippedType();
 
@@ -1231,7 +1230,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
 
             internal override bool IsVoid(TypeSymbol typeSymbol) => false;
-            internal override bool IsSZArray(TypeSymbol typeSymbol) => false;
+            internal override bool IsArray(TypeSymbol typeSymbol) => false;
             internal override bool IsStatic(TypeSymbol typeSymbol) => false;
 
             private TypeSymbol GetResolvedType()

@@ -1495,10 +1495,7 @@ namespace StarkPlatform.Compiler.Stark
 
         public override BoundNode VisitArrayCreation(BoundArrayCreation node)
         {
-            foreach (var expr in node.Bounds)
-            {
-                VisitRvalue(expr);
-            }
+            VisitRvalue(node.Size);
             TypeSymbol resultType = (node.InitializerOpt == null) ? node.Type : VisitArrayInitializer(node);
             _resultType = TypeSymbolWithAnnotations.Create(resultType, NullableAnnotation.NotNullable);
             return null;
@@ -1689,19 +1686,15 @@ namespace StarkPlatform.Compiler.Stark
 
             var type = _resultType.TypeSymbol as ArrayTypeSymbol;
 
-            foreach (var i in node.Indices)
-            {
-                VisitRvalue(i);
-            }
+            VisitRvalue(node.Index);
 
-            if (node.Indices.Length == 1 &&
-                TypeSymbol.Equals(node.Indices[0].Type, compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything2))
+            if (TypeSymbol.Equals(node.Index.Type, compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything2))
             {
                 _resultType = TypeSymbolWithAnnotations.Create(type);
             }
             else
             {
-                _resultType = type?.ElementType ?? default;
+                _resultType = type?.GetArrayElementType() ?? default;
             }
 
             return null;
@@ -3115,9 +3108,9 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             var type = parameter.Type;
-            if (expanded && parameter.Ordinal == n - 1 && type.IsSZArray())
+            if (expanded && parameter.Ordinal == n - 1 && type.IsArray())
             {
-                type = ((ArrayTypeSymbol)type.TypeSymbol).ElementType;
+                type = type.TypeSymbol.GetArrayElementType();
             }
 
             return (parameter, type);

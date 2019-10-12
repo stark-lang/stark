@@ -259,7 +259,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
                         case TypeKind.Array:
                             Debug.Assert(inherited || currentCompilation == null);
-                            constraintEffectiveBase = corLibrary.GetSpecialType(SpecialType.System_Array_T);
+                            constraintEffectiveBase = corLibrary.GetSpecialType(SpecialType.core_Array_T);
                             constraintDeducedBase = constraintType.TypeSymbol;
                             break;
 

@@ -29,18 +29,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        bool Cci.IArrayTypeReference.IsSZArray
-        {
-            get
-            {
-                return this.IsSZArray;
-            }
-        }
-
-        ImmutableArray<int> Cci.IArrayTypeReference.LowerBounds => LowerBounds;
-        int Cci.IArrayTypeReference.Rank => Rank;
-        ImmutableArray<int> Cci.IArrayTypeReference.Sizes => Sizes;
-
         void Cci.IReference.Dispatch(Cci.MetadataVisitor visitor)
         {
             visitor.Visit((Cci.IArrayTypeReference)this);

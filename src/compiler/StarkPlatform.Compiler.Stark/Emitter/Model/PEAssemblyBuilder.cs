@@ -332,7 +332,7 @@ namespace StarkPlatform.Compiler.Stark.Emit
             var byteType = TypeSymbolWithAnnotations.Create(compilation.GetSpecialType(SpecialType.System_UInt8));
             Binder.ReportUseSiteDiagnostics(byteType.TypeSymbol, diagnostics, Location.None);
             var byteArray = TypeSymbolWithAnnotations.Create(
-                ArrayTypeSymbol.CreateSZArray(
+                ArrayTypeSymbol.CreateArray(
                     byteType.TypeSymbol.ContainingAssembly,
                     byteType));
             return ImmutableArray.Create<MethodSymbol>(

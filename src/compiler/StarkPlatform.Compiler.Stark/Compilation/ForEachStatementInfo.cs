@@ -12,7 +12,9 @@ namespace StarkPlatform.Compiler.Stark
     {
         public IMethodSymbol IterateBegin { get; }
 
-        public IMethodSymbol IterateHasNext { get; }
+        public IMethodSymbol IterateHasCurrent { get; }
+
+        public IMethodSymbol IterateCurrent { get; }
 
         public IMethodSymbol IterateNext { get; }
 
@@ -40,7 +42,8 @@ namespace StarkPlatform.Compiler.Stark
         /// Initializes a new instance of the <see cref="ForEachStatementInfo" /> structure.
         /// </summary>
         internal ForEachStatementInfo(IMethodSymbol iterateBegin,
-                                      IMethodSymbol iterateHasNext,
+                                      IMethodSymbol iterateHasCurrent,
+                                      IMethodSymbol iterateCurrent,
                                       IMethodSymbol iterateNext,
                                       IMethodSymbol iterateEnd,
                                       ITypeSymbol elementType,
@@ -48,7 +51,8 @@ namespace StarkPlatform.Compiler.Stark
                                       )
         {
             this.IterateBegin = iterateBegin;
-            this.IterateHasNext = iterateHasNext;
+            this.IterateHasCurrent = iterateHasCurrent;
+            this.IterateCurrent = iterateCurrent;
             this.IterateNext = iterateNext;
             this.IterateEnd = iterateEnd;
             this.ElementType = elementType;
@@ -63,7 +67,8 @@ namespace StarkPlatform.Compiler.Stark
         public bool Equals(ForEachStatementInfo other)
         {
             return object.Equals(this.IterateBegin, other.IterateBegin)
-                   && object.Equals(this.IterateHasNext, other.IterateHasNext)
+                   && object.Equals(this.IterateHasCurrent, other.IterateHasCurrent)
+                   && object.Equals(this.IterateCurrent, other.IterateCurrent)
                    && object.Equals(this.IterateNext, other.IterateNext)
                    && object.Equals(this.IterateEnd, other.IterateEnd)
                    && object.Equals(this.ElementType, other.ElementType)
@@ -73,10 +78,11 @@ namespace StarkPlatform.Compiler.Stark
         public override int GetHashCode()
         {
             return Hash.Combine(IterateBegin,
-                Hash.Combine(IterateHasNext,
-                    Hash.Combine(IterateNext,
-                        Hash.Combine(IterateEnd,
-                            Hash.Combine(ElementType, IteratorType.GetHashCode())))));
+                Hash.Combine(IterateHasCurrent,
+                    Hash.Combine(IterateCurrent,
+                        Hash.Combine(IterateNext,
+                            Hash.Combine(IterateEnd,
+                                Hash.Combine(ElementType, IteratorType.GetHashCode()))))));
         }
     }
 }

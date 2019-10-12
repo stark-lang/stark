@@ -973,7 +973,7 @@ namespace StarkPlatform.Compiler.Stark
             switch (type.TypeKind)
             {
                 case TypeKind.Array:
-                    return IsCompliantType(((ArrayTypeSymbol)type).ElementType.TypeSymbol, context);
+                    return IsCompliantType(type.GetArrayElementType().TypeSymbol, context);
                 case TypeKind.Dynamic:
                     // NOTE: It would probably be most correct to return 
                     // IsCompliantType(this.compilation.GetSpecialType(SpecialType.System_Object), context)
@@ -992,6 +992,10 @@ namespace StarkPlatform.Compiler.Stark
                 case TypeKind.Delegate:
                 case TypeKind.Enum:
                 case TypeKind.Submission:
+                    if (type.IsArray())
+                    {
+                        return IsCompliantType(type.GetArrayElementType().TypeSymbol, context);
+                    }
                     return IsCompliantType((NamedTypeSymbol)type, context);
                 default:
                     throw ExceptionUtilities.UnexpectedValue(type.TypeKind);
@@ -1361,7 +1365,6 @@ namespace StarkPlatform.Compiler.Stark
             // array rank, or unnamed array element types (e.g. int[][] == char[][]).
 
             bool sawRefKindDifference = xRefKinds.IsDefault != yRefKinds.IsDefault;
-            bool sawArrayRankDifference = false;
             bool sawArrayOfArraysDifference = false;
 
             for (int i = 0; i < numParams; i++)
@@ -1377,16 +1380,11 @@ namespace StarkPlatform.Compiler.Stark
 
                 if (typeKind == TypeKind.Array)
                 {
-                    ArrayTypeSymbol xArrayType = (ArrayTypeSymbol)xType;
-                    ArrayTypeSymbol yArrayType = (ArrayTypeSymbol)yType;
-
-                    sawArrayRankDifference = sawArrayRankDifference || xArrayType.Rank != yArrayType.Rank;
-
-                    bool elementTypesDiffer = !TypeSymbol.Equals(xArrayType.ElementType.TypeSymbol, yArrayType.ElementType.TypeSymbol, TypeCompareKind.ConsiderEverything2);
+                    bool elementTypesDiffer = !TypeSymbol.Equals(xType.GetArrayElementType().TypeSymbol, yType.GetArrayElementType().TypeSymbol, TypeCompareKind.ConsiderEverything2);
 
                     // You might expect that only unnamed-vs-unnamed would produce a warning, but
                     // dev11 reports unnamed-vs-anything.
-                    if (IsArrayOfArrays(xArrayType) || IsArrayOfArrays(yArrayType))
+                    if (IsArrayOfArrays(xType) || IsArrayOfArrays(yType))
                     {
                         sawArrayOfArraysDifference = sawArrayOfArraysDifference || elementTypesDiffer;
                     }
@@ -1408,16 +1406,15 @@ namespace StarkPlatform.Compiler.Stark
 
             code =
                 sawArrayOfArraysDifference ? ErrorCode.WRN_CLS_OverloadUnnamed :
-                sawArrayRankDifference ? ErrorCode.WRN_CLS_OverloadRefOut : // Lumping rank difference with refkind is odd, but matches dev11.
                 sawRefKindDifference ? ErrorCode.WRN_CLS_OverloadRefOut :
                 ErrorCode.Void;
 
             return code != ErrorCode.Void;
         }
 
-        private static bool IsArrayOfArrays(ArrayTypeSymbol arrayType)
+        private static bool IsArrayOfArrays(TypeSymbol arrayType)
         {
-            return arrayType.ElementType.Kind == SymbolKind.ArrayType;
+            return arrayType.GetArrayElementType().TypeSymbol.IsArray();
         }
     }
 }

@@ -16,7 +16,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 {
     internal sealed class SourcePropertySymbol : PropertySymbol, IAttributeTargetSymbol
     {
-        private const string DefaultIndexerName = "Item";
+        private const string DefaultIndexerName = "item";
 
         // TODO (tomat): consider splitting into multiple subclasses/rare data.
 

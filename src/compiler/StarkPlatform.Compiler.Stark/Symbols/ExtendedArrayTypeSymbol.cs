@@ -27,13 +27,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             return _underlyingArray.WithElementTypeCore(elementType);
         }
 
-        public override int Rank => _underlyingArray.Rank;
-
-        public override bool IsSZArray => _underlyingArray.IsSZArray;
-
         public override bool IsRefLikeType => (_accessModifiers & TypeAccessModifiers.Transient) != 0;
-
-        internal override bool HasDefaultSizesAndLowerBounds => _underlyingArray.HasDefaultSizesAndLowerBounds;
 
         public override TypeAccessModifiers AccessModifiers => _accessModifiers;
     }

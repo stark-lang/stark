@@ -1,0 +1,15 @@
+namespace core
+{
+    public readonly struct Index 
+    {
+        public constructor(value: int) {
+            this.value = value
+        }
+
+        public let value : int
+
+        public static func operator implicit as(value: i32) -> Index => new Index(value)
+
+        public static func operator implicit as(value: int) -> Index => new Index(value)
+    }
+}

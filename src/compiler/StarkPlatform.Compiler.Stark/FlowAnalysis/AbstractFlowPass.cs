@@ -1864,10 +1864,7 @@ namespace StarkPlatform.Compiler.Stark
         public override BoundNode VisitArrayAccess(BoundArrayAccess node)
         {
             VisitRvalue(node.Expression);
-            foreach (var i in node.Indices)
-            {
-                VisitRvalue(i);
-            }
+            VisitRvalue(node.Index);
 
             return null;
         }
@@ -2140,10 +2137,7 @@ namespace StarkPlatform.Compiler.Stark
 
         public override BoundNode VisitArrayCreation(BoundArrayCreation node)
         {
-            foreach (var expr in node.Bounds)
-            {
-                VisitRvalue(expr);
-            }
+            VisitRvalue(node.Size);
 
             if (node.InitializerOpt != null)
             {
@@ -2682,7 +2676,7 @@ namespace StarkPlatform.Compiler.Stark
             return null;
         }
 
-        public override BoundNode VisitArrayLength(BoundArrayLength node)
+        public override BoundNode VisitArraySize(BoundArraySize node)
         {
             VisitRvalue(node.Expression);
             return null;

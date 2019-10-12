@@ -8,7 +8,6 @@ namespace StarkPlatform.Compiler
         System_Math__RoundDouble,
         System_Math__PowDoubleDouble,
 
-        System_Array__get_Length,
         System_Array__Empty,
         System_Array__Copy,
 

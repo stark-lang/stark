@@ -20,8 +20,9 @@ namespace StarkPlatform.Compiler.Stark
 
         // Members required by the "pattern" based approach.  Also populated for other approaches.
         public readonly MethodSymbol IterateBegin;
+        public readonly MethodSymbol IterateHasCurrent;
+        public readonly MethodSymbol IterateCurrent;
         public readonly MethodSymbol IterateNext;
-        public readonly MethodSymbol IterateHasNext;
         public readonly MethodSymbol IterateEnd;
 
         // True if the enumerator needs disposal once used. 
@@ -42,7 +43,8 @@ namespace StarkPlatform.Compiler.Stark
             TypeSymbolWithAnnotations elementType,
             TypeSymbol iteratorType,
             MethodSymbol iterateBegin,
-            MethodSymbol iterateHasNext,
+            MethodSymbol iterateHasCurrent,
+            MethodSymbol iterateCurrent,
             MethodSymbol iterateNext,
             MethodSymbol iterateEnd,
             bool needsDisposal,
@@ -54,15 +56,16 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert((object)iteratorType != null, "Field 'stateType' cannot be null");
             Debug.Assert((object)iterateBegin != null, "Field 'iterateBegin' cannot be null");
             Debug.Assert((object)iterateNext != null, "Field 'iterateItem' cannot be null");
-            Debug.Assert((object)iterateHasNext != null, "Field 'iterateNext' cannot be null");
+            Debug.Assert((object)iterateHasCurrent != null, "Field 'iterateNext' cannot be null");
             Debug.Assert((object)iterateEnd != null, "Field 'iterateEnd' cannot be null");
 
             this.IterableType = iterableType;
             this.ElementType = elementType;
             this.IteratorType = iteratorType;
             this.IterateBegin = iterateBegin;
+            this.IterateHasCurrent = iterateHasCurrent;
+            this.IterateCurrent = iterateCurrent;
             this.IterateNext = iterateNext;
-            this.IterateHasNext = iterateHasNext;
             this.IterateEnd = iterateEnd;
             this.NeedsDisposal = needsDisposal;
             this.DisposeAwaitableInfo = disposeAwaitableInfo;
@@ -77,8 +80,9 @@ namespace StarkPlatform.Compiler.Stark
             public TypeSymbol IteratorType;
             
             public MethodSymbol IterateBegin;
+            public MethodSymbol IterateHasCurrent;
+            public MethodSymbol IterateCurrent;
             public MethodSymbol IterateNext;
-            public MethodSymbol IterateHasNext;
             public MethodSymbol IterateEnd;
 
             public bool NeedsDisposal;
@@ -91,7 +95,7 @@ namespace StarkPlatform.Compiler.Stark
                 Debug.Assert((object)IteratorType != null, "'StateType' cannot be null");
 
                 Debug.Assert(IterateBegin != null);
-                Debug.Assert(IterateHasNext != null);
+                Debug.Assert(IterateHasCurrent != null);
                 Debug.Assert(IterateNext != null);
                 Debug.Assert(IterateEnd != null);
 
@@ -100,7 +104,8 @@ namespace StarkPlatform.Compiler.Stark
                     ElementType,
                     IteratorType,
                     IterateBegin,
-                    IterateHasNext,
+                    IterateHasCurrent,
+                    IterateCurrent,
                     IterateNext,
                     IterateEnd,
                     NeedsDisposal,

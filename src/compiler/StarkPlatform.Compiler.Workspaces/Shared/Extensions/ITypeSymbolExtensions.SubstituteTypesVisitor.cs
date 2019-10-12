@@ -103,7 +103,7 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     return symbol;
                 }
 
-                return _typeGenerator.CreateArrayTypeSymbol(elementType, symbol.Rank);
+                return _typeGenerator.CreateArrayTypeSymbol(elementType);
             }
 
             public override ITypeSymbol VisitPointerType(IPointerTypeSymbol symbol)

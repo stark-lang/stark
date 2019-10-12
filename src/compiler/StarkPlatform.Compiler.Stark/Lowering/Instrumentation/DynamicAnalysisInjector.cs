@@ -104,7 +104,7 @@ namespace StarkPlatform.Compiler.Stark
             _methodBody = methodBody;
             _spansBuilder = ArrayBuilder<SourceSpan>.GetInstance();
             TypeSymbol payloadElementType = methodBodyFactory.SpecialType(SpecialType.System_Boolean);
-            _payloadType = ArrayTypeSymbol.CreateCSharpArray(methodBodyFactory.Compilation.Assembly, TypeSymbolWithAnnotations.Create(payloadElementType));
+            _payloadType = ArrayTypeSymbol.CreateArray(methodBodyFactory.Compilation.Assembly, TypeSymbolWithAnnotations.Create(payloadElementType));
             _diagnostics = diagnostics;
             _debugDocumentProvider = debugDocumentProvider;
             _methodBodyFactory = methodBodyFactory;
@@ -253,7 +253,7 @@ namespace StarkPlatform.Compiler.Stark
                 const int analysisKind = 0;
 
                 ArrayTypeSymbol modulePayloadType =
-                    ArrayTypeSymbol.CreateCSharpArray(_methodBodyFactory.Compilation.Assembly, TypeSymbolWithAnnotations.Create(_payloadType));
+                    ArrayTypeSymbol.CreateArray(_methodBodyFactory.Compilation.Assembly, TypeSymbolWithAnnotations.Create(_payloadType));
 
                 // Synthesize the initialization of the instrumentation payload array, using concurrency-safe code:
                 //
@@ -266,7 +266,7 @@ namespace StarkPlatform.Compiler.Stark
                         _methodBodyFactory.Local(_methodPayload),
                         _methodBodyFactory.ArrayAccess(
                             _methodBodyFactory.InstrumentationPayloadRoot(analysisKind, modulePayloadType),
-                            ImmutableArray.Create(_methodBodyFactory.MethodDefIndex(_method))));
+                            _methodBodyFactory.MethodDefIndex(_method)));
 
                 BoundExpression mvid = _methodBodyFactory.ModuleVersionId();
                 BoundExpression methodToken = _methodBodyFactory.MethodDefIndex(_method);
@@ -274,7 +274,7 @@ namespace StarkPlatform.Compiler.Stark
                 BoundExpression payloadSlot =
                     _methodBodyFactory.ArrayAccess(
                         _methodBodyFactory.InstrumentationPayloadRoot(analysisKind, modulePayloadType),
-                        ImmutableArray.Create(_methodBodyFactory.MethodDefIndex(_method)));
+                        _methodBodyFactory.MethodDefIndex(_method));
 
                 BoundStatement createPayloadCall =
                     GetCreatePayloadStatement(

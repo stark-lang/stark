@@ -40,21 +40,7 @@ namespace StarkPlatform.Compiler.Stark
                 Visit(symbol.ElementType.TypeSymbol, builder);
 
                 // Rank-one arrays are displayed different than rectangular arrays
-                if (symbol.IsSZArray)
-                {
-                    builder.Append("[]");
-                }
-                else
-                {
-                    builder.Append("[0:");
-
-                    for (int i = 0; i < symbol.Rank - 1; i++)
-                    {
-                        builder.Append(",0:");
-                    }
-
-                    builder.Append(']');
-                }
+                builder.Append("[]");
 
                 return null;
             }

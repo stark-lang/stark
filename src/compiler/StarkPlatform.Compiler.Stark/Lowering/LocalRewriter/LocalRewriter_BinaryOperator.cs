@@ -419,7 +419,7 @@ namespace StarkPlatform.Compiler.Stark
 
                     case BinaryOperatorKind.Int32GreaterThan:
                     case BinaryOperatorKind.Int32LessThanOrEqual:
-                        if (loweredLeft.Kind == BoundKind.ArrayLength && loweredRight.IsDefaultValue())
+                        if (loweredLeft.Kind == BoundKind.ArraySize && loweredRight.IsDefaultValue())
                         {
                             //array length is never negative
                             var newOp = operatorKind == BinaryOperatorKind.Int32GreaterThan ?
@@ -428,13 +428,13 @@ namespace StarkPlatform.Compiler.Stark
 
                             operatorKind &= ~BinaryOperatorKind.OpMask;
                             operatorKind |= newOp;
-                            loweredLeft = UnconvertArrayLength((BoundArrayLength)loweredLeft);
+                            loweredLeft = UnconvertArrayLength((BoundArraySize)loweredLeft);
                         }
                         goto default;
 
                     case BinaryOperatorKind.Int32LessThan:
                     case BinaryOperatorKind.Int32GreaterThanOrEqual:
-                        if (loweredRight.Kind == BoundKind.ArrayLength && loweredLeft.IsDefaultValue())
+                        if (loweredRight.Kind == BoundKind.ArraySize && loweredLeft.IsDefaultValue())
                         {
                             //array length is never negative
                             var newOp = operatorKind == BinaryOperatorKind.Int32LessThan ?
@@ -443,19 +443,19 @@ namespace StarkPlatform.Compiler.Stark
 
                             operatorKind &= ~BinaryOperatorKind.OpMask;
                             operatorKind |= newOp;
-                            loweredRight = UnconvertArrayLength((BoundArrayLength)loweredRight);
+                            loweredRight = UnconvertArrayLength((BoundArraySize)loweredRight);
                         }
                         goto default;
 
                     case BinaryOperatorKind.Int32Equal:
                     case BinaryOperatorKind.Int32NotEqual:
-                        if (loweredLeft.Kind == BoundKind.ArrayLength && loweredRight.IsDefaultValue())
+                        if (loweredLeft.Kind == BoundKind.ArraySize && loweredRight.IsDefaultValue())
                         {
-                            loweredLeft = UnconvertArrayLength((BoundArrayLength)loweredLeft);
+                            loweredLeft = UnconvertArrayLength((BoundArraySize)loweredLeft);
                         }
-                        else if (loweredRight.Kind == BoundKind.ArrayLength && loweredLeft.IsDefaultValue())
+                        else if (loweredRight.Kind == BoundKind.ArraySize && loweredLeft.IsDefaultValue())
                         {
-                            loweredRight = UnconvertArrayLength((BoundArrayLength)loweredRight);
+                            loweredRight = UnconvertArrayLength((BoundArraySize)loweredRight);
                         }
 
                         goto default;
@@ -521,9 +521,9 @@ namespace StarkPlatform.Compiler.Stark
         //array length produces native uint, so the node typically implies a conversion to int32/int64.  
         //Sometimes the conversion is not necessary - i.e. when we just check for 0
         //This helper removes unnecessary implied conversion from ArrayLength node.
-        private BoundExpression UnconvertArrayLength(BoundArrayLength arrLength)
+        private BoundExpression UnconvertArrayLength(BoundArraySize arrSize)
         {
-            return arrLength.Update(arrLength.Expression, _factory.SpecialType(SpecialType.System_UInt));
+            return arrSize.Update(arrSize.Expression, _factory.SpecialType(SpecialType.System_UInt));
         }
 
         private BoundExpression MakeDynamicLogicalBinaryOperator(

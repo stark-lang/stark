@@ -250,9 +250,7 @@ namespace StarkPlatform.Compiler.ConvertForToForEach
             if (collectionType is IArrayTypeSymbol arrayType)
             {
                 iterationType = arrayType.ElementType;
-
-                // We only support single-dimensional array iteration.
-                return arrayType.Rank == 1;
+                return true;
             }
 
             // Check in the class/struct hierarchy first.
@@ -482,7 +480,7 @@ namespace StarkPlatform.Compiler.ConvertForToForEach
         {
             if (collectionType is IArrayTypeSymbol arrayType)
             {
-                return arrayType.Rank == 1 ? arrayType.ElementType : null;
+                return arrayType.ElementType;
             }
 
             var indexer =

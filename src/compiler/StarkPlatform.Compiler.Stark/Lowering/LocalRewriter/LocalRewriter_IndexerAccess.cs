@@ -110,6 +110,22 @@ namespace StarkPlatform.Compiler.Stark
             BoundIndexerAccess oldNodeOpt,
             bool isLeftOfAssignment)
         {
+            // check for System.Array.[Length|LongLength] on a single dimensional array,
+            // we have a special node for such cases.
+            if (rewrittenReceiver != null && rewrittenReceiver.Type.IsArray() && !isLeftOfAssignment)
+            {
+                // NOTE: we are not interested in potential badness of Array.Length property.
+                // If it is bad reference compare will not succeed.
+
+                var specialIndexer = _compilation.GetSpecialTypeMember(SpecialMember.core_Array_T__item);
+
+                if (ReferenceEquals(indexer.OriginalDefinition, specialIndexer))
+                {
+                    return new BoundArrayAccess(syntax, rewrittenReceiver, rewrittenArguments[0], indexer.Type.TypeSymbol);
+                }
+            }
+
+
             if (isLeftOfAssignment && indexer.RefKind == RefKind.None)
             {
                 // This is an indexer set access. We return a BoundIndexerAccess node here.

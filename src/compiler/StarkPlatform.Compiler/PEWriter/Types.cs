@@ -28,45 +28,6 @@ namespace StarkPlatform.Cci
         /// The type of the elements of this array.
         /// </summary>
         ITypeReference GetElementType(EmitContext context);
-
-        /// <summary>
-        /// This type of array is a single dimensional array with zero lower bound for index values.
-        /// </summary>
-        bool IsSZArray
-        {
-            get;
-            // ^ ensures result ==> Rank == 1;
-        }
-
-        /// <summary>
-        /// A possibly empty list of lower bounds for dimension indices. When not explicitly specified, a lower bound defaults to zero.
-        /// The first lower bound in the list corresponds to the first dimension. Dimensions cannot be skipped.
-        /// </summary>
-        ImmutableArray<int> LowerBounds
-        {
-            get;
-            // ^ ensures count(result) <= Rank;
-        }
-
-        /// <summary>
-        /// The number of array dimensions.
-        /// </summary>
-        int Rank
-        {
-            get;
-            // ^ ensures result > 0;
-        }
-
-        /// <summary>
-        /// A possible empty list of upper bounds for dimension indices.
-        /// The first upper bound in the list corresponds to the first dimension. Dimensions cannot be skipped.
-        /// An unspecified upper bound means that instances of this type can have an arbitrary upper bound for that dimension.
-        /// </summary>
-        ImmutableArray<int> Sizes
-        {
-            get;
-            // ^ ensures count(result) <= Rank;
-        }
     }
 
     /// <summary>

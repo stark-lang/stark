@@ -956,29 +956,22 @@ namespace StarkPlatform.Compiler.Stark
             return StringLiteral(ConstantValue.Create(stringValue));
         }
 
-        public BoundArrayLength ArrayLength(BoundExpression array)
+        public BoundArraySize ArrayLength(BoundExpression array)
         {
             Debug.Assert((object)array.Type != null && array.Type.IsArray());
-            return new BoundArrayLength(Syntax, array, SpecialType(StarkPlatform.Compiler.SpecialType.System_Int32));
+            return new BoundArraySize(Syntax, array, SpecialType(StarkPlatform.Compiler.SpecialType.System_Int32));
         }
 
         public BoundArrayAccess ArrayAccessFirstElement(BoundExpression array)
         {
             Debug.Assert((object)array.Type != null && array.Type.IsArray());
-            int rank = ((ArrayTypeSymbol)array.Type).Rank;
-            ImmutableArray<BoundExpression> firstElementIndices = ArrayBuilder<BoundExpression>.GetInstance(rank, Literal(0)).ToImmutableAndFree();
-            return ArrayAccess(array, firstElementIndices);
+            return ArrayAccess(array, Literal(0));
         }
 
-        public BoundArrayAccess ArrayAccess(BoundExpression array, params BoundExpression[] indices)
-        {
-            return ArrayAccess(array, indices.AsImmutableOrNull());
-        }
-
-        public BoundArrayAccess ArrayAccess(BoundExpression array, ImmutableArray<BoundExpression> indices)
+        public BoundArrayAccess ArrayAccess(BoundExpression array, BoundExpression index)
         {
             Debug.Assert((object)array.Type != null && array.Type.IsArray());
-            return new BoundArrayAccess(Syntax, array, indices, ((ArrayTypeSymbol)array.Type).ElementType.TypeSymbol);
+            return new BoundArrayAccess(Syntax, array, index, array.Type.GetArrayElementType().TypeSymbol);
         }
 
         public BoundStatement BaseInitialization()
@@ -1245,7 +1238,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             return new BoundArrayCreation(
                 Syntax,
-                ImmutableArray.Create<BoundExpression>(Literal(elements.Length)),
+                Literal(elements.Length),
                 new BoundArrayInitialization(Syntax, elements) { WasCompilerGenerated = true },
                 Compilation.CreateArrayTypeSymbol(elementType));
         }
@@ -1254,7 +1247,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             return new BoundArrayCreation(
                Syntax,
-               ImmutableArray.Create<BoundExpression>(length),
+               length,
                null,
                Compilation.CreateArrayTypeSymbol(elementType))
             { WasCompilerGenerated = true };

@@ -550,7 +550,7 @@ namespace StarkPlatform.Compiler.Stark
                     Error(diagnostics, ErrorCode.ERR_ArraySizeInDeclaration, rankSpecifier);
                 }
 
-                var array = ArrayTypeSymbol.CreateCSharpArray(this.Compilation.Assembly, type, rankSpecifier.Rank);
+                var array = ArrayTypeSymbol.CreateArray(this.Compilation.Assembly, type);
                 type = TypeSymbolWithAnnotations.Create(IsNullableEnabled(rankSpecifier.CloseBracketToken), array);
             }
 

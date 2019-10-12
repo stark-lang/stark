@@ -483,8 +483,8 @@ namespace StarkPlatform.Compiler.Stark
             TypeSymbol initializerType = initializerExpr.Type;
 
             pinnedTemp = factory.SynthesizedLocal(initializerType, isPinned: true);
-            ArrayTypeSymbol arrayType = (ArrayTypeSymbol)pinnedTemp.Type.TypeSymbol;
-            TypeSymbolWithAnnotations arrayElementType = arrayType.ElementType;
+            TypeSymbol arrayType = pinnedTemp.Type.TypeSymbol;
+            TypeSymbolWithAnnotations arrayElementType = arrayType.GetArrayElementType();
 
             // NOTE: we pin the array, not the pointer.
             Debug.Assert(pinnedTemp.IsPinned);
@@ -498,22 +498,7 @@ namespace StarkPlatform.Compiler.Stark
 
             BoundExpression lengthCall;
 
-            if (arrayType.IsSZArray)
-            {
-                lengthCall = factory.ArrayLength(factory.Local(pinnedTemp));
-            }
-            else
-            {
-                MethodSymbol lengthMethod;
-                if (TryGetWellKnownTypeMember(fixedInitializer.Syntax, WellKnownMember.System_Array__get_Length, out lengthMethod))
-                {
-                    lengthCall = factory.Call(factory.Local(pinnedTemp), lengthMethod);
-                }
-                else
-                {
-                    lengthCall = new BoundBadExpression(fixedInitializer.Syntax, LookupResultKind.NotInvocable, ImmutableArray<Symbol>.Empty, ImmutableArray.Create<BoundExpression>(factory.Local(pinnedTemp)), ErrorTypeSymbol.UnknownResultType);
-                }
-            }
+            lengthCall = factory.ArrayLength(factory.Local(pinnedTemp));
 
             // NOTE: dev10 comment says ">", but code actually checks "!="
             //temp.Length != 0

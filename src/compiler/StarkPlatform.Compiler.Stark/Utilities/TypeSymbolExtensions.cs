@@ -99,8 +99,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     {
                         var array = (ArrayTypeSymbol)type;
                         TypeSymbolWithAnnotations elementType = array.ElementType;
-                        return elementType.CustomModifiers.Any() || elementType.TypeSymbol.HasCustomModifiers(flagNonDefaultArraySizesOrLowerBounds) ||
-                               (flagNonDefaultArraySizesOrLowerBounds && !array.HasDefaultSizesAndLowerBounds);
+                        return elementType.CustomModifiers.Any();
                     }
                 case SymbolKind.PointerType:
                     {

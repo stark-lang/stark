@@ -3769,20 +3769,8 @@ namespace StarkPlatform.Cci
                 {
                     typeReference = arrayTypeReference.GetElementType(Context);
 
-                    if (arrayTypeReference.IsSZArray)
-                    {
-                        encoder = encoder.SZArray();
-                        continue;
-                    }
-                    else
-                    {
-                        SignatureTypeEncoder elementType;
-                        ArrayShapeEncoder arrayShape;
-                        encoder.Array(out elementType, out arrayShape);
-                        SerializeTypeReference(elementType, typeReference);
-                        arrayShape.Shape(arrayTypeReference.Rank, arrayTypeReference.Sizes, arrayTypeReference.LowerBounds);
-                        return;
-                    }
+                    encoder = encoder.SZArray();
+                    continue;
                 }
 
                 if (module.IsPlatformType(typeReference, PlatformType.SystemObject))
@@ -3906,11 +3894,6 @@ namespace StarkPlatform.Cci
         private void SerializeCustomAttributeArrayType(CustomAttributeArrayTypeEncoder encoder, IArrayTypeReference arrayTypeReference)
         {
             // A single-dimensional, zero-based array is specified as a single byte 0x1D followed by the FieldOrPropType of the element type. 
-
-            // only non-jagged SZ arrays are allowed in attributes 
-            // (need to encode the type of the SZ array if the parameter type is Object):
-            Debug.Assert(arrayTypeReference.IsSZArray);
-
             var elementType = arrayTypeReference.GetElementType(Context);
             Debug.Assert(!(elementType is IModifiedTypeReference));
 

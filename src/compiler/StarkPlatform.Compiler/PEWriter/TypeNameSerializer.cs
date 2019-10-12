@@ -27,22 +27,7 @@ namespace StarkPlatform.Cci
                 typeReference = arrType.GetElementType(context);
                 bool isAssemQual = false;
                 AppendSerializedTypeName(sb, typeReference, ref isAssemQual, context);
-                if (arrType.IsSZArray)
-                {
-                    sb.Append("[]");
-                }
-                else
-                {
-                    sb.Append('[');
-                    if (arrType.Rank == 1)
-                    {
-                        sb.Append('*');
-                    }
-
-                    sb.Append(',', (int)arrType.Rank - 1);
-
-                    sb.Append(']');
-                }
+                sb.Append("[]");
 
                 goto done;
             }

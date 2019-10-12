@@ -122,11 +122,6 @@ namespace StarkPlatform.Compiler.Stark
                         ArrayTypeSymbol at1 = (ArrayTypeSymbol)t1.TypeSymbol;
                         ArrayTypeSymbol at2 = (ArrayTypeSymbol)t2.TypeSymbol;
 
-                        if (!at1.HasSameShapeAs(at2))
-                        {
-                            return false;
-                        }
-
                         return CanUnifyHelper(at1.ElementType, at2.ElementType, ref substitution);
                     }
                 case SymbolKind.PointerType:

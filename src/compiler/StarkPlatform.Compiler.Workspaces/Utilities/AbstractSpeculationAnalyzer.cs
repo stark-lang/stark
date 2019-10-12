@@ -795,7 +795,7 @@ namespace StarkPlatform.Compiler.Shared.Utilities
 
             if (newReceiverType.IsReferenceType &&
                 !IsEffectivelySealedClass(newReceiverType) &&
-                newSymbolContainingType.SpecialType != SpecialType.System_Array_T &&
+                newSymbolContainingType.SpecialType != SpecialType.core_Array_T &&
                 newSymbolContainingType.SpecialType != SpecialType.System_Delegate &&
                 newSymbolContainingType.SpecialType != SpecialType.System_Enum &&
                 !IsReceiverUniqueInstance(newReceiver, speculativeSemanticModel))

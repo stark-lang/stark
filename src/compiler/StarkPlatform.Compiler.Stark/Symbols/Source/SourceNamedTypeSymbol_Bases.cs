@@ -446,7 +446,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                         {
                             // allowed
                         }
-                        else if (baseSpecialType == SpecialType.System_Array_T && this.ContainingAssembly.CorLibrary == this.ContainingAssembly)
+                        else if (baseSpecialType == SpecialType.core_Array_T && this.ContainingAssembly.CorLibrary == this.ContainingAssembly)
                         {
                             // Specific exception for System.ArrayContracts, which is only built when CONTRACTS_FULL is defined.
                             // (See InheritanceResolver::CheckForBaseClassErrors).
@@ -607,7 +607,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         {
             switch (specialType)
             {
-                case SpecialType.System_Array_T:
+                case SpecialType.core_Array_T:
                 case SpecialType.System_Enum:
                 case SpecialType.System_Delegate:
                 case SpecialType.System_MulticastDelegate:

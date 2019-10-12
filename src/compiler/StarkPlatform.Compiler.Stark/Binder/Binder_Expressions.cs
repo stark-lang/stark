@@ -2765,7 +2765,7 @@ namespace StarkPlatform.Compiler.Stark
 
             if (paramNum == parameters.Length - 1 && result.Kind == MemberResolutionKind.ApplicableInExpandedForm)
             {
-                type = ((ArrayTypeSymbol)type.TypeSymbol).ElementType;
+                type = type.TypeSymbol.GetArrayElementType();
             }
 
             return type;
@@ -2855,14 +2855,14 @@ namespace StarkPlatform.Compiler.Stark
             // on. We might consider doing a semantic analysis here (with error suppression; a parse
             // error has already been reported) so that "go to definition" works.
 
-            ArrayBuilder<BoundExpression> sizes = ArrayBuilder<BoundExpression>.GetInstance();
+            BoundExpression size = null;
             ArrayRankSpecifierSyntax firstRankSpecifier = node.Type.RankSpecifiers[0];
             {
                 var arg = firstRankSpecifier.Sizes;
                 // These make the parse tree nicer, but they shouldn't actually appear in the bound tree.
-                if (arg.Kind() != SyntaxKind.OmittedArraySizeExpression)
+                if (arg != null && arg.Kind() != SyntaxKind.OmittedArraySizeExpression)
                 {
-                    var size = BindValue(arg, diagnostics, BindValueKind.RValue);
+                    size = BindValue(arg, diagnostics, BindValueKind.RValue);
                     if (!size.HasAnyErrors)
                     {
                         size = ConvertToArrayIndex(size, node, diagnostics, allowIndexAndRange: false);
@@ -2871,8 +2871,6 @@ namespace StarkPlatform.Compiler.Stark
                             Error(diagnostics, ErrorCode.ERR_NegativeArraySize, arg);
                         }
                     }
-
-                    sizes.Add(size);
                 }
                 else if (node.Initializer is null)
                 {
@@ -2888,19 +2886,14 @@ namespace StarkPlatform.Compiler.Stark
                     var arg = rank.Sizes;
                     if (arg.Kind() != SyntaxKind.OmittedArraySizeExpression)
                     {
-                        var size = BindValue(arg, diagnostics, BindValueKind.RValue);
                         Error(diagnostics, ErrorCode.ERR_InvalidArray, arg);
-                        // Capture the invalid sizes for `SemanticModel` and `IOperation`
-                        sizes.Add(size);
                     }
                 }
             }
 
-            ImmutableArray<BoundExpression> arraySizes = sizes.ToImmutableAndFree();
-
             return node.Initializer == null
-                ? new BoundArrayCreation(node, arraySizes, null, type)
-                : BindArrayCreationWithInitializer(diagnostics, node, node.Initializer, type, arraySizes);
+                ? new BoundArrayCreation(node, size, null, type)
+                : BindArrayCreationWithInitializer(diagnostics, node, node.Initializer, type, size);
         }
 
         private BoundExpression BindImplicitArrayCreationExpression(ImplicitArrayCreationExpressionSyntax node, DiagnosticBag diagnostics)
@@ -2908,9 +2901,8 @@ namespace StarkPlatform.Compiler.Stark
             // See BindArrayCreationExpression method above for implicitly typed array creation SPEC.
 
             InitializerExpressionSyntax initializer = node.Initializer;
-            int rank = node.Commas.Count + 1;
 
-            ImmutableArray<BoundExpression> boundInitializerExpressions = BindArrayInitializerExpressions(initializer, diagnostics, dimension: 1, rank: rank);
+            ImmutableArray<BoundExpression> boundInitializerExpressions = BindArrayInitializerExpressions(initializer, diagnostics);
 
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
             TypeSymbol bestType = BestTypeInferrer.InferBestType(boundInitializerExpressions, this.Conversions, out _, ref useSiteDiagnostics);
@@ -2929,15 +2921,14 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             // Element type nullability will be inferred in flow analysis and does not need to be set here.
-            var arrayType = ArrayTypeSymbol.CreateCSharpArray(Compilation.Assembly, TypeSymbolWithAnnotations.Create(bestType), rank);
-            return BindArrayCreationWithInitializer(diagnostics, node, initializer, arrayType,
-                sizes: ImmutableArray<BoundExpression>.Empty, boundInitExprOpt: boundInitializerExpressions);
+            var arrayType = ArrayTypeSymbol.CreateArray(Compilation.Assembly, TypeSymbolWithAnnotations.Create(bestType));
+            return BindArrayCreationWithInitializer(diagnostics, node, initializer, arrayType, null, boundInitExprOpt: boundInitializerExpressions);
         }
 
         private BoundExpression BindImplicitStackAllocArrayCreationExpression(ImplicitStackAllocArrayCreationExpressionSyntax node, DiagnosticBag diagnostics)
         {
             InitializerExpressionSyntax initializer = node.Initializer;
-            ImmutableArray<BoundExpression> boundInitializerExpressions = BindArrayInitializerExpressions(initializer, diagnostics, dimension: 1, rank: 1);
+            ImmutableArray<BoundExpression> boundInitializerExpressions = BindArrayInitializerExpressions(initializer, diagnostics);
 
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
             TypeSymbol bestType = BestTypeInferrer.InferBestType(boundInitializerExpressions, this.Conversions, out _, ref useSiteDiagnostics);
@@ -2968,10 +2959,10 @@ namespace StarkPlatform.Compiler.Stark
         // This method binds all the array initializer expressions.
         // NOTE: It doesn't convert the bound initializer expressions to array's element type.
         // NOTE: This is done separately in ConvertAndBindArrayInitialization method below.
-        private ImmutableArray<BoundExpression> BindArrayInitializerExpressions(InitializerExpressionSyntax initializer, DiagnosticBag diagnostics, int dimension, int rank)
+        private ImmutableArray<BoundExpression> BindArrayInitializerExpressions(InitializerExpressionSyntax initializer, DiagnosticBag diagnostics)
         {
             var exprBuilder = ArrayBuilder<BoundExpression>.GetInstance();
-            BindArrayInitializerExpressions(initializer, exprBuilder, diagnostics, dimension, rank);
+            BindArrayInitializerExpressions(initializer, exprBuilder, diagnostics);
             return exprBuilder.ToImmutableAndFree();
         }
 
@@ -2983,56 +2974,17 @@ namespace StarkPlatform.Compiler.Stark
         /// <param name="initializer">Initializer Syntax.</param>
         /// <param name="exprBuilder">Bound expression builder.</param>
         /// <param name="diagnostics">Diagnostics.</param>
-        /// <param name="dimension">Current array dimension being processed.</param>
         /// <param name="rank">Rank of the array type.</param>
-        private void BindArrayInitializerExpressions(InitializerExpressionSyntax initializer, ArrayBuilder<BoundExpression> exprBuilder, DiagnosticBag diagnostics, int dimension, int rank)
+        private void BindArrayInitializerExpressions(InitializerExpressionSyntax initializer, ArrayBuilder<BoundExpression> exprBuilder, DiagnosticBag diagnostics)
         {
-            Debug.Assert(rank > 0);
-            Debug.Assert(dimension > 0 && dimension <= rank);
             Debug.Assert(exprBuilder != null);
 
-            if (dimension == rank)
+            // We are processing the nth dimension of a rank-n array. We expect that these will
+            // only be values, not array initializers.
+            foreach (var expression in initializer.Expressions)
             {
-                // We are processing the nth dimension of a rank-n array. We expect that these will
-                // only be values, not array initializers.
-                foreach (var expression in initializer.Expressions)
-                {
-                    var boundExpression = BindValue(expression, diagnostics, BindValueKind.RValue);
-                    exprBuilder.Add(boundExpression);
-                }
-            }
-            else
-            {
-                // Inductive case; we'd better have another array initializer
-                foreach (var expression in initializer.Expressions)
-                {
-                    if (expression.Kind() == SyntaxKind.ArrayInitializerExpression)
-                    {
-                        BindArrayInitializerExpressions((InitializerExpressionSyntax)expression, exprBuilder, diagnostics, dimension + 1, rank);
-                    }
-                    else
-                    {
-                        // We have non-array initializer expression, but we expected an array initializer expression.
-
-                        var boundExpression = BindValue(expression, diagnostics, BindValueKind.RValue);
-                        if ((object)boundExpression.Type == null || !boundExpression.Type.IsErrorType())
-                        {
-                            if (!boundExpression.HasAnyErrors)
-                            {
-                                Error(diagnostics, ErrorCode.ERR_ArrayInitializerExpected, expression);
-                            }
-
-                            // Wrap the expression with a bound bad expression with error type.
-                            boundExpression = BadExpression(
-                                expression,
-                                LookupResultKind.Empty,
-                                ImmutableArray.Create(boundExpression.ExpressionSymbol),
-                                ImmutableArray.Create(boundExpression));
-                        }
-
-                        exprBuilder.Add(boundExpression);
-                    }
-                }
+                var boundExpression = BindValue(expression, diagnostics, BindValueKind.RValue);
+                exprBuilder.Add(boundExpression);
             }
         }
 
@@ -3044,7 +2996,6 @@ namespace StarkPlatform.Compiler.Stark
         /// <param name="node">Initializer Syntax.</param>
         /// <param name="type">Array type.</param>
         /// <param name="knownSizes">Known array bounds.</param>
-        /// <param name="dimension">Current array dimension being processed.</param>
         /// <param name="boundInitExpr">Array of bound initializer expressions.</param>
         /// <param name="boundInitExprIndex">
         /// Index into the array of bound initializer expressions to fetch the next bound expression.
@@ -3053,77 +3004,48 @@ namespace StarkPlatform.Compiler.Stark
         private BoundArrayInitialization ConvertAndBindArrayInitialization(
             DiagnosticBag diagnostics,
             InitializerExpressionSyntax node,
-            ArrayTypeSymbol type,
-            int?[] knownSizes,
-            int dimension,
+            TypeSymbol type,
+            ref int? knownSize,
             ImmutableArray<BoundExpression> boundInitExpr,
             ref int boundInitExprIndex)
         {
             Debug.Assert(!boundInitExpr.IsDefault);
 
             ArrayBuilder<BoundExpression> initializers = ArrayBuilder<BoundExpression>.GetInstance();
-            if (dimension == type.Rank)
+
+            // We are processing the nth dimension of a rank-n array. We expect that these will
+            // only be values, not array initializers.
+            TypeSymbol elemType = type.GetArrayElementType().TypeSymbol;
+            foreach (var expressionSyntax in node.Expressions)
             {
-                // We are processing the nth dimension of a rank-n array. We expect that these will
-                // only be values, not array initializers.
-                TypeSymbol elemType = type.ElementType.TypeSymbol;
-                foreach (var expressionSyntax in node.Expressions)
+                Debug.Assert(boundInitExprIndex >= 0 && boundInitExprIndex < boundInitExpr.Length);
+
+                BoundExpression boundExpression = boundInitExpr[boundInitExprIndex];
+                boundInitExprIndex++;
+
+                BoundExpression convertedExpression = GenerateConversionForAssignment(elemType, boundExpression, diagnostics);
+                initializers.Add(convertedExpression);
+            }
+
+            bool hasErrors = false;
+            
+            if (knownSize.HasValue)
+            {
+                if (knownSize.Value != initializers.Count)
                 {
-                    Debug.Assert(boundInitExprIndex >= 0 && boundInitExprIndex < boundInitExpr.Length);
-
-                    BoundExpression boundExpression = boundInitExpr[boundInitExprIndex];
-                    boundInitExprIndex++;
-
-                    BoundExpression convertedExpression = GenerateConversionForAssignment(elemType, boundExpression, diagnostics);
-                    initializers.Add(convertedExpression);
+                    // No need to report an error if the known size is negative
+                    // since we've already reported CS0248 earlier and it's
+                    // expected that the number of initializers won't match.
+                    if (knownSize >= 0)
+                    {
+                        Error(diagnostics, ErrorCode.ERR_ArrayInitializerIncorrectLength, node, knownSize.Value);
+                        hasErrors = true;
+                    }
                 }
             }
             else
             {
-                // Inductive case; we'd better have another array initializer
-                foreach (var expr in node.Expressions)
-                {
-                    BoundExpression init = null;
-                    if (expr.Kind() == SyntaxKind.ArrayInitializerExpression)
-                    {
-                        init = ConvertAndBindArrayInitialization(diagnostics, (InitializerExpressionSyntax)expr,
-                             type, knownSizes, dimension + 1, boundInitExpr, ref boundInitExprIndex);
-                    }
-                    else
-                    {
-                        // We have non-array initializer expression, but we expected an array initializer expression.
-                        // We have already generated the diagnostics during binding, so just fetch the bound expression.
-
-                        Debug.Assert(boundInitExprIndex >= 0 && boundInitExprIndex < boundInitExpr.Length);
-
-                        init = boundInitExpr[boundInitExprIndex];
-                        Debug.Assert(init.HasAnyErrors);
-                        Debug.Assert(init.Type.IsErrorType());
-
-                        boundInitExprIndex++;
-                    }
-
-                    initializers.Add(init);
-                }
-            }
-
-            bool hasErrors = false;
-            var knownSizeOpt = knownSizes[dimension - 1];
-
-            if (knownSizeOpt == null)
-            {
-                knownSizes[dimension - 1] = initializers.Count;
-            }
-            else if (knownSizeOpt != initializers.Count)
-            {
-                // No need to report an error if the known size is negative
-                // since we've already reported CS0248 earlier and it's
-                // expected that the number of initializers won't match.
-                if (knownSizeOpt >= 0)
-                {
-                    Error(diagnostics, ErrorCode.ERR_ArrayInitializerIncorrectLength, node, knownSizeOpt.Value);
-                    hasErrors = true;
-                }
+                knownSize = initializers.Count;
             }
 
             return new BoundArrayInitialization(node, initializers.ToImmutableAndFree(), hasErrors: hasErrors);
@@ -3133,8 +3055,7 @@ namespace StarkPlatform.Compiler.Stark
            DiagnosticBag diagnostics,
            InitializerExpressionSyntax node,
            ArrayTypeSymbol type,
-           int?[] knownSizes,
-           int dimension,
+           ref int? knownSize,
            ImmutableArray<BoundExpression> boundInitExprOpt = default(ImmutableArray<BoundExpression>))
         {
             // Bind the array initializer expressions, if not already bound.
@@ -3142,13 +3063,13 @@ namespace StarkPlatform.Compiler.Stark
             // NOTE: during array's element type inference.
             if (boundInitExprOpt.IsDefault)
             {
-                boundInitExprOpt = BindArrayInitializerExpressions(node, diagnostics, dimension, type.Rank);
+                boundInitExprOpt = BindArrayInitializerExpressions(node, diagnostics);
             }
 
             // Convert the bound array initializer expressions to array's element type and
             // generate BoundArrayInitialization with the converted initializers.
             int boundInitExprIndex = 0;
-            return ConvertAndBindArrayInitialization(diagnostics, node, type, knownSizes, dimension, boundInitExprOpt, ref boundInitExprIndex);
+            return ConvertAndBindArrayInitialization(diagnostics, node, type, ref knownSize, boundInitExprOpt, ref boundInitExprIndex);
         }
 
         private BoundArrayInitialization BindUnexpectedArrayInitializer(
@@ -3157,12 +3078,11 @@ namespace StarkPlatform.Compiler.Stark
             ErrorCode errorCode,
             CSharpSyntaxNode errorNode = null)
         {
+            int? knownSize = null;
             var result = BindArrayInitializerList(
                 diagnostics,
                 node,
-                this.Compilation.CreateArrayTypeSymbol(GetSpecialType(SpecialType.System_Object, diagnostics, node)),
-                new int?[1],
-                dimension: 1);
+                this.Compilation.CreateArrayTypeSymbol(GetSpecialType(SpecialType.System_Object, diagnostics, node)), ref knownSize);
 
             if (!result.HasAnyErrors)
             {
@@ -3201,7 +3121,7 @@ namespace StarkPlatform.Compiler.Stark
             ExpressionSyntax creationSyntax,
             InitializerExpressionSyntax initSyntax,
             ArrayTypeSymbol type,
-            ImmutableArray<BoundExpression> sizes,
+            BoundExpression size,
             ImmutableArray<BoundExpression> boundInitExprOpt = default(ImmutableArray<BoundExpression>))
         {
             Debug.Assert(creationSyntax == null ||
@@ -3213,35 +3133,26 @@ namespace StarkPlatform.Compiler.Stark
 
             bool error = false;
 
-            // NOTE: In error scenarios, it may be the case sizes.Count > type.Rank.
-            // For example, new int[1 2] has 2 sizes, but rank 1 (since there are 0 commas).
-            int rank = type.Rank;
-            int numSizes = sizes.Length;
-            int?[] knownSizes = new int?[Math.Max(rank, numSizes)];
-
             // If there are sizes given and there is an array initializer, then every size must be a
             // constant. (We'll check later that it matches)
-            for (int i = 0; i < numSizes; ++i)
+
+            // Here we are being bug-for-bug compatible with C# 4. When you have code like
+            // byte[] b = new[uint.MaxValue] { 2 };
+            // you might expect an error that says that the number of elements in the initializer does
+            // not match the size of the array. But in C# 4 if the constant does not fit into an integer
+            // then we confusingly give the error "that's not a constant".
+            // NOTE: in the example above, GetIntegerConstantForArraySize is returning null because the
+            // size doesn't fit in an int - not because it doesn't match the initializer length.
+            var knownSize = GetIntegerConstantForArraySize(size);
+            if (size != null && !size.HasAnyErrors && knownSize == null)
             {
-                // Here we are being bug-for-bug compatible with C# 4. When you have code like
-                // byte[] b = new[uint.MaxValue] { 2 };
-                // you might expect an error that says that the number of elements in the initializer does
-                // not match the size of the array. But in C# 4 if the constant does not fit into an integer
-                // then we confusingly give the error "that's not a constant".
-                // NOTE: in the example above, GetIntegerConstantForArraySize is returning null because the
-                // size doesn't fit in an int - not because it doesn't match the initializer length.
-                var size = sizes[i];
-                knownSizes[i] = GetIntegerConstantForArraySize(size);
-                if (!size.HasAnyErrors && knownSizes[i] == null)
-                {
-                    Error(diagnostics, ErrorCode.ERR_ConstantExpected, size.Syntax);
-                    error = true;
-                }
+                Error(diagnostics, ErrorCode.ERR_ConstantExpected, size.Syntax);
+                error = true;
             }
 
             // KnownSizes is further mutated by BindArrayInitializerList as it works out more
             // information about the sizes.
-            BoundArrayInitialization initializer = BindArrayInitializerList(diagnostics, initSyntax, type, knownSizes, 1, boundInitExprOpt);
+            BoundArrayInitialization initializer = BindArrayInitializerList(diagnostics, initSyntax, type, ref knownSize, boundInitExprOpt);
 
             error = error || initializer.HasAnyErrors;
 
@@ -3252,26 +3163,21 @@ namespace StarkPlatform.Compiler.Stark
             //
             // It is possible in error scenarios that some of the bounds were not determined. Substitute
             // zeroes for those.
-            if (numSizes == 0)
+            if (size == null)
             {
-                BoundExpression[] sizeArray = new BoundExpression[rank];
-                for (int i = 0; i < rank; i++)
-                {
-                    sizeArray[i] = new BoundLiteral(
-                        nonNullSyntax,
-                        ConstantValue.Create(knownSizes[i] ?? 0),
-                        GetSpecialType(SpecialType.System_Int32, diagnostics, nonNullSyntax))
-                    { WasCompilerGenerated = true };
-                }
-                sizes = sizeArray.AsImmutableOrNull();
+                size = new BoundLiteral(
+                    nonNullSyntax,
+                    ConstantValue.CreateInt(knownSize ?? 0),
+                    GetSpecialType(SpecialType.System_Int, diagnostics, nonNullSyntax))
+                { WasCompilerGenerated = true };
             }
-            else if (!error && rank != numSizes)
-            {
-                Error(diagnostics, ErrorCode.ERR_BadIndexCount, nonNullSyntax, type.Rank);
-                error = true;
-            }
+            //else if (!error && rank != numSizes)
+            //{
+            //    Error(diagnostics, ErrorCode.ERR_BadIndexCount, nonNullSyntax, 1);
+            //    error = true;
+            //}
 
-            return new BoundArrayCreation(nonNullSyntax, sizes, initializer, type, hasErrors: error)
+            return new BoundArrayCreation(nonNullSyntax, size, initializer, type, hasErrors: error)
             {
                 WasCompilerGenerated = !hasCreationSyntax &&
                     (initSyntax.Parent == null ||
@@ -3426,7 +3332,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             if (boundInitExprOpt.IsDefault)
             {
-                boundInitExprOpt = BindArrayInitializerExpressions(initSyntax, diagnostics, dimension: 1, rank: 1);
+                boundInitExprOpt = BindArrayInitializerExpressions(initSyntax, diagnostics);
             }
 
             boundInitExprOpt = boundInitExprOpt.SelectAsArray((expr, t) => GenerateConversionForAssignment(t.elementType, expr, t.diagnostics), (elementType, diagnostics));
@@ -3464,16 +3370,14 @@ namespace StarkPlatform.Compiler.Stark
         {
             // If the bound could have been converted to int, then it was.  If it could not have been
             // converted to int, and it was a constant, then it was out of range.
-
-            Debug.Assert(expression != null);
-            if (expression.HasAnyErrors)
+            if (expression == null || expression.HasAnyErrors)
             {
                 return null;
             }
 
             var constantValue = expression.ConstantValue;
 
-            if (constantValue == null || constantValue.IsBad || expression.Type.SpecialType != SpecialType.System_Int32)
+            if (constantValue == null || constantValue.IsBad || (expression.Type.SpecialType != SpecialType.System_Int32 && expression.Type.SpecialType != SpecialType.System_Int))
             {
                 return null;
             }
@@ -3497,19 +3401,21 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             var type = expression.Type.SpecialType;
+
+
             if (type == SpecialType.System_Int32)
             {
                 return constantValue.Int32Value < 0;
             }
 
-            if (type == SpecialType.System_Int64)
+            if (type == SpecialType.System_Int64 || type == SpecialType.System_Int)
             {
                 return constantValue.Int64Value < 0;
             }
 
             // By the time we get here we definitely have int, long, uint or ulong.  Obviously the
             // latter two are never negative.
-            Debug.Assert(type == SpecialType.System_UInt32 || type == SpecialType.System_UInt64);
+            Debug.Assert(type == SpecialType.System_UInt32 || type == SpecialType.System_UInt64 || type == SpecialType.System_UInt);
 
             return false;
         }
@@ -6858,49 +6764,41 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             bool hasErrors = ReportRefOrOutArgument(arguments, diagnostics);
-            var arrayType = (ArrayTypeSymbol)expr.Type;
+            var arrayType = expr.Type;
+            Debug.Assert(arrayType.IsArray());
 
             // Note that the spec says to determine which of {int, uint, long, ulong} *each* index
             // expression is convertible to. That is not what C# 1 through 4 did; the
             // implementations instead determined which of those four types *all* of the index
             // expressions converted to. 
 
-            int rank = arrayType.Rank;
-
-            if (arguments.Arguments.Count != rank)
+            if (arguments.Arguments.Count != 1)
             {
-                Error(diagnostics, ErrorCode.ERR_BadIndexCount, node, rank);
-                return new BoundArrayAccess(node, expr, BuildArgumentsForErrorRecovery(arguments), arrayType.ElementType.TypeSymbol, hasErrors: true);
+                Error(diagnostics, ErrorCode.ERR_BadIndexCount, node, 1);
+                return new BoundArrayAccess(node, expr, BuildArgumentsForErrorRecovery(arguments).FirstOrDefault() ?? new BoundLiteral(expr.Syntax, ConstantValue.CreateInt(0), Compilation.GetSpecialType(SpecialType.System_Int)), arrayType.GetArrayElementType().TypeSymbol, hasErrors: true);
             }
 
             // Convert all the arguments to the array index type.
-            BoundExpression[] convertedArguments = new BoundExpression[arguments.Arguments.Count];
-            for (int i = 0; i < arguments.Arguments.Count; ++i)
+            BoundExpression argument = arguments.Arguments[0];
+            BoundExpression index = ConvertToArrayIndex(argument, node, diagnostics, allowIndexAndRange: true);
+
+            // NOTE: Dev10 only warns if rank == 1
+            // Question: Why do we limit this warning to one-dimensional arrays?
+            // Answer: Because multidimensional arrays can have nonzero lower bounds in the CLR.
+            if (!index.HasAnyErrors)
             {
-                BoundExpression argument = arguments.Arguments[i];
-
-                BoundExpression index = ConvertToArrayIndex(argument, node, diagnostics, allowIndexAndRange: rank == 1);
-                convertedArguments[i] = index;
-
-                // NOTE: Dev10 only warns if rank == 1
-                // Question: Why do we limit this warning to one-dimensional arrays?
-                // Answer: Because multidimensional arrays can have nonzero lower bounds in the CLR.
-                if (rank == 1 && !index.HasAnyErrors)
+                ConstantValue constant = index.ConstantValue;
+                if (constant != null && constant.IsNegativeNumeric)
                 {
-                    ConstantValue constant = index.ConstantValue;
-                    if (constant != null && constant.IsNegativeNumeric)
-                    {
-                        Error(diagnostics, ErrorCode.WRN_NegativeArrayIndex, index.Syntax);
-                    }
+                    Error(diagnostics, ErrorCode.WRN_NegativeArrayIndex, index.Syntax);
                 }
             }
 
-            var resultType = rank == 1 &&
-                TypeSymbol.Equals(convertedArguments[0].Type, Compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything2)
+            var resultType = TypeSymbol.Equals(index.Type, Compilation.GetWellKnownType(WellKnownType.core_Range), TypeCompareKind.ConsiderEverything2)
                 ? arrayType
-                : arrayType.ElementType.TypeSymbol;
+                : arrayType.GetArrayElementType().TypeSymbol;
 
-            return new BoundArrayAccess(node, expr, convertedArguments.AsImmutableOrNull(), resultType, hasErrors);
+            return new BoundArrayAccess(node, expr, index, resultType, hasErrors);
         }
 
         private BoundExpression ConvertToArrayIndex(BoundExpression index, SyntaxNode node, DiagnosticBag diagnostics, bool allowIndexAndRange)
@@ -6917,6 +6815,7 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             var result =
+                TryImplicitConversionToArrayIndex(index, SpecialType.System_Int, node, diagnostics) ??
                 TryImplicitConversionToArrayIndex(index, SpecialType.System_Int32, node, diagnostics) ??
                 TryImplicitConversionToArrayIndex(index, SpecialType.System_UInt32, node, diagnostics) ??
                 TryImplicitConversionToArrayIndex(index, SpecialType.System_Int64, node, diagnostics) ??
