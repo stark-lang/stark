@@ -2179,7 +2179,7 @@ namespace StarkPlatform.Compiler
 
                                         break; // Signature doesn't match.
 
-                                    case SignatureTypeCode.SZArray:
+                                    case SignatureTypeCode.Array:
                                         // Verify array element type
                                         continue;
 

@@ -80,9 +80,9 @@ namespace StarkPlatform.Reflection.Metadata
         String = SignatureTypeCode.String,
 
         /// <summary>
-        /// Equivalent to <see cref="SignatureTypeCode.SZArray"/>.
+        /// Equivalent to <see cref="SignatureTypeCode.Array"/>.
         /// </summary>
-        SZArray = SignatureTypeCode.SZArray,
+        SZArray = SignatureTypeCode.Array,
 
         /// <summary>
         /// The attribute argument is a System.Type instance.

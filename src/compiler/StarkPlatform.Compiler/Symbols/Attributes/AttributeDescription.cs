@@ -65,7 +65,7 @@ namespace StarkPlatform.Compiler
         private const byte Double = (byte)SignatureTypeCode.Double;
         private const byte String = (byte)SignatureTypeCode.String;
         private const byte Object = (byte)SignatureTypeCode.Object;
-        private const byte SzArray = (byte)SignatureTypeCode.SZArray;
+        private const byte SzArray = (byte)SignatureTypeCode.Array;
         private const byte TypeHandle = (byte)SignatureTypeCode.TypeHandle;
 
         internal enum TypeHandleTarget : byte

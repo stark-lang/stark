@@ -351,7 +351,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                             k += 1;
                             break;
 
-                        case (byte)SignatureTypeCode.SZArray:
+                        case (byte)SignatureTypeCode.Array:
                             // Skip over and check the next byte
                             foundMatch = parameterType.IsArray();
                             break;

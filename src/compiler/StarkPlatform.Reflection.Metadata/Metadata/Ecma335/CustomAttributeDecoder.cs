@@ -166,7 +166,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
                     info.TypeCode = _provider.IsSystemType(info.Type) ? SerializationTypeCode.Type : (SerializationTypeCode)_provider.GetUnderlyingEnumType(info.Type);
                     break;
 
-                case SignatureTypeCode.SZArray:
+                case SignatureTypeCode.Array:
                     if (isElementType)
                     {
                         // jagged arrays are not allowed.

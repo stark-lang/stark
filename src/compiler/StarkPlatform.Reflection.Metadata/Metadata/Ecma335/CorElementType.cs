@@ -40,7 +40,7 @@ namespace StarkPlatform.Reflection.Metadata
 
         ELEMENT_TYPE_FNPTR = 0x1B,     // FNPTR <complete sig for the function including calling convention>
         ELEMENT_TYPE_OBJECT = 0x1C,     // Shortcut for System.Object
-        ELEMENT_TYPE_SZARRAY = 0x1D,     // Shortcut for single dimension zero lower bound array
+        ELEMENT_TYPE_ARRAY = 0x1D,     // Shortcut for single dimension zero lower bound array
         // SZARRAY <type>
         ELEMENT_TYPE_MVAR = 0x1E,     // a method type variable MVAR <U1>
 

@@ -197,7 +197,7 @@ namespace StarkPlatform.Compiler
                     typeSymbol = GetSymbolForTypeHandleOrThrow(ppSig.ReadTypeHandle(), out refersToNoPiaLocalType, allowTypeSpec: false, requireShortForm: true);
                     break;
 
-                case SignatureTypeCode.SZArray:
+                case SignatureTypeCode.Array:
                     modifiers = DecodeModifiersOrThrow(ref ppSig, AllowedRequiredModifierType.None, out typeCode, out _);
                     typeSymbol = DecodeTypeOrThrow(ref ppSig, typeCode, out refersToNoPiaLocalType);
                     typeSymbol = GetSZArrayTypeSymbol(typeSymbol, modifiers);
@@ -1204,7 +1204,7 @@ tryAgain:
         {
             SignatureTypeCode paramTypeCode = sigReader.ReadSignatureTypeCode();
 
-            if (paramTypeCode == SignatureTypeCode.SZArray)
+            if (paramTypeCode == SignatureTypeCode.Array)
             {
                 if (isElementType)
                 {

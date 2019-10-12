@@ -194,7 +194,7 @@ namespace StarkPlatform.Compiler.RuntimeMembers
                         if (!allowByRef) goto default;
                         break;
 
-                    case SignatureTypeCode.SZArray:
+                    case SignatureTypeCode.Array:
                         break;
 
                     case SignatureTypeCode.Pointer:

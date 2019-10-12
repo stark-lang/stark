@@ -20,7 +20,7 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
-                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
+                    (byte)SignatureTypeCode.Array, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
 
                 // System_String__ConcatStringString
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -58,7 +58,7 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
-                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
+                    (byte)SignatureTypeCode.Array, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
 
                 // System_String__ConcatObject
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -93,7 +93,7 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
-                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
+                    (byte)SignatureTypeCode.Array, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
 
                 // System_String__op_Equality
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -135,7 +135,7 @@ namespace StarkPlatform.Compiler
                     2,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
-                    (byte)SignatureTypeCode.SZArray, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
+                    (byte)SignatureTypeCode.Array, (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
 
                 // System_Double__IsNaN
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags

@@ -141,7 +141,7 @@ namespace StarkPlatform.Reflection.Metadata
         /// <summary>
         /// Represents a single dimensional <see cref="System.Array"/> with 0 lower bound.
         /// </summary>
-        SZArray = CorElementType.ELEMENT_TYPE_SZARRAY,
+        Array = CorElementType.ELEMENT_TYPE_ARRAY,
 
         // SZARRAY <type>
 

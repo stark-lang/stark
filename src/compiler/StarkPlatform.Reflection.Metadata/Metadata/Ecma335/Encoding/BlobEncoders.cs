@@ -1015,7 +1015,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         /// </summary>
         public SignatureTypeEncoder SZArray()
         {
-            Builder.WriteByte((byte)SignatureTypeCode.SZArray);
+            Builder.WriteByte((byte)SignatureTypeCode.Array);
             return this;
         }
 

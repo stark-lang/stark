@@ -97,7 +97,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
                     elementType = DecodeType(ref blobReader);
                     return _provider.GetPinnedType(elementType);
 
-                case (int)SignatureTypeCode.SZArray:
+                case (int)SignatureTypeCode.Array:
                     elementType = DecodeType(ref blobReader);
                     return _provider.GetSZArrayType(elementType);
 

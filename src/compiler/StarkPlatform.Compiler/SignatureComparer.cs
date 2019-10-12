@@ -181,7 +181,7 @@ namespace StarkPlatform.Compiler.RuntimeMembers
                     short expectedType = ReadTypeId(signature, ref position);
                     return MatchTypeToTypeId(type, expectedType);
 
-                case SignatureTypeCode.SZArray:
+                case SignatureTypeCode.Array:
                     return MatchType(GetArrayElementType(type), signature, ref position);
 
                 case SignatureTypeCode.Pointer:
