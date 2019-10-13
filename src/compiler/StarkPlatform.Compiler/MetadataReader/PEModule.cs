@@ -2094,7 +2094,7 @@ namespace StarkPlatform.Compiler
             EntityHandle ctor;
 
             // Check namespace and type name and get signature if a match is found
-            if (!IsTargetAttribute(metadataReader, customAttribute, description.Namespace, description.Name, out ctor, description.MatchIgnoringCase))
+            if (!IsTargetAttribute(metadataReader, customAttribute, description.NamespaceAndNestedType, description.Name, out ctor, description.MatchIgnoringCase))
             {
                 return No;
             }

@@ -74,9 +74,9 @@ namespace StarkPlatform.Compiler
                 // NOTE: Below assumption disallows early decoding well-known attributes with optional parameters.
                 if (attributeArgCount == parameterCount)
                 {
-                    string actualNamespaceName = attributeType.ContainingNamespace.ToDisplayString(SymbolDisplayFormat.QualifiedNameOnlyFormat);
+                    string actualNamespaceAndNestedType = attributeType.ContainingSymbol.ToDisplayString(SymbolDisplayFormat.QualifiedNameOnlyFormat);
                     StringComparison options = description.MatchIgnoringCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
-                    return actualNamespaceName.Equals(description.Namespace, options) && attributeType.Name.Equals(description.Name, options);
+                    return actualNamespaceAndNestedType.Equals(description.NamespaceAndNestedType, options) && attributeType.Name.Equals(description.Name, options);
                 }
             }
 

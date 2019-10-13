@@ -9,20 +9,20 @@ namespace StarkPlatform.Compiler
 {
     internal struct AttributeDescription
     {
-        public readonly string Namespace;
+        public readonly string NamespaceAndNestedType;
         public readonly string Name;
         public readonly byte[][] Signatures;
 
         // VB matches ExtensionAttribute name and namespace ignoring case (it's the only attribute that matches its name case-insensitively)
         public readonly bool MatchIgnoringCase;
 
-        public AttributeDescription(string @namespace, string name, byte[][] signatures, bool matchIgnoringCase = false)
+        public AttributeDescription(string namespaceAndNestedType, string name, byte[][] signatures, bool matchIgnoringCase = false)
         {
-            Debug.Assert(@namespace != null);
+            Debug.Assert(namespaceAndNestedType != null);
             Debug.Assert(name != null);
             Debug.Assert(signatures != null);
 
-            this.Namespace = @namespace;
+            this.NamespaceAndNestedType = namespaceAndNestedType;
             this.Name = name;
             this.Signatures = signatures;
             this.MatchIgnoringCase = matchIgnoringCase;
@@ -30,7 +30,7 @@ namespace StarkPlatform.Compiler
 
         public string FullName
         {
-            get { return Namespace + "." + Name; }
+            get { return NamespaceAndNestedType + "." + Name; }
         }
 
         public override string ToString()
@@ -415,7 +415,7 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription OptionalAttribute = new AttributeDescription("core.runtime", "OptionalAttribute", s_signaturesOfOptionalAttribute);
         internal static readonly AttributeDescription ComImportAttribute = new AttributeDescription("core.runtime", "ComImportAttribute", s_signaturesOfComImportAttribute);
         internal static readonly AttributeDescription AttributeUsageAttribute = new AttributeDescription("System", "AttributeUsageAttribute", s_signaturesOfAttributeUsage);
-        internal static readonly AttributeDescription ConditionalAttribute = new AttributeDescription("System.Diagnostics", "ConditionalAttribute", s_signaturesOfConditionalAttribute);
+        internal static readonly AttributeDescription ConditionalAttribute = new AttributeDescription("core.diagnostics", "ConditionalAttribute", s_signaturesOfConditionalAttribute);
         internal static readonly AttributeDescription CaseInsensitiveExtensionAttribute = new AttributeDescription("core.runtime", "ExtensionAttribute", s_signaturesOfExtensionAttribute, matchIgnoringCase: true);
         internal static readonly AttributeDescription CaseSensitiveExtensionAttribute = new AttributeDescription("core.runtime", "ExtensionAttribute", s_signaturesOfExtensionAttribute, matchIgnoringCase: false);
 

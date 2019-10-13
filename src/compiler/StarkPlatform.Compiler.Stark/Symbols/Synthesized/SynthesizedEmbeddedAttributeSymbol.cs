@@ -53,7 +53,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             _module = compilation.SourceModule;
 
             _namespace = _module.GlobalNamespace;
-            foreach (var part in description.Namespace.Split('.'))
+            foreach (var part in description.NamespaceAndNestedType.Split('.'))
             {
                 _namespace = new MissingNamespaceSymbol(_namespace, part);
             }

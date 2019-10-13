@@ -184,7 +184,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         /// <param name="description">The attribute to match.</param>
         internal override int GetTargetAttributeSignatureIndex(Symbol targetSymbol, AttributeDescription description)
         {
-            if (!IsTargetAttribute(description.Namespace, description.Name))
+            if (!IsTargetAttribute(description.NamespaceAndNestedType, description.Name))
             {
                 return -1;
             }
