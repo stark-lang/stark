@@ -2,7 +2,9 @@ namespace core
 {
     public abstract struct Enum<T>
     {
+#pragma warning disable CS0649
         private let _value : T
+#pragma warning restore
 
         protected constructor()
         {
