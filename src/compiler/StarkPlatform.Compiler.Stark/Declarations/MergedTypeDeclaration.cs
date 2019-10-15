@@ -56,6 +56,7 @@ namespace StarkPlatform.Compiler.Stark
                 SyntaxList<AttributeSyntax> attributesSyntaxList;
                 switch (typeDecl.Kind())
                 {
+                    case SyntaxKind.ModuleDeclaration:
                     case SyntaxKind.ClassDeclaration:
                     case SyntaxKind.StructDeclaration:
                     case SyntaxKind.InterfaceDeclaration:
