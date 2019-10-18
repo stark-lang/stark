@@ -3733,8 +3733,7 @@ namespace StarkPlatform.Cci
                 {
                     // ELEMENT_TYPE_WITH_ACCESS_MODIFIERS: 0x60
                     encoder.Builder.WriteByte((byte)CorElementType.ELEMENT_TYPE_WITH_ACCESS_MODIFIERS);
-                    byte modifiers = (byte)extendedTypeReference.AccessModifiers;
-                    encoder.Builder.WriteByte(modifiers);
+                    encoder.Builder.WriteCompressedInteger((int)extendedTypeReference.AccessModifiers);
 
                     typeReference = extendedTypeReference.GetElementType(Context);
                     continue;

@@ -287,6 +287,12 @@ namespace StarkPlatform.Compiler.Stark
                 AddSpace();
             }
 
+            if ((symbol.AccessModifiers & TypeAccessModifiers.Const) != 0)
+            {
+                builder.Add(CreatePart(SymbolDisplayPartKind.Keyword, symbol, "const"));
+                AddSpace();
+            }
+
             symbol.ElementType.Accept(this.NotFirstVisitor);
         }
 

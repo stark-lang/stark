@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 {
@@ -34,6 +36,31 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
         internal override TypeSymbol GetEnumUnderlyingType(PEModuleSymbol moduleSymbol, TypeSymbol type)
         {
             return type.GetEnumUnderlyingType();
+        }
+
+        internal override TypeSymbol MakeExtendedTypeSymbol(PEModuleSymbol moduleSymbol, TypeSymbol type, TypeAccessModifiers typeAccessModifiers)
+        {
+            switch (type.TypeKind)
+            {
+                case TypeKind.Array:
+                    return new ExtendedArrayTypeSymbol(TypeSymbolWithAnnotations.Create(type), (ArrayTypeSymbol)type, typeAccessModifiers);
+                
+                case TypeKind.Class:
+                case TypeKind.Interface:
+                case TypeKind.Struct:
+                case TypeKind.Enum:
+                    return new ExtendedNamedTypeSymbol(TypeSymbolWithAnnotations.Create(type), typeAccessModifiers);
+
+                case TypeKind.TypeParameter:
+                    return new ExtendedTypeParameterSymbol((TypeParameterSymbol)type, typeAccessModifiers);
+                
+                case TypeKind.ConstLiteral:
+                case TypeKind.Module:
+                case TypeKind.Submission:
+                case TypeKind.Pointer:
+                default:
+                    throw ExceptionUtilities.UnexpectedValue(type.TypeKind);
+            }
         }
 
         internal override Cci.PrimitiveTypeCode GetPrimitiveTypeCode(PEModuleSymbol moduleSymbol, TypeSymbol type)

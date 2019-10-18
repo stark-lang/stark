@@ -20,5 +20,9 @@ namespace StarkPlatform.Reflection.Metadata
         Immutable = 1 << 5,
 
         Isolated = 1 << 6,
+
+        Const = 1 << 7,
+
+        Unsafe = 1 << 8,
     }
 }

@@ -209,6 +209,12 @@ namespace StarkPlatform.Compiler
                     typeSymbol = MakePointerTypeSymbol(typeSymbol, modifiers);
                     break;
 
+                case SignatureTypeCode.TypeWithAccessModifiers:
+                    var typeAccessModifiers = (TypeAccessModifiers) ppSig.ReadCompressedInteger();
+                    typeSymbol = DecodeTypeOrThrow(ref ppSig, typeCode, out refersToNoPiaLocalType);
+                    typeSymbol = MakeExtendedTypeSymbol(typeSymbol, typeAccessModifiers);
+                    break;
+
                 case SignatureTypeCode.GenericTypeParameter:
                     if (!ppSig.TryReadCompressedInteger(out paramPosition))
                     {

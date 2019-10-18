@@ -81,18 +81,8 @@ namespace StarkPlatform.Compiler
         Submission = 12,
 
         /// <summary>
-        /// Type is a readonly.
-        /// </summary>
-        ReadOnly = 13,
-
-        /// <summary>
-        /// Type is a transient.
-        /// </summary>
-        Transient = 14,
-
-        /// <summary>
         /// Type is a const literal.
         /// </summary>
-        ConstLiteral = 15,
+        ConstLiteral = 13,
     }
 }

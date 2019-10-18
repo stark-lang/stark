@@ -291,6 +291,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
                     case SyntaxKind.TransientKeyword:
                     case SyntaxKind.ReadOnlyKeyword:
+                    case SyntaxKind.ConstKeyword:
+                    case SyntaxKind.UnsafeKeyword:
                         break;
 
                     default:

@@ -567,7 +567,8 @@ namespace StarkPlatform.Compiler.Stark
                 ((sourceAccessModifiers & TypeAccessModifiers.Transient) != (destAccessModifiers & TypeAccessModifiers.Transient)) ||
                ((sourceAccessModifiers & TypeAccessModifiers.Immutable) != 0 && ((destAccessModifiers == TypeAccessModifiers.None) || (destAccessModifiers & TypeAccessModifiers.Isolated) != 0)) ||
                 ((sourceAccessModifiers & TypeAccessModifiers.ReadOnly) != 0 && (destAccessModifiers & TypeAccessModifiers.ReadOnly) != 0) ||
-                ((sourceAccessModifiers == TypeAccessModifiers.None) && ((destAccessModifiers & TypeAccessModifiers.Immutable) != 0 || (destAccessModifiers & TypeAccessModifiers.Isolated) != 0))
+                ((sourceAccessModifiers == TypeAccessModifiers.None) && ((destAccessModifiers & TypeAccessModifiers.Immutable) != 0 || (destAccessModifiers & TypeAccessModifiers.Isolated) != 0)) ||
+                ((sourceAccessModifiers & TypeAccessModifiers.Const) != (destAccessModifiers & TypeAccessModifiers.Const))
                 )
             {
                 return Conversion.NoConversion;

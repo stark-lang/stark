@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using StarkPlatform.Compiler.PooledObjects;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {
@@ -61,6 +62,11 @@ namespace StarkPlatform.Compiler
         protected TypeSymbol GetSZArrayTypeSymbol(TypeSymbol elementType, ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers)
         {
             return _factory.GetSZArrayTypeSymbol(this.moduleSymbol, elementType, customModifiers);
+        }
+
+        protected TypeSymbol MakeExtendedTypeSymbol(TypeSymbol elementType, TypeAccessModifiers typeAccessModifieres)
+        {
+            return _factory.MakeExtendedTypeSymbol(this.moduleSymbol, elementType, typeAccessModifieres);
         }
 
         protected TypeSymbol MakePointerTypeSymbol(TypeSymbol type, ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers)

@@ -471,6 +471,12 @@ namespace StarkPlatform.Compiler.Stark
                             case SyntaxKind.TransientKeyword:
                                 accessModifiers |= TypeAccessModifiers.Transient;
                                 break;
+                            case SyntaxKind.ConstKeyword:
+                                accessModifiers |= TypeAccessModifiers.Const;
+                                break;
+                            case SyntaxKind.UnsafeKeyword:
+                                accessModifiers |= TypeAccessModifiers.Unsafe;
+                                break;
                             case SyntaxKind.ThisKeyword:
                             case SyntaxKind.ParamsKeyword:
                                 // these modifiers are handled at parameter level and not at the type level
@@ -485,7 +491,7 @@ namespace StarkPlatform.Compiler.Stark
                     if (elementType.IsErrorType()) return elementType;
 
                     // Create an extended type symbol
-                    return ExtendedTypeSymbol.CreateExtendedTypeSymbol(extendedTypeSyntax, elementType, accessModifiers, diagnostics);
+                    return  TypeSymbolWithAnnotations.Create(ExtendedTypeSymbol.CreateExtendedTypeSymbol(extendedTypeSyntax, elementType, accessModifiers));
                 }
 
                 default:

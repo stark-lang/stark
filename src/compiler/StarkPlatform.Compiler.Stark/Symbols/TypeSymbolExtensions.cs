@@ -306,7 +306,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             var resolveNamedType = type;
             while (resolveNamedType is ITypeWithElementTypeSymbol)
             {
-                Debug.Assert(resolveNamedType.TypeKind == TypeKind.Transient || resolveNamedType.TypeKind == TypeKind.ReadOnly);
                 resolveNamedType = (TypeSymbol)((ITypeWithElementTypeSymbol)resolveNamedType).ElementType;
             }
             Debug.Assert(resolveNamedType.Kind == SymbolKind.NamedType);

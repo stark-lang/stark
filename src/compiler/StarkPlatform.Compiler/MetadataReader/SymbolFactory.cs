@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {
@@ -37,10 +38,12 @@ namespace StarkPlatform.Compiler
         internal abstract TypeSymbol GetSpecialType(ModuleSymbol moduleSymbol, SpecialType specialType);
         internal abstract TypeSymbol GetSystemTypeSymbol(ModuleSymbol moduleSymbol);
         internal abstract TypeSymbol GetEnumUnderlyingType(ModuleSymbol moduleSymbol, TypeSymbol type);
+        internal abstract TypeSymbol MakeExtendedTypeSymbol(ModuleSymbol moduleSymbol, TypeSymbol type, TypeAccessModifiers typeAccessModifiers);
 
         internal abstract bool IsAcceptedVolatileModifierType(ModuleSymbol moduleSymbol, TypeSymbol type);
         internal abstract bool IsAcceptedInAttributeModifierType(TypeSymbol type);
         internal abstract bool IsAcceptedUnmanagedTypeModifierType(TypeSymbol type);
+
 
         internal abstract Cci.PrimitiveTypeCode GetPrimitiveTypeCode(ModuleSymbol moduleSymbol, TypeSymbol type);
     }

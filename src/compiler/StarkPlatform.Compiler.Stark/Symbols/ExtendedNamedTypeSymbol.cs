@@ -138,22 +138,28 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
     internal static class ExtendedTypeSymbol
     {
-        public static TypeSymbolWithAnnotations CreateExtendedTypeSymbol(CSharpSyntaxNode syntax, TypeSymbolWithAnnotations baseSymbol, TypeAccessModifiers accessModifiers, DiagnosticBag diagnostics)
+        public static TypeSymbol CreateConstTypeSymbol(CSharpSyntaxNode syntax, TypeSymbolWithAnnotations baseSymbol)
+        {
+            return CreateExtendedTypeSymbol(syntax, baseSymbol, TypeAccessModifiers.Const);
+        }
+
+        public static TypeSymbol CreateExtendedTypeSymbol(CSharpSyntaxNode syntax, TypeSymbolWithAnnotations baseSymbol, TypeAccessModifiers accessModifiers)
         {
             if (baseSymbol.Kind == SymbolKind.NamedType)
             {
-                return TypeSymbolWithAnnotations.Create(new ExtendedNamedTypeSymbol(baseSymbol, accessModifiers));
+                return new ExtendedNamedTypeSymbol(baseSymbol, accessModifiers);
             }
 
             if (baseSymbol.Kind == SymbolKind.ArrayType)
             {
-                return TypeSymbolWithAnnotations.Create(new ExtendedArrayTypeSymbol(baseSymbol, (ArrayTypeSymbol)baseSymbol.TypeSymbol, accessModifiers));
+                return new ExtendedArrayTypeSymbol(baseSymbol, (ArrayTypeSymbol)baseSymbol.TypeSymbol, accessModifiers);
             }
 
             if (baseSymbol.Kind == SymbolKind.TypeParameter)
             {
-                return TypeSymbolWithAnnotations.Create(new ExtendedTypeParameterSymbol((TypeParameterSymbol)baseSymbol.TypeSymbol, accessModifiers));
+                return new ExtendedTypeParameterSymbol((TypeParameterSymbol)baseSymbol.TypeSymbol, accessModifiers);
             }
+
             throw new NotSupportedException($"The syntax `{syntax}` is not supported for extended type");
         }
     }

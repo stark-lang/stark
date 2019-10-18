@@ -5539,13 +5539,10 @@ tryAgain:
                 }
 
                 // Parse any modifiers
-                switch (this.CurrentToken.Kind)
+                if (IsExtendedTypeModifier(this.CurrentToken))
                 {
-                    case SyntaxKind.TransientKeyword:
-                    case SyntaxKind.ReadOnlyKeyword:
-                        typeModifiers = _pool.Allocate<SyntaxToken>();
-                        ParseTypeModifiers(typeModifiers);
-                        break;
+                    typeModifiers = _pool.Allocate<SyntaxToken>();
+                    ParseTypeModifiers(typeModifiers);
                 }
 
                 switch (this.CurrentToken.Kind)
@@ -5626,6 +5623,7 @@ tryAgain:
             {
                 case SyntaxKind.TransientKeyword:
                 case SyntaxKind.ReadOnlyKeyword:
+                case SyntaxKind.ConstKeyword:
                 case SyntaxKind.UnsafeKeyword:
                     return true;
             }
