@@ -2,8 +2,8 @@
   "profiles": {
     "csc": {
       "commandName": "Project",
-      "commandLineArgs": "-parallel- -nostdlib -target:library -unsafe -langversion:8.0 -recurse:*.sk -runtimemetadataversion:v1.0.0 -out:system.sklib",
-      "workingDirectory": "C:\\code\\stark\\stark\\src\\runtime\\system"
+      "commandLineArgs": "-parallel- -nostdlib -target:library -unsafe -langversion:8.0 -recurse:*.sk -runtimemetadataversion:v1.0.0 -out:core.sklib",
+      "workingDirectory": "C:\\code\\stark\\stark\\src\\runtime\\core"
     }
   }
 }
