@@ -440,10 +440,10 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription AssemblyTrademarkAttribute = new AttributeDescription("System.Reflection", "AssemblyTrademarkAttribute", s_signaturesOfAssemblyTrademarkAttribute);
         internal static readonly AttributeDescription AssemblyFlagsAttribute = new AttributeDescription("System.Reflection", "AssemblyFlagsAttribute", s_signaturesOfAssemblyFlagsAttribute);
         internal static readonly AttributeDescription IUnknownConstantAttribute = new AttributeDescription("core.runtime", "IUnknownConstantAttribute", s_signaturesOfIUnknownConstantAttribute);
-        internal static readonly AttributeDescription CallerArgumentExpressionAttribute = new AttributeDescription("core.runtime", "CallerArgumentExpressionAttribute", s_signaturesOfCallerArgumentExpressionAttribute);
-        internal static readonly AttributeDescription CallerFilePathAttribute = new AttributeDescription("core.runtime", "CallerFilePathAttribute", s_signaturesOfCallerFilePathAttribute);
-        internal static readonly AttributeDescription CallerLineNumberAttribute = new AttributeDescription("core.runtime", "CallerLineNumberAttribute", s_signaturesOfCallerLineNumberAttribute);
-        internal static readonly AttributeDescription CallerMemberNameAttribute = new AttributeDescription("core.runtime", "CallerMemberNameAttribute", s_signaturesOfCallerMemberNameAttribute);
+        internal static readonly AttributeDescription CallerArgumentExpressionAttribute = new AttributeDescription("core.diagnostics", "CallerArgumentExpressionAttribute", s_signaturesOfCallerArgumentExpressionAttribute);
+        internal static readonly AttributeDescription CallerFilePathAttribute = new AttributeDescription("core.diagnostics", "CallerFilePathAttribute", s_signaturesOfCallerFilePathAttribute);
+        internal static readonly AttributeDescription CallerLineNumberAttribute = new AttributeDescription("core.diagnostics", "CallerLineNumberAttribute", s_signaturesOfCallerLineNumberAttribute);
+        internal static readonly AttributeDescription CallerMemberNameAttribute = new AttributeDescription("core.diagnostics", "CallerMemberNameAttribute", s_signaturesOfCallerMemberNameAttribute);
         internal static readonly AttributeDescription IDispatchConstantAttribute = new AttributeDescription("core.runtime", "IDispatchConstantAttribute", s_signaturesOfIDispatchConstantAttribute);
         internal static readonly AttributeDescription DefaultParameterValueAttribute = new AttributeDescription("core.runtime", "DefaultParameterValueAttribute", s_signaturesOfDefaultParameterValueAttribute);
         internal static readonly AttributeDescription UnverifiableCodeAttribute = new AttributeDescription("core.runtime", "UnverifiableCodeAttribute", s_signaturesOfUnverifiableCodeAttribute);

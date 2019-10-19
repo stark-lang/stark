@@ -1,0 +1,47 @@
+namespace core
+{
+    public partial module runtime 
+    {
+        // Config attribute is regular attribute
+        // but that can also be used in AttributeTargets.EXPRESSIONS
+        @AttributeUsage(AttributeTargets.MODULE | 
+                            AttributeTargets.CLASS | 
+                        AttributeTargets.STRUCT | 
+                            AttributeTargets.ENUM | 
+                    AttributeTargets.CONSTRUCTOR | 
+                            AttributeTargets.FIELD | 
+                            AttributeTargets.FUNC , multiple: true)
+        public class ConfigAttribute extends Attribute
+        {
+            public constructor(condition: string)
+            {
+                this.condition = condition
+            }
+
+            public func condition -> string { get }
+        }
+
+        @Intrinsic
+        public extern static func config(condition: const string) -> bool
+
+        // Module that will get natively compiled only if building a benchmark executable
+        // Still compiled and shipped as part of the library
+        @Config("benchmarks")
+        public module play_config { 
+
+            public static func part1()
+            {
+                //if config(1) then
+                if config("cpu.x86 || feature.my_lambda_feature") then
+                {
+                    // Code that will get compiled only for the x86 CPU
+                    // or if the feature "my_lambda_feature" is enabled
+                }
+                else 
+                {
+                    // Code native compiled otherwise
+                }
+            }
+        }
+    }
+}

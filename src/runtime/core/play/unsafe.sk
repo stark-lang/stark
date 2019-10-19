@@ -1,4 +1,6 @@
-namespace core.runtime {
+import core.runtime
+
+namespace core.play {
 
     public module unsafe_utility
     {

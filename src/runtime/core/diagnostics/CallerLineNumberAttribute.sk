@@ -1,9 +1,9 @@
 namespace core
-{
-    public partial module runtime 
+{    
+    public partial module diagnostics
     {
         @AttributeUsage(AttributeTargets.PARAMETER)
-        public class InAttribute extends Attribute
+        public class CallerLineNumberAttribute extends Attribute
         {
             public constructor()
             {

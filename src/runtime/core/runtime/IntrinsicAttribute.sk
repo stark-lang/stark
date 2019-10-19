@@ -1,10 +1,13 @@
-namespace core.runtime
+namespace core
 {
-    @AttributeUsage(AttributeTargets.FUNC)
-    internal class IntrinsicAttribute extends Attribute
+    public partial module runtime 
     {
-        public constructor()
+        @AttributeUsage(AttributeTargets.FUNC)
+        internal class IntrinsicAttribute extends Attribute
         {
+            public constructor()
+            {
+            }
         }
     }
 }
