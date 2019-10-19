@@ -282,17 +282,6 @@ namespace StarkPlatform.Compiler.Stark.Emit
                     diagnostics,
                     AttributeDescription.IsUnmanagedAttribute);
             }
-
-            if (this.NeedsGeneratedNullableAttribute)
-            {
-                CreateEmbeddedAttributeItselfIfNeeded(diagnostics);
-
-                CreateEmbeddedAttributeIfNeeded(
-                    ref _lazyNullableAttribute,
-                    diagnostics,
-                    AttributeDescription.NullableAttribute,
-                    GetNullableAttributeConstructors);
-            }
         }
 
         private void CreateEmbeddedAttributeItselfIfNeeded(DiagnosticBag diagnostics)

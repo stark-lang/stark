@@ -2383,23 +2383,9 @@ namespace StarkPlatform.Compiler
 
         internal bool HasNullableAttribute(EntityHandle token, out byte defaultTransform, out ImmutableArray<byte> nullableTransforms)
         {
-            AttributeInfo info = FindTargetAttribute(token, AttributeDescription.NullableAttribute);
-            Debug.Assert(!info.HasValue || info.SignatureIndex == 0 || info.SignatureIndex == 1);
-
             defaultTransform = 0;
             nullableTransforms = default(ImmutableArray<byte>);
-
-            if (!info.HasValue)
-            {
-                return false;
-            }
-
-            if (info.SignatureIndex == 0)
-            {
-                return TryExtractValueFromAttribute(info.Handle, out defaultTransform, s_attributeByteValueExtractor);
-            }
-
-            return TryExtractByteArrayValueFromAttribute(info.Handle, out nullableTransforms);
+            return false;
         }
 
         #endregion
