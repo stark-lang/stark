@@ -2051,6 +2051,9 @@ If such a class is used as a base class and if the deriving class defines a dest
   <data name="ERR_ArrayOfStaticClass" xml:space="preserve">
     <value>'{0}': array elements cannot be of static type</value>
   </data>
+  <data name="ERR_InvalidArrayLikeTypeForSlice" xml:space="preserve">
+    <value>The type '{0}' cannot be used as a slice as it is not implementing the IArray&lt;T&gt; interface</value>
+  </data>
   <data name="ERR_IndexerInStaticClass" xml:space="preserve">
     <value>'{0}': cannot declare indexers in a module</value>
   </data>

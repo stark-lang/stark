@@ -6855,12 +6855,12 @@ namespace StarkPlatform.Compiler.Stark
 
             // TODO: Disable temporarily
 
-            //if (result is null && allowIndexAndRange)
-            //{
-            //    result =
-            //        TryImplicitConversionToArrayIndex(index, WellKnownType.core_Index, node, diagnostics) ??
-            //        TryImplicitConversionToArrayIndex(index, WellKnownType.core_Range, node, diagnostics);
-            //}
+            if (result is null && allowIndexAndRange)
+            {
+                result =
+                    TryImplicitConversionToArrayIndex(index, WellKnownType.core_Index, node, diagnostics) ??
+                    TryImplicitConversionToArrayIndex(index, WellKnownType.core_Range, node, diagnostics);
+            }
 
             if (result is null)
             {

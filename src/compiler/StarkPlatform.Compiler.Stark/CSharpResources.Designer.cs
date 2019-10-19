@@ -6100,6 +6100,15 @@ namespace StarkPlatform.Compiler.Stark {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type &apos;{0}&apos; cannot be used as a slice as it is not implementing the IArray&lt;T&gt; interface.
+        /// </summary>
+        internal static string ERR_InvalidArrayLikeTypeForSlice {
+            get {
+                return ResourceManager.GetString("ERR_InvalidArrayLikeTypeForSlice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Assembly culture strings may not contain embedded NUL characters..
         /// </summary>
         internal static string ERR_InvalidAssemblyCulture {

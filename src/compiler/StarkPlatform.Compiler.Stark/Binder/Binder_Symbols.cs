@@ -454,6 +454,46 @@ namespace StarkPlatform.Compiler.Stark
                     var constType = literal.Type;
                     return TypeSymbolWithAnnotations.Create(new ConstLiteralTypeSymbol(TypeSymbolWithAnnotations.Create(constType), literal.ConstantValue.Value));
 
+
+                case SyntaxKind.SliceType:
+                    var sliceTypeSyntax = (SliceTypeSyntax) syntax;
+                    var sliceArrayType = BindType(sliceTypeSyntax.ElementType, diagnostics, basesBeingResolved);
+
+                    TypeSymbol sliceElementType = null;
+                    if (sliceArrayType.Kind == SymbolKind.NamedType)
+                    {
+                        var namedTypeSymbol = (NamedTypeSymbol)sliceArrayType.TypeSymbol;
+
+                        HashSet<DiagnosticInfo> useSiteDiagnostics = null;
+                        foreach (var interf in namedTypeSymbol.AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics))
+                        {
+                            var typeParameters = interf.TypeParameters;
+                            if (typeParameters.Length != 1) continue;
+
+                            var typeArguments = interf.GetAllTypeArguments(ref useSiteDiagnostics);
+                            if (typeArguments.Length == 1 && interf.ConstructedFrom.SpecialType == SpecialType.core_IArray_T)
+                            {
+                                sliceElementType = typeArguments[0].TypeSymbol;
+                                break;
+                            }
+                        }
+                    }
+                    else if (sliceArrayType.IsArray())
+                    {
+                        sliceElementType = sliceArrayType.TypeSymbol.GetArrayElementType().TypeSymbol;
+                    }
+
+                    // Generate an error if the type is actually not IArray<T> or an array type
+                    if ((object)sliceElementType == null)
+                    {
+                        var diagInfo = diagnostics.Add(ErrorCode.ERR_InvalidArrayLikeTypeForSlice, syntax.Location, sliceArrayType.TypeSymbol);
+                        return TypeSymbolWithAnnotations.Create(new ExtendedErrorTypeSymbol(sliceArrayType.TypeSymbol, LookupResultKind.NotATypeOrNamespace, diagInfo));
+                    }
+                    
+                    var sliceGenericType = GetSpecialType(SpecialType.core_Slice_TArray_T, diagnostics, sliceTypeSyntax);
+                    var sliceInstanceType = sliceGenericType.Construct(sliceArrayType.TypeSymbol, sliceElementType);
+                    return TypeSymbolWithAnnotations.Create(sliceInstanceType);
+
                 case SyntaxKind.RefType:
                 case SyntaxKind.ExtendedType:
                 {

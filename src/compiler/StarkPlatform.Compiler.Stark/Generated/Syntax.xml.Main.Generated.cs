@@ -76,6 +76,12 @@ namespace StarkPlatform.Compiler.Stark
       return this.DefaultVisit(node);
     }
 
+    /// <summary>Called when the visitor visits a SliceTypeSyntax node.</summary>
+    public virtual TResult VisitSliceType(SliceTypeSyntax node)
+    {
+      return this.DefaultVisit(node);
+    }
+
     /// <summary>Called when the visitor visits a NullableTypeSyntax node.</summary>
     public virtual TResult VisitNullableType(NullableTypeSyntax node)
     {
@@ -1395,6 +1401,12 @@ namespace StarkPlatform.Compiler.Stark
 
     /// <summary>Called when the visitor visits a PointerTypeSyntax node.</summary>
     public virtual void VisitPointerType(PointerTypeSyntax node)
+    {
+      this.DefaultVisit(node);
+    }
+
+    /// <summary>Called when the visitor visits a SliceTypeSyntax node.</summary>
+    public virtual void VisitSliceType(SliceTypeSyntax node)
     {
       this.DefaultVisit(node);
     }
@@ -2731,6 +2743,13 @@ namespace StarkPlatform.Compiler.Stark
       var asteriskToken = this.VisitToken(node.AsteriskToken);
       var elementType = (TypeSyntax)this.Visit(node.ElementType);
       return node.Update(asteriskToken, elementType);
+    }
+
+    public override SyntaxNode VisitSliceType(SliceTypeSyntax node)
+    {
+      var tildeToken = this.VisitToken(node.TildeToken);
+      var elementType = (TypeSyntax)this.Visit(node.ElementType);
+      return node.Update(tildeToken, elementType);
     }
 
     public override SyntaxNode VisitNullableType(NullableTypeSyntax node)
@@ -4785,6 +4804,28 @@ namespace StarkPlatform.Compiler.Stark
     public static PointerTypeSyntax PointerType(TypeSyntax elementType)
     {
       return SyntaxFactory.PointerType(SyntaxFactory.Token(SyntaxKind.AsteriskToken), elementType);
+    }
+
+    /// <summary>Creates a new SliceTypeSyntax instance.</summary>
+    public static SliceTypeSyntax SliceType(SyntaxToken tildeToken, TypeSyntax elementType)
+    {
+      switch (tildeToken.Kind())
+      {
+        case SyntaxKind.TildeToken:
+          break;
+        default:
+          throw new ArgumentException(nameof(tildeToken));
+      }
+      if (elementType == null)
+        throw new ArgumentNullException(nameof(elementType));
+      return (SliceTypeSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.SliceType((Syntax.InternalSyntax.SyntaxToken)tildeToken.Node, elementType == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.TypeSyntax)elementType.Green).CreateRed();
+    }
+
+
+    /// <summary>Creates a new SliceTypeSyntax instance.</summary>
+    public static SliceTypeSyntax SliceType(TypeSyntax elementType)
+    {
+      return SyntaxFactory.SliceType(SyntaxFactory.Token(SyntaxKind.TildeToken), elementType);
     }
 
     /// <summary>Creates a new NullableTypeSyntax instance.</summary>

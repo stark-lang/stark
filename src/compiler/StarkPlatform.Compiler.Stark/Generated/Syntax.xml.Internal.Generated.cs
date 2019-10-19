@@ -1376,6 +1376,133 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     }
   }
 
+  /// <summary>Class which represents the syntax node for slice type.</summary>
+  internal sealed partial class SliceTypeSyntax : TypeSyntax
+  {
+    internal readonly SyntaxToken tildeToken;
+    internal readonly TypeSyntax elementType;
+
+    internal SliceTypeSyntax(SyntaxKind kind, SyntaxToken tildeToken, TypeSyntax elementType, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
+        : base(kind, diagnostics, annotations)
+    {
+        this.SlotCount = 2;
+        this.AdjustFlagsAndWidth(tildeToken);
+        this.tildeToken = tildeToken;
+        this.AdjustFlagsAndWidth(elementType);
+        this.elementType = elementType;
+    }
+
+
+    internal SliceTypeSyntax(SyntaxKind kind, SyntaxToken tildeToken, TypeSyntax elementType, SyntaxFactoryContext context)
+        : base(kind)
+    {
+        this.SetFactoryContext(context);
+        this.SlotCount = 2;
+        this.AdjustFlagsAndWidth(tildeToken);
+        this.tildeToken = tildeToken;
+        this.AdjustFlagsAndWidth(elementType);
+        this.elementType = elementType;
+    }
+
+
+    internal SliceTypeSyntax(SyntaxKind kind, SyntaxToken tildeToken, TypeSyntax elementType)
+        : base(kind)
+    {
+        this.SlotCount = 2;
+        this.AdjustFlagsAndWidth(tildeToken);
+        this.tildeToken = tildeToken;
+        this.AdjustFlagsAndWidth(elementType);
+        this.elementType = elementType;
+    }
+
+    /// <summary>SyntaxToken representing the tilde.</summary>
+    public SyntaxToken TildeToken { get { return this.tildeToken; } }
+    /// <summary>TypeSyntax node that represents the element type of the slice.</summary>
+    public TypeSyntax ElementType { get { return this.elementType; } }
+
+    internal override GreenNode GetSlot(int index)
+    {
+        switch (index)
+        {
+            case 0: return this.tildeToken;
+            case 1: return this.elementType;
+            default: return null;
+        }
+    }
+
+    internal override SyntaxNode CreateRed(SyntaxNode parent, int position)
+    {
+      return new Stark.Syntax.SliceTypeSyntax(this, parent, position);
+    }
+
+    public override TResult Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor)
+    {
+        return visitor.VisitSliceType(this);
+    }
+
+    public override void Accept(CSharpSyntaxVisitor visitor)
+    {
+        visitor.VisitSliceType(this);
+    }
+
+    public SliceTypeSyntax Update(SyntaxToken tildeToken, TypeSyntax elementType)
+    {
+        if (tildeToken != this.TildeToken || elementType != this.ElementType)
+        {
+            var newNode = SyntaxFactory.SliceType(tildeToken, elementType);
+            var diags = this.GetDiagnostics();
+            if (diags != null && diags.Length > 0)
+               newNode = newNode.WithDiagnosticsGreen(diags);
+            var annotations = this.GetAnnotations();
+            if (annotations != null && annotations.Length > 0)
+               newNode = newNode.WithAnnotationsGreen(annotations);
+            return newNode;
+        }
+
+        return this;
+    }
+
+    internal override GreenNode SetDiagnostics(DiagnosticInfo[] diagnostics)
+    {
+         return new SliceTypeSyntax(this.Kind, this.tildeToken, this.elementType, diagnostics, GetAnnotations());
+    }
+
+    internal override GreenNode SetAnnotations(SyntaxAnnotation[] annotations)
+    {
+         return new SliceTypeSyntax(this.Kind, this.tildeToken, this.elementType, GetDiagnostics(), annotations);
+    }
+
+    internal SliceTypeSyntax(ObjectReader reader)
+        : base(reader)
+    {
+      this.SlotCount = 2;
+      var tildeToken = (SyntaxToken)reader.ReadValue();
+      if (tildeToken != null)
+      {
+         AdjustFlagsAndWidth(tildeToken);
+         this.tildeToken = tildeToken;
+      }
+      var elementType = (TypeSyntax)reader.ReadValue();
+      if (elementType != null)
+      {
+         AdjustFlagsAndWidth(elementType);
+         this.elementType = elementType;
+      }
+    }
+
+    internal override void WriteTo(ObjectWriter writer)
+    {
+      base.WriteTo(writer);
+      writer.WriteValue(this.tildeToken);
+      writer.WriteValue(this.elementType);
+    }
+
+    static SliceTypeSyntax()
+    {
+       ObjectBinder.RegisterTypeReader(typeof(SliceTypeSyntax), r => new SliceTypeSyntax(r));
+    }
+  }
+
   /// <summary>Class which represents the syntax node for a nullable type.</summary>
   internal sealed partial class NullableTypeSyntax : TypeSyntax
   {
@@ -36869,6 +36996,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return this.DefaultVisit(node);
     }
 
+    public virtual TResult VisitSliceType(SliceTypeSyntax node)
+    {
+      return this.DefaultVisit(node);
+    }
+
     public virtual TResult VisitNullableType(NullableTypeSyntax node)
     {
       return this.DefaultVisit(node);
@@ -37969,6 +38101,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     }
 
     public virtual void VisitPointerType(PointerTypeSyntax node)
+    {
+      this.DefaultVisit(node);
+    }
+
+    public virtual void VisitSliceType(SliceTypeSyntax node)
     {
       this.DefaultVisit(node);
     }
@@ -39095,6 +39232,13 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       var asteriskToken = (SyntaxToken)this.Visit(node.AsteriskToken);
       var elementType = (TypeSyntax)this.Visit(node.ElementType);
       return node.Update(asteriskToken, elementType);
+    }
+
+    public override CSharpSyntaxNode VisitSliceType(SliceTypeSyntax node)
+    {
+      var tildeToken = (SyntaxToken)this.Visit(node.TildeToken);
+      var elementType = (TypeSyntax)this.Visit(node.ElementType);
+      return node.Update(tildeToken, elementType);
     }
 
     public override CSharpSyntaxNode VisitNullableType(NullableTypeSyntax node)
@@ -41226,6 +41370,35 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       if (cached != null) return (PointerTypeSyntax)cached;
 
       var result = new PointerTypeSyntax(SyntaxKind.PointerType, asteriskToken, elementType, this.context);
+      if (hash >= 0)
+      {
+          SyntaxNodeCache.AddNode(result, hash);
+      }
+
+      return result;
+    }
+
+    public SliceTypeSyntax SliceType(SyntaxToken tildeToken, TypeSyntax elementType)
+    {
+#if DEBUG
+      if (tildeToken == null)
+        throw new ArgumentNullException(nameof(tildeToken));
+      switch (tildeToken.Kind)
+      {
+        case SyntaxKind.TildeToken:
+          break;
+        default:
+          throw new ArgumentException(nameof(tildeToken));
+      }
+      if (elementType == null)
+        throw new ArgumentNullException(nameof(elementType));
+#endif
+
+      int hash;
+      var cached = CSharpSyntaxNodeCache.TryGetNode((int)SyntaxKind.SliceType, tildeToken, elementType, this.context, out hash);
+      if (cached != null) return (SliceTypeSyntax)cached;
+
+      var result = new SliceTypeSyntax(SyntaxKind.SliceType, tildeToken, elementType, this.context);
       if (hash >= 0)
       {
           SyntaxNodeCache.AddNode(result, hash);
@@ -48811,6 +48984,35 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return result;
     }
 
+    public static SliceTypeSyntax SliceType(SyntaxToken tildeToken, TypeSyntax elementType)
+    {
+#if DEBUG
+      if (tildeToken == null)
+        throw new ArgumentNullException(nameof(tildeToken));
+      switch (tildeToken.Kind)
+      {
+        case SyntaxKind.TildeToken:
+          break;
+        default:
+          throw new ArgumentException(nameof(tildeToken));
+      }
+      if (elementType == null)
+        throw new ArgumentNullException(nameof(elementType));
+#endif
+
+      int hash;
+      var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.SliceType, tildeToken, elementType, out hash);
+      if (cached != null) return (SliceTypeSyntax)cached;
+
+      var result = new SliceTypeSyntax(SyntaxKind.SliceType, tildeToken, elementType);
+      if (hash >= 0)
+      {
+          SyntaxNodeCache.AddNode(result, hash);
+      }
+
+      return result;
+    }
+
     public static NullableTypeSyntax NullableType(SyntaxToken questionToken, TypeSyntax elementType)
     {
 #if DEBUG
@@ -56096,6 +56298,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
            typeof(ArrayTypeSyntax),
            typeof(ArrayRankSpecifierSyntax),
            typeof(PointerTypeSyntax),
+           typeof(SliceTypeSyntax),
            typeof(NullableTypeSyntax),
            typeof(TupleTypeSyntax),
            typeof(TupleElementSyntax),

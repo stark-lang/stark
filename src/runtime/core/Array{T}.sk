@@ -8,9 +8,17 @@ namespace core {
         private constructor() {}
 
         /// ref indexer #2, not readonly
-        public extern func operator [index: int] -> ref T { 
-            @Intrinsic
-            get 
+        public func operator [index: int] -> ref T { 
+            get
+            {
+                unsafe il
+                {
+                    ldarg.0
+                    ldarg.1
+                    ldelema T
+                    ret
+                }
+            } 
         }
 
         // // in indexer #3, readonly
@@ -18,6 +26,8 @@ namespace core {
         //     @Intrinsic
         //     get 
         // }
+
+        public func operator [range: Range] -> Slice<[]T,T> => new Slice<[]T, T>(this, range.begin.value, range.end.value - range.begin.value + 1)
 
         readonly func Iterable<T, int>.iterate_begin() -> int => 0
 

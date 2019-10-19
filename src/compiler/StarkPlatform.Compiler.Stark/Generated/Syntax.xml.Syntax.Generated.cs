@@ -844,6 +844,83 @@ namespace StarkPlatform.Compiler.Stark.Syntax
     }
   }
 
+  /// <summary>Class which represents the syntax node for slice type.</summary>
+  public sealed partial class SliceTypeSyntax : TypeSyntax
+  {
+    private TypeSyntax elementType;
+
+    internal SliceTypeSyntax(StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.CSharpSyntaxNode green, SyntaxNode parent, int position)
+        : base(green, parent, position)
+    {
+    }
+
+    /// <summary>SyntaxToken representing the tilde.</summary>
+    public SyntaxToken TildeToken 
+    {
+      get { return new SyntaxToken(this, ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SliceTypeSyntax)this.Green).tildeToken, this.Position, 0); }
+    }
+
+    /// <summary>TypeSyntax node that represents the element type of the slice.</summary>
+    public TypeSyntax ElementType 
+    {
+        get
+        {
+            return this.GetRed(ref this.elementType, 1);
+        }
+    }
+
+    internal override SyntaxNode GetNodeSlot(int index)
+    {
+        switch (index)
+        {
+            case 1: return this.GetRed(ref this.elementType, 1);
+            default: return null;
+        }
+    }
+    internal override SyntaxNode GetCachedSlot(int index)
+    {
+        switch (index)
+        {
+            case 1: return this.elementType;
+            default: return null;
+        }
+    }
+
+    public override TResult Accept<TResult>(CSharpSyntaxVisitor<TResult> visitor)
+    {
+        return visitor.VisitSliceType(this);
+    }
+
+    public override void Accept(CSharpSyntaxVisitor visitor)
+    {
+        visitor.VisitSliceType(this);
+    }
+
+    public SliceTypeSyntax Update(SyntaxToken tildeToken, TypeSyntax elementType)
+    {
+        if (tildeToken != this.TildeToken || elementType != this.ElementType)
+        {
+            var newNode = SyntaxFactory.SliceType(tildeToken, elementType);
+            var annotations = this.GetAnnotations();
+            if (annotations != null && annotations.Length > 0)
+               return newNode.WithAnnotations(annotations);
+            return newNode;
+        }
+
+        return this;
+    }
+
+    public SliceTypeSyntax WithTildeToken(SyntaxToken tildeToken)
+    {
+        return this.Update(tildeToken, this.ElementType);
+    }
+
+    public SliceTypeSyntax WithElementType(TypeSyntax elementType)
+    {
+        return this.Update(this.TildeToken, elementType);
+    }
+  }
+
   /// <summary>Class which represents the syntax node for a nullable type.</summary>
   public sealed partial class NullableTypeSyntax : TypeSyntax
   {

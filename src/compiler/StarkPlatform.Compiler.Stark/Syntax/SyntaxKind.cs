@@ -340,6 +340,7 @@ namespace StarkPlatform.Compiler.Stark
         ExtendedType = 8626,
         OmittedTypeArgument = 8627,
         ConstLiteralType = 8628,
+        SliceType = 8629,
 
         // expressions
         ParenthesizedExpression = 8632,

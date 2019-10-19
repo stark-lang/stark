@@ -4532,6 +4532,7 @@ tryAgain:
                 case SyntaxKind.CommaToken:
                 case SyntaxKind.DotToken:
                 case SyntaxKind.QuestionToken:
+                case SyntaxKind.TildeToken:
                 case SyntaxKind.EqualsEqualsToken:
                 case SyntaxKind.ExclamationEqualsToken:
                 case SyntaxKind.BarToken:
@@ -5291,7 +5292,7 @@ tryAgain:
         {
             ScanTypeFlags result;
 
-            while (this.CurrentToken.Kind == SyntaxKind.AsteriskToken)
+            while (this.CurrentToken.Kind == SyntaxKind.AsteriskToken || CurrentToken.Kind == SyntaxKind.QuestionToken || CurrentToken.Kind == SyntaxKind.TildeToken)
             {
                 lastTokenOfType = this.EatToken();
             }
@@ -5547,6 +5548,12 @@ tryAgain:
 
                 switch (this.CurrentToken.Kind)
                 {
+                    case SyntaxKind.TildeToken:
+                        var tilde = EatToken();
+                        type = ParseType(mode);
+                        type = _syntaxFactory.SliceType(tilde, type);
+                        break;
+
                     case SyntaxKind.QuestionToken:
                         var question = EatToken();
                         type = ParseType(mode);
@@ -6068,6 +6075,7 @@ tryAgain:
                     case SyntaxKind.DotToken:
                     case SyntaxKind.AsteriskToken:
                     case SyntaxKind.QuestionToken:
+                    case SyntaxKind.TildeToken:
                     case SyntaxKind.OpenBracketToken:
                     case SyntaxKind.LessThanToken:
                     case SyntaxKind.ColonColonToken:

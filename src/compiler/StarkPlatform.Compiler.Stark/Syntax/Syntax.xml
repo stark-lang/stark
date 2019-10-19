@@ -227,6 +227,26 @@
       <summary>Creates a PointerTypeSyntax node.</summary>
     </FactoryComment>
   </Node>
+  <Node Name="SliceTypeSyntax" Base="TypeSyntax">
+    <Kind Name="SliceType"/>
+    <Field Name="TildeToken" Type="SyntaxToken">
+      <Kind Name="TildeToken"/>
+      <PropertyComment>
+        <summary>SyntaxToken representing the tilde.</summary>
+      </PropertyComment>
+    </Field>
+    <Field Name="ElementType" Type="TypeSyntax">
+      <PropertyComment>
+        <summary>TypeSyntax node that represents the element type of the slice.</summary>
+      </PropertyComment>
+    </Field>
+    <TypeComment>
+      <summary>Class which represents the syntax node for slice type.</summary>
+    </TypeComment>
+    <FactoryComment>
+      <summary>Creates a SliceTypeSyntax node.</summary>
+    </FactoryComment>
+  </Node>
   <Node Name="NullableTypeSyntax" Base="TypeSyntax">
     <Kind Name="NullableType"/>
     <Field Name="QuestionToken" Type="SyntaxToken">
