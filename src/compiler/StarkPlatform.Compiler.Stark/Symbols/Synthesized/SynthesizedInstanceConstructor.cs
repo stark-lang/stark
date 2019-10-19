@@ -74,12 +74,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         {
             get
             {
-                if (_containingType.IsComImport)
-                {
-                    Debug.Assert(_containingType.TypeKind == TypeKind.Class);
-                    return MethodImplAttributes.Runtime | MethodImplAttributes.InternalCall;
-                }
-
                 if (_containingType.TypeKind == TypeKind.Delegate)
                 {
                     return MethodImplAttributes.Runtime;
@@ -175,9 +169,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         {
             get
             {
-                // Synthesized constructors of ComImport type are extern
-                NamedTypeSymbol containingType = this.ContainingType;
-                return (object)containingType != null && containingType.IsComImport;
+                return false;
             }
         }
 

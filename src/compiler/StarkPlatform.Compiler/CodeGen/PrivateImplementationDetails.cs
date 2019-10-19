@@ -500,8 +500,6 @@ namespace StarkPlatform.Compiler.CodeGen
 
         public bool IsSpecialName => false;
 
-        public bool IsWindowsRuntimeImport => false;
-
         public bool IsSealed => true;
 
         public virtual IEnumerable<Cci.IMethodDefinition> GetMethods(EmitContext context)

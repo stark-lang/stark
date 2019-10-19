@@ -71,22 +71,6 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                 }
             }
 
-            protected abstract void EmbedCorrespondingComEventInterfaceMethodInternal(TSyntaxNode syntaxNodeOpt, DiagnosticBag diagnostics, bool isUsedForComAwareEventBinding);
-
-            internal void EmbedCorrespondingComEventInterfaceMethod(TSyntaxNode syntaxNodeOpt, DiagnosticBag diagnostics, bool isUsedForComAwareEventBinding)
-            {
-                if (_isUsedForComAwareEventBinding == 0 &&
-                    (!isUsedForComAwareEventBinding ||
-                     Interlocked.CompareExchange(ref _isUsedForComAwareEventBinding, 1, 0) == 0))
-                {
-                    Debug.Assert(!isUsedForComAwareEventBinding || _isUsedForComAwareEventBinding != 0);
-
-                    EmbedCorrespondingComEventInterfaceMethodInternal(syntaxNodeOpt, diagnostics, isUsedForComAwareEventBinding);
-                }
-
-                Debug.Assert(!isUsedForComAwareEventBinding || _isUsedForComAwareEventBinding != 0);
-            }
-
             Cci.IMethodReference Cci.IEventDefinition.Adder
             {
                 get { return _adder; }

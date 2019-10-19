@@ -87,20 +87,11 @@ namespace StarkPlatform.Cci
                     nativePdbWriterOpt.EmbedSourceLink(context.Module.SourceLinkStreamOpt);
                 }
 
-                if (mdWriter.Module.OutputKind == OutputKind.WindowsRuntimeMetadata)
-                {
-                    // Dev12: If compiling to winmdobj, we need to add to PDB source spans of
-                    //        all types and members for better error reporting by WinMDExp.
-                    nativePdbWriterOpt.WriteDefinitionLocations(mdWriter.Module.GetSymbolToLocationMap());
-                }
-                else
-                {
 #if DEBUG
-                    // validate that all definitions are writable
-                    // if same scenario would happen in an winmdobj project
-                    nativePdbWriterOpt.AssertAllDefinitionsHaveTokens(mdWriter.Module.GetSymbolToLocationMap());
+                // validate that all definitions are writable
+                // if same scenario would happen in an winmdobj project
+                nativePdbWriterOpt.AssertAllDefinitionsHaveTokens(mdWriter.Module.GetSymbolToLocationMap());
 #endif
-                }
 
                 nativePdbWriterOpt.WriteRemainingEmbeddedDocuments(mdWriter.Module.DebugDocumentsBuilder.EmbeddedDocuments);
             }

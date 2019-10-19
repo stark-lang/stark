@@ -134,12 +134,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         internal override bool HasSpecialName => false;
 
-        internal override bool IsComImport => false;
-
-        internal override bool IsWindowsRuntimeImport => false;
-
-        internal override bool ShouldAddWinRTMembers => false;
-
         public override bool IsSerializable => false;
 
         internal override TypeLayout Layout => default(TypeLayout);

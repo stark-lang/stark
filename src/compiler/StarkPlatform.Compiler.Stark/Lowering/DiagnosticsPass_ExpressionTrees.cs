@@ -263,10 +263,6 @@ namespace StarkPlatform.Compiler.Stark
                 {
                     Error(ErrorCode.ERR_ExpressionTreeContainsNamedArgument, node);
                 }
-                else if (IsComCallWithRefOmitted(method, arguments, argumentRefKindsOpt))
-                {
-                    Error(ErrorCode.ERR_ComRefCallInExpressionTree, node);
-                }
                 else if (method.MethodKind == MethodKind.LocalFunction)
                 {
                     Error(ErrorCode.ERR_ExpressionTreeContainsLocalFunction, node);

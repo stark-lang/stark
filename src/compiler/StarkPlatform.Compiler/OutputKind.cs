@@ -30,28 +30,13 @@ namespace StarkPlatform.Compiler
         /// A .netmodule file.
         /// </summary>
         NetModule = 3,
-
-        /// <summary>
-        /// A .winmdobj file.
-        /// </summary>
-        WindowsRuntimeMetadata = 4,
-
-        /// <summary>
-        /// An .exe that can run in an app container.
-        /// </summary>
-        /// <remarks>
-        /// Equivalent to a WindowsApplication, but with an extra bit set in the Portable Executable file
-        /// so that the application can only be run in an app container.
-        /// Also known as a "Windows Store app".
-        /// </remarks>
-        WindowsRuntimeApplication = 5,
     }
 
     internal static partial class EnumBounds
     {
         internal static bool IsValid(this OutputKind value)
         {
-            return value >= OutputKind.ConsoleApplication && value <= OutputKind.WindowsRuntimeApplication;
+            return value >= OutputKind.ConsoleApplication && value <= OutputKind.NetModule;
         }
 
         internal static string GetDefaultExtension(this OutputKind kind)
@@ -60,7 +45,6 @@ namespace StarkPlatform.Compiler
             {
                 case OutputKind.ConsoleApplication:
                 case OutputKind.WindowsApplication:
-                case OutputKind.WindowsRuntimeApplication:
                     return ".exe";
 
                 case OutputKind.DynamicallyLinkedLibrary:
@@ -68,9 +52,6 @@ namespace StarkPlatform.Compiler
 
                 case OutputKind.NetModule:
                     return ".netmodule";
-
-                case OutputKind.WindowsRuntimeMetadata:
-                    return ".winmdobj";
 
                 default:
                     return ".dll";
@@ -83,12 +64,10 @@ namespace StarkPlatform.Compiler
             {
                 case OutputKind.ConsoleApplication:
                 case OutputKind.WindowsApplication:
-                case OutputKind.WindowsRuntimeApplication:
                     return true;
 
                 case OutputKind.DynamicallyLinkedLibrary:
                 case OutputKind.NetModule:
-                case OutputKind.WindowsRuntimeMetadata:
                     return false;
 
                 default:
@@ -99,11 +78,6 @@ namespace StarkPlatform.Compiler
         internal static bool IsNetModule(this OutputKind kind)
         {
             return kind == OutputKind.NetModule;
-        }
-
-        internal static bool IsWindowsRuntime(this OutputKind kind)
-        {
-            return kind == OutputKind.WindowsRuntimeMetadata;
         }
     }
 }

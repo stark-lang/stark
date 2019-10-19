@@ -560,15 +560,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        bool Cci.ITypeDefinition.IsComObject
-        {
-            get
-            {
-                CheckDefinitionInvariant();
-                return this.IsComImport;
-            }
-        }
-
         bool Cci.ITypeDefinition.IsGeneric
         {
             get
@@ -611,15 +602,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 CheckDefinitionInvariant();
                 return this.HasSpecialName;
-            }
-        }
-
-        bool Cci.ITypeDefinition.IsWindowsRuntimeImport
-        {
-            get
-            {
-                CheckDefinitionInvariant();
-                return this.IsWindowsRuntimeImport;
             }
         }
 

@@ -1672,12 +1672,6 @@ namespace StarkPlatform.Compiler.Stark
                 case "module":
                     return OutputKind.NetModule;
 
-                case "appcontainerexe":
-                    return OutputKind.WindowsRuntimeApplication;
-
-                case "winmdobj":
-                    return OutputKind.WindowsRuntimeMetadata;
-
                 default:
                     AddDiagnostic(diagnostics, ErrorCode.FTL_InvalidTarget);
                     return OutputKind.ConsoleApplication;

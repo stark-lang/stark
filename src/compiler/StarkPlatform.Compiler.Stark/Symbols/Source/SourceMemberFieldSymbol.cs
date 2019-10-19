@@ -386,19 +386,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             if ((object)associatedPropertyOrEvent != null && associatedPropertyOrEvent.Kind == SymbolKind.Event)
             {
                 EventSymbol @event = (EventSymbol)associatedPropertyOrEvent;
-                if (@event.IsWindowsRuntimeEvent)
-                {
-                    NamedTypeSymbol tokenTableType = this.DeclaringCompilation.GetWellKnownType(WellKnownType.core_runtime_WindowsRuntime_EventRegistrationTokenTable_T);
-                    Binder.ReportUseSiteDiagnostics(tokenTableType, diagnosticsForFirstDeclarator, this.ErrorLocation);
-
-                    // CONSIDER: Do we want to guard against the possibility that someone has created their own EventRegistrationTokenTable<T>
-                    // type that has additional generic constraints?
-                    type = TypeSymbolWithAnnotations.Create(tokenTableType.Construct(ImmutableArray.Create(@event.Type)));
-                }
-                else
-                {
-                    type = @event.Type;
-                }
+                type = @event.Type;
             }
             else
             {

@@ -52,51 +52,16 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 CSharpCompilation compilation = this.DeclaringCompilation;
                 Debug.Assert(compilation != null);
 
-                // NOTE: LazyMethodChecks calls us within a lock, so we use regular assignments,
-                // rather than Interlocked.CompareExchange.
-                if (_event.IsWindowsRuntimeEvent)
-                {
-                    TypeSymbol eventTokenType = compilation.GetWellKnownType(WellKnownType.core_runtime_WindowsRuntime_EventRegistrationToken);
-                    Binder.ReportUseSiteDiagnostics(eventTokenType, diagnostics, this.Location);
+                // void add_E(EventDelegate d);
+                // void remove_E(EventDelegate d);
 
-                    if (this.MethodKind == MethodKind.EventAdd)
-                    {
-                        // EventRegistrationToken add_E(EventDelegate d);
+                TypeSymbol voidType = compilation.GetSpecialType(SpecialType.System_Void);
+                Binder.ReportUseSiteDiagnostics(voidType, diagnostics, this.Location);
+                _lazyReturnType = TypeSymbolWithAnnotations.Create(voidType);
+                this.SetReturnsVoid(returnsVoid: true);
 
-                        // Leave the returns void bit in this.flags false.
-                        _lazyReturnType = TypeSymbolWithAnnotations.Create(eventTokenType);
-
-                        var parameter = new SynthesizedAccessorValueParameterSymbol(this, _event.Type, 0);
-                        _lazyParameters = ImmutableArray.Create<ParameterSymbol>(parameter);
-                    }
-                    else
-                    {
-                        Debug.Assert(this.MethodKind == MethodKind.EventRemove);
-
-                        // void remove_E(EventRegistrationToken t);
-
-                        TypeSymbol voidType = compilation.GetSpecialType(SpecialType.System_Void);
-                        Binder.ReportUseSiteDiagnostics(voidType, diagnostics, this.Location);
-                        _lazyReturnType = TypeSymbolWithAnnotations.Create(voidType);
-                        this.SetReturnsVoid(returnsVoid: true);
-
-                        var parameter = new SynthesizedAccessorValueParameterSymbol(this, TypeSymbolWithAnnotations.Create(eventTokenType), 0);
-                        _lazyParameters = ImmutableArray.Create<ParameterSymbol>(parameter);
-                    }
-                }
-                else
-                {
-                    // void add_E(EventDelegate d);
-                    // void remove_E(EventDelegate d);
-
-                    TypeSymbol voidType = compilation.GetSpecialType(SpecialType.System_Void);
-                    Binder.ReportUseSiteDiagnostics(voidType, diagnostics, this.Location);
-                    _lazyReturnType = TypeSymbolWithAnnotations.Create(voidType);
-                    this.SetReturnsVoid(returnsVoid: true);
-
-                    var parameter = new SynthesizedAccessorValueParameterSymbol(this, _event.Type, 0);
-                    _lazyParameters = ImmutableArray.Create<ParameterSymbol>(parameter);
-                }
+                var parameter = new SynthesizedAccessorValueParameterSymbol(this, _event.Type, 0);
+                _lazyParameters = ImmutableArray.Create<ParameterSymbol>(parameter);
             }
         }
 

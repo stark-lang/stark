@@ -17,7 +17,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
             internal AnonymousTypePropertyGetAccessorSymbol(AnonymousTypePropertySymbol property)
                 // winmdobj output only effects setters, so we can always set this to false
-                : base(property.ContainingType, SourcePropertyAccessorSymbol.GetAccessorName(property.Name, getNotSet: true, isWinMdOutput: false))
+                : base(property.ContainingType, SourcePropertyAccessorSymbol.GetAccessorName(property.Name, true))
             {
                 _property = property;
             }

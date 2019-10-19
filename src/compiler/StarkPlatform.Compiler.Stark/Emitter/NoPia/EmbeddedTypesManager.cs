@@ -520,11 +520,6 @@ namespace StarkPlatform.Compiler.Stark.Emit.NoPia
 
             if (embedded != cached)
             {
-                if (isUsedForComAwareEventBinding)
-                {
-                    cached.EmbedCorrespondingComEventInterfaceMethod(syntaxNodeOpt, diagnostics, isUsedForComAwareEventBinding);
-                }
-
                 return cached;
             }
 
@@ -535,8 +530,6 @@ namespace StarkPlatform.Compiler.Stark.Emit.NoPia
             // Embed types referenced by this event declaration.
             // This should also embed accessors.
             EmbedReferences(embedded, syntaxNodeOpt, diagnostics);
-
-            embedded.EmbedCorrespondingComEventInterfaceMethod(syntaxNodeOpt, diagnostics, isUsedForComAwareEventBinding);
 
             return embedded;
         }

@@ -15,17 +15,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
     internal static partial class SymbolExtensions
     {
         /// <summary>
-        /// Does the compilation this symbol belongs to output to a winmdobj?
-        /// </summary>
-        /// <param name="symbol"></param>
-        /// <returns></returns>
-        public static bool IsCompilationOutputWinMdObj(this Symbol symbol)
-        {
-            var comp = symbol.DeclaringCompilation;
-            return comp != null && comp.Options.OutputKind == OutputKind.WindowsRuntimeMetadata;
-        }
-
-        /// <summary>
         /// Returns a constructed named type symbol if 'type' is generic, otherwise just returns 'type'
         /// </summary>
         public static NamedTypeSymbol ConstructIfGeneric(this NamedTypeSymbol type, ImmutableArray<TypeSymbolWithAnnotations> typeArguments)

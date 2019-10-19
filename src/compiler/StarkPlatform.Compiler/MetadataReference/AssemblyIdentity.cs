@@ -136,11 +136,6 @@ namespace StarkPlatform.Compiler
                 }
             }
 
-            if (isRetargetable && contentType == AssemblyContentType.WindowsRuntime)
-            {
-                throw new ArgumentException(CodeAnalysisResources.WinRTIdentityCantBeRetargetable, nameof(isRetargetable));
-            }
-
             _name = name;
             _version = version ?? NullVersion;
             _cultureName = NormalizeCultureName(cultureName);

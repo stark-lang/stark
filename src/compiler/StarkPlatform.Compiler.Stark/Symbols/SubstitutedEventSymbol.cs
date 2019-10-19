@@ -121,17 +121,5 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 return _lazyOverriddenOrHiddenMembers;
             }
         }
-
-        public override bool IsWindowsRuntimeEvent
-        {
-            get
-            {
-                // A substituted event computes overriding and interface implementation separately
-                // from the original definition, in case the type has changed.  However, is should
-                // never be the case that providing type arguments changes a WinRT event to a 
-                // non-WinRT event or vice versa, so we'll delegate to the original definition.
-                return OriginalDefinition.IsWindowsRuntimeEvent;
-            }
-        }
     }
 }

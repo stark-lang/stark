@@ -1709,8 +1709,7 @@ namespace StarkPlatform.Compiler
             if (baseAddress == 0)
             {
                 if (outputKind == OutputKind.ConsoleApplication ||
-                    outputKind == OutputKind.WindowsApplication ||
-                    outputKind == OutputKind.WindowsRuntimeApplication)
+                    outputKind == OutputKind.WindowsApplication)
                 {
                     baseAddress = (requires64Bit) ? Cci.ModulePropertiesForSerialization.DefaultExeBaseAddress64Bit : Cci.ModulePropertiesForSerialization.DefaultExeBaseAddress32Bit;
                 }
@@ -1790,7 +1789,7 @@ namespace StarkPlatform.Compiler
                 sizeOfHeapCommit: sizeOfHeapCommit,
                 sizeOfStackReserve: sizeOfStackReserve,
                 sizeOfStackCommit: sizeOfStackCommit,
-                dllCharacteristics: GetDllCharacteristics(emitOptions.HighEntropyVirtualAddressSpace, compilationOptions.OutputKind == OutputKind.WindowsRuntimeApplication),
+                dllCharacteristics: GetDllCharacteristics(emitOptions.HighEntropyVirtualAddressSpace, false),
                 imageCharacteristics: GetCharacteristics(outputKind, requires32Bit),
                 subsystem: GetSubsystem(outputKind),
                 majorSubsystemVersion: (ushort)subsystemVersion.Major,
@@ -1862,14 +1861,12 @@ namespace StarkPlatform.Compiler
 
             switch (outputKind)
             {
-                case OutputKind.WindowsRuntimeMetadata:
                 case OutputKind.DynamicallyLinkedLibrary:
                 case OutputKind.NetModule:
                     characteristics |= Characteristics.Dll;
                     break;
 
                 case OutputKind.ConsoleApplication:
-                case OutputKind.WindowsRuntimeApplication:
                 case OutputKind.WindowsApplication:
                     break;
 
@@ -1887,10 +1884,8 @@ namespace StarkPlatform.Compiler
                 case OutputKind.ConsoleApplication:
                 case OutputKind.DynamicallyLinkedLibrary:
                 case OutputKind.NetModule:
-                case OutputKind.WindowsRuntimeMetadata:
                     return Subsystem.WindowsCui;
 
-                case OutputKind.WindowsRuntimeApplication:
                 case OutputKind.WindowsApplication:
                     return Subsystem.WindowsGui;
 

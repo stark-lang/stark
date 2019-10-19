@@ -32,17 +32,6 @@ namespace StarkPlatform.Compiler.Stark
                     loweredLeft = VisitIndexerAccess((BoundIndexerAccess)left, isLeftOfAssignment: true);
                     break;
 
-                case BoundKind.EventAccess:
-                    {
-                        BoundEventAccess eventAccess = (BoundEventAccess)left;
-                        if (eventAccess.EventSymbol.IsWindowsRuntimeEvent)
-                        {
-                            Debug.Assert(!node.IsRef);
-                            return VisitWindowsRuntimeEventFieldAssignmentOperator(node.Syntax, eventAccess, loweredRight);
-                        }
-                        goto default;
-                    }
-
                 case BoundKind.DynamicMemberAccess:
                     {
                         // dyn.m = expr
@@ -107,16 +96,6 @@ namespace StarkPlatform.Compiler.Stark
                 case BoundKind.EventAccess:
                     var eventAccess = (BoundEventAccess)rewrittenLeft;
                     Debug.Assert(eventAccess.IsUsableAsField);
-                    if (eventAccess.EventSymbol.IsWindowsRuntimeEvent)
-                    {
-                        const bool isDynamic = false;
-                        return RewriteWindowsRuntimeEventAssignmentOperator(eventAccess.Syntax,
-                                                                            eventAccess.EventSymbol,
-                                                                            EventAssignmentKind.Assignment,
-                                                                            isDynamic,
-                                                                            eventAccess.ReceiverOpt,
-                                                                            rewrittenRight);
-                    }
 
                     // Only Windows Runtime field-like events can come through here:
                     // - Assignment operation is not supported for custom (non-field like) events.

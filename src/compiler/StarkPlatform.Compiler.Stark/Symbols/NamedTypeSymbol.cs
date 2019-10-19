@@ -1333,31 +1333,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         internal abstract bool HasSpecialName { get; }
 
         /// <summary>
-        /// Returns a flag indicating whether this symbol is ComImport.
-        /// </summary>
-        /// <remarks>
-        /// A type can me marked as a ComImport type in source by applying the <see cref="System.Runtime.InteropServices.ComImportAttribute"/>
-        /// </remarks>
-        internal abstract bool IsComImport { get; }
-
-        /// <summary>
-        /// True if the type is a Windows runtime type.
-        /// </summary>
-        /// <remarks>
-        /// A type can me marked as a Windows runtime type in source by applying the WindowsRuntimeImportAttribute.
-        /// WindowsRuntimeImportAttribute is a pseudo custom attribute defined as an internal class in System.Runtime.InteropServices.WindowsRuntime namespace.
-        /// This is needed to mark Windows runtime types which are redefined in mscorlib.dll and System.Runtime.WindowsRuntime.dll.
-        /// These two assemblies are special as they implement the CLR's support for WinRT.
-        /// </remarks>
-        internal abstract bool IsWindowsRuntimeImport { get; }
-
-        /// <summary>
-        /// True if the type should have its WinRT interfaces projected onto .NET types and
-        /// have missing .NET interface members added to the type.
-        /// </summary>
-        internal abstract bool ShouldAddWinRTMembers { get; }
-
-        /// <summary>
         /// Returns a flag indicating whether this symbol has at least one applied/inherited conditional attribute.
         /// </summary>
         /// <remarks>
@@ -1409,31 +1384,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         /// Returns a sequence of preprocessor symbols specified in <see cref="ConditionalAttribute"/> applied on this symbol, or null if there are none.
         /// </summary>
         internal abstract ImmutableArray<string> GetAppliedConditionalSymbols();
-
-        /// <summary>
-        /// If <see cref="CoClassAttribute"/> was applied to the type and the attribute argument is a valid named type argument, i.e. accessible class type, then it returns the type symbol for the argument.
-        /// Otherwise, returns null.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This property invokes force completion of attributes. If you are accessing this property
-        /// from the binder, make sure that we are not binding within an Attribute context.
-        /// This could lead to a possible cycle in attribute binding.
-        /// We can avoid this cycle by first checking if we are within the context of an Attribute argument,
-        /// i.e. if(!binder.InAttributeArgument) { ...  namedType.ComImportCoClass ... }
-        /// </para>
-        /// <para>
-        /// CONSIDER: We can remove the above restriction and possibility of cycle if we do an
-        /// early binding of some well known attributes.
-        /// </para>
-        /// </remarks>
-        internal virtual NamedTypeSymbol ComImportCoClass
-        {
-            get
-            {
-                return null;
-            }
-        }
 
         /// <summary>
         /// If class represents fixed buffer, this property returns the FixedElementField
@@ -1652,8 +1602,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         /// Otherwise, returns null.
         /// </summary>
         INamedTypeSymbol INamedTypeSymbol.TupleUnderlyingType => this.TupleUnderlyingType;
-
-        bool INamedTypeSymbol.IsComImport => IsComImport;
 
         #endregion
 

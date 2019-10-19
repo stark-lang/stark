@@ -14,11 +14,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         KindMask = 0x0f,
         NormalNonAttribute = 1,
         NormalAttribute = 2,
-        UnmangleWinRTName = 3,
-        PrefixWinRTName = 4,
-        RedirectedToClrType = 5,
-        RedirectedToClrAttribute = 6,
-
+        
         MarkAbstractFlag = 0x10,
         MarkInternalFlag = 0x20
     }
@@ -28,9 +24,6 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
         None = 0,
         SystemDelegate = 1,
         SystemAttribute = 2,
-
-        // RowId is an index to the projection info table.
-        UseProjectionInfo = 3,
     }
 
     internal enum TypeRefSignatureTreatment : byte

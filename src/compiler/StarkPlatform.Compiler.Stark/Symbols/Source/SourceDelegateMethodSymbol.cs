@@ -71,9 +71,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             symbols.Add(new Constructor(delegateType, voidType, objectType, intPtrType, syntax));
 
             if (binder.Compilation.GetSpecialType(SpecialType.System_IAsyncResult).TypeKind != TypeKind.Error &&
-                binder.Compilation.GetSpecialType(SpecialType.System_AsyncCallback).TypeKind != TypeKind.Error &&
-                // WinRT delegates don't have Begin/EndInvoke methods
-                !delegateType.IsCompilationOutputWinMdObj())
+                binder.Compilation.GetSpecialType(SpecialType.System_AsyncCallback).TypeKind != TypeKind.Error)
             {
                 var iAsyncResultType = TypeSymbolWithAnnotations.Create(binder.GetSpecialType(SpecialType.System_IAsyncResult, diagnostics, syntax));
                 var asyncCallbackType = TypeSymbolWithAnnotations.Create(binder.GetSpecialType(SpecialType.System_AsyncCallback, diagnostics, syntax));

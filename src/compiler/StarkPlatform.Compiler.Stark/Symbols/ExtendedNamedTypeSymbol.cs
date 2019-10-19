@@ -40,8 +40,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         public override NamedTypeSymbol OriginalDefinition => this;
 
-        internal override bool IsComImport => _underlyingType.IsComImport;
-
         public override bool IsRefLikeType => IsTransient;
 
         public override bool IsReadOnly => (_accessModifiers & TypeAccessModifiers.ReadOnly) != 0 || base.IsReadOnly;

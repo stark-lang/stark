@@ -4254,21 +4254,10 @@ namespace StarkPlatform.Compiler.Stark
             VisitLvalue(left);
             TypeSymbolWithAnnotations leftType = _resultType;
 
-            if (left.Kind == BoundKind.EventAccess && ((BoundEventAccess)left).EventSymbol.IsWindowsRuntimeEvent)
-            {
-                // Event assignment is a call to an Add method. (Note that assignment
-                // of non-field-like events uses BoundEventAssignmentOperator
-                // rather than BoundAssignmentOperator.)
-                VisitRvalue(right);
-                SetResult(node);
-            }
-            else
-            {
-                TypeSymbolWithAnnotations rightType = VisitOptionalImplicitConversion(right, leftType, UseLegacyWarnings(left), AssignmentKind.Assignment);
-                TrackNullableStateForAssignment(right, leftType, MakeSlot(left), rightType, MakeSlot(right));
-                // https://github.com/dotnet/roslyn/issues/30066 Check node.Type.IsErrorType() instead?
-                _resultType = node.HasErrors ? TypeSymbolWithAnnotations.Create(node.Type) : rightType;
-            }
+            TypeSymbolWithAnnotations rightType = VisitOptionalImplicitConversion(right, leftType, UseLegacyWarnings(left), AssignmentKind.Assignment);
+            TrackNullableStateForAssignment(right, leftType, MakeSlot(left), rightType, MakeSlot(right));
+            // https://github.com/dotnet/roslyn/issues/30066 Check node.Type.IsErrorType() instead?
+            _resultType = node.HasErrors ? TypeSymbolWithAnnotations.Create(node.Type) : rightType;
 
             return null;
         }

@@ -150,7 +150,6 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
     {
         Plain = (byte)(StringHandleType.String >> HeapHandleType.OffsetBitCount),
         Virtual = (byte)(StringHandleType.VirtualString >> HeapHandleType.OffsetBitCount),
-        WinRTPrefixed = (byte)(StringHandleType.WinRTPrefixedString >> HeapHandleType.OffsetBitCount),
         DotTerminated = (byte)(StringHandleType.DotTerminatedString >> HeapHandleType.OffsetBitCount),
     }
 
@@ -174,9 +173,6 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
 
         // Virtual string identified by a virtual index
         internal const uint VirtualString = HeapHandleType.VirtualBit | (0 << HeapHandleType.OffsetBitCount);
-
-        // Virtual string whose value is a "<WinRT>" prefixed string found at the specified heap offset.
-        internal const uint WinRTPrefixedString = HeapHandleType.VirtualBit | (1 << HeapHandleType.OffsetBitCount);
 
         // Reserved virtual strings that can be used in future:
         internal const uint ReservedVirtualString1 = HeapHandleType.VirtualBit | (2 << HeapHandleType.OffsetBitCount);

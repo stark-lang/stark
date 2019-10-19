@@ -138,14 +138,6 @@ namespace StarkPlatform.Compiler.Stark.Emit.NoPia
             }
         }
 
-        protected override bool IsComImport
-        {
-            get
-            {
-                return UnderlyingNamedType.IsComImport;
-            }
-        }
-
         protected override bool IsInterface
         {
             get
@@ -167,14 +159,6 @@ namespace StarkPlatform.Compiler.Stark.Emit.NoPia
             get
             {
                 return UnderlyingNamedType.HasSpecialName;
-            }
-        }
-
-        protected override bool IsWindowsRuntimeImport
-        {
-            get
-            {
-                return UnderlyingNamedType.IsWindowsRuntimeImport;
             }
         }
 

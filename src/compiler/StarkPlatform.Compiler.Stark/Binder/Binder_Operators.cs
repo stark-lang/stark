@@ -259,13 +259,6 @@ namespace StarkPlatform.Compiler.Stark
                     Error(diagnostics, ErrorCode.ERR_MissingPredefinedMember, node, delegateType, SourceEventSymbol.GetAccessorName(eventSymbol.Name, isAddition));
                 }
             }
-            else if (eventSymbol.IsWindowsRuntimeEvent)
-            {
-                // Return type is actually void because this call will be later encapsulated in a call
-                // to WindowsRuntimeMarshal.AddEventHandler or RemoveEventHandler, which has the return
-                // type of void.
-                type = this.GetSpecialType(SpecialType.System_Void, diagnostics, node);
-            }
             else
             {
                 type = method.ReturnType.TypeSymbol;
@@ -2119,7 +2112,7 @@ namespace StarkPlatform.Compiler.Stark
                             else
                             {
                                 BoundEventAccess eventAccess = (BoundEventAccess)expr;
-                                if (!eventAccess.IsUsableAsField || eventAccess.EventSymbol.IsWindowsRuntimeEvent)
+                                if (!eventAccess.IsUsableAsField)
                                 {
                                     return true;
                                 }

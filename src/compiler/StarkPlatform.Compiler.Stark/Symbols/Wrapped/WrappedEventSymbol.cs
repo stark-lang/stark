@@ -144,14 +144,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        public override bool IsWindowsRuntimeEvent
-        {
-            get
-            {
-                return _underlyingEvent.IsWindowsRuntimeEvent;
-            }
-        }
-
         internal override bool HasRuntimeSpecialName
         {
             get

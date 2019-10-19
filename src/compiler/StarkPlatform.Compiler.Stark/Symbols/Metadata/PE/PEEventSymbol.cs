@@ -106,11 +106,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 _eventType = type;
             }
 
-            // IsWindowsRuntimeEvent checks the signatures, so we just have to check the accessors.
-            bool isWindowsRuntimeEvent = IsWindowsRuntimeEvent;
-            bool callMethodsDirectly = isWindowsRuntimeEvent
-                ? !DoModifiersMatch(_addMethod, _removeMethod)
-                : !DoSignaturesMatch(moduleSymbol, originalEventType, _addMethod, _removeMethod);
+            bool callMethodsDirectly = !DoSignaturesMatch(moduleSymbol, originalEventType, _addMethod, _removeMethod);
 
             if (callMethodsDirectly)
             {
@@ -121,7 +117,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 _addMethod.SetAssociatedEvent(this, MethodKind.EventAdd);
                 _removeMethod.SetAssociatedEvent(this, MethodKind.EventRemove);
 
-                PEFieldSymbol associatedField = GetAssociatedField(privateFieldNameToSymbols, isWindowsRuntimeEvent);
+                PEFieldSymbol associatedField = GetAssociatedField(privateFieldNameToSymbols);
                 if ((object)associatedField != null)
                 {
                     _associatedFieldOpt = associatedField;
@@ -148,7 +144,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
         /// <remarks>
         /// Perf impact: If we find a field with the same name, we will eagerly evaluate its type.
         /// </remarks>
-        private PEFieldSymbol GetAssociatedField(MultiDictionary<string, PEFieldSymbol> privateFieldNameToSymbols, bool isWindowsRuntimeEvent)
+        private PEFieldSymbol GetAssociatedField(MultiDictionary<string, PEFieldSymbol> privateFieldNameToSymbols)
         {
             // NOTE: Neither the name nor the accessibility of a PEFieldSymbol is lazy.
             foreach (PEFieldSymbol candidateAssociatedField in privateFieldNameToSymbols[_name])
@@ -159,47 +155,13 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 // otherwise have been lazy.
                 TypeSymbol candidateAssociatedFieldType = candidateAssociatedField.Type.TypeSymbol;
 
-                if (isWindowsRuntimeEvent)
+                if (TypeSymbol.Equals(candidateAssociatedFieldType, _eventType.TypeSymbol, TypeCompareKind.ConsiderEverything2))
                 {
-                    NamedTypeSymbol eventRegistrationTokenTable_T = ((PEModuleSymbol)(this.ContainingModule)).EventRegistrationTokenTable_T;
-                    if (TypeSymbol.Equals(eventRegistrationTokenTable_T, candidateAssociatedFieldType.OriginalDefinition, TypeCompareKind.ConsiderEverything2) &&
-                        TypeSymbol.Equals(_eventType.TypeSymbol, ((NamedTypeSymbol)candidateAssociatedFieldType).TypeArgumentsNoUseSiteDiagnostics[0].TypeSymbol, TypeCompareKind.ConsiderEverything2))
-                    {
-                        return candidateAssociatedField;
-                    }
-                }
-                else
-                {
-                    if (TypeSymbol.Equals(candidateAssociatedFieldType, _eventType.TypeSymbol, TypeCompareKind.ConsiderEverything2))
-                    {
-                        return candidateAssociatedField;
-                    }
+                    return candidateAssociatedField;
                 }
             }
 
             return null;
-        }
-
-        public override bool IsWindowsRuntimeEvent
-        {
-            get
-            {
-                NamedTypeSymbol token = ((PEModuleSymbol)(this.ContainingModule)).EventRegistrationToken;
-
-                // If the addMethod returns an EventRegistrationToken
-                // and the removeMethod accepts an EventRegistrationToken
-                // then the Event is a WinRT type event and can be called
-                // using += and -=.
-                // NOTE: this check mimics the one in the native compiler
-                // (see IMPORTER::ImportEvent).  In particular, it specifically
-                // does not check whether the containing type is a WinRT type -
-                // it was a design goal to accept any events of this form.
-                return
-                    TypeSymbol.Equals(_addMethod.ReturnType.TypeSymbol, token, TypeCompareKind.ConsiderEverything2) &&
-                    _addMethod.ParameterCount == 1 &&
-                    _removeMethod.ParameterCount == 1 &&
-                    TypeSymbol.Equals(_removeMethod.Parameters[0].Type.TypeSymbol, token, TypeCompareKind.ConsiderEverything2);
-            }
         }
 
         internal override FieldSymbol AssociatedField

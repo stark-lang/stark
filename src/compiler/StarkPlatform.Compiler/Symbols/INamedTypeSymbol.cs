@@ -49,12 +49,6 @@ namespace StarkPlatform.Compiler
         bool IsImplicitClass { get; }
 
         /// <summary>
-        /// Specifies that the class or interface is imported from another module.  See
-        /// <see cref="TypeAttributes.Import"/> and <see cref="ComImportAttribute"/>
-        /// </summary>
-        bool IsComImport { get; }
-
-        /// <summary>
         /// Returns collection of names of members declared within this type.
         /// </summary>
         IEnumerable<string> MemberNames { get; }

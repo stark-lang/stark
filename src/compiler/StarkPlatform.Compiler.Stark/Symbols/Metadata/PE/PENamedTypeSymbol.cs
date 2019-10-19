@@ -1979,27 +1979,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             }
         }
 
-        internal override bool IsComImport
-        {
-            get
-            {
-                return (_flags & TypeAttributes.Import) != 0;
-            }
-        }
-
-        internal override bool ShouldAddWinRTMembers
-        {
-            get { return IsWindowsRuntimeImport; }
-        }
-
-        internal override bool IsWindowsRuntimeImport
-        {
-            get
-            {
-                return (_flags & TypeAttributes.WindowsRuntime) != 0;
-            }
-        }
-
         internal override bool GetGuidString(out string guidString)
         {
             return ContainingPEModule.Module.HasGuidAttribute(_handle, out guidString);
@@ -2087,33 +2066,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 }
 
                 return uncommon.lazyIsReadOnly.Value();
-            }
-        }
-
-        internal override NamedTypeSymbol ComImportCoClass
-        {
-            get
-            {
-                if (!this.IsInterfaceType())
-                {
-                    return null;
-                }
-
-                var uncommon = GetUncommonProperties();
-                if (uncommon == s_noUncommonProperties)
-                {
-                    return null;
-                }
-
-                if (ReferenceEquals(uncommon.lazyComImportCoClassType, ErrorTypeSymbol.UnknownResultType))
-                {
-                    var type = this.ContainingPEModule.TryDecodeAttributeWithTypeArgument(this.Handle, AttributeDescription.CoClassAttribute);
-                    var coClassType = ((object)type != null && (type.TypeKind == TypeKind.Class || type.IsErrorType())) ? (NamedTypeSymbol)type : null;
-
-                    Interlocked.CompareExchange(ref uncommon.lazyComImportCoClassType, coClassType, ErrorTypeSymbol.UnknownResultType);
-                }
-
-                return uncommon.lazyComImportCoClassType;
             }
         }
 

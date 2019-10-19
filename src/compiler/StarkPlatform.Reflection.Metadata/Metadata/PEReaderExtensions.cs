@@ -52,7 +52,7 @@ namespace StarkPlatform.Reflection.Metadata
         /// <exception cref="IOException">IO error while reading from the underlying stream.</exception>
         public static MetadataReader GetMetadataReader(this PEReader peReader)
         {
-            return GetMetadataReader(peReader, MetadataReaderOptions.ApplyWindowsRuntimeProjections, null);
+            return GetMetadataReader(peReader, MetadataReaderOptions.Default, null);
         }
 
         /// <summary>

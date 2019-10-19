@@ -105,9 +105,6 @@ namespace StarkPlatform.Reflection.Metadata
                 case TypeRefTreatment.SystemAttribute:
                 case TypeRefTreatment.SystemDelegate:
                     return AssemblyReferenceHandle.FromVirtualIndex(AssemblyReferenceHandle.VirtualIndex.System_Runtime);
-
-                case TypeRefTreatment.UseProjectionInfo:
-                    return MetadataReader.GetProjectedAssemblyRef(RowId);
             }
 
             Debug.Assert(false, "Unknown TypeRef treatment");
@@ -116,14 +113,7 @@ namespace StarkPlatform.Reflection.Metadata
 
         private StringHandle GetProjectedName()
         {
-            if (Treatment == TypeRefTreatment.UseProjectionInfo)
-            {
-                return MetadataReader.GetProjectedName(RowId);
-            }
-            else
-            {
-                return _reader.TypeRefTable.GetName(Handle);
-            }
+            return _reader.TypeRefTable.GetName(Handle);
         }
 
         private StringHandle GetProjectedNamespace()
@@ -133,9 +123,6 @@ namespace StarkPlatform.Reflection.Metadata
                 case TypeRefTreatment.SystemAttribute:
                 case TypeRefTreatment.SystemDelegate:
                     return StringHandle.FromVirtualIndex(StringHandle.VirtualIndex.System);
-
-                case TypeRefTreatment.UseProjectionInfo:
-                    return MetadataReader.GetProjectedNamespace(RowId);
             }
 
             Debug.Assert(false, "Unknown TypeRef treatment");
@@ -157,14 +144,7 @@ namespace StarkPlatform.Reflection.Metadata
 
         private TypeRefSignatureTreatment GetProjectedSignatureTreatment()
         {
-            if (Treatment == TypeRefTreatment.UseProjectionInfo)
-            {
-                return MetadataReader.GetProjectedSignatureTreatment(RowId);
-            }
-            else
-            {
-                return TypeRefSignatureTreatment.None;
-            }
+            return TypeRefSignatureTreatment.None;
         }
         #endregion
     }

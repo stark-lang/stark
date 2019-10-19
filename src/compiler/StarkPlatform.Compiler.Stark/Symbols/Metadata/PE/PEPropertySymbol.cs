@@ -163,9 +163,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 
             originalPropertyType = DynamicTypeDecoder.TransformType(originalPropertyType, typeCustomModifiers.Length, handle, moduleSymbol, _refKind);
 
-            // Dynamify object type if necessary
-            originalPropertyType = originalPropertyType.AsDynamicIfNoPia(_containingType);
-
             // We start without annotation (they will be decoded below)
             var propertyType = TypeSymbolWithAnnotations.Create(originalPropertyType, customModifiers: typeCustomModifiers);
 
@@ -477,7 +474,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 // Indexed property support is limited to types marked [ComImport],
                 // to match the native compiler where the feature was scoped to
                 // avoid supporting property groups.
-                return (this.ParameterCount > 0) && _containingType.IsComImport;
+                return false;
             }
         }
 

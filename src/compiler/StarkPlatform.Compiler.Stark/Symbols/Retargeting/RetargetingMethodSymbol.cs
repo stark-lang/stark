@@ -132,7 +132,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Retargeting
             {
                 if (_lazyReturnType.IsNull)
                 {
-                    _lazyReturnType = this.RetargetingTranslator.Retarget(_underlyingMethod.ReturnType, RetargetOptions.RetargetPrimitiveTypesByTypeCode, this.ContainingType);
+                    _lazyReturnType = this.RetargetingTranslator.Retarget(_underlyingMethod.ReturnType, RetargetOptions.RetargetPrimitiveTypesByTypeCode);
                 }
                 return _lazyReturnType;
             }

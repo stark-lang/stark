@@ -517,21 +517,6 @@ next:;
             bool hasAnyDiagnostics;
             CSharpAttributeData boundAttribute;
 
-            if (CSharpAttributeData.IsTargetEarlyAttribute(arguments.AttributeType, arguments.AttributeSyntax, AttributeDescription.ComImportAttribute))
-            {
-                boundAttribute = arguments.Binder.GetAttribute(arguments.AttributeSyntax, arguments.AttributeType, out hasAnyDiagnostics);
-                if (!boundAttribute.HasErrors)
-                {
-                    arguments.GetOrCreateData<CommonTypeEarlyWellKnownAttributeData>().HasComImportAttribute = true;
-                    if (!hasAnyDiagnostics)
-                    {
-                        return boundAttribute;
-                    }
-                }
-
-                return null;
-            }
-
             if (CSharpAttributeData.IsTargetEarlyAttribute(arguments.AttributeType, arguments.AttributeSyntax, AttributeDescription.CodeAnalysisEmbeddedAttribute))
             {
                 boundAttribute = arguments.Binder.GetAttribute(arguments.AttributeSyntax, arguments.AttributeType, out hasAnyDiagnostics);
@@ -863,24 +848,6 @@ next:;
             }
         }
 
-        internal override bool IsComImport
-        {
-            get
-            {
-                CommonTypeEarlyWellKnownAttributeData data = this.GetEarlyDecodedWellKnownAttributeData();
-                return data != null && data.HasComImportAttribute;
-            }
-        }
-
-        internal override NamedTypeSymbol ComImportCoClass
-        {
-            get
-            {
-                TypeWellKnownAttributeData data = this.GetDecodedWellKnownAttributeData();
-                return data != null ? data.ComImportCoClass : null;
-            }
-        }
-
         private void ValidateConditionalAttribute(CSharpAttributeData attribute, AttributeSyntax node, DiagnosticBag diagnostics)
         {
             Debug.Assert(this.IsConditional);
@@ -919,20 +886,6 @@ next:;
             {
                 var data = GetEarlyDecodedWellKnownAttributeData();
                 return data != null && data.HasCodeAnalysisEmbeddedAttribute;
-            }
-        }
-
-        internal sealed override bool ShouldAddWinRTMembers
-        {
-            get { return false; }
-        }
-
-        internal sealed override bool IsWindowsRuntimeImport
-        {
-            get
-            {
-                TypeWellKnownAttributeData data = this.GetDecodedWellKnownAttributeData();
-                return data != null && data.HasWindowsRuntimeImportAttribute;
             }
         }
 
@@ -1041,65 +994,6 @@ next:;
             Debug.Assert(symbolPart == AttributeLocation.None);
 
             var data = (TypeWellKnownAttributeData)decodedData;
-
-            if (this.IsComImport)
-            {
-                Debug.Assert(boundAttributes.Any());
-
-                // Symbol with ComImportAttribute must have a GuidAttribute
-                if (data == null || data.GuidString == null)
-                {
-                    int index = boundAttributes.IndexOfAttribute(this, AttributeDescription.ComImportAttribute);
-                    diagnostics.Add(ErrorCode.ERR_ComImportWithoutUuidAttribute, allAttributeSyntaxNodes[index].Name.Location, this.Name);
-                }
-
-                if (this.TypeKind == TypeKind.Class)
-                {
-                    var baseType = this.BaseTypeNoUseSiteDiagnostics;
-                    if ((object)baseType != null && baseType.SpecialType != SpecialType.System_Object)
-                    {
-                        // CS0424: '{0}': a class with the ComImport attribute cannot specify a base class
-                        diagnostics.Add(ErrorCode.ERR_ComImportWithBase, this.Locations[0], this.Name);
-                    }
-
-                    var initializers = this.StaticInitializers;
-                    if (!initializers.IsDefaultOrEmpty)
-                    {
-                        foreach (var initializerGroup in initializers)
-                        {
-                            foreach (var singleInitializer in initializerGroup)
-                            {
-                                if (!singleInitializer.FieldOpt.IsMetadataConstant)
-                                {
-                                    // CS8028: '{0}': a class with the ComImport attribute cannot specify field initializers.
-                                    diagnostics.Add(ErrorCode.ERR_ComImportWithInitializers, singleInitializer.Syntax.GetLocation(), this.Name);
-                                }
-                            }
-                        }
-                    }
-
-                    initializers = this.InstanceInitializers;
-                    if (!initializers.IsDefaultOrEmpty)
-                    {
-                        foreach (var initializerGroup in initializers)
-                        {
-                            foreach (var singleInitializer in initializerGroup)
-                            {
-                                // CS8028: '{0}': a class with the ComImport attribute cannot specify field initializers.
-                                diagnostics.Add(ErrorCode.ERR_ComImportWithInitializers, singleInitializer.Syntax.GetLocation(), this.Name);
-                            }
-                        }
-                    }
-                }
-            }
-            else if ((object)this.ComImportCoClass != null)
-            {
-                Debug.Assert(boundAttributes.Any());
-
-                // Symbol with CoClassAttribute must have a ComImportAttribute
-                int index = boundAttributes.IndexOfAttribute(this, AttributeDescription.CoClassAttribute);
-                diagnostics.Add(ErrorCode.WRN_CoClassWithoutComImport, allAttributeSyntaxNodes[index].Location, this.Name);
-            }
 
             // Report ERR_DefaultMemberOnIndexedType if type has a default member attribute and has indexers.
             if (data != null && data.HasDefaultMemberAttribute && this.Indexers.Any())

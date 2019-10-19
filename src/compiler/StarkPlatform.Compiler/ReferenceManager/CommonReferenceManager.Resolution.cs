@@ -936,48 +936,6 @@ namespace StarkPlatform.Compiler
                 return new AssemblyReferenceBinding(reference, maxLowerVersionDefinition, versionDifference: -1);
             }
 
-            // Handle cases where Windows.winmd is a runtime substitute for a
-            // reference to a compile-time winmd. This is for scenarios such as a
-            // debugger EE which constructs a compilation from the modules of
-            // the running process where Windows.winmd loaded at runtime is a
-            // substitute for a collection of Windows.*.winmd compile-time references.
-            if (reference.IsWindowsComponent())
-            {
-                for (int i = definitionStartIndex; i < definitions.Length; i++)
-                {
-                    if (definitions[i].Identity.IsWindowsRuntime())
-                    {
-                        return new AssemblyReferenceBinding(reference, i);
-                    }
-                }
-            }
-
-            // In the IDE it is possible the reference we're looking for is a
-            // compilation reference to a source assembly. However, if the reference
-            // is of ContentType WindowsRuntime then the compilation will never
-            // match since all C#/VB WindowsRuntime compilations output .winmdobjs,
-            // not .winmds, and the ContentType of a .winmdobj is Default.
-            // If this is the case, we want to ignore the ContentType mismatch and
-            // allow the compilation to match the reference.
-            if (reference.ContentType == AssemblyContentType.WindowsRuntime)
-            {
-                for (int i = definitionStartIndex; i < definitions.Length; i++)
-                {
-                    var definition = definitions[i].Identity;
-                    var sourceCompilation = definitions[i].SourceCompilation;
-                    if (definition.ContentType == AssemblyContentType.Default &&
-                        sourceCompilation?.Options.OutputKind == OutputKind.WindowsRuntimeMetadata &&
-                        AssemblyIdentityComparer.SimpleNameComparer.Equals(reference.Name, definition.Name) &&
-                        reference.Version.Equals(definition.Version) &&
-                        reference.IsRetargetable == definition.IsRetargetable &&
-                        AssemblyIdentityComparer.CultureComparer.Equals(reference.CultureName, definition.CultureName) &&
-                        AssemblyIdentity.KeysEqual(reference, definition))
-                    {
-                        return new AssemblyReferenceBinding(reference, i);
-                    }
-                }
-            }
-
             // As in the native compiler (see IMPORTER::MapAssemblyRefToAid), we compare against the
             // compilation (i.e. source) assembly as a last resort.  We follow the native approach of
             // skipping the public key comparison since we have yet to compute it.

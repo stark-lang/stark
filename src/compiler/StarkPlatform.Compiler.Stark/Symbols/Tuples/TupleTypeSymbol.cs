@@ -1352,38 +1352,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        internal override bool IsComImport
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        internal override NamedTypeSymbol ComImportCoClass
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        internal override bool IsWindowsRuntimeImport
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        internal override bool ShouldAddWinRTMembers
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         public override bool IsSerializable
         {
             get

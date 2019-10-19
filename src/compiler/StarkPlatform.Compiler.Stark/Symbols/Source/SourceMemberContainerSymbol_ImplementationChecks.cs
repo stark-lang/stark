@@ -153,37 +153,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                         }
                     }
 
-                    if (wasImplementingMemberFound && interfaceMemberKind == SymbolKind.Event)
-                    {
-                        // NOTE: unlike dev11, we're including a related location for the implementing type, because
-                        // otherwise the only error location will be in the containing type of the implementing event
-                        // (i.e. no indication of which type's interface list is actually problematic).
-
-                        EventSymbol interfaceEvent = (EventSymbol)interfaceMember;
-                        EventSymbol implementingEvent = (EventSymbol)implementingMember;
-                        EventSymbol maybeWinRTEvent;
-                        EventSymbol maybeRegularEvent;
-
-                        if (interfaceEvent.IsWindowsRuntimeEvent)
-                        {
-                            maybeWinRTEvent = interfaceEvent; // Definitely WinRT.
-                            maybeRegularEvent = implementingEvent; // Maybe regular.
-                        }
-                        else
-                        {
-                            maybeWinRTEvent = implementingEvent; // Maybe WinRT.
-                            maybeRegularEvent = interfaceEvent; // Definitely regular.
-                        }
-
-                        if (interfaceEvent.IsWindowsRuntimeEvent != implementingEvent.IsWindowsRuntimeEvent)
-                        {
-                            // At this point (and not before), we know that maybeWinRTEvent is definitely a WinRT event and maybeRegularEvent is definitely a regular event.
-                            var args = new object[] { implementingEvent, interfaceEvent, maybeWinRTEvent, maybeRegularEvent };
-                            var info = new CSDiagnosticInfo(ErrorCode.ERR_MixingWinRTEventWithRegular, args, ImmutableArray<Symbol>.Empty, ImmutableArray.Create<Location>(this.Locations[0]));
-                            diagnostics.Add(info, implementingEvent.Locations[0]);
-                        }
-                    }
-
                     // Dev10: If a whole property is missing, report the property.  If the property is present, but an accessor
                     // is missing, report just the accessor.
 
@@ -342,14 +311,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
             // If the property or event wasn't implemented, then we'd prefer to report diagnostics about that.
             if ((object)implementingPropertyOrEvent == null)
-            {
-                return false;
-            }
-
-            // If the property or event was an event and was implemented, but the WinRT-ness didn't agree,
-            // then we'd prefer to report diagnostics about that.
-            if (interfacePropertyOrEvent.Kind == SymbolKind.Event && implementingPropertyOrEvent.Kind == SymbolKind.Event &&
-                ((EventSymbol)interfacePropertyOrEvent).IsWindowsRuntimeEvent != ((EventSymbol)implementingPropertyOrEvent).IsWindowsRuntimeEvent)
             {
                 return false;
             }

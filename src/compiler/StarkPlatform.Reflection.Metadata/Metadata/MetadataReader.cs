@@ -215,24 +215,7 @@ namespace StarkPlatform.Reflection.Metadata
 
         private MetadataKind GetMetadataKind(string versionString)
         {
-            // Treat metadata as CLI raw metadata if the client doesn't want to see projections.
-            if ((_options & MetadataReaderOptions.ApplyWindowsRuntimeProjections) == 0)
-            {
-                return MetadataKind.Ecma335;
-            }
-
-            if (!versionString.Contains("WindowsRuntime"))
-            {
-                return MetadataKind.Ecma335;
-            }
-            else if (versionString.Contains("CLR"))
-            {
-                return MetadataKind.ManagedWindowsMetadata;
-            }
-            else
-            {
-                return MetadataKind.WindowsMetadata;
-            }
+            return MetadataKind.Ecma335;
         }
 
         /// <summary>

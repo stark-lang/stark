@@ -626,7 +626,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
                 case SymbolKind.NamedType:
                     if (IsTargetAttribute(target, AttributeDescription.SpecialNameAttribute) ||
-                        IsTargetAttribute(target, AttributeDescription.ComImportAttribute) ||
                         IsTargetAttribute(target, AttributeDescription.SerializableAttribute) ||
                         IsTargetAttribute(target, AttributeDescription.StructLayoutAttribute) ||
                         IsTargetAttribute(target, AttributeDescription.WindowsRuntimeImportAttribute) ||

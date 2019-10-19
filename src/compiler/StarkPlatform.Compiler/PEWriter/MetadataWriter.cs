@@ -1514,19 +1514,9 @@ namespace StarkPlatform.Cci
                 result |= TypeAttributes.RTSpecialName;
             }
 
-            if (typeDef.IsComObject)
-            {
-                result |= TypeAttributes.Import;
-            }
-
             if (typeDef.IsSerializable)
             {
                 result |= TypeAttributes.Serializable;
-            }
-
-            if (typeDef.IsWindowsRuntimeImport)
-            {
-                result |= TypeAttributes.WindowsRuntime;
             }
 
             switch (typeDef.StringFormat)

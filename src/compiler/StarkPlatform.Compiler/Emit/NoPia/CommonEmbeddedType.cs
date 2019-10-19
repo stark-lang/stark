@@ -61,11 +61,9 @@ namespace StarkPlatform.Compiler.Emit.NoPia
             protected abstract Cci.ITypeReference GetBaseClass(TPEModuleBuilder moduleBuilder, TSyntaxNode syntaxNodeOpt, DiagnosticBag diagnostics);
             protected abstract IEnumerable<Cci.TypeReferenceWithAttributes> GetInterfaces(EmitContext context);
             protected abstract bool IsBeforeFieldInit { get; }
-            protected abstract bool IsComImport { get; }
             protected abstract bool IsInterface { get; }
             protected abstract bool IsSerializable { get; }
             protected abstract bool IsSpecialName { get; }
-            protected abstract bool IsWindowsRuntimeImport { get; }
             protected abstract bool IsSealed { get; }
             protected abstract TypeLayout? GetTypeLayoutIfStruct();
             protected abstract System.Runtime.InteropServices.CharSet StringFormat { get; }
@@ -90,7 +88,6 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                 // Copy some of the attributes.
 
                 bool hasGuid = false;
-                bool hasComEventInterfaceAttribute = false;
 
                 // Note, when porting attributes, we are not using constructors from original symbol.
                 // The constructors might be missing (for example, in metadata case) and doing lookup
@@ -106,14 +103,6 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                             // If this type has a GuidAttribute, we should emit it.
                             hasGuid = true;
                             builder.AddOptional(TypeManager.CreateSynthesizedAttribute(WellKnownMember.System_Runtime_InteropServices_GuidAttribute__ctor, attrData, syntaxNodeOpt, diagnostics));
-                        }
-                    }
-                    else if (IsTargetAttribute(attrData, AttributeDescription.ComEventInterfaceAttribute))
-                    {
-                        if (attrData.CommonConstructorArguments.Length == 2)
-                        {
-                            hasComEventInterfaceAttribute = true;
-                            builder.AddOptional(TypeManager.CreateSynthesizedAttribute(WellKnownMember.System_Runtime_InteropServices_ComEventInterfaceAttribute__ctor, attrData, syntaxNodeOpt, diagnostics));
                         }
                     }
                     else
@@ -171,30 +160,6 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                                 builder.AddOptional(TypeManager.CreateSynthesizedAttribute(WellKnownMember.System_Runtime_InteropServices_UnmanagedFunctionPointerAttribute__ctor, attrData, syntaxNodeOpt, diagnostics));
                             }
                         }
-                    }
-                }
-
-                // We must emit a TypeIdentifier attribute which connects this local type with the canonical type. 
-                // Interfaces usually have a guid attribute, in which case the TypeIdentifier attribute we emit will
-                // not need any additional parameters. For interfaces which lack a guid and all other types, we must 
-                // emit a TypeIdentifier that has parameters identifying the scope and name of the original type. We 
-                // will use the Assembly GUID as the scope identifier.
-
-                if (IsInterface && !hasComEventInterfaceAttribute)
-                {
-                    if (!IsComImport)
-                    {
-                        // If we have an interface not marked ComImport, but the assembly is linked, then
-                        // we need to give an error. We allow event interfaces to not have ComImport marked on them.
-                        // ERRID_NoPIAAttributeMissing2/ERR_InteropTypeMissingAttribute
-                        ReportMissingAttribute(AttributeDescription.ComImportAttribute, syntaxNodeOpt, diagnostics);
-                    }
-                    else if (!hasGuid)
-                    {
-                        // Interfaces used with No-PIA ought to have a guid attribute, or the CLR cannot do type unification. 
-                        // This interface lacks a guid, so unification probably won't work. We allow event interfaces to not have a Guid.
-                        // ERRID_NoPIAAttributeMissing2/ERR_InteropTypeMissingAttribute
-                        ReportMissingAttribute(AttributeDescription.GuidAttribute, syntaxNodeOpt, diagnostics);
                     }
                 }
 
@@ -322,15 +287,7 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                     return IsBeforeFieldInit;
                 }
             }
-
-            bool Cci.ITypeDefinition.IsComObject
-            {
-                get
-                {
-                    return IsInterface || IsComImport;
-                }
-            }
-
+            
             bool Cci.ITypeDefinition.IsGeneric
             {
                 get
@@ -368,14 +325,6 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                 get
                 {
                     return IsSpecialName;
-                }
-            }
-
-            bool Cci.ITypeDefinition.IsWindowsRuntimeImport
-            {
-                get
-                {
-                    return IsWindowsRuntimeImport;
                 }
             }
 

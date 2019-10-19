@@ -10,7 +10,6 @@
 
 namespace StarkPlatform.Compiler {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -20,7 +19,7 @@ namespace StarkPlatform.Compiler {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CodeAnalysisResources {
@@ -40,7 +39,7 @@ namespace StarkPlatform.Compiler {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("StarkPlatform.Compiler.CodeAnalysisResources", typeof(CodeAnalysisResources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("StarkPlatform.Compiler.CodeAnalysisResources", typeof(CodeAnalysisResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -1582,15 +1581,6 @@ namespace StarkPlatform.Compiler {
         internal static string Value_too_large_to_be_represented_as_a_30_bit_unsigned_integer {
             get {
                 return ResourceManager.GetString("Value_too_large_to_be_represented_as_a_30_bit_unsigned_integer", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to WindowsRuntime identity can&apos;t be retargetable.
-        /// </summary>
-        internal static string WinRTIdentityCantBeRetargetable {
-            get {
-                return ResourceManager.GetString("WinRTIdentityCantBeRetargetable", resourceCulture);
             }
         }
         

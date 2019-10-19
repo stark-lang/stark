@@ -1360,18 +1360,7 @@ namespace StarkPlatform.Compiler.Stark
                 }
             }
 
-            TypeSymbol type;
-            if ((op1.Kind == BoundKind.EventAccess) &&
-                ((BoundEventAccess)op1).EventSymbol.IsWindowsRuntimeEvent)
-            {
-                // Event assignment is a call to void WindowsRuntimeMarshal.AddEventHandler<T>().
-                type = this.GetSpecialType(SpecialType.System_Void, diagnostics, node);
-            }
-            else
-            {
-                type = op1.Type;
-            }
-
+            TypeSymbol type = op1.Type;
             return new BoundAssignmentOperator(node, op1, op2, isRef, type, hasErrors);
         }
 

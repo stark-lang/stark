@@ -402,7 +402,7 @@ namespace StarkPlatform.Compiler.Stark
             rewrittenArguments = _factory.MakeTempsForDiscardArguments(rewrittenArguments, temporariesBuilder);
             ImmutableArray<ParameterSymbol> parameters = methodOrIndexer.GetParameters();
 
-            if (CanSkipRewriting(rewrittenArguments, methodOrIndexer, expanded, argsToParamsOpt, invokedAsExtensionMethod, false, out var isComReceiver))
+            if (CanSkipRewriting(rewrittenArguments, methodOrIndexer, expanded, argsToParamsOpt, invokedAsExtensionMethod))
             {
                 temps = temporariesBuilder.ToImmutableAndFree();
                 argumentRefKindsOpt = GetEffectiveArgumentRefKinds(argumentRefKindsOpt, parameters);
@@ -493,11 +493,6 @@ namespace StarkPlatform.Compiler.Stark
             // Step three: Now fill in the optional arguments.
             InsertMissingOptionalArguments(syntax, optionalParametersMethod.Parameters, actualArguments, refKinds, enableCallerInfo);
 
-            if (isComReceiver)
-            {
-                RewriteArgumentsForComCall(parameters, actualArguments, refKinds, temporariesBuilder);
-            }
-
             temps = temporariesBuilder.ToImmutableAndFree();
             storesToTemps.Free();
 
@@ -583,7 +578,7 @@ namespace StarkPlatform.Compiler.Stark
             //
             // If neither of those are the case then we can just take an early out.
 
-            if (CanSkipRewriting(arguments, methodOrIndexer, expanded, argsToParamsOpt, invokedAsExtensionMethod, true, out _))
+            if (CanSkipRewriting(arguments, methodOrIndexer, expanded, argsToParamsOpt, invokedAsExtensionMethod))
             {
                 // In this case, the invocation is not in expanded form and there's no named argument provided.
                 // So we just return list of arguments as is.
@@ -629,12 +624,9 @@ namespace StarkPlatform.Compiler.Stark
             Symbol methodOrIndexer,
             bool expanded,
             ImmutableArray<int> argsToParamsOpt,
-            bool invokedAsExtensionMethod,
-            bool ignoreComReceiver,
-            out bool isComReceiver)
+            bool invokedAsExtensionMethod
+            )
         {
-            isComReceiver = false;
-
             // An applicable "vararg" method could not possibly be applicable in its expanded
             // form, and cannot possibly have named arguments or used optional parameters, 
             // because the __arglist() argument has to be positional and in the last position. 
@@ -647,18 +639,9 @@ namespace StarkPlatform.Compiler.Stark
                 return true;
             }
 
-            if (!ignoreComReceiver)
-            {
-                var receiverNamedType = invokedAsExtensionMethod ?
-                                        ((MethodSymbol)methodOrIndexer).Parameters[0].Type.TypeSymbol as NamedTypeSymbol :
-                                        methodOrIndexer.ContainingType;
-                isComReceiver = (object)receiverNamedType != null && receiverNamedType.IsComImport;
-            }
-
             return rewrittenArguments.Length == methodOrIndexer.GetParameterCount() &&
                 argsToParamsOpt.IsDefault &&
-                !expanded &&
-                !isComReceiver;
+                !expanded;
         }
 
         private static ImmutableArray<RefKind> GetRefKindsOrNull(ArrayBuilder<RefKind> refKinds)

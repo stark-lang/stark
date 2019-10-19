@@ -1904,7 +1904,7 @@ namespace StarkPlatform.Compiler.Stark
 
         private static void GenerateExternalMethodWarnings(SourceMemberMethodSymbol methodSymbol, DiagnosticBag diagnostics)
         {
-            if (methodSymbol.GetAttributes().IsEmpty && !methodSymbol.ContainingType.IsComImport)
+            if (methodSymbol.GetAttributes().IsEmpty)
             {
                 // external method with no attributes
                 var errorCode = (methodSymbol.MethodKind == MethodKind.Constructor || methodSymbol.MethodKind == MethodKind.StaticConstructor) ?

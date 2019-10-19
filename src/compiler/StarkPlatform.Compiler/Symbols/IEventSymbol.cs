@@ -20,11 +20,6 @@ namespace StarkPlatform.Compiler
         ITypeSymbol Type { get; }
 
         /// <summary>
-        /// Returns true if the event is a WinRT type event.
-        /// </summary>
-        bool IsWindowsRuntimeEvent { get; }
-
-        /// <summary>
         /// The 'add' accessor of the event.  Null only in error scenarios.
         /// </summary>
         IMethodSymbol AddMethod { get; }

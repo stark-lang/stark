@@ -4895,23 +4895,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             Debug.Assert((object)type != null);
 
-            // COM interfaces which have ComImportAttribute and CoClassAttribute can be instantiated with "new". 
-            // CoClassAttribute contains the type information of the original CoClass for the interface.
-            // We replace the interface creation with CoClass object creation for this case.
-
-            // NOTE: We don't attempt binding interface creation to CoClass creation if we are within an attribute argument.
-            // NOTE: This is done to prevent a cycle in an error scenario where we have a "new InterfaceType" expression in an attribute argument.
-            // NOTE: Accessing IsComImport/ComImportCoClass properties on given type symbol would attempt ForceCompeteAttributes, which would again try binding all attributes on the symbol.
-            // NOTE: causing infinite recursion. We avoid this cycle by checking if we are within in context of an Attribute argument.
-            if (!this.InAttributeArgument && type.IsComImport)
-            {
-                NamedTypeSymbol coClassType = type.ComImportCoClass;
-                if ((object)coClassType != null)
-                {
-                    return BindComImportCoClassCreationExpression(node, type, coClassType, diagnostics);
-                }
-            }
-
             // interfaces can't be instantiated in C#
             diagnostics.Add(ErrorCode.ERR_NoNewAbstract, node.Location, type);
             return BindBadInterfaceCreationExpression(node, type, diagnostics);
@@ -4926,122 +4909,6 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression result = new BoundBadExpression(node, LookupResultKind.NotCreatable, ImmutableArray.Create<Symbol>(type), childNodes, type);
             analyzedArguments.Free();
             return result;
-        }
-
-        private BoundExpression BindComImportCoClassCreationExpression(ObjectCreationExpressionSyntax node, NamedTypeSymbol interfaceType, NamedTypeSymbol coClassType, DiagnosticBag diagnostics)
-        {
-            Debug.Assert((object)interfaceType != null);
-            Debug.Assert(interfaceType.IsInterfaceType());
-            Debug.Assert((object)coClassType != null);
-            Debug.Assert(TypeSymbol.Equals(interfaceType.ComImportCoClass, coClassType, TypeCompareKind.ConsiderEverything2));
-            Debug.Assert(coClassType.TypeKind == TypeKind.Class || coClassType.TypeKind == TypeKind.Error);
-
-            if (coClassType.IsErrorType())
-            {
-                Error(diagnostics, ErrorCode.ERR_MissingCoClass, node, coClassType, interfaceType);
-            }
-            else if (coClassType.IsUnboundGenericType)
-            {
-                // BREAKING CHANGE:     Dev10 allows the following code to compile, even though the output assembly is not verifiable and generates a runtime exception:
-                //
-                //          [ComImport, Guid("00020810-0000-0000-C000-000000000046")]
-                //          [CoClass(typeof(GenericClass<>))]
-                //          public interface InterfaceType {}
-                //          public class GenericClass<T>: InterfaceType {}
-                // 
-                //          public class Program
-                //          {
-                //              public static void Main() { var i = new InterfaceType(); }
-                //          }
-                //
-                //  We disallow CoClass creation if coClassType is an unbound generic type and report a compile time error.
-
-                Error(diagnostics, ErrorCode.ERR_BadCoClassSig, node, coClassType, interfaceType);
-            }
-            else
-            {
-                // NoPIA support
-                if (interfaceType.ContainingAssembly.IsLinked)
-                {
-                    return BindNoPiaObjectCreationExpression(node, interfaceType, coClassType, diagnostics);
-                }
-
-                var classCreation = BindClassCreationExpression(node, coClassType, coClassType.Name, diagnostics, interfaceType);
-                HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-                Conversion conversion = this.Conversions.ClassifyConversionFromExpression(classCreation, interfaceType, ref useSiteDiagnostics, forCast: true);
-                diagnostics.Add(node, useSiteDiagnostics);
-                if (!conversion.IsValid)
-                {
-                    SymbolDistinguisher distinguisher = new SymbolDistinguisher(this.Compilation, coClassType, interfaceType);
-                    Error(diagnostics, ErrorCode.ERR_NoExplicitConv, node, distinguisher.First, distinguisher.Second);
-                }
-
-                // Bind the conversion, but drop the conversion node.
-                CreateConversion(classCreation, conversion, interfaceType, diagnostics);
-
-                // Override result type to be the interface type.
-                switch (classCreation.Kind)
-                {
-                    case BoundKind.ObjectCreationExpression:
-                        var creation = (BoundObjectCreationExpression)classCreation;
-                        return creation.Update(creation.Constructor, creation.ConstructorsGroup, creation.Arguments, creation.ArgumentNamesOpt,
-                                               creation.ArgumentRefKindsOpt, creation.Expanded, creation.ArgsToParamsOpt, creation.ConstantValueOpt,
-                                               creation.InitializerExpressionOpt, creation.BinderOpt, interfaceType);
-
-                    case BoundKind.BadExpression:
-                        var bad = (BoundBadExpression)classCreation;
-                        return bad.Update(bad.ResultKind, bad.Symbols, bad.ChildBoundNodes, interfaceType);
-
-                    default:
-                        throw ExceptionUtilities.UnexpectedValue(classCreation.Kind);
-                }
-            }
-
-            return BindBadInterfaceCreationExpression(node, interfaceType, diagnostics);
-        }
-
-        private BoundExpression BindNoPiaObjectCreationExpression(
-            ObjectCreationExpressionSyntax node,
-            NamedTypeSymbol interfaceType,
-            NamedTypeSymbol coClassType,
-            DiagnosticBag diagnostics)
-        {
-            string guidString;
-            if (!coClassType.GetGuidString(out guidString))
-            {
-                // At this point, VB reports ERRID_NoPIAAttributeMissing2 if guid isn't there.
-                // C# doesn't complain and instead uses zero guid.
-                guidString = System.Guid.Empty.ToString("D");
-            }
-
-            var boundInitializerOpt = node.Initializer == null ? null :
-                                                BindInitializerExpression(syntax: node.Initializer,
-                                                 type: interfaceType,
-                                                 typeSyntax: node.Type,
-                                                 diagnostics: diagnostics);
-
-            var creation = new BoundNoPiaObjectCreationExpression(node, guidString, boundInitializerOpt, interfaceType);
-
-            // Get the bound arguments and the argument names, it is an error if any are present.
-            AnalyzedArguments analyzedArguments = AnalyzedArguments.GetInstance();
-            try
-            {
-                BindArgumentsAndNames(node.ArgumentList, diagnostics, analyzedArguments, allowArglist: false);
-
-                if (analyzedArguments.Arguments.Count > 0)
-                {
-                    diagnostics.Add(ErrorCode.ERR_BadCtorArgCount, node.ArgumentList.Location, interfaceType, analyzedArguments.Arguments.Count);
-
-                    var children = BuildArgumentsForErrorRecovery(analyzedArguments).Add(creation);
-                    return new BoundBadExpression(node, LookupResultKind.OverloadResolutionFailure, ImmutableArray<Symbol>.Empty, children, creation.Type);
-                }
-            }
-            finally
-            {
-                analyzedArguments.Free();
-            }
-
-            return creation;
         }
 
         private BoundExpression BindTypeParameterCreationExpression(ObjectCreationExpressionSyntax node, TypeParameterSymbol typeParameter, DiagnosticBag diagnostics)
@@ -6220,7 +6087,7 @@ namespace StarkPlatform.Compiler.Stark
                 }
 
                 var overloadResolutionResult = OverloadResolutionResult<MethodSymbol>.GetInstance();
-                bool allowRefOmittedArguments = methodGroup.Receiver.IsExpressionOfComImportType();
+                bool allowRefOmittedArguments = false;
                 HashSet<DiagnosticInfo> useSiteDiagnostics = null;
                 OverloadResolution.MethodInvocationOverloadResolution(
                     methods: methodGroup.Methods,
@@ -7152,7 +7019,7 @@ namespace StarkPlatform.Compiler.Stark
             DiagnosticBag diagnostics)
         {
             OverloadResolutionResult<PropertySymbol> overloadResolutionResult = OverloadResolutionResult<PropertySymbol>.GetInstance();
-            bool allowRefOmittedArguments = receiverOpt.IsExpressionOfComImportType();
+            bool allowRefOmittedArguments = false;
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
 
             var refKindContext = GetCurrentRefKindContext();
@@ -7498,7 +7365,7 @@ namespace StarkPlatform.Compiler.Stark
             else
             {
                 var result = OverloadResolutionResult<MethodSymbol>.GetInstance();
-                bool allowRefOmittedArguments = methodGroup.Receiver.IsExpressionOfComImportType();
+                bool allowRefOmittedArguments = false;
                 OverloadResolution.MethodInvocationOverloadResolution(
                     methods: methodGroup.Methods,
                     typeArguments: methodGroup.TypeArguments,

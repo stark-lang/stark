@@ -332,16 +332,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return this.Map; }
         }
 
-        internal sealed override bool IsComImport
-        {
-            get { return OriginalDefinition.IsComImport; }
-        }
-
-        internal sealed override NamedTypeSymbol ComImportCoClass
-        {
-            get { return OriginalDefinition.ComImportCoClass; }
-        }
-
         internal override IEnumerable<MethodSymbol> GetMethodsToEmit()
         {
             throw ExceptionUtilities.Unreachable;

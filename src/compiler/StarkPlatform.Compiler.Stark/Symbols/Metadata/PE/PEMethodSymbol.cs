@@ -607,7 +607,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             }
 
             // Dynamify object type if necessary
-            var returnType = paramInfo[0].Type.AsDynamicIfNoPia(_containingType);
+            var returnType = paramInfo[0].Type;
 
             paramInfo[0].Type = returnType;
 

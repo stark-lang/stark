@@ -161,9 +161,6 @@ namespace StarkPlatform.Compiler
                 case OutputKind.NetModule:
                 case OutputKind.WindowsApplication:
                     return new SubsystemVersion(4, 0);
-                case OutputKind.WindowsRuntimeApplication:
-                case OutputKind.WindowsRuntimeMetadata:
-                    return Windows8;
 
                 default:
                     throw new ArgumentOutOfRangeException(CodeAnalysisResources.OutputKindNotSupported, "outputKind");

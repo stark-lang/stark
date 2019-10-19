@@ -68,19 +68,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         }
 
         /// <summary>
-        /// True if this is a Windows Runtime-style event.
-        /// 
-        /// A normal C# event, "event D E", has accessors
-        ///     void add_E(D d)
-        ///     void remove_E(D d)
-        /// 
-        /// A Windows Runtime event, "event D E", has accessors
-        ///     EventRegistrationToken add_E(D d)
-        ///     void remove_E(EventRegistrationToken t)
-        /// </summary>
-        public abstract bool IsWindowsRuntimeEvent { get; }
-
-        /// <summary>
         /// True if the event itself is excluded from code coverage instrumentation.
         /// True for source events marked with <see cref="AttributeDescription.ExcludeFromCodeCoverageAttribute"/>.
         /// </summary>

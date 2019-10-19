@@ -60,7 +60,7 @@ namespace StarkPlatform.Reflection.Metadata
 
         /// <summary>Specifies that the class or interface is imported from another module.</summary>
         /// <returns></returns>
-        Import = 4096, // 0x00001000
+        // Import = 4096, // 0x00001000
 
         /// <summary>Specifies class layout information.</summary>
         /// <returns></returns>
@@ -136,6 +136,6 @@ namespace StarkPlatform.Reflection.Metadata
 
         /// <summary>Specifies a Windows Runtime type.</summary>
         /// <returns></returns>
-        WindowsRuntime = 16384, // 0x00004000
+        // WindowsRuntime = 16384, // 0x00004000
     }
 }

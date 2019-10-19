@@ -1463,37 +1463,6 @@ done:
             Debug.Assert(boundAttributes.Length == allAttributeSyntaxNodes.Length);
             Debug.Assert(symbolPart == AttributeLocation.None || symbolPart == AttributeLocation.Return);
 
-            if (symbolPart != AttributeLocation.Return)
-            {
-                Debug.Assert(_lazyCustomAttributesBag != null);
-                Debug.Assert(_lazyCustomAttributesBag.IsDecodedWellKnownAttributeDataComputed);
-
-                if (_containingType.IsComImport && _containingType.TypeKind == TypeKind.Class)
-                {
-                    switch (this.MethodKind)
-                    {
-                        case MethodKind.Constructor:
-                        case MethodKind.StaticConstructor:
-                            if (!this.IsImplicitlyDeclared)
-                            {
-                                // CS0669: A class with the ComImport attribute cannot have a user-defined constructor
-                                diagnostics.Add(ErrorCode.ERR_ComImportWithUserCtor, this.Locations[0]);
-                            }
-
-                            break;
-
-                        default:
-                            if (!this.IsAbstract && !this.IsExtern)
-                            {
-                                // CS0423: Since '{1}' has the ComImport attribute, '{0}' must be extern or abstract
-                                diagnostics.Add(ErrorCode.ERR_ComImportWithImpl, this.Locations[0], this, _containingType);
-                            }
-
-                            break;
-                    }
-                }
-            }
-
             base.PostDecodeWellKnownAttributes(boundAttributes, allAttributeSyntaxNodes, diagnostics, symbolPart, decodedData);
         }
 
@@ -1579,13 +1548,6 @@ done:
             {
                 var data = GetDecodedWellKnownAttributeData();
                 var result = (data != null) ? data.MethodImplAttributes : default(MethodImplAttributes);
-
-                if (this.ContainingType.IsComImport && this.MethodKind == MethodKind.Constructor)
-                {
-                    // Synthesized constructor of ComImport types is marked as Runtime implemented and InternalCall
-                    result |= (MethodImplAttributes.Runtime | MethodImplAttributes.InternalCall);
-                }
-
                 return result;
             }
         }

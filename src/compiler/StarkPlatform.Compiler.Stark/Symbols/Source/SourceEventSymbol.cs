@@ -31,7 +31,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         private CustomAttributesBag<CSharpAttributeData> _lazyCustomAttributesBag;
         private string _lazyDocComment;
         private OverriddenOrHiddenMembersResult _lazyOverriddenOrHiddenMembers;
-        private ThreeState _lazyIsWindowsRuntimeEvent = ThreeState.Unknown;
 
         // TODO: CLSCompliantAttribute
 
@@ -564,85 +563,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 }
                 return _lazyOverriddenOrHiddenMembers;
             }
-        }
-
-        public sealed override bool IsWindowsRuntimeEvent
-        {
-            get
-            {
-                if (!_lazyIsWindowsRuntimeEvent.HasValue())
-                {
-                    // This would be a CompareExchange if there was an overload for ThreeState.
-                    _lazyIsWindowsRuntimeEvent = ComputeIsWindowsRuntimeEvent().ToThreeState();
-                }
-                Debug.Assert(_lazyIsWindowsRuntimeEvent.HasValue());
-                return _lazyIsWindowsRuntimeEvent.Value();
-            }
-        }
-
-        private bool ComputeIsWindowsRuntimeEvent()
-        {
-            // Interface events don't override or implement other events, so they only
-            // depend the output kind.
-            if (this.containingType.IsInterfaceType())
-            {
-                return this.IsCompilationOutputWinMdObj();
-            }
-
-            // If you explicitly implement an event, then you're a WinRT event if and only if it's a WinRT event.
-            ImmutableArray<EventSymbol> explicitInterfaceImplementations = this.ExplicitInterfaceImplementations;
-            if (!explicitInterfaceImplementations.IsEmpty)
-            {
-                // If there could be more than one, we'd have to worry about conflicts, but that's impossible for source events.
-                Debug.Assert(explicitInterfaceImplementations.Length == 1);
-                // Don't have to worry about conflicting with the override rule, since explicit impls are never overrides (in source).
-                Debug.Assert((object)this.OverriddenEvent == null);
-
-                return explicitInterfaceImplementations[0].IsWindowsRuntimeEvent;
-            }
-
-            // If you override an event, then you're a WinRT event if and only if it's a WinRT event.
-            EventSymbol overriddenEvent = this.OverriddenEvent;
-            if ((object)overriddenEvent != null)
-            {
-                return overriddenEvent.IsWindowsRuntimeEvent;
-            }
-
-            // If you implicitly implement one or more interface events (for yourself, not for a derived type),
-            // then you're a WinRT event if and only if at least one is a WinRT event.
-            //
-            // NOTE: it's possible that we returned false above even though we would have returned true
-            // below.  Whenever this occurs, we need to report a diagnostic (because an event can't be
-            // both WinRT and non-WinRT), but we'll do that when we're checking interface implementations
-            // (see SourceMemberContainerTypeSymbol.ComputeInterfaceImplementations).
-            bool sawImplicitImplementation = false;
-            foreach (NamedTypeSymbol @interface in this.containingType.InterfacesAndTheirBaseInterfacesNoUseSiteDiagnostics.Keys)
-            {
-                foreach (Symbol interfaceMember in @interface.GetMembers(this.Name))
-                {
-                    if (interfaceMember.Kind == SymbolKind.Event && //quick check (necessary, not sufficient)
-                        this == this.containingType.FindImplementationForInterfaceMember(interfaceMember)) //slow check (necessary and sufficient)
-                    {
-                        sawImplicitImplementation = true;
-
-                        if (((EventSymbol)interfaceMember).IsWindowsRuntimeEvent)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            // If you implement one or more interface events and none of them are WinRT events, then you
-            // are not a WinRT event.
-            if (sawImplicitImplementation)
-            {
-                return false;
-            }
-
-            // If you're not constrained by your relationships with other members, then you're a WinRT event
-            // if and only if this compilation will produce a ".winmdobj" file.
-            return this.IsCompilationOutputWinMdObj();
         }
 
         internal static string GetAccessorName(string eventName, bool isAdder)

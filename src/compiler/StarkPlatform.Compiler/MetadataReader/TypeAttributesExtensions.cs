@@ -17,11 +17,6 @@ namespace StarkPlatform.Compiler
             return (flags & TypeAttributes.Struct) == TypeAttributes.Struct;
         }
 
-        public static bool IsWindowsRuntime(this TypeAttributes flags)
-        {
-            return (flags & TypeAttributes.WindowsRuntime) != 0;
-        }
-
         public static bool IsPublic(this TypeAttributes flags)
         {
             return (flags & TypeAttributes.Public) != 0;

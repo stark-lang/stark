@@ -193,20 +193,6 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        internal static bool IsExpressionOfComImportType(this BoundExpression expressionOpt)
-        {
-            // NOTE: Dev11 also returns false if expressionOpt is a TypeExpression.  Unfortunately,
-            // that makes it impossible to handle TypeOrValueExpression in a consistent way, since
-            // we don't know whether it's a type until after overload resolution and we can't do
-            // overload resolution without knowing whether 'ref' can be omitted (which is what this
-            // method is used to determine).  Since there is no intuitive reason to disallow
-            // omitting 'ref' for static methods, we'll drop the restriction on TypeExpression.
-            if (expressionOpt == null) return false;
-
-            TypeSymbol receiverType = expressionOpt.Type;
-            return (object)receiverType != null && receiverType.Kind == SymbolKind.NamedType && ((NamedTypeSymbol)receiverType).IsComImport;
-        }
-
         // https://github.com/dotnet/roslyn/issues/29618 Remove this method. Initial binding should not infer nullability.
         internal static TypeSymbolWithAnnotations GetTypeAndNullability(this BoundExpression expr)
         {

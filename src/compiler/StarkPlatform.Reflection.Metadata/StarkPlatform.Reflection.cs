@@ -206,10 +206,7 @@ namespace StarkPlatform.Reflection
         /// </summary>
         Retargetable = 0x00000100,
 
-        /// <summary>
-        /// The assembly contains Windows Runtime code.
-        /// </summary>
-        WindowsRuntime = 0x00000200,
+        //WindowsRuntime = 0x00000200,
 
         /// <summary>
         /// Content type mask. Masked bits correspond to values of <see cref="System.Reflection.Stark.AssemblyContentType"/>.

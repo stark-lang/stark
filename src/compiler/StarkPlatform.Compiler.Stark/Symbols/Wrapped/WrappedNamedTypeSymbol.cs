@@ -185,16 +185,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return _underlyingType.ObsoleteAttributeData; }
         }
 
-        internal override bool ShouldAddWinRTMembers
-        {
-            get { return _underlyingType.ShouldAddWinRTMembers; }
-        }
-
-        internal override bool IsWindowsRuntimeImport
-        {
-            get { return _underlyingType.IsWindowsRuntimeImport; }
-        }
-
         internal override TypeLayout Layout
         {
             get { return _underlyingType.Layout; }

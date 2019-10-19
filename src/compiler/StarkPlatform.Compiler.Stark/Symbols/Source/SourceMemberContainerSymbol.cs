@@ -2562,8 +2562,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 string propertyName = propertySymbol.IsIndexer ? propertySymbol.MetadataName : propertySymbol.Name;
                 accessorName = SourcePropertyAccessorSymbol.GetAccessorName(propertyName,
-                    getNotSet,
-                    propertySymbol.IsCompilationOutputWinMdObj());
+                    getNotSet);
             }
 
             foreach (var symbol in GetMembers(accessorName))

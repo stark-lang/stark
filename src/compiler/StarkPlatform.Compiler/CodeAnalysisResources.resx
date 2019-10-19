@@ -372,9 +372,6 @@
   <data name="InvalidCultureName" xml:space="preserve">
     <value>Invalid culture name: '{0}'</value>
   </data>
-  <data name="WinRTIdentityCantBeRetargetable" xml:space="preserve">
-    <value>WindowsRuntime identity can't be retargetable</value>
-  </data>
   <data name="PEImageNotAvailable" xml:space="preserve">
     <value>PE image not available.</value>
   </data>

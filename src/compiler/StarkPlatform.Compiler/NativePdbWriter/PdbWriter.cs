@@ -125,7 +125,7 @@ namespace StarkPlatform.Cci
 
             // We need to avoid emitting CDI DynamicLocals = 5 and EditAndContinueLocalSlotMap = 6 for files processed by WinMDExp until 
             // bug #1067635 is fixed and available in SDK.
-            bool suppressNewCustomDebugInfo = compilationOptions.OutputKind == OutputKind.WindowsRuntimeMetadata;
+            bool suppressNewCustomDebugInfo = true;
 
             // delta doesn't need this information - we use information recorded by previous generation emit
             bool emitEncInfo = compilationOptions.EnableEditAndContinue && _metadataWriter.IsFullMetadata;

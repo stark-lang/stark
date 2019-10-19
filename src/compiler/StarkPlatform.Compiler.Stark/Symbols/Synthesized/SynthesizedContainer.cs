@@ -182,12 +182,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         public override bool IsImplicitlyDeclared => true;
 
-        internal override bool ShouldAddWinRTMembers => false;
-
-        internal override bool IsWindowsRuntimeImport => false;
-
-        internal override bool IsComImport => false;
-
         internal sealed override ObsoleteAttributeData ObsoleteAttributeData => null;
 
         internal sealed override ImmutableArray<string> GetAppliedConditionalSymbols() => ImmutableArray<string>.Empty;

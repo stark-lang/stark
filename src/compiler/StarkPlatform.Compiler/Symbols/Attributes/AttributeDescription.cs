@@ -413,9 +413,9 @@ namespace StarkPlatform.Compiler
 
         // early decoded attributes:
         internal static readonly AttributeDescription OptionalAttribute = new AttributeDescription("core.runtime", "OptionalAttribute", s_signaturesOfOptionalAttribute);
-        internal static readonly AttributeDescription ComImportAttribute = new AttributeDescription("core.runtime", "ComImportAttribute", s_signaturesOfComImportAttribute);
-        internal static readonly AttributeDescription AttributeUsageAttribute = new AttributeDescription("System", "AttributeUsageAttribute", s_signaturesOfAttributeUsage);
+        internal static readonly AttributeDescription AttributeUsageAttribute = new AttributeDescription("core", "AttributeUsageAttribute", s_signaturesOfAttributeUsage);
         internal static readonly AttributeDescription ConditionalAttribute = new AttributeDescription("core.diagnostics", "ConditionalAttribute", s_signaturesOfConditionalAttribute);
+
         internal static readonly AttributeDescription CaseInsensitiveExtensionAttribute = new AttributeDescription("core.runtime", "ExtensionAttribute", s_signaturesOfExtensionAttribute, matchIgnoringCase: true);
         internal static readonly AttributeDescription CaseSensitiveExtensionAttribute = new AttributeDescription("core.runtime", "ExtensionAttribute", s_signaturesOfExtensionAttribute, matchIgnoringCase: false);
 
@@ -478,15 +478,11 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription TypeIdentifierAttribute = new AttributeDescription("core.runtime", "TypeIdentifierAttribute", s_signaturesOfTypeIdentifierAttribute);
         internal static readonly AttributeDescription VisualBasicEmbeddedAttribute = new AttributeDescription("Microsoft.VisualBasic", "Embedded", s_signaturesOfVisualBasicEmbedded);
         internal static readonly AttributeDescription CodeAnalysisEmbeddedAttribute = new AttributeDescription("StarkPlatform.Compiler", "EmbeddedAttribute", s_signaturesOfCodeAnalysisEmbedded);
-        internal static readonly AttributeDescription VisualBasicComClassAttribute = new AttributeDescription("Microsoft.VisualBasic", "ComClassAttribute", s_signaturesOfVisualBasicComClassAttribute);
         internal static readonly AttributeDescription StandardModuleAttribute = new AttributeDescription("Microsoft.VisualBasic.CompilerServices", "StandardModuleAttribute", s_signaturesOfStandardModuleAttribute);
         internal static readonly AttributeDescription OptionCompareAttribute = new AttributeDescription("Microsoft.VisualBasic.CompilerServices", "OptionCompareAttribute", s_signaturesOfOptionCompareAttribute);
         internal static readonly AttributeDescription AccessedThroughPropertyAttribute = new AttributeDescription("core.runtime", "AccessedThroughPropertyAttribute", s_signaturesOfAccessedThroughPropertyAttribute);
-        internal static readonly AttributeDescription WebMethodAttribute = new AttributeDescription("System.Web.Services", "WebMethodAttribute", s_signaturesOfWebMethodAttribute);
         internal static readonly AttributeDescription DateTimeConstantAttribute = new AttributeDescription("core.runtime", "DateTimeConstantAttribute", s_signaturesOfDateTimeConstantAttribute);
         internal static readonly AttributeDescription ClassInterfaceAttribute = new AttributeDescription("core.runtime", "ClassInterfaceAttribute", s_signaturesOfClassInterfaceAttribute);
-        internal static readonly AttributeDescription ComSourceInterfacesAttribute = new AttributeDescription("core.runtime", "ComSourceInterfacesAttribute", s_signaturesOfComSourceInterfacesAttribute);
-        internal static readonly AttributeDescription ComVisibleAttribute = new AttributeDescription("core.runtime", "ComVisibleAttribute", s_signaturesOfComVisibleAttribute);
         internal static readonly AttributeDescription DispIdAttribute = new AttributeDescription("core.runtime", "DispIdAttribute", new byte[][] { s_signature_HasThis_Void_Int32 });
         internal static readonly AttributeDescription TypeLibVersionAttribute = new AttributeDescription("core.runtime", "TypeLibVersionAttribute", s_signaturesOfTypeLibVersionAttribute);
         internal static readonly AttributeDescription ComCompatibleVersionAttribute = new AttributeDescription("core.runtime", "ComCompatibleVersionAttribute", s_signaturesOfComCompatibleVersionAttribute);
@@ -503,7 +499,6 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription DebuggableAttribute = new AttributeDescription("System.Diagnostics", "DebuggableAttribute", s_signaturesOfDebuggableAttribute);
         internal static readonly AttributeDescription TypeForwardedToAttribute = new AttributeDescription("core.runtime", "TypeForwardedToAttribute", s_signaturesOfTypeForwardedToAttribute);
         internal static readonly AttributeDescription STAThreadAttribute = new AttributeDescription("System", "STAThreadAttribute", s_signaturesOfSTAThreadAttribute);
-        internal static readonly AttributeDescription MTAThreadAttribute = new AttributeDescription("System", "MTAThreadAttribute", s_signaturesOfMTAThreadAttribute);
         internal static readonly AttributeDescription ObsoleteAttribute = new AttributeDescription("System", "ObsoleteAttribute", s_signaturesOfObsoleteAttribute);
         internal static readonly AttributeDescription TypeLibTypeAttribute = new AttributeDescription("core.runtime", "TypeLibTypeAttribute", s_signaturesOfTypeLibTypeAttribute);
         internal static readonly AttributeDescription DynamicAttribute = new AttributeDescription("core.runtime", "DynamicAttribute", s_signaturesOfDynamicAttribute);
@@ -515,9 +510,6 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription DebuggerStepThroughAttribute = new AttributeDescription("System.Diagnostics", "DebuggerStepThroughAttribute", s_signaturesOfDebuggerStepThroughAttribute);
         internal static readonly AttributeDescription SecurityCriticalAttribute = new AttributeDescription("System.Security", "SecurityCriticalAttribute", s_signaturesOfSecurityCriticalAttribute);
         internal static readonly AttributeDescription SecuritySafeCriticalAttribute = new AttributeDescription("System.Security", "SecuritySafeCriticalAttribute", s_signaturesOfSecuritySafeCriticalAttribute);
-        internal static readonly AttributeDescription DesignerGeneratedAttribute = new AttributeDescription("Microsoft.VisualBasic.CompilerServices", "DesignerGeneratedAttribute", s_signaturesOfDesignerGeneratedAttribute);
-        internal static readonly AttributeDescription MyGroupCollectionAttribute = new AttributeDescription("Microsoft.VisualBasic", "MyGroupCollectionAttribute", s_signaturesOfMyGroupCollectionAttribute);
-        internal static readonly AttributeDescription ComEventInterfaceAttribute = new AttributeDescription("core.runtime", "ComEventInterfaceAttribute", s_signaturesOfComEventInterfaceAttribute);
         internal static readonly AttributeDescription BestFitMappingAttribute = new AttributeDescription("core.runtime", "BestFitMappingAttribute", s_signaturesOfBestFitMappingAttribute);
         internal static readonly AttributeDescription FlagsAttribute = new AttributeDescription("System", "FlagsAttribute", s_signaturesOfFlagsAttribute);
         internal static readonly AttributeDescription LCIDConversionAttribute = new AttributeDescription("core.runtime", "LCIDConversionAttribute", s_signaturesOfLCIDConversionAttribute);

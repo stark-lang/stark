@@ -153,14 +153,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Retargeting
                 return (TypeSymbol)symbol.Accept(this, options);
             }
 
-            public TypeSymbolWithAnnotations Retarget(TypeSymbolWithAnnotations underlyingType, RetargetOptions options, NamedTypeSymbol asDynamicIfNoPiaContainingType = null)
+            public TypeSymbolWithAnnotations Retarget(TypeSymbolWithAnnotations underlyingType, RetargetOptions options)
             {
                 var newTypeSymbol = Retarget(underlyingType.TypeSymbol, options);
-
-                if ((object)asDynamicIfNoPiaContainingType != null)
-                {
-                    newTypeSymbol = newTypeSymbol.AsDynamicIfNoPia(asDynamicIfNoPiaContainingType);
-                }
 
                 bool modifiersHaveChanged;
                 var newModifiers = RetargetModifiers(underlyingType.CustomModifiers, out modifiersHaveChanged);

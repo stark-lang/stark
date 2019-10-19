@@ -97,8 +97,6 @@ namespace StarkPlatform.Compiler.CodeGeneration
 
         public bool MightContainExtensionMethods => false;
 
-        public bool IsComImport => false;
-
         public bool IsUnmanagedType => throw new NotImplementedException();
 
         public bool IsRefLikeType => throw new NotImplementedException();

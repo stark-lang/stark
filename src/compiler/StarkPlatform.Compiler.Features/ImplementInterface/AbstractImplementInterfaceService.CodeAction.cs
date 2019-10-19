@@ -177,7 +177,6 @@ namespace StarkPlatform.Compiler.ImplementInterface
                 var result = document;
                 var compilation = await result.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
 
-                var isComImport = unimplementedMembers.Any(t => t.type.IsComImport);
                 var options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
                 var propertyGenerationBehavior = options.GetOption(ImplementTypeOptions.PropertyGenerationBehavior);
 
@@ -188,8 +187,7 @@ namespace StarkPlatform.Compiler.ImplementInterface
                 // it's not a ComImport interface.  Member ordering in ComImport interfaces 
                 // matters, so we don't want to much with them.
                 var insertionBehavior = options.GetOption(ImplementTypeOptions.InsertionBehavior);
-                var groupMembers = !isComImport &&
-                    insertionBehavior == ImplementTypeInsertionBehavior.WithOtherMembersOfTheSameKind;
+                var groupMembers = insertionBehavior == ImplementTypeInsertionBehavior.WithOtherMembersOfTheSameKind;
 
                 result = await CodeGenerator.AddMemberDeclarationsAsync(
                     result.Project.Solution, classOrStructType, memberDefinitions,

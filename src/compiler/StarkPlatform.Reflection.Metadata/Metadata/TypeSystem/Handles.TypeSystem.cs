@@ -2299,7 +2299,6 @@ namespace StarkPlatform.Reflection.Metadata
         {
             Debug.Assert((value & StringHandleType.TypeMask) == StringHandleType.String ||
                          (value & StringHandleType.TypeMask) == StringHandleType.VirtualString ||
-                         (value & StringHandleType.TypeMask) == StringHandleType.WinRTPrefixedString ||
                          (value & StringHandleType.TypeMask) == StringHandleType.DotTerminatedString);
 
             _value = value;
@@ -2319,12 +2318,6 @@ namespace StarkPlatform.Reflection.Metadata
         internal static StringHandle FromWriterVirtualIndex(int virtualIndex)
         {
             return new StringHandle(StringHandleType.VirtualString | (uint)virtualIndex);
-        }
-
-        internal StringHandle WithWinRTPrefix()
-        {
-            Debug.Assert(StringKind == StringKind.Plain);
-            return new StringHandle(StringHandleType.WinRTPrefixedString | _value);
         }
 
         internal StringHandle WithDotTermination()
@@ -2381,13 +2374,13 @@ namespace StarkPlatform.Reflection.Metadata
         internal int GetHeapOffset()
         {
             // WinRT prefixed strings are virtual, the value is a heap offset
-            Debug.Assert(!IsVirtual || StringKind == StringKind.WinRTPrefixed);
+            Debug.Assert(!IsVirtual);
             return (int)(_value & HeapHandleType.OffsetMask);
         }
 
         internal VirtualIndex GetVirtualIndex()
         {
-            Debug.Assert(IsVirtual && StringKind != StringKind.WinRTPrefixed);
+            Debug.Assert(IsVirtual);
             return (VirtualIndex)(_value & HeapHandleType.OffsetMask);
         }
 

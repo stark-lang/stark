@@ -30,7 +30,6 @@ namespace StarkPlatform.Compiler.MetadataAsSource
             public new IEventSymbol OriginalDefinition => this;
 
             public IMethodSymbol AddMethod => _symbol.AddMethod;
-            public bool IsWindowsRuntimeEvent => _symbol.IsWindowsRuntimeEvent;
             public IEventSymbol OverriddenEvent => _symbol.OverriddenEvent;
             public IMethodSymbol RaiseMethod => _symbol.RaiseMethod;
             public IMethodSymbol RemoveMethod => _symbol.RemoveMethod;

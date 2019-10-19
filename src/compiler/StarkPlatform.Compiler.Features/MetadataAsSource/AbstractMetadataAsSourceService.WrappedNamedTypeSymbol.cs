@@ -63,7 +63,6 @@ namespace StarkPlatform.Compiler.MetadataAsSource
             }
 
             public bool IsAnonymousType => _symbol.IsAnonymousType;
-            public bool IsComImport => _symbol.IsComImport;
             public bool IsGenericType => _symbol.IsGenericType;
             public bool IsImplicitClass => _symbol.IsImplicitClass;
             public bool IsReferenceType => _symbol.IsReferenceType;

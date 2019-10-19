@@ -332,11 +332,6 @@ namespace StarkPlatform.Compiler.Stark
             // For a call, step four would be to optimize away some of the temps.  However, we need them all to prevent
             // duplicate side-effects, so we'll skip that step.
 
-            if (indexer.ContainingType.IsComImport)
-            {
-                RewriteArgumentsForComCall(parameters, actualArguments, refKinds, temps);
-            }
-
             rewrittenArguments = actualArguments.AsImmutableOrNull();
 
             foreach (BoundAssignmentOperator tempAssignment in storesToTemps)
@@ -590,13 +585,6 @@ namespace StarkPlatform.Compiler.Stark
                         var eventAccess = (BoundEventAccess)originalLHS;
                         Debug.Assert(eventAccess.IsUsableAsField);
                         BoundExpression receiverOpt = eventAccess.ReceiverOpt;
-
-                        if (eventAccess.EventSymbol.IsWindowsRuntimeEvent)
-                        {
-                            // This is a temporary object that will be rewritten away before the lowering completes.
-                            return eventAccess.Update(TransformPropertyOrEventReceiver(eventAccess.EventSymbol, eventAccess.ReceiverOpt, stores, temps),
-                                                      eventAccess.EventSymbol, eventAccess.IsUsableAsField, eventAccess.ResultKind, eventAccess.Type);
-                        }
 
                         if (TransformCompoundAssignmentFieldOrEventAccessReceiver(eventAccess.EventSymbol, ref receiverOpt, stores, temps))
                         {

@@ -447,16 +447,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             return newOwner.IsDefinition ? this : new SubstitutedNestedErrorTypeSymbol(newOwner, this);
         }
 
-        internal sealed override bool ShouldAddWinRTMembers
-        {
-            get { return false; }
-        }
-
-        internal sealed override bool IsWindowsRuntimeImport
-        {
-            get { return false; }
-        }
-
         internal sealed override TypeLayout Layout
         {
             get { return default(TypeLayout); }
@@ -468,11 +458,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         }
 
         public sealed override bool IsSerializable
-        {
-            get { return false; }
-        }
-
-        internal sealed override bool IsComImport
         {
             get { return false; }
         }

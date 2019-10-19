@@ -3678,9 +3678,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 if (binder != null)
                 {
-                    var instanceConstructors = typeSymbolOpt.IsInterfaceType() && (object)typeSymbolOpt.ComImportCoClass != null ?
-                        typeSymbolOpt.ComImportCoClass.InstanceConstructors :
-                        typeSymbolOpt.InstanceConstructors;
+                    var instanceConstructors = typeSymbolOpt.InstanceConstructors;
 
                     HashSet<DiagnosticInfo> useSiteDiagnostics = null;
                     candidateConstructors = binder.FilterInaccessibleConstructors(instanceConstructors, allowProtectedConstructorsOfBaseType: false, useSiteDiagnostics: ref useSiteDiagnostics);

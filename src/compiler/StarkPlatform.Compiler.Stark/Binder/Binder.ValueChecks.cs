@@ -839,16 +839,7 @@ namespace StarkPlatform.Compiler.Stark
                 }
                 else if (RequiresVariable(valueKind))
                 {
-                    if (eventSymbol.IsWindowsRuntimeEvent && valueKind != BindValueKind.Assignable)
-                    {
-                        // NOTE: Dev11 reports ERR_RefProperty, as if this were a property access (since that's how it will be lowered).
-                        // Roslyn reports a new, more specific, error code.
-                        ErrorCode errorCode = valueKind == BindValueKind.RefOrOut ? ErrorCode.ERR_WinRtEventPassedByRef : GetStandardLvalueError(valueKind);
-                        Error(diagnostics, errorCode, eventSyntax, eventSymbol);
-
-                        return false;
-                    }
-                    else if (RequiresVariableReceiver(receiver, eventSymbol.AssociatedField) && // NOTE: using field, not event
+                    if (RequiresVariableReceiver(receiver, eventSymbol.AssociatedField) && // NOTE: using field, not event
                         !CheckIsValidReceiverForVariable(eventSyntax, receiver, valueKind, diagnostics))
                     {
                         return false;

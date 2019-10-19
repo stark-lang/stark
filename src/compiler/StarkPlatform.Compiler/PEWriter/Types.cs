@@ -468,11 +468,6 @@ namespace StarkPlatform.Cci
         bool IsBeforeFieldInit { get; }
 
         /// <summary>
-        /// Is this imported from COM type library
-        /// </summary>
-        bool IsComObject { get; }
-
-        /// <summary>
         /// True if this type is parameterized (this.GenericParameters is a non empty collection).
         /// </summary>
         bool IsGeneric { get; }
@@ -496,17 +491,6 @@ namespace StarkPlatform.Cci
         /// True if the type has special name.
         /// </summary>
         bool IsSpecialName { get; }
-
-        /// <summary>
-        /// True if the type is a Windows runtime type.
-        /// </summary>
-        /// <remarks>
-        /// A type can me marked as a Windows runtime type in source by applying the WindowsRuntimeImportAttribute.
-        /// WindowsRuntimeImportAttribute is a pseudo custom attribute defined as an internal class in System.Runtime.InteropServices.WindowsRuntime namespace.
-        /// This is needed to mark Windows runtime types which are redefined in mscorlib.dll and System.Runtime.WindowsRuntime.dll.
-        /// These two assemblies are special as they implement the CLR's support for WinRT.
-        /// </remarks>
-        bool IsWindowsRuntimeImport { get; }
 
         /// <summary>
         /// True if the type may not be subtyped.

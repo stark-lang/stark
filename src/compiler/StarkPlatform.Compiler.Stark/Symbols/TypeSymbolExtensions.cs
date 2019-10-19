@@ -1211,36 +1211,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         }
 
         /// <summary>
-        /// If we are in a COM PIA with embedInteropTypes enabled we should turn properties and methods 
-        /// that have the type and return type of object, respectively, into type dynamic. If the requisite conditions 
-        /// are fulfilled, this method returns a dynamic type. If not, it returns the original type.
-        /// </summary>
-        /// <param name="type">A property type or method return type to be checked for dynamification.</param>
-        /// <param name="containingType">Containing type.</param>
-        /// <returns></returns>
-        public static TypeSymbol AsDynamicIfNoPia(this TypeSymbol type, NamedTypeSymbol containingType)
-        {
-            return type.TryAsDynamicIfNoPia(containingType, out TypeSymbol result) ? result : type;
-        }
-
-        public static bool TryAsDynamicIfNoPia(this TypeSymbol type, NamedTypeSymbol containingType, out TypeSymbol result)
-        {
-            if (type.SpecialType == SpecialType.System_Object)
-            {
-                AssemblySymbol assembly = containingType.ContainingAssembly;
-                if ((object)assembly != null &&
-                    assembly.IsLinked &&
-                    containingType.IsComImport)
-                {
-                    result = DynamicTypeSymbol.Instance;
-                    return true;
-                }
-            }
-            result = null;
-            return false;
-        }
-
-        /// <summary>
         /// Type variables are never considered reference types by the verifier.
         /// </summary>
         internal static bool IsVerifierReference(this TypeSymbol type)

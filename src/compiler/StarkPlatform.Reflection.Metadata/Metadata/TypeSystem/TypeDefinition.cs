@@ -226,33 +226,6 @@ namespace StarkPlatform.Reflection.Metadata
             var flags = _reader.TypeDefTable.GetFlags(Handle);
             var treatment = Treatment;
 
-            switch (treatment & TypeDefTreatment.KindMask)
-            {
-                case TypeDefTreatment.NormalNonAttribute:
-                    flags |= TypeAttributes.WindowsRuntime | TypeAttributes.Import;
-                    break;
-
-                case TypeDefTreatment.NormalAttribute:
-                    flags |= TypeAttributes.WindowsRuntime | TypeAttributes.Sealed;
-                    break;
-
-                case TypeDefTreatment.UnmangleWinRTName:
-                    flags = flags & ~TypeAttributes.SpecialName | TypeAttributes.Public;
-                    break;
-
-                case TypeDefTreatment.PrefixWinRTName:
-                    flags = flags & ~TypeAttributes.Public | TypeAttributes.Import;
-                    break;
-
-                case TypeDefTreatment.RedirectedToClrType:
-                    flags = flags & ~TypeAttributes.Public | TypeAttributes.Import;
-                    break;
-
-                case TypeDefTreatment.RedirectedToClrAttribute:
-                    flags &= ~TypeAttributes.Public;
-                    break;
-            }
-
             if ((treatment & TypeDefTreatment.MarkAbstractFlag) != 0)
             {
                 flags |= TypeAttributes.Abstract;
@@ -269,16 +242,6 @@ namespace StarkPlatform.Reflection.Metadata
         private StringHandle GetProjectedName()
         {
             var name = _reader.TypeDefTable.GetName(Handle);
-
-            switch (Treatment & TypeDefTreatment.KindMask)
-            {
-                case TypeDefTreatment.UnmangleWinRTName:
-                    return name.SuffixRaw(MetadataReader.ClrPrefix.Length);
-
-                case TypeDefTreatment.PrefixWinRTName:
-                    return name.WithWinRTPrefix();
-            }
-
             return name;
         }
 

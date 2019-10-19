@@ -906,10 +906,7 @@ namespace StarkPlatform.Cci
         internal static bool HasBody(this IMethodDefinition methodDef)
         {
             // Method definition has body if it is a non-abstract, non-extern method.
-            // Additionally, methods within COM types have no body.
-
-            return !methodDef.IsAbstract && !methodDef.IsExternal &&
-                (methodDef.ContainingTypeDefinition == null || !methodDef.ContainingTypeDefinition.IsComObject);
+            return !methodDef.IsAbstract && !methodDef.IsExternal;
         }
 
         /// <summary>

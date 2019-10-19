@@ -200,9 +200,6 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
             {
                 case StringKind.Virtual:
                     return GetVirtualString(handle.GetVirtualIndex());
-
-                case StringKind.WinRTPrefixed:
-                    return GetNonVirtualString(handle, utf8Decoder, MetadataReader.WinRTPrefix);
             }
 
             throw ExceptionUtilities.UnexpectedValue(handle.StringKind);
@@ -222,10 +219,6 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
                     {
                         case StringKind.Virtual:
                             bytes = Encoding.UTF8.GetBytes(GetVirtualString(handle.GetVirtualIndex()));
-                            break;
-
-                        case StringKind.WinRTPrefixed:
-                            bytes = GetNonVirtualStringBytes(handle, MetadataReader.WinRTPrefix);
                             break;
 
                         default:

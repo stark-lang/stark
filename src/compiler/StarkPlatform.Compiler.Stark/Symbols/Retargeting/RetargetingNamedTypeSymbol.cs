@@ -339,20 +339,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Retargeting
             return _lazyUseSiteDiagnostic;
         }
 
-        internal override NamedTypeSymbol ComImportCoClass
-        {
-            get
-            {
-                NamedTypeSymbol coClass = _underlyingType.ComImportCoClass;
-                return (object)coClass == null ? null : this.RetargetingTranslator.Retarget(coClass, RetargetOptions.RetargetPrimitiveTypesByName);
-            }
-        }
-
-        internal override bool IsComImport
-        {
-            get { return _underlyingType.IsComImport; }
-        }
-
         internal sealed override CSharpCompilation DeclaringCompilation // perf, not correctness
         {
             get { return null; }

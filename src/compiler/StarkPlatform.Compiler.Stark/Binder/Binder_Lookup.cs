@@ -698,14 +698,6 @@ namespace StarkPlatform.Compiler.Stark
 
                 MergeHidingLookupResults(result, tmp, ref useSiteDiagnostics);
 
-                // If the type is from a winmd and implements any of the special WinRT collection
-                // projections then we may need to add underlying interface members. 
-                NamedTypeSymbol namedType = currentType as NamedTypeSymbol;
-                if (namedType?.ShouldAddWinRTMembers == true)
-                {
-                    AddWinRTMembers(result, namedType, name, arity, options, originalBinder, diagnose, ref useSiteDiagnostics);
-                }
-
                 // any viable non-methods [non-indexers] found here will hide viable methods [indexers] (with the same name) in any further base classes
                 bool tmpHidesMethodOrIndexers = tmp.IsMultiViable && !IsMethodOrIndexer(tmp.Symbols[0]);
 

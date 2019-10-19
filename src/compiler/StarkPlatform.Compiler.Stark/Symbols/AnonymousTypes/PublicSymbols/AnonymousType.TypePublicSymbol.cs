@@ -263,21 +263,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 get { return this; }
             }
 
-            internal override bool ShouldAddWinRTMembers
-            {
-                get { return false; }
-            }
-
-            internal override bool IsWindowsRuntimeImport
-            {
-                get { return false; }
-            }
-
-            internal override bool IsComImport
-            {
-                get { return false; }
-            }
-
             internal sealed override ObsoleteAttributeData ObsoleteAttributeData
             {
                 get { return null; }

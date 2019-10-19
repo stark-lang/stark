@@ -60,7 +60,6 @@ namespace StarkPlatform.Compiler.Stark
 
                 if (node.Type.IsInterfaceType())
                 {
-                    Debug.Assert(TypeSymbol.Equals(rewrittenObjectCreation.Type, ((NamedTypeSymbol)node.Type).ComImportCoClass, TypeCompareKind.ConsiderEverything2));
                     rewrittenObjectCreation = MakeConversionNode(rewrittenObjectCreation, node.Type, false, false);
                 }
 
@@ -87,7 +86,6 @@ namespace StarkPlatform.Compiler.Stark
 
             if (node.Type.IsInterfaceType())
             {
-                Debug.Assert(TypeSymbol.Equals(rewrittenObjectCreation.Type, ((NamedTypeSymbol)node.Type).ComImportCoClass, TypeCompareKind.ConsiderEverything2));
                 rewrittenObjectCreation = MakeConversionNode(rewrittenObjectCreation, node.Type, false, false);
             }
 

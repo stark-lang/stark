@@ -142,8 +142,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 RefKind refKind;
                 return !IsParams && IsMetadataOptional &&
                        ((refKind = RefKind) == RefKind.None ||
-                        (refKind == RefKind.In) ||
-                        (refKind == RefKind.Ref && ContainingSymbol.ContainingType.IsComImport));
+                        (refKind == RefKind.In));
             }
         }
 

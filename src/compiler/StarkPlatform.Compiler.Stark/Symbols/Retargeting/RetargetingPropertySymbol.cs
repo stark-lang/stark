@@ -62,10 +62,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Retargeting
                 if (_lazyType.IsNull)
                 {
                     var type = this.RetargetingTranslator.Retarget(_underlyingProperty.Type, RetargetOptions.RetargetPrimitiveTypesByTypeCode);
-                    if (type.TypeSymbol.TryAsDynamicIfNoPia(this.ContainingType, out TypeSymbol asDynamic))
-                    {
-                        type = TypeSymbolWithAnnotations.Create(asDynamic);
-                    }
                     _lazyType = type;
                 }
                 return _lazyType;

@@ -41,7 +41,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             GetNameAndExplicitInterfaceImplementations(
                 explicitlyImplementedPropertyOpt,
                 propertyName,
-                property.IsCompilationOutputWinMdObj(),
                 aliasQualifierOpt,
                 isGetMethod,
                 out name,
@@ -76,7 +75,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             GetNameAndExplicitInterfaceImplementations(
                 explicitlyImplementedPropertyOpt,
                 propertyName,
-                property.IsCompilationOutputWinMdObj(),
                 aliasQualifierOpt,
                 isGetMethod: true,
                 name: out name,
@@ -105,7 +103,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         private static void GetNameAndExplicitInterfaceImplementations(
             PropertySymbol explicitlyImplementedPropertyOpt,
             string propertyName,
-            bool isWinMd,
             string aliasQualifierOpt,
             bool isGetMethod,
             out string name,
@@ -113,7 +110,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         {
             if ((object)explicitlyImplementedPropertyOpt == null)
             {
-                name = GetAccessorName(propertyName, isGetMethod, isWinMd);
+                name = GetAccessorName(propertyName, isGetMethod);
                 explicitInterfaceImplementations = ImmutableArray<MethodSymbol>.Empty;
             }
             else
@@ -125,7 +122,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 string accessorName = (object)implementedAccessor != null
                     ? implementedAccessor.Name
                     : GetAccessorName(explicitlyImplementedPropertyOpt.MetadataName,
-                        isGetMethod, isWinMd); //Not name - could be indexer placeholder
+                        isGetMethod); //Not name - could be indexer placeholder
 
                 name = ExplicitInterfaceHelpers.GetMemberName(accessorName, explicitlyImplementedPropertyOpt.ContainingType, aliasQualifierOpt);
                 explicitInterfaceImplementations = (object)implementedAccessor == null
@@ -456,9 +453,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         /// <summary>
         /// If we are outputting a .winmdobj then the setter name is put_, not set_.
         /// </summary>
-        internal static string GetAccessorName(string propertyName, bool getNotSet, bool isWinMdOutput)
+        internal static string GetAccessorName(string propertyName, bool getNotSet)
         {
-            var prefix = getNotSet ? "get_" : isWinMdOutput ? "put_" : "set_";
+            var prefix = getNotSet ? "get_" : "set_";
             return prefix + propertyName;
         }
 
