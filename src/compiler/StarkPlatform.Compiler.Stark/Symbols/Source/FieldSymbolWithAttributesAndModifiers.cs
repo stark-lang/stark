@@ -216,10 +216,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 // IsByRefLikeAttribute should not be set explicitly.
                 arguments.Diagnostics.Add(ErrorCode.ERR_ExplicitReservedAttr, arguments.AttributeSyntaxOpt.Location, AttributeDescription.IsByRefLikeAttribute.FullName);
             }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.DateTimeConstantAttribute))
-            {
-                VerifyConstantValueMatches(attribute.DecodeDateTimeConstantValue(), ref arguments);
-            }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.TupleElementNamesAttribute))
             {
                 arguments.Diagnostics.Add(ErrorCode.ERR_ExplicitTupleElementNamesAttribute, arguments.AttributeSyntaxOpt.Location);

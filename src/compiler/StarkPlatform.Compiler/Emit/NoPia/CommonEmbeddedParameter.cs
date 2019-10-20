@@ -89,13 +89,6 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                             builder.AddOptional(TypeManager.CreateSynthesizedAttribute(WellKnownMember.System_ParamArrayAttribute__ctor, attrData, syntaxNodeOpt, diagnostics));
                         }
                     }
-                    else if (IsTargetAttribute(attrData, AttributeDescription.DateTimeConstantAttribute))
-                    {
-                        if (attrData.CommonConstructorArguments.Length == 1)
-                        {
-                            builder.AddOptional(TypeManager.CreateSynthesizedAttribute(WellKnownMember.System_Runtime_CompilerServices_DateTimeConstantAttribute__ctor, attrData, syntaxNodeOpt, diagnostics));
-                        }
-                    }
                     else
                     {
                         if (IsTargetAttribute(attrData, AttributeDescription.DefaultParameterValueAttribute))

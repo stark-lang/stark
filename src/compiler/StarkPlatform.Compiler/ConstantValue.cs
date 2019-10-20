@@ -27,7 +27,6 @@ namespace StarkPlatform.Compiler
         Single,
         Double,
         String,
-        DateTime,
         ConstTypeParameter,
     }
 
@@ -316,16 +315,6 @@ namespace StarkPlatform.Compiler
             return new ConstantValueTypeParameter(typeParameterSymbol);
         }
 
-        public static ConstantValue Create(DateTime value)
-        {
-            if (value == default(DateTime))
-            {
-                return ConstantValueDefault.DateTime;
-            }
-
-            return new ConstantValueDateTime(value);
-        }
-
         public static ConstantValue Create(object value, SpecialType st)
         {
             var discriminator = GetDiscriminator(st);
@@ -364,7 +353,6 @@ namespace StarkPlatform.Compiler
                         CreateSingle((double)value) :
                         Create((float)value);
                 case ConstantValueTypeDiscriminator.Double: return Create((double)value);
-                case ConstantValueTypeDiscriminator.DateTime: return Create((DateTime)value);
                 case ConstantValueTypeDiscriminator.String: return Create((string)value);
                 default:
                     throw new InvalidOperationException();  //Not using ExceptionUtilities.UnexpectedValue() because this failure path is tested.
@@ -396,7 +384,6 @@ namespace StarkPlatform.Compiler
                 case ConstantValueTypeDiscriminator.Boolean: return ConstantValueDefault.Boolean;
                 case ConstantValueTypeDiscriminator.Single: return ConstantValueDefault.Float32;
                 case ConstantValueTypeDiscriminator.Double: return ConstantValueDefault.Float64;
-                case ConstantValueTypeDiscriminator.DateTime: return ConstantValueDefault.DateTime;
 
                 case ConstantValueTypeDiscriminator.Null:
                 case ConstantValueTypeDiscriminator.String: return Null;
@@ -423,7 +410,6 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_Boolean: return ConstantValueTypeDiscriminator.Boolean;
                 case SpecialType.System_Float32: return ConstantValueTypeDiscriminator.Single;
                 case SpecialType.System_Float64: return ConstantValueTypeDiscriminator.Double;
-                case SpecialType.System_DateTime: return ConstantValueTypeDiscriminator.DateTime;
                 case SpecialType.System_String: return ConstantValueTypeDiscriminator.String;
             }
 
@@ -448,7 +434,6 @@ namespace StarkPlatform.Compiler
                 case ConstantValueTypeDiscriminator.Boolean: return SpecialType.System_Boolean;
                 case ConstantValueTypeDiscriminator.Single: return SpecialType.System_Float32;
                 case ConstantValueTypeDiscriminator.Double: return SpecialType.System_Float64;
-                case ConstantValueTypeDiscriminator.DateTime: return SpecialType.System_DateTime;
                 case ConstantValueTypeDiscriminator.String: return SpecialType.System_String;
                 default: return SpecialType.None;
             }
@@ -476,7 +461,6 @@ namespace StarkPlatform.Compiler
                     case ConstantValueTypeDiscriminator.Boolean: return Boxes.Box(BooleanValue);
                     case ConstantValueTypeDiscriminator.Single: return Boxes.Box(SingleValue);
                     case ConstantValueTypeDiscriminator.Double: return Boxes.Box(DoubleValue);
-                    case ConstantValueTypeDiscriminator.DateTime: return DateTimeValue;
                     case ConstantValueTypeDiscriminator.String: return StringValue;
                     case ConstantValueTypeDiscriminator.ConstTypeParameter: return TypeParameter;
                     default: throw ExceptionUtilities.UnexpectedValue(this.Discriminator);
@@ -623,19 +607,6 @@ namespace StarkPlatform.Compiler
             get
             {
                 return this.Discriminator == ConstantValueTypeDiscriminator.String;
-            }
-        }
-
-        public static bool IsDateTimeType(ConstantValueTypeDiscriminator discriminator)
-        {
-            return discriminator == ConstantValueTypeDiscriminator.DateTime;
-        }
-
-        public bool IsDateTime
-        {
-            get
-            {
-                return this.Discriminator == ConstantValueTypeDiscriminator.DateTime;
             }
         }
 

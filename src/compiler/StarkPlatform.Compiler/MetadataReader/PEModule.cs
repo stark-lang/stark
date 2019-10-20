@@ -1116,29 +1116,6 @@ namespace StarkPlatform.Compiler
             return false;
         }
 
-        internal bool HasDateTimeConstantAttribute(EntityHandle token, out ConstantValue defaultValue)
-        {
-            long value;
-            AttributeInfo info = FindLastTargetAttribute(token, AttributeDescription.DateTimeConstantAttribute);
-            if (info.HasValue && TryExtractLongValueFromAttribute(info.Handle, out value))
-            {
-                // if value is outside this range, DateTime would throw when constructed
-                if (value < DateTime.MinValue.Ticks || value > DateTime.MaxValue.Ticks)
-                {
-                    defaultValue = ConstantValue.Bad;
-                }
-                else
-                {
-                    defaultValue = ConstantValue.Create(new DateTime(value));
-                }
-
-                return true;
-            }
-
-            defaultValue = null;
-            return false;
-        }
-
         internal ImmutableArray<string> GetInternalsVisibleToAttributeValues(EntityHandle token)
         {
             List<AttributeInfo> attrInfos = FindTargetAttributes(token, AttributeDescription.InternalsVisibleToAttribute);

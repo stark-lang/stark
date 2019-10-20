@@ -55,7 +55,6 @@ namespace StarkPlatform.Compiler
             "core.Collections.Generic.IReadOnlyList`1",
             "core.Collections.Generic.IReadOnlyCollection`1",
             "core.Option`1",
-            "core.DateTime",
             "core.runtime.compiler.IsVolatile",
             "core.IDisposable",
             "core.TypedReference",

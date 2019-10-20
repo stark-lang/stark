@@ -765,14 +765,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_runtime_WindowsRuntime_EventRegistrationToken,
                     (byte)SignatureTypeCode.GenericMethodParameter, 0,
 
-                // System_Runtime_CompilerServices_DateTimeConstantAttribute__ctor
-                (byte)MemberFlags.Constructor,                                                                              // Flags
-                (byte)WellKnownType.core_runtime_compiler_DateTimeConstantAttribute,                              // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int64,
-
                 // System_Runtime_CompilerServices_ExtensionAttribute__ctor
                 (byte)MemberFlags.Constructor,                                                                              // Flags
                 (byte)WellKnownType.core_runtime_compiler_ExtensionAttribute,                                     // DeclaringTypeId
@@ -1239,14 +1231,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
 
-                // Microsoft_VisualBasic_CompilerServices_Conversions__ToDateString
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
-
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharString
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
                 (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
@@ -1326,14 +1310,6 @@ namespace StarkPlatform.Compiler
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64,
-
-                // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDateTime
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringChar
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -1437,14 +1413,6 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Float64, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
-
-                // Microsoft_VisualBasic_CompilerServices_Conversions__ToDateObject
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)WellKnownType.Microsoft_VisualBasic_CompilerServices_Conversions,                                     // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
 
                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharObject
@@ -3320,7 +3288,6 @@ namespace StarkPlatform.Compiler
                 "AddEventHandler",                          // System_Runtime_InteropServices_WindowsRuntime_WindowsRuntimeMarshal__AddEventHandler_T
                 "RemoveAllEventHandlers",                   // System_Runtime_InteropServices_WindowsRuntime_WindowsRuntimeMarshal__RemoveAllEventHandlers
                 "RemoveEventHandler",                       // System_Runtime_InteropServices_WindowsRuntime_WindowsRuntimeMarshal__RemoveEventHandler_T
-                ".ctor",                                    // System_Runtime_CompilerServices_DateTimeConstantAttribute__ctor
                 ".ctor",                                    // System_Runtime_CompilerServices_ExtensionAttribute__ctor
                 ".ctor",                                    // System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor
                 ".ctor",                                    // System_Runtime_CompilerServices_AccessedThroughPropertyAttribute__ctor
@@ -3373,7 +3340,6 @@ namespace StarkPlatform.Compiler
                 "ToULong",                                  // Microsoft_VisualBasic_CompilerServices_Conversions__ToULongString
                 "ToSingle",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToSingleString
                 "ToDouble",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToDoubleString
-                "ToDate",                                   // Microsoft_VisualBasic_CompilerServices_Conversions__ToDateString
                 "ToChar",                                   // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharString
                 "ToCharArrayRankOne",                       // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharArrayRankOneString
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringBoolean
@@ -3384,7 +3350,6 @@ namespace StarkPlatform.Compiler
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringUInt64
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringSingle
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDouble
-                "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDateTime
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringChar
                 "ToString",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToStringObject
                 "ToBoolean",                                // Microsoft_VisualBasic_CompilerServices_Conversions__ToBooleanObject
@@ -3398,7 +3363,6 @@ namespace StarkPlatform.Compiler
                 "ToULong",                                  // Microsoft_VisualBasic_CompilerServices_Conversions__ToULongObject
                 "ToSingle",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToSingleObject
                 "ToDouble",                                 // Microsoft_VisualBasic_CompilerServices_Conversions__ToDoubleObject
-                "ToDate",                                   // Microsoft_VisualBasic_CompilerServices_Conversions__ToDateObject
                 "ToChar",                                   // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharObject
                 "ToCharArrayRankOne",                       // Microsoft_VisualBasic_CompilerServices_Conversions__ToCharArrayRankOneObject
                 "ToGenericParameter",                       // Microsoft_VisualBasic_CompilerServices_Conversions__ToGenericParameter_T_Object

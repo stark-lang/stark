@@ -159,47 +159,6 @@ namespace StarkPlatform.Compiler
             }
         }
 
-        private sealed class ConstantValueDateTime : ConstantValue
-        {
-            private readonly DateTime _value;
-
-            public ConstantValueDateTime(DateTime value)
-            {
-                _value = value;
-            }
-
-            public override ConstantValueTypeDiscriminator Discriminator
-            {
-                get
-                {
-                    return ConstantValueTypeDiscriminator.DateTime;
-                }
-            }
-
-            internal override SpecialType SpecialType
-            {
-                get { return SpecialType.System_DateTime; }
-            }
-
-            public override DateTime DateTimeValue
-            {
-                get
-                {
-                    return _value;
-                }
-            }
-
-            public override int GetHashCode()
-            {
-                return Hash.Combine(base.GetHashCode(), _value.GetHashCode());
-            }
-
-            public override bool Equals(ConstantValue other)
-            {
-                return base.Equals(other) && _value == other.DateTimeValue;
-            }
-        }
-
         // base for constant classes that may represent more than one 
         // constant type
         private abstract class ConstantValueDiscriminated : ConstantValue
@@ -241,7 +200,6 @@ namespace StarkPlatform.Compiler
             public static readonly ConstantValueDefault Rune = new ConstantValueDefault(ConstantValueTypeDiscriminator.Rune);
             public static readonly ConstantValueDefault Float32 = new ConstantValueSingleZero();
             public static readonly ConstantValueDefault Float64 = new ConstantValueDoubleZero();
-            public static readonly ConstantValueDefault DateTime = new ConstantValueDefault(ConstantValueTypeDiscriminator.DateTime);
             public static readonly ConstantValueDefault Boolean = new ConstantValueDefault(ConstantValueTypeDiscriminator.Boolean);
 
             protected ConstantValueDefault(ConstantValueTypeDiscriminator discriminator)

@@ -905,11 +905,7 @@ tryAgain:
                 bool refersToNoPiaLocalType;
                 type = GetSymbolForTypeHandleOrThrow(sigReader.ReadTypeHandle(), out refersToNoPiaLocalType, allowTypeSpec: true, requireShortForm: true);
 
-                if (type.SpecialType == SpecialType.System_DateTime)
-                {
-                    value = ConstantValue.Create(sigReader.ReadDateTime());
-                }
-                else if (sigReader.RemainingBytes == 0)
+                if (sigReader.RemainingBytes == 0)
                 {
                     // default(T)
                     value = (type.IsReferenceType || type is IPointerTypeSymbol) ? ConstantValue.Null : ConstantValue.Bad;

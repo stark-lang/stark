@@ -443,11 +443,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 value = _moduleSymbol.Module.GetParamDefaultValue(_handle);
             }
 
-            if (value == null && !ignoreAttributes)
-            {
-                value = GetDefaultDecimalOrDateTimeValue();
-            }
-
             return value;
         }
 
@@ -467,21 +462,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 
                 return _lazyDefaultValue;
             }
-        }
-
-        private ConstantValue GetDefaultDecimalOrDateTimeValue()
-        {
-            Debug.Assert(!_handle.IsNil);
-            ConstantValue value = null;
-
-            // It is possible in Visual Basic for a parameter of object type to have a default value of DateTime type.
-            // If it's present, use it.  We'll let the call-site figure out whether it can actually be used.
-            if (_moduleSymbol.Module.HasDateTimeConstantAttribute(_handle, out value))
-            {
-                return value;
-            }
-
-            return value;
         }
 
         internal override bool IsMetadataOptional
@@ -809,14 +789,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
 
                 ConstantValue defaultValue = this.ExplicitDefaultConstantValue;
                 AttributeDescription filterOutConstantAttributeDescription = default(AttributeDescription);
-
-                if ((object)defaultValue != null)
-                {
-                    if (defaultValue.Discriminator == ConstantValueTypeDiscriminator.DateTime)
-                    {
-                        filterOutConstantAttributeDescription = AttributeDescription.DateTimeConstantAttribute;
-                    }
-                }
 
                 bool filterIsReadOnlyAttribute = this.RefKind == RefKind.In;
 

@@ -481,7 +481,6 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription StandardModuleAttribute = new AttributeDescription("Microsoft.VisualBasic.CompilerServices", "StandardModuleAttribute", s_signaturesOfStandardModuleAttribute);
         internal static readonly AttributeDescription OptionCompareAttribute = new AttributeDescription("Microsoft.VisualBasic.CompilerServices", "OptionCompareAttribute", s_signaturesOfOptionCompareAttribute);
         internal static readonly AttributeDescription AccessedThroughPropertyAttribute = new AttributeDescription("core.runtime", "AccessedThroughPropertyAttribute", s_signaturesOfAccessedThroughPropertyAttribute);
-        internal static readonly AttributeDescription DateTimeConstantAttribute = new AttributeDescription("core.runtime", "DateTimeConstantAttribute", s_signaturesOfDateTimeConstantAttribute);
         internal static readonly AttributeDescription ClassInterfaceAttribute = new AttributeDescription("core.runtime", "ClassInterfaceAttribute", s_signaturesOfClassInterfaceAttribute);
         internal static readonly AttributeDescription DispIdAttribute = new AttributeDescription("core.runtime", "DispIdAttribute", new byte[][] { s_signature_HasThis_Void_Int32 });
         internal static readonly AttributeDescription TypeLibVersionAttribute = new AttributeDescription("core.runtime", "TypeLibVersionAttribute", s_signaturesOfTypeLibVersionAttribute);

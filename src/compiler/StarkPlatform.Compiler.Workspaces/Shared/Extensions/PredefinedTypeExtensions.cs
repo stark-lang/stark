@@ -40,8 +40,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                     return SpecialType.System_Float64;
                 case PredefinedType.String:
                     return SpecialType.System_String;
-                case PredefinedType.DateTime:
-                    return SpecialType.System_DateTime;
                 default:
                     return SpecialType.None;
             }

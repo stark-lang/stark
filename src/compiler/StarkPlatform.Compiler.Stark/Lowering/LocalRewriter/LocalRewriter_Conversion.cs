@@ -376,7 +376,7 @@ namespace StarkPlatform.Compiler.Stark
 
             if (!conversion.IsValid)
             {
-                if (!acceptFailingConversion || rewrittenOperand.Type.SpecialType != SpecialType.System_DateTime)
+                if (!acceptFailingConversion)
                 {
                     // error CS0029: Cannot implicitly convert type '{0}' to '{1}'
                     diagnostics.Add(

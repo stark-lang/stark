@@ -80,7 +80,6 @@ namespace StarkPlatform.Compiler
                 case SpecialType.System_Int:
                 case SpecialType.System_UInt:
                 case SpecialType.core_Option_T:
-                case SpecialType.System_DateTime:
                 case SpecialType.System_TypedReference:
                 case SpecialType.System_ArgIterator:
                 case SpecialType.System_RuntimeArgumentHandle:
@@ -308,11 +307,6 @@ namespace StarkPlatform.Compiler
             if (value.GetType() == typeof(ushort))
             {
                 return SpecialType.System_UInt16;
-            }
-
-            if (value.GetType() == typeof(DateTime))
-            {
-                return SpecialType.System_DateTime;
             }
 
             if (value.GetType() == typeof(byte))

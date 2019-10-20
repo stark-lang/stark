@@ -1169,7 +1169,6 @@ namespace StarkPlatform.Compiler.Stark
                 case SpecialType.System_UInt64:
                 case SpecialType.System_Float32:
                 case SpecialType.System_Float64:
-                case SpecialType.System_DateTime:
                     return true;
                 default:
                     return t.IsNullableType();

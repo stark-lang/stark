@@ -31,17 +31,6 @@ namespace StarkPlatform.Compiler
         System_Delegate__op_Equality,
         System_Delegate__op_Inequality,
 
-        System_DateTime__MinValue,
-        System_DateTime__CtorInt64,
-        System_DateTime__CompareDateTimeDateTime,
-
-        System_DateTime__op_Equality,
-        System_DateTime__op_Inequality,
-        System_DateTime__op_GreaterThan,
-        System_DateTime__op_GreaterThanOrEqual,
-        System_DateTime__op_LessThan,
-        System_DateTime__op_LessThanOrEqual,
-
         core_Iterable_T_TIterator__iterate_begin,
         core_Iterable_T_TIterator__iterate_has_current,
         core_Iterable_T_TIterator__iterate_current,

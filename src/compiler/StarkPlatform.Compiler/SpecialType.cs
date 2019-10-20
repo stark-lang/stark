@@ -191,11 +191,6 @@ namespace StarkPlatform.Compiler
         core_Option_T,
 
         /// <summary>
-        /// Indicates that the type is <see cref="DateTime"/>.
-        /// </summary>
-        System_DateTime,
-
-        /// <summary>
         /// Indicates that the type is <see cref="IsVolatile"/>.
         /// </summary>
         System_Runtime_CompilerServices_IsVolatile,

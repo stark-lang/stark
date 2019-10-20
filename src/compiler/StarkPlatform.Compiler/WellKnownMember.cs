@@ -114,7 +114,6 @@ namespace StarkPlatform.Compiler
         System_Runtime_InteropServices_WindowsRuntime_WindowsRuntimeMarshal__RemoveAllEventHandlers,
         System_Runtime_InteropServices_WindowsRuntime_WindowsRuntimeMarshal__RemoveEventHandler_T,
 
-        System_Runtime_CompilerServices_DateTimeConstantAttribute__ctor,
         System_Runtime_CompilerServices_ExtensionAttribute__ctor,
         System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor,
         System_Runtime_CompilerServices_AccessedThroughPropertyAttribute__ctor,
@@ -176,7 +175,6 @@ namespace StarkPlatform.Compiler
         Microsoft_VisualBasic_CompilerServices_Conversions__ToULongString,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToSingleString,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToDoubleString,
-        Microsoft_VisualBasic_CompilerServices_Conversions__ToDateString,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToCharString,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToCharArrayRankOneString,
 
@@ -188,7 +186,6 @@ namespace StarkPlatform.Compiler
         Microsoft_VisualBasic_CompilerServices_Conversions__ToStringUInt64,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToStringSingle,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDouble,
-        Microsoft_VisualBasic_CompilerServices_Conversions__ToStringDateTime,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToStringChar,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToStringObject,
 
@@ -203,7 +200,6 @@ namespace StarkPlatform.Compiler
         Microsoft_VisualBasic_CompilerServices_Conversions__ToULongObject,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToSingleObject,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToDoubleObject,
-        Microsoft_VisualBasic_CompilerServices_Conversions__ToDateObject,
         Microsoft_VisualBasic_CompilerServices_Conversions__ToCharObject,
 
         Microsoft_VisualBasic_CompilerServices_Conversions__ToCharArrayRankOneObject,

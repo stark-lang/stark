@@ -189,83 +189,6 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Delegate,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Delegate,
 
-                // System_DateTime__MinValue
-                (byte)(MemberFlags.Field | MemberFlags.Static),                                                             // Flags
-                (byte)SpecialType.System_DateTime,                                                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,                                  // Field Signature
-
-                // System_DateTime__CtorInt64
-                (byte)MemberFlags.Constructor,                                                                              // Flags
-                (byte)SpecialType.System_DateTime,                                                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int64,
-
-                // System_DateTime__CompareDateTimeDateTime
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)SpecialType.System_DateTime,                                                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    2,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-
-                // System_DateTime__op_Equality
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)SpecialType.System_DateTime,                                                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    2,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-
-                // System_DateTime__op_Inequality
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)SpecialType.System_DateTime,                                                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    2,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-
-                // System_DateTime__op_GreaterThan
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)SpecialType.System_DateTime,                                                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    2,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-
-                // System_DateTime__op_GreaterThanOrEqual
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)SpecialType.System_DateTime,                                                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    2,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-
-                // System_DateTime__op_LessThan
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)SpecialType.System_DateTime,                                                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    2,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-
-                // System_DateTime__op_LessThanOrEqual
-                (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
-                (byte)SpecialType.System_DateTime,                                                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    2,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_DateTime,
-
                 // core_Iterable_T_TIterator__iterate_begin
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
                 (byte)SpecialType.core_Iterable_T_TIterator,                                                               // DeclaringTypeId
@@ -543,15 +466,6 @@ namespace StarkPlatform.Compiler
                 "Remove",                                   // System_Delegate__Remove
                 "op_Equality",                              // System_Delegate__op_Equality
                 "op_Inequality",                            // System_Delegate__op_Inequality
-                "MinValue",                                 // System_DateTime__MinValue
-                ".ctor",                                    // System_DateTime__CtorInt64
-                "Compare",                                  // System_DateTime__CompareDateTimeDateTime
-                "op_Equality",                              // System_DateTime__op_Equality
-                "op_Inequality",                            // System_DateTime__op_Inequality
-                "op_GreaterThan",                           // System_DateTime__op_GreaterThan
-                "op_GreaterThanOrEqual",                    // System_DateTime__op_GreaterThanOrEqual
-                "op_LessThan",                              // System_DateTime__op_LessThan
-                "op_LessThanOrEqual",                       // System_DateTime__op_LessThanOrEqual
                 "iterate_begin",                            // core_Iterable_T_TIterator__iterate_begin
                 "iterate_has_current",                      // core_Iterable_T_TIterator__iterate_has_current
                 "iterate_current",                          // core_Iterable_T_TIterator__iterate_current
