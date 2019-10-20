@@ -516,22 +516,6 @@ namespace StarkPlatform.Compiler
                 0,                                                                                                          // Arity
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Diagnostics_DebuggableAttribute__DebuggingModes, // Field Signature
 
-                // System_Runtime_InteropServices_UnknownWrapper__ctor
-                (byte)MemberFlags.Constructor,                                                                              // Flags
-                (byte)WellKnownType.core_runtime_UnknownWrapper,                                          // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
-
-                // System_Runtime_InteropServices_DispatchWrapper__ctor
-                (byte)MemberFlags.Constructor,                                                                              // Flags
-                (byte)WellKnownType.core_runtime_DispatchWrapper,                                         // DeclaringTypeId
-                0,                                                                                                          // Arity
-                    1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Object,
-
                 // System_Runtime_InteropServices_ClassInterfaceAttribute__ctorClassInterfaceType
                 (byte)MemberFlags.Constructor,                                                                              // Flags
                 (byte)WellKnownType.core_runtime_ClassInterfaceAttribute,                                 // DeclaringTypeId
@@ -3260,8 +3244,6 @@ namespace StarkPlatform.Compiler
                 "DisableOptimizations",                     // System_Diagnostics_DebuggableAttribute_DebuggingModes__DisableOptimizations
                 "EnableEditAndContinue",                    // System_Diagnostics_DebuggableAttribute_DebuggingModes__EnableEditAndContinue
                 "IgnoreSymbolStoreSequencePoints",          // System_Diagnostics_DebuggableAttribute_DebuggingModes__IgnoreSymbolStoreSequencePoints
-                ".ctor",                                    // System_Runtime_InteropServices_UnknownWrapper__ctor
-                ".ctor",                                    // System_Runtime_InteropServices_DispatchWrapper__ctor
                 ".ctor",                                    // System_Runtime_InteropServices_ClassInterfaceAttribute__ctorClassInterfaceType
                 ".ctor",                                    // System_Runtime_InteropServices_CoClassAttribute__ctor
                 ".ctor",                                    // System_Runtime_InteropServices_ComAwareEventInfo__ctor

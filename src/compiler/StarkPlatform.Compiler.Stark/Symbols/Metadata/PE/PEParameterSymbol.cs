@@ -22,8 +22,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
         [Flags]
         private enum WellKnownAttributeFlags
         {
-            HasIDispatchConstantAttribute = 0x1 << 0,
-            HasIUnknownConstantAttribute = 0x1 << 1,
+            //HasIDispatchConstantAttribute = 0x1 << 0,
+            //HasIUnknownConstantAttribute = 0x1 << 1,
             HasCallerFilePathAttribute = 0x1 << 2,
             HasCallerLineNumberAttribute = 0x1 << 3,
             HasCallerMemberNameAttribute = 0x1 << 4,
@@ -469,38 +469,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             get
             {
                 return (_flags & ParameterAttributes.Optional) != 0;
-            }
-        }
-
-        internal override bool IsIDispatchConstant
-        {
-            get
-            {
-                const WellKnownAttributeFlags flag = WellKnownAttributeFlags.HasIDispatchConstantAttribute;
-
-                bool value;
-                if (!_packedFlags.TryGetWellKnownAttribute(flag, out value))
-                {
-                    value = _packedFlags.SetWellKnownAttribute(flag, _moduleSymbol.Module.HasAttribute(_handle,
-                        AttributeDescription.IDispatchConstantAttribute));
-                }
-                return value;
-            }
-        }
-
-        internal override bool IsIUnknownConstant
-        {
-            get
-            {
-                const WellKnownAttributeFlags flag = WellKnownAttributeFlags.HasIUnknownConstantAttribute;
-
-                bool value;
-                if (!_packedFlags.TryGetWellKnownAttribute(flag, out value))
-                {
-                    value = _packedFlags.SetWellKnownAttribute(flag, _moduleSymbol.Module.HasAttribute(_handle,
-                        AttributeDescription.IUnknownConstantAttribute));
-                }
-                return value;
             }
         }
 

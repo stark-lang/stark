@@ -83,8 +83,6 @@ namespace StarkPlatform.Compiler
         System_Diagnostics_DebuggableAttribute_DebuggingModes__EnableEditAndContinue,
         System_Diagnostics_DebuggableAttribute_DebuggingModes__IgnoreSymbolStoreSequencePoints,
 
-        System_Runtime_InteropServices_UnknownWrapper__ctor,
-        System_Runtime_InteropServices_DispatchWrapper__ctor,
         System_Runtime_InteropServices_ClassInterfaceAttribute__ctorClassInterfaceType,
         System_Runtime_InteropServices_CoClassAttribute__ctor,
         System_Runtime_InteropServices_ComAwareEventInfo__ctor,

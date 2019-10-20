@@ -104,12 +104,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        internal override bool IsIDispatchConstant
-            => GetDecodedWellKnownAttributeData()?.HasIDispatchConstantAttribute == true;
-
-        internal override bool IsIUnknownConstant
-            => GetDecodedWellKnownAttributeData()?.HasIUnknownConstantAttribute == true;
-
         private bool HasCallerLineNumberAttribute
             => GetEarlyDecodedWellKnownAttributeData()?.HasCallerLineNumberAttribute == true;
 
@@ -611,14 +605,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             else if (attribute.IsTargetAttribute(this, AttributeDescription.MarshalAsAttribute))
             {
                 MarshalAsAttributeDecoder<ParameterWellKnownAttributeData, AttributeSyntax, CSharpAttributeData, AttributeLocation>.Decode(ref arguments, AttributeTargets.Parameter, MessageProvider.Instance);
-            }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.IDispatchConstantAttribute))
-            {
-                arguments.GetOrCreateData<ParameterWellKnownAttributeData>().HasIDispatchConstantAttribute = true;
-            }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.IUnknownConstantAttribute))
-            {
-                arguments.GetOrCreateData<ParameterWellKnownAttributeData>().HasIUnknownConstantAttribute = true;
             }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.CallerLineNumberAttribute))
             {

@@ -367,10 +367,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return null; }
         }
 
-        internal abstract bool IsIDispatchConstant { get; }
-
-        internal abstract bool IsIUnknownConstant { get; }
-
         internal abstract bool IsCallerFilePath { get; }
 
         internal abstract bool IsCallerLineNumber { get; }

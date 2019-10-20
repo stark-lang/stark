@@ -57,16 +57,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return false; }
         }
 
-        internal override bool IsIDispatchConstant
-        {
-            get { return false; }
-        }
-
-        internal override bool IsIUnknownConstant
-        {
-            get { return false; }
-        }
-
         internal override bool IsCallerFilePath
         {
             get { return false; }

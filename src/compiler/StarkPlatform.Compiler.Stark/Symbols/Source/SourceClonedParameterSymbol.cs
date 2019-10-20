@@ -126,16 +126,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return _originalParam.MarshallingInformation; }
         }
 
-        internal override bool IsIDispatchConstant
-        {
-            get { return _originalParam.IsIDispatchConstant; }
-        }
-
-        internal override bool IsIUnknownConstant
-        {
-            get { return _originalParam.IsIUnknownConstant; }
-        }
-
         internal override bool IsCallerFilePath
         {
             get { return _originalParam.IsCallerFilePath; }

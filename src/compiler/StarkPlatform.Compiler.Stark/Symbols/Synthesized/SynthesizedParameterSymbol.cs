@@ -90,16 +90,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return null; }
         }
 
-        internal override bool IsIDispatchConstant
-        {
-            get { return false; }
-        }
-
-        internal override bool IsIUnknownConstant
-        {
-            get { return false; }
-        }
-
         internal override bool IsCallerLineNumber
         {
             get { return false; }

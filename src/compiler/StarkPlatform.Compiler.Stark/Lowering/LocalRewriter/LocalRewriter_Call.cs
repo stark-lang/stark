@@ -1516,20 +1516,6 @@ namespace StarkPlatform.Compiler.Stark
                 // default(object)
                 defaultValue = new BoundDefaultExpression(syntax, parameter.Type.TypeSymbol) { WasCompilerGenerated = true };
             }
-            else if (parameter.IsIUnknownConstant)
-            {
-                // new UnknownWrapper(default(object))
-                var methodSymbol = (MethodSymbol)compilation.GetWellKnownTypeMember(WellKnownMember.System_Runtime_InteropServices_UnknownWrapper__ctor);
-                var argument = new BoundDefaultExpression(syntax, parameter.Type.TypeSymbol) { WasCompilerGenerated = true };
-                defaultValue = new BoundObjectCreationExpression(syntax, methodSymbol, null, argument) { WasCompilerGenerated = true };
-            }
-            else if (parameter.IsIDispatchConstant)
-            {
-                // new DispatchWrapper(default(object))
-                var methodSymbol = (MethodSymbol)compilation.GetWellKnownTypeMember(WellKnownMember.System_Runtime_InteropServices_DispatchWrapper__ctor);
-                var argument = new BoundDefaultExpression(syntax, parameter.Type.TypeSymbol) { WasCompilerGenerated = true };
-                defaultValue = new BoundObjectCreationExpression(syntax, methodSymbol, null, argument) { WasCompilerGenerated = true };
-            }
             else
             {
                 // Type.Missing

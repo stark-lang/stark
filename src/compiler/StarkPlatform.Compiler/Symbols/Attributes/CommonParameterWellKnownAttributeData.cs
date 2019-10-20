@@ -73,41 +73,5 @@ namespace StarkPlatform.Compiler
             }
         }
         #endregion
-
-        #region IDispatchConstantAttribute
-        private bool _hasIDispatchConstantAttribute;
-        public bool HasIDispatchConstantAttribute
-        {
-            get
-            {
-                VerifySealed(expected: true);
-                return _hasIDispatchConstantAttribute;
-            }
-            set
-            {
-                VerifySealed(expected: false);
-                _hasIDispatchConstantAttribute = value;
-                SetDataStored();
-            }
-        }
-        #endregion
-
-        #region IUnknownConstantAttribute
-        private bool _hasIUnknownConstantAttribute;
-        public bool HasIUnknownConstantAttribute
-        {
-            get
-            {
-                VerifySealed(expected: true);
-                return _hasIUnknownConstantAttribute;
-            }
-            set
-            {
-                VerifySealed(expected: false);
-                _hasIUnknownConstantAttribute = value;
-                SetDataStored();
-            }
-        }
-        #endregion
     }
 }

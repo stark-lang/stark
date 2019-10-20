@@ -128,16 +128,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return _underlyingParameter.MarshallingType; }
         }
 
-        internal override bool IsIDispatchConstant
-        {
-            get { return _underlyingParameter.IsIDispatchConstant; }
-        }
-
-        internal override bool IsIUnknownConstant
-        {
-            get { return _underlyingParameter.IsIUnknownConstant; }
-        }
-
         internal override bool IsCallerLineNumber
         {
             get { return _underlyingParameter.IsCallerLineNumber; }

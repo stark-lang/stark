@@ -61,10 +61,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         internal override ConstantValue ExplicitDefaultConstantValue { get { throw ExceptionUtilities.Unreachable; } }
 
-        internal override bool IsIDispatchConstant { get { throw ExceptionUtilities.Unreachable; } }
-
-        internal override bool IsIUnknownConstant { get { throw ExceptionUtilities.Unreachable; } }
-
         internal override bool IsCallerFilePath { get { throw ExceptionUtilities.Unreachable; } }
 
         internal override bool IsCallerLineNumber { get { throw ExceptionUtilities.Unreachable; } }
