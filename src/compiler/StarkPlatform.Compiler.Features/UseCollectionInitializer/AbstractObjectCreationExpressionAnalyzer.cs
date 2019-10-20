@@ -102,14 +102,6 @@ namespace StarkPlatform.Compiler.UseCollectionInitializer
             }
 
             _initializedSymbol = _semanticModel.GetDeclaredSymbol(containingDeclarator, _cancellationToken);
-            if (_initializedSymbol is ILocalSymbol local &&
-                local.Type is IDynamicTypeSymbol)
-            {
-                // Not supported if we're creating a dynamic local.  The object we're instantiating
-                // may not have the members that we're trying to access on the dynamic object.
-                return false;
-            }
-
             if (!_syntaxFacts.IsDeclaratorOfLocalDeclarationStatement(containingDeclarator, _containingStatement))
             {
                 return false;
@@ -134,13 +126,6 @@ namespace StarkPlatform.Compiler.UseCollectionInitializer
             }
 
             var typeInfo = _semanticModel.GetTypeInfo(left, _cancellationToken);
-            if (typeInfo.Type is IDynamicTypeSymbol || typeInfo.ConvertedType is IDynamicTypeSymbol)
-            {
-                // Not supported if we're initializing something dynamic.  The object we're instantiating
-                // may not have the members that we're trying to access on the dynamic object.
-                return false;
-            }
-
             _valuePattern = left;
             _initializedSymbol = _semanticModel.GetSymbolInfo(left, _cancellationToken).GetAnySymbol();
             return true;

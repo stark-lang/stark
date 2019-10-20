@@ -33,18 +33,6 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert((object)rewrittenResultType != null);
             Debug.Assert(rewrittenRight.Type.Equals(rewrittenResultType, TypeCompareKind.IgnoreDynamicAndTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes));
 
-            if (_inExpressionLambda)
-            {
-                TypeSymbol strippedLeftType = rewrittenLeft.Type.StrippedType();
-                Conversion rewrittenConversion = TryMakeConversion(syntax, leftConversion, strippedLeftType, rewrittenResultType);
-                if (!rewrittenConversion.Exists)
-                {
-                    return BadExpression(syntax, rewrittenResultType, rewrittenLeft, rewrittenRight);
-                }
-
-                return new BoundNullCoalescingOperator(syntax, rewrittenLeft, rewrittenRight, rewrittenConversion, resultKind, rewrittenResultType);
-            }
-
             var isUnconstrainedTypeParameter = (object)rewrittenLeft.Type != null && !rewrittenLeft.Type.IsReferenceType && !rewrittenLeft.Type.IsValueType;
 
             // first we can make a small optimization:

@@ -121,7 +121,6 @@ namespace StarkPlatform.Compiler.Stark
                 case SymbolKind.Local:
                 case SymbolKind.Label:
                 case SymbolKind.Namespace:
-                case SymbolKind.DynamicType:
                 case SymbolKind.Assembly:
                 case SymbolKind.NetModule:
                 case SymbolKind.RangeVariable:

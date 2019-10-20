@@ -548,7 +548,6 @@ namespace StarkPlatform.Compiler.Stark
                     }
 
                     return false;
-                case TypeKind.Dynamic:
                 case TypeKind.TypeParameter:
                     return false;
                 default:

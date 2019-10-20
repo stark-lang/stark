@@ -22,10 +22,7 @@ namespace StarkPlatform.Compiler.Stark
 
             var rewrittenType = VisitType(node.Type);
 
-            bool wasInExpressionLambda = _inExpressionLambda;
-            _inExpressionLambda = _inExpressionLambda || (node.ConversionKind == ConversionKind.AnonymousFunction && !wasInExpressionLambda && rewrittenType.IsExpressionTree());
             var rewrittenOperand = VisitExpression(node.Operand);
-            _inExpressionLambda = wasInExpressionLambda;
 
             var result = MakeConversionNode(node, node.Syntax, rewrittenOperand, node.Conversion, node.Checked, node.ExplicitCastInCode, node.ConstantValue, rewrittenType);
 
@@ -35,8 +32,7 @@ namespace StarkPlatform.Compiler.Stark
             // 4.1.6 C# spec: To force a value of a floating point type to the exact precision of its type, an explicit cast can be used.
             // It means that explicit casts to (double) or (float) should be preserved on the node.
             // If original conversion has become something else with unknown precision, add an explicit identity cast.
-            if (!_inExpressionLambda &&
-                node.ExplicitCastInCode &&
+            if (node.ExplicitCastInCode &&
                 IsFloatingPointExpressionOfUnknownPrecision(result))
             {
                 result = MakeConversionNode(
@@ -112,11 +108,6 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert(oldNode == null || oldNode.Syntax == syntax);
             Debug.Assert((object)rewrittenType != null);
 
-            if (_inExpressionLambda)
-            {
-                @checked = @checked && NeedsCheckedConversionInExpressionTree(rewrittenOperand.Type, rewrittenType, explicitCastInCode);
-            }
-
             switch (conversion.Kind)
             {
                 case ConversionKind.Identity:
@@ -132,7 +123,7 @@ namespace StarkPlatform.Compiler.Stark
                     // but we need to change the Type property on the resulting BoundExpression to match the rewrittenType.
                     // This is necessary so that subsequent lowering transformations see that the expression is dynamic.
 
-                    if (_inExpressionLambda || !rewrittenOperand.Type.Equals(rewrittenType, TypeCompareKind.ConsiderEverything))
+                    if (!rewrittenOperand.Type.Equals(rewrittenType, TypeCompareKind.ConsiderEverything))
                     {
                         break;
                     }
@@ -174,16 +165,13 @@ namespace StarkPlatform.Compiler.Stark
                         rewrittenType: rewrittenType);
 
                 case ConversionKind.DefaultOrNullLiteral:
-                    if (!_inExpressionLambda || !explicitCastInCode)
-                    {
-                        return new BoundDefaultExpression(syntax, rewrittenType);
-                    }
+                    return new BoundDefaultExpression(syntax, rewrittenType);
 
                     break;
 
                 case ConversionKind.ImplicitReference:
                 case ConversionKind.ExplicitReference:
-                    if (rewrittenOperand.IsDefaultValue() && (!_inExpressionLambda || !explicitCastInCode))
+                    if (rewrittenOperand.IsDefaultValue())
                     {
                         return new BoundDefaultExpression(syntax, rewrittenType);
                     }
@@ -201,7 +189,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 case ConversionKind.ImplicitNumeric:
                 case ConversionKind.ExplicitNumeric:
-                    if (rewrittenOperand.IsDefaultValue() && (!_inExpressionLambda || !explicitCastInCode))
+                    if (rewrittenOperand.IsDefaultValue())
                     {
                         return new BoundDefaultExpression(syntax, rewrittenType);
                     }
@@ -255,19 +243,11 @@ namespace StarkPlatform.Compiler.Stark
 
                 case ConversionKind.ExplicitEnumeration:
                     if (!rewrittenType.IsNullableType() &&
-                        rewrittenOperand.IsDefaultValue() &&
-                        (!_inExpressionLambda || !explicitCastInCode))
+                        rewrittenOperand.IsDefaultValue())
                     {
                         return new BoundDefaultExpression(syntax, rewrittenType);
                     }
                     break;
-
-                case ConversionKind.ImplicitDynamic:
-                case ConversionKind.ExplicitDynamic:
-                    Debug.Assert((object)conversion.Method == null);
-                    Debug.Assert(!conversion.IsExtensionMethod);
-                    Debug.Assert(constantValueOpt == null);
-                    return _dynamicFactory.MakeDynamicConversion(rewrittenOperand, explicitCastInCode || conversion.Kind == ConversionKind.ExplicitDynamic, conversion.IsArrayIndex, @checked, rewrittenType).ToExpression();
 
                 case ConversionKind.ImplicitTuple:
                 case ConversionKind.ExplicitTuple:
@@ -660,11 +640,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             Debug.Assert((object)rewrittenType != null);
 
-            if (_inExpressionLambda)
-            {
-                return RewriteLiftedConversionInExpressionTree(syntax, rewrittenOperand, conversion, @checked, explicitCastInCode, rewrittenType);
-            }
-
             TypeSymbol rewrittenOperandType = rewrittenOperand.Type;
             Debug.Assert(rewrittenType.IsNullableType() || rewrittenOperandType.IsNullableType());
 
@@ -933,8 +908,7 @@ namespace StarkPlatform.Compiler.Stark
             // do not rewrite user defined conversion 
             // - in expression trees or 
             // - special situations when converting from array to ReadOnlySpan, which has special support in codegen
-            bool doNotLowerToCall = _inExpressionLambda ||
-                                    (rewrittenOperand.Type.IsArray()) && _compilation.IsReadOnlySpanType(rewrittenType);
+            bool doNotLowerToCall = (rewrittenOperand.Type.IsArray()) && _compilation.IsReadOnlySpanType(rewrittenType);
 
             BoundExpression result =
                 doNotLowerToCall
@@ -962,12 +936,6 @@ namespace StarkPlatform.Compiler.Stark
             Conversion conversion,
             TypeSymbol rewrittenType)
         {
-            if (_inExpressionLambda)
-            {
-                Conversion conv = TryMakeConversion(syntax, conversion, rewrittenOperand.Type, rewrittenType);
-                return BoundConversion.Synthesized(syntax, rewrittenOperand, conv, false, explicitCastInCode: true, conversionGroupOpt: null, default(ConstantValue), rewrittenType);
-            }
-
             // DELIBERATE SPEC VIOLATION: 
             // The native compiler allows for a "lifted" conversion even when the return type of the conversion
             // not a non-nullable value type. For example, if we have a conversion from struct S to string,
@@ -1078,11 +1046,6 @@ namespace StarkPlatform.Compiler.Stark
 
             var returnType = method.ReturnType.TypeSymbol;
             Debug.Assert((object)returnType != null);
-
-            if (_inExpressionLambda)
-            {
-                return BoundConversion.Synthesized(syntax, rewrittenOperand, conversion, @checked, explicitCastInCode: explicitCastInCode, conversionGroupOpt: null, constantValueOpt, rewrittenType);
-            }
 
             var rewrittenCall = MakeCall(
                     syntax: syntax,

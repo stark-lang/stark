@@ -349,21 +349,6 @@ namespace StarkPlatform.Compiler.Operations
             DefaultVisit(operation);
         }
 
-        public virtual void VisitDynamicObjectCreation(IDynamicObjectCreationOperation operation)
-        {
-            DefaultVisit(operation);
-        }
-
-        public virtual void VisitDynamicInvocation(IDynamicInvocationOperation operation)
-        {
-            DefaultVisit(operation);
-        }
-
-        public virtual void VisitDynamicIndexerAccess(IDynamicIndexerAccessOperation operation)
-        {
-            DefaultVisit(operation);
-        }
-
         public virtual void VisitObjectOrCollectionInitializer(IObjectOrCollectionInitializerOperation operation)
         {
             DefaultVisit(operation);
@@ -374,7 +359,7 @@ namespace StarkPlatform.Compiler.Operations
             DefaultVisit(operation);
         }
 
-        [Obsolete("ICollectionElementInitializerOperation has been replaced with " + nameof(IInvocationOperation) + " and " + nameof(IDynamicInvocationOperation), error: true)]
+        [Obsolete("ICollectionElementInitializerOperation has been replaced with " + nameof(IInvocationOperation), error: true)]
         public virtual void VisitCollectionElementInitializer(ICollectionElementInitializerOperation operation)
         {
             DefaultVisit(operation);
@@ -436,11 +421,6 @@ namespace StarkPlatform.Compiler.Operations
         }
 
         public virtual void VisitParenthesized(IParenthesizedOperation operation)
-        {
-            DefaultVisit(operation);
-        }
-
-        public virtual void VisitDynamicMemberReference(IDynamicMemberReferenceOperation operation)
         {
             DefaultVisit(operation);
         }
@@ -952,21 +932,6 @@ namespace StarkPlatform.Compiler.Operations
             return DefaultVisit(operation, argument);
         }
 
-        public virtual TResult VisitDynamicObjectCreation(IDynamicObjectCreationOperation operation, TArgument argument)
-        {
-            return DefaultVisit(operation, argument);
-        }
-
-        public virtual TResult VisitDynamicInvocation(IDynamicInvocationOperation operation, TArgument argument)
-        {
-            return DefaultVisit(operation, argument);
-        }
-
-        public virtual TResult VisitDynamicIndexerAccess(IDynamicIndexerAccessOperation operation, TArgument argument)
-        {
-            return DefaultVisit(operation, argument);
-        }
-
         public virtual TResult VisitObjectOrCollectionInitializer(IObjectOrCollectionInitializerOperation operation, TArgument argument)
         {
             return DefaultVisit(operation, argument);
@@ -977,7 +942,7 @@ namespace StarkPlatform.Compiler.Operations
             return DefaultVisit(operation, argument);
         }
 
-        [Obsolete("ICollectionElementInitializerOperation has been replaced with " + nameof(IInvocationOperation) + " and " + nameof(IDynamicInvocationOperation), error: true)]
+        [Obsolete("ICollectionElementInitializerOperation has been replaced with " + nameof(IInvocationOperation), error: true)]
         public virtual TResult VisitCollectionElementInitializer(ICollectionElementInitializerOperation operation, TArgument argument)
         {
             return DefaultVisit(operation, argument);
@@ -1039,11 +1004,6 @@ namespace StarkPlatform.Compiler.Operations
         }
 
         public virtual TResult VisitParenthesized(IParenthesizedOperation operation, TArgument argument)
-        {
-            return DefaultVisit(operation, argument);
-        }
-
-        public virtual TResult VisitDynamicMemberReference(IDynamicMemberReferenceOperation operation, TArgument argument)
         {
             return DefaultVisit(operation, argument);
         }

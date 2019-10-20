@@ -116,9 +116,6 @@ namespace StarkPlatform.Compiler.Stark
         // Set to true once we've seen the base (or self) constructor invocation in a constructor
         private bool _seenBaseCall;
 
-        // Set to true while translating code inside of an expression lambda.
-        private bool _inExpressionLambda;
-
         // When a lambda captures only 'this' of the enclosing method, we cache it in a local
         // variable.  This is the set of such local variables that must be added to the enclosing
         // method's top-level block.
@@ -1293,21 +1290,6 @@ namespace StarkPlatform.Compiler.Stark
             if (conversion.ConversionKind == ConversionKind.AnonymousFunction)
             {
                 var result = (BoundExpression)RewriteLambdaConversion((BoundLambda)conversion.Operand);
-
-                if (_inExpressionLambda && conversion.ExplicitCastInCode)
-                {
-                    result = new BoundConversion(
-                        syntax: conversion.Syntax,
-                        operand: result,
-                        conversion: conversion.Conversion,
-                        isBaseConversion: false,
-                        @checked: false,
-                        explicitCastInCode: true,
-                        conversionGroupOpt: conversion.ConversionGroupOpt,
-                        constantValueOpt: conversion.ConstantValueOpt,
-                        type: conversion.Type);
-                }
-
                 return result;
             }
 
@@ -1493,19 +1475,6 @@ namespace StarkPlatform.Compiler.Stark
 
         private BoundNode RewriteLambdaConversion(BoundLambda node)
         {
-            var wasInExpressionLambda = _inExpressionLambda;
-            _inExpressionLambda = _inExpressionLambda || node.Type.IsExpressionTree();
-
-            if (_inExpressionLambda)
-            {
-                var newType = VisitType(node.Type);
-                var newBody = (BoundBlock)Visit(node.Body);
-                node = node.Update(node.UnboundLambda, node.Symbol, newBody, node.Diagnostics, node.Binder, newType);
-                var result0 = wasInExpressionLambda ? node : ExpressionLambdaRewriter.RewriteLambda(node, CompilationState, TypeMap, RecursionDepth, Diagnostics);
-                _inExpressionLambda = wasInExpressionLambda;
-                return result0;
-            }
-
             ClosureKind closureKind;
             NamedTypeSymbol translatedLambdaContainer;
             SynthesizedClosureEnvironment containerAsFrame;

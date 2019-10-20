@@ -64,8 +64,6 @@ namespace StarkPlatform.Compiler.Stark
                 case SymbolKind.PointerType:
                 case SymbolKind.Parameter:
                     break; // Can sensibly append location, after unwrapping.
-                case SymbolKind.DynamicType:
-                    break; // Can't sensibly append location, but it should never be ambiguous.
                 case SymbolKind.ConstLiteralType:
                     break;
                 case SymbolKind.Namespace:
@@ -190,7 +188,7 @@ namespace StarkPlatform.Compiler.Stark
                 return containingAssembly.Identity.ToString();
             }
 
-            Debug.Assert(unwrappedSymbol.Kind == SymbolKind.DynamicType || unwrappedSymbol.Kind == SymbolKind.ErrorType);
+            Debug.Assert(unwrappedSymbol.Kind == SymbolKind.ErrorType);
             return null;
         }
 

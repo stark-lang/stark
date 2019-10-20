@@ -302,12 +302,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
             var type = this.Type;
 
-            if (type.TypeSymbol.ContainsDynamic())
-            {
-                var compilation = this.DeclaringCompilation;
-                AddSynthesizedAttribute(ref attributes, compilation.SynthesizeDynamicAttribute(type.TypeSymbol, type.CustomModifiers.Length));
-            }
-
             if (type.TypeSymbol.ContainsTupleNames())
             {
                 AddSynthesizedAttribute(ref attributes,

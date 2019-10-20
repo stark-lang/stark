@@ -382,7 +382,7 @@ namespace StarkPlatform.Compiler.Stark
                 HashSet<DiagnosticInfo> useSiteDiagnostics = null;
                 Conversion conversion = _conversions.ClassifyBuiltInConversion(inputType, type, ref useSiteDiagnostics);
                 _diagnostics.Add(syntax, useSiteDiagnostics);
-                if (input.Type.IsDynamic() ? type.SpecialType == SpecialType.System_Object : conversion.IsImplicit)
+                if (conversion.IsImplicit)
                 {
                     // type test not needed, only the type cast
                 }

@@ -966,11 +966,6 @@ namespace StarkPlatform.Compiler.Stark
             {
                 case TypeKind.Array:
                     return IsCompliantType(type.GetArrayElementType().TypeSymbol, context);
-                case TypeKind.Dynamic:
-                    // NOTE: It would probably be most correct to return 
-                    // IsCompliantType(this.compilation.GetSpecialType(SpecialType.System_Object), context)
-                    // but that's way too much work in the 99.9% case.
-                    return true;
                 case TypeKind.Pointer:
                     return false;
                 case TypeKind.Error:

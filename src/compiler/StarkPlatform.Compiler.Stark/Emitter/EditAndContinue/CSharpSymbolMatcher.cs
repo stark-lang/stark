@@ -440,11 +440,6 @@ namespace StarkPlatform.Compiler.Stark.Emit
                 }
             }
 
-            public override Symbol VisitDynamicType(DynamicTypeSymbol symbol)
-            {
-                return _otherAssembly.GetSpecialType(SpecialType.System_Object);
-            }
-
             public override Symbol VisitNamedType(NamedTypeSymbol sourceType)
             {
                 var originalDef = sourceType.OriginalDefinition;
@@ -877,11 +872,6 @@ namespace StarkPlatform.Compiler.Stark.Emit
                 var translatedModifiers = VisitCustomModifiers(symbol.ElementType.CustomModifiers);
 
                 return ArrayTypeSymbol.CreateArray(symbol.BaseTypeNoUseSiteDiagnostics.ContainingAssembly, symbol.ElementType.WithTypeAndModifiers(translatedElementType, translatedModifiers));
-            }
-
-            public override Symbol VisitDynamicType(DynamicTypeSymbol symbol)
-            {
-                return _systemObject;
             }
 
             public override Symbol VisitNamedType(NamedTypeSymbol type)

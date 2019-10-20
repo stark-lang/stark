@@ -33,37 +33,34 @@ namespace StarkPlatform.Compiler.Stark
             // target type cannot be a non-nullable value type
             Debug.Assert(!rewrittenType.IsValueType || rewrittenType.IsNullableType());
 
-            if (!_inExpressionLambda)
-            {
                 ConstantValue constantValue = Binder.GetAsOperatorConstantResult(rewrittenOperand.Type, rewrittenType, conversion.Kind, rewrittenOperand.ConstantValue);
 
-                if (constantValue != null)
+            if (constantValue != null)
+            {
+                Debug.Assert(constantValue.IsNull);
+                BoundExpression result = rewrittenType.IsNullableType() ? new BoundDefaultExpression(syntax, rewrittenType) : MakeLiteral(syntax, constantValue, rewrittenType);
+
+                if (rewrittenOperand.ConstantValue != null)
                 {
-                    Debug.Assert(constantValue.IsNull);
-                    BoundExpression result = rewrittenType.IsNullableType() ? new BoundDefaultExpression(syntax, rewrittenType) : MakeLiteral(syntax, constantValue, rewrittenType);
-
-                    if (rewrittenOperand.ConstantValue != null)
-                    {
-                        // No need to preserve any side-effects from the operand. 
-                        // We also can keep the "constant" notion of the result, which
-                        // enables some optimizations down the road.
-                        return result;
-                    }
-
-                    return new BoundSequence(
-                        syntax: syntax,
-                        locals: ImmutableArray<LocalSymbol>.Empty,
-                        sideEffects: ImmutableArray.Create<BoundExpression>(rewrittenOperand),
-                        value: result,
-                        type: rewrittenType);
+                    // No need to preserve any side-effects from the operand. 
+                    // We also can keep the "constant" notion of the result, which
+                    // enables some optimizations down the road.
+                    return result;
                 }
 
-                if (conversion.IsImplicit)
-                {
-                    // Operand with bound implicit conversion to target type.
-                    // We don't need a runtime check, generate a conversion for the operand instead.
-                    return MakeConversionNode(syntax, rewrittenOperand, conversion, rewrittenType, @checked: false);
-                }
+                return new BoundSequence(
+                    syntax: syntax,
+                    locals: ImmutableArray<LocalSymbol>.Empty,
+                    sideEffects: ImmutableArray.Create<BoundExpression>(rewrittenOperand),
+                    value: result,
+                    type: rewrittenType);
+            }
+
+            if (conversion.IsImplicit)
+            {
+                // Operand with bound implicit conversion to target type.
+                // We don't need a runtime check, generate a conversion for the operand instead.
+                return MakeConversionNode(syntax, rewrittenOperand, conversion, rewrittenType, @checked: false);
             }
 
             return oldNode.Update(rewrittenOperand, rewrittenTargetType, conversion, rewrittenType);

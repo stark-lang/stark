@@ -15,7 +15,6 @@ namespace StarkPlatform.Compiler.Stark
         public readonly ArrayBuilder<IdentifierNameSyntax> Names;
         public readonly ArrayBuilder<RefKind> RefKinds;
         public bool IsExtensionMethodInvocation;
-        private ThreeState _lazyHasDynamicArgument;
 
         internal AnalyzedArguments()
         {
@@ -30,7 +29,6 @@ namespace StarkPlatform.Compiler.Stark
             this.Names.Clear();
             this.RefKinds.Clear();
             this.IsExtensionMethodInvocation = false;
-            _lazyHasDynamicArgument = ThreeState.Unknown;
         }
 
         public BoundExpression Argument(int i)
@@ -77,33 +75,6 @@ namespace StarkPlatform.Compiler.Stark
             return (i == 0) && this.IsExtensionMethodInvocation;
         }
 
-        public bool HasDynamicArgument
-        {
-            get
-            {
-                if (_lazyHasDynamicArgument.HasValue())
-                {
-                    return _lazyHasDynamicArgument.Value();
-                }
-
-                bool hasRefKinds = RefKinds.Count > 0;
-                for (int i = 0; i < Arguments.Count; i++)
-                {
-                    var argument = Arguments[i];
-
-                    // By-ref dynamic arguments don't make the invocation dynamic.
-                    if ((object)argument.Type != null && argument.Type.IsDynamic() && (!hasRefKinds || RefKinds[i] == StarkPlatform.Compiler.RefKind.None))
-                    {
-                        _lazyHasDynamicArgument = ThreeState.True;
-                        return true;
-                    }
-                }
-
-                _lazyHasDynamicArgument = ThreeState.False;
-                return false;
-            }
-        }
-
         public bool HasErrors
         {
             get
@@ -134,7 +105,6 @@ namespace StarkPlatform.Compiler.Stark
             instance.Names.AddRange(original.Names);
             instance.RefKinds.AddRange(original.RefKinds);
             instance.IsExtensionMethodInvocation = original.IsExtensionMethodInvocation;
-            instance._lazyHasDynamicArgument = original._lazyHasDynamicArgument;
             return instance;
         }
 

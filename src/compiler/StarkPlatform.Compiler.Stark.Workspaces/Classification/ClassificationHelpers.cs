@@ -15,7 +15,6 @@ namespace StarkPlatform.Compiler.Stark.Classification
         private const string ValueKeyword = "value";
         private const string VarKeyword = "var";
         private const string UnmanagedKeyword = "unmanaged";
-        private const string DynamicKeyword = "dynamic";
         private const string AwaitKeyword = "await";
 
         /// <summary>
@@ -542,7 +541,7 @@ namespace StarkPlatform.Compiler.Stark.Classification
                     var tokenString = token.ToString();
                     var isKeyword = SyntaxFacts.IsKeywordKind(token.Kind())
                         || (wasKeyword && SyntaxFacts.GetContextualKeywordKind(text) != SyntaxKind.None)
-                        || (wasKeyword && (tokenString == VarKeyword || tokenString == DynamicKeyword || tokenString == UnmanagedKeyword));
+                        || (wasKeyword && (tokenString == VarKeyword || tokenString == UnmanagedKeyword));
 
                     var isIdentifier = token.Kind() == SyntaxKind.IdentifierToken;
 

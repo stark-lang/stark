@@ -237,22 +237,6 @@ namespace StarkPlatform.Compiler.Stark
         }
     }
 
-    internal partial class BoundDynamicIndexerAccess
-    {
-        internal string TryGetIndexedPropertyName()
-        {
-            foreach (var indexer in ApplicableIndexers)
-            {
-                if (!indexer.IsIndexer && indexer.IsIndexedProperty)
-                {
-                    return indexer.Name;
-                }
-            }
-
-            return null;
-        }
-    }
-
     internal partial class BoundEventAccess
     {
         public override Symbol ExpressionSymbol
@@ -537,16 +521,6 @@ namespace StarkPlatform.Compiler.Stark
             get
             {
                 return this.ConstantValueOpt;
-            }
-        }
-
-        public bool IsDynamic
-        {
-            get
-            {
-                // IsTrue dynamic operator is invoked at runtime if the condition is of the type dynamic.
-                // The type of the operator itself is Boolean, so we need to check its kind.
-                return this.Condition.Kind == BoundKind.UnaryOperator && ((BoundUnaryOperator)this.Condition).OperatorKind.IsDynamic();
             }
         }
     }

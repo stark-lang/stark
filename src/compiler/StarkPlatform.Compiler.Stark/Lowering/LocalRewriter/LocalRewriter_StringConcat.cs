@@ -41,11 +41,6 @@ namespace StarkPlatform.Compiler.Stark
                 operatorKind == BinaryOperatorKind.StringAndObjectConcatenation ||
                 operatorKind == BinaryOperatorKind.ObjectAndStringConcatenation);
 
-            if (_inExpressionLambda)
-            {
-                return RewriteStringConcatInExpressionLambda(syntax, operatorKind, loweredLeft, loweredRight, type);
-            }
-
             // avoid run time boxing and ToString operations if we can reasonably convert to a string at compile time
             loweredLeft = ConvertConcatExprToStringIfPossible(syntax, loweredLeft);
             loweredRight = ConvertConcatExprToStringIfPossible(syntax, loweredRight);
@@ -334,22 +329,6 @@ namespace StarkPlatform.Compiler.Stark
 
                 return (BoundExpression)BoundCall.Synthesized(syntax, null, method, array);
             }
-        }
-
-        /// <summary>
-        /// Most of the above optimizations are not applicable in expression trees as the operator
-        /// must stay a binary operator. We cannot do much beyond constant folding which is done in binder.
-        /// </summary>
-        private BoundExpression RewriteStringConcatInExpressionLambda(SyntaxNode syntax, BinaryOperatorKind operatorKind, BoundExpression loweredLeft, BoundExpression loweredRight, TypeSymbol type)
-        {
-            SpecialMember member = (operatorKind == BinaryOperatorKind.StringConcatenation) ?
-                SpecialMember.System_String__ConcatStringString :
-                SpecialMember.System_String__ConcatObjectObject;
-
-            var method = UnsafeGetSpecialTypeMethod(syntax, member);
-            Debug.Assert((object)method != null);
-
-            return new BoundBinaryOperator(syntax, operatorKind, default(ConstantValue), method, default(LookupResultKind), loweredLeft, loweredRight, type);
         }
 
         /// <summary>

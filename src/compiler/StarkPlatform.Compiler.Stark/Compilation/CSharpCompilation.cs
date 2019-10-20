@@ -1360,17 +1360,6 @@ namespace StarkPlatform.Compiler.Stark
         }
 
         /// <summary>
-        /// The TypeSymbol for the type 'dynamic' in this Compilation.
-        /// </summary>
-        internal new TypeSymbol DynamicType
-        {
-            get
-            {
-                return AssemblySymbol.DynamicType;
-            }
-        }
-
-        /// <summary>
         /// The NamedTypeSymbol for the .NET System.Object type, which could have a TypeKind of
         /// Error if there was no COR Library in this Compilation.
         /// </summary>
@@ -3067,11 +3056,6 @@ namespace StarkPlatform.Compiler.Stark
             return this.AnonymousTypeManager.ConstructAnonymousTypeSymbol(descriptor);
         }
 
-        protected override ITypeSymbol CommonDynamicType
-        {
-            get { return DynamicType; }
-        }
-
         protected override INamedTypeSymbol CommonObjectType
         {
             get { return this.ObjectType; }
@@ -3187,18 +3171,6 @@ namespace StarkPlatform.Compiler.Stark
 #pragma warning restore RS0026 // Do not add multiple public overloads with optional parameters
 
         #endregion
-
-        /// <summary>
-        /// Returns if the compilation has all of the members necessary to emit metadata about
-        /// dynamic types.
-        /// </summary>
-        /// <returns></returns>
-        internal bool HasDynamicEmitAttributes()
-        {
-            return
-                (object)GetWellKnownTypeMember(WellKnownMember.System_Runtime_CompilerServices_DynamicAttribute__ctor) != null &&
-                (object)GetWellKnownTypeMember(WellKnownMember.System_Runtime_CompilerServices_DynamicAttribute__ctorTransformFlags) != null;
-        }
 
         internal bool HasTupleNamesAttributes =>
             (object)GetWellKnownTypeMember(WellKnownMember.System_Runtime_CompilerServices_TupleElementNamesAttribute__ctorTransformNames) != null;

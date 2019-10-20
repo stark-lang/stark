@@ -30,14 +30,8 @@ namespace StarkPlatform.Compiler.Stark
                                 CheckFieldAddress((BoundFieldAccess)argument, method);
                                 break;
                             case BoundKind.Local:
-                                var local = (BoundLocal)argument;
-                                if (local.Syntax.Kind() == SyntaxKind.DeclarationExpression)
-                                {
-                                    CheckOutDeclaration(local);
-                                }
                                 break;
                             case BoundKind.DiscardExpression:
-                                CheckDiscard((BoundDiscardExpression)argument);
                                 break;
                         }
                     }
@@ -53,7 +47,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             FieldSymbol fieldSymbol = fieldAccess.FieldSymbol;
 
-            if (IsNonAgileFieldAccess(fieldAccess, _compilation))
+                        if (IsNonAgileFieldAccess(fieldAccess, _compilation))
             {
                 Error(ErrorCode.WRN_ByRefNonAgileField, fieldAccess, fieldSymbol);
             }
@@ -224,24 +218,17 @@ namespace StarkPlatform.Compiler.Stark
 
         private void CheckBinaryOperator(BoundBinaryOperator node)
         {
-            if ((object)node.MethodOpt == null)
-            {
-                CheckUnsafeType(node.Left);
-                CheckUnsafeType(node.Right);
-            }
-
             CheckForBitwiseOrSignExtend(node, node.OperatorKind, node.Left, node.Right);
             CheckNullableNullBinOp(node);
             CheckLiftedBinOp(node);
             CheckRelationals(node);
-            CheckDynamic(node);
         }
 
         private void CheckCompoundAssignmentOperator(BoundCompoundAssignmentOperator node)
         {
             BoundExpression left = node.Left;
 
-            if (!node.Operator.Kind.IsDynamic() && !node.LeftConversion.IsIdentity && node.LeftConversion.Exists)
+            if (!node.LeftConversion.IsIdentity && node.LeftConversion.Exists)
             {
                 // Need to represent the implicit conversion as a node in order to be able to produce correct diagnostics.
                 left = new BoundConversion(left.Syntax, left, node.LeftConversion, node.Operator.Kind.IsChecked(),
@@ -250,11 +237,6 @@ namespace StarkPlatform.Compiler.Stark
 
             CheckForBitwiseOrSignExtend(node, node.Operator.Kind, left, node.Right);
             CheckLiftedCompoundAssignment(node);
-
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsAssignment, node);
-            }
         }
 
         private void CheckRelationals(BoundBinaryOperator node)

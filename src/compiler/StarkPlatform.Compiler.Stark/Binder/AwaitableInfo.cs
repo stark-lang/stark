@@ -15,8 +15,6 @@ namespace StarkPlatform.Compiler.Stark
         public readonly PropertySymbol IsCompleted;
         public readonly MethodSymbol GetResult;
 
-        public bool IsDynamic => GetResult is null;
-
         internal AwaitableInfo(MethodSymbol getAwaiterMethod, PropertySymbol isCompletedProperty, MethodSymbol getResultMethod)
         {
             this.GetAwaiter = getAwaiterMethod;

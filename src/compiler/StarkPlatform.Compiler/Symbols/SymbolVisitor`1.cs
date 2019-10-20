@@ -36,11 +36,6 @@ namespace StarkPlatform.Compiler
             return DefaultVisit(symbol);
         }
 
-        public virtual TResult VisitDynamicType(IDynamicTypeSymbol symbol)
-        {
-            return DefaultVisit(symbol);
-        }
-
         public virtual TResult VisitEvent(IEventSymbol symbol)
         {
             return DefaultVisit(symbol);

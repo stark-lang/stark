@@ -334,23 +334,6 @@ namespace StarkPlatform.Compiler.Stark
         private BoundExpression RewriteTupleSingleOperator(TupleBinaryOperatorInfo.Single single,
             BoundExpression left, BoundExpression right, TypeSymbol boolType, BinaryOperatorKind operatorKind)
         {
-            if (single.Kind.IsDynamic())
-            {
-                // Produce
-                // !((left == right).op_false)
-                // (left != right).op_true
-
-                BoundExpression dynamicResult = _dynamicFactory.MakeDynamicBinaryOperator(single.Kind, left, right, isCompoundAssignment: false, _compilation.DynamicType).ToExpression();
-                if (operatorKind == BinaryOperatorKind.Equal)
-                {
-                    return _factory.Not(MakeUnaryOperator(UnaryOperatorKind.DynamicFalse, left.Syntax, method: null, dynamicResult, boolType));
-                }
-                else
-                {
-                    return MakeUnaryOperator(UnaryOperatorKind.DynamicTrue, left.Syntax, method: null, dynamicResult, boolType);
-                }
-            }
-
             if (left.IsLiteralNull() && right.IsLiteralNull())
             {
                 // For `null == null` this is special-cased during initial binding

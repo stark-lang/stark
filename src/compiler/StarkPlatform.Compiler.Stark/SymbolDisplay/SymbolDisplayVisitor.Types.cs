@@ -151,11 +151,6 @@ namespace StarkPlatform.Compiler.Stark
             builder.Add(CreatePart(SymbolDisplayPartKind.TypeParameterName, symbol, symbol.Name));
         }
 
-        public override void VisitDynamicType(IDynamicTypeSymbol symbol)
-        {
-            builder.Add(CreatePart(SymbolDisplayPartKind.Keyword, symbol, symbol.Name));
-        }
-
         public override void VisitNamedType(INamedTypeSymbol symbol)
         {
             if (this.IsMinimizing && TryAddAlias(symbol, builder))

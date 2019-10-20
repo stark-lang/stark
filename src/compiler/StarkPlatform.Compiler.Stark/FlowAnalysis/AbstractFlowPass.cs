@@ -963,33 +963,6 @@ namespace StarkPlatform.Compiler.Stark
             return null;
         }
 
-        public override BoundNode VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node)
-        {
-            VisitArguments(node.Arguments, node.ArgumentRefKindsOpt, null);
-            VisitRvalue(node.InitializerExpressionOpt);
-            return null;
-        }
-
-        public override BoundNode VisitDynamicIndexerAccess(BoundDynamicIndexerAccess node)
-        {
-            VisitRvalue(node.ReceiverOpt);
-            VisitArguments(node.Arguments, node.ArgumentRefKindsOpt, null);
-            return null;
-        }
-
-        public override BoundNode VisitDynamicMemberAccess(BoundDynamicMemberAccess node)
-        {
-            VisitRvalue(node.Receiver);
-            return null;
-        }
-
-        public override BoundNode VisitDynamicInvocation(BoundDynamicInvocation node)
-        {
-            VisitRvalue(node.Expression);
-            VisitArguments(node.Arguments, node.ArgumentRefKindsOpt, null);
-            return null;
-        }
-
         public override BoundNode VisitInterpolatedString(BoundInterpolatedString node)
         {
             foreach (var expr in node.Parts)
@@ -2738,11 +2711,6 @@ namespace StarkPlatform.Compiler.Stark
             return null;
         }
 
-        public override BoundNode VisitDynamicObjectInitializerMember(BoundDynamicObjectInitializerMember node)
-        {
-            return null;
-        }
-
         public override BoundNode VisitCollectionElementInitializer(BoundCollectionElementInitializer node)
         {
             if (node.AddMethod.CallsAreOmitted(node.SyntaxTree))
@@ -2763,12 +2731,6 @@ namespace StarkPlatform.Compiler.Stark
                 VisitArguments(node.Arguments, default(ImmutableArray<RefKind>), node.AddMethod);
             }
 
-            return null;
-        }
-
-        public override BoundNode VisitDynamicCollectionElementInitializer(BoundDynamicCollectionElementInitializer node)
-        {
-            VisitArguments(node.Arguments, default(ImmutableArray<RefKind>), method: null);
             return null;
         }
 

@@ -50,7 +50,7 @@ namespace StarkPlatform.Compiler.Stark
         _UInt64AndPointer = 0x0000002F, // reserved for binary op
         _NullableNull = 0x00000030, // reserved for binary op
         UserDefined = 0x00000031,
-        Dynamic = 0x00000032,
+        // Dynamic = 0x00000032,
         _PointerAndInt = 0x00000033, // reserved for binary op
         _PointerAndUInt = 0x00000034, // reserved for binary op
         _IntAndPointer = 0x00000035, // reserved for binary op
@@ -107,7 +107,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumPostfixIncrement = Lifted | Enum | PostfixIncrement,
         LiftedUserDefinedPostfixIncrement = Lifted | UserDefined | PostfixIncrement,
         PointerPostfixIncrement = Pointer | PostfixIncrement,
-        DynamicPostfixIncrement = Dynamic | PostfixIncrement,
 
         Int8PrefixIncrement = Int8 | PrefixIncrement,
         UInt8PrefixIncrement = UInt8 | PrefixIncrement,
@@ -142,7 +141,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumPrefixIncrement = Lifted | Enum | PrefixIncrement,
         LiftedUserDefinedPrefixIncrement = Lifted | UserDefined | PrefixIncrement,
         PointerPrefixIncrement = Pointer | PrefixIncrement,
-        DynamicPrefixIncrement = Dynamic | PrefixIncrement,
 
         Int8PostfixDecrement = Int8 | PostfixDecrement,
         UInt8PostfixDecrement = UInt8 | PostfixDecrement,
@@ -177,7 +175,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumPostfixDecrement = Lifted | Enum | PostfixDecrement,
         LiftedUserDefinedPostfixDecrement = Lifted | UserDefined | PostfixDecrement,
         PointerPostfixDecrement = Pointer | PostfixDecrement,
-        DynamicPostfixDecrement = Dynamic | PostfixDecrement,
 
         Int8PrefixDecrement = Int8 | PrefixDecrement,
         UInt8PrefixDecrement = UInt8 | PrefixDecrement,
@@ -212,7 +209,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumPrefixDecrement = Lifted | Enum | PrefixDecrement,
         LiftedUserDefinedPrefixDecrement = Lifted | UserDefined | PrefixDecrement,
         PointerPrefixDecrement = Pointer | PrefixDecrement,
-        DynamicPrefixDecrement = Dynamic | PrefixDecrement,
 
         Int32UnaryPlus = Int32 | UnaryPlus,
         UInt32UnaryPlus = UInt32 | UnaryPlus,
@@ -234,7 +230,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUIntUnaryPlus = Lifted | UInt | UnaryPlus,
 
         LiftedUserDefinedUnaryPlus = Lifted | UserDefined | UnaryPlus,
-        DynamicUnaryPlus = Dynamic | UnaryPlus,
 
         Int32UnaryMinus = Int32 | UnaryMinus,
         Int64UnaryMinus = Int64 | UnaryMinus,
@@ -250,13 +245,11 @@ namespace StarkPlatform.Compiler.Stark
         LiftedIntUnaryMinus = Lifted | Int | UnaryMinus,
 
         LiftedUserDefinedUnaryMinus = Lifted | UserDefined | UnaryMinus,
-        DynamicUnaryMinus = Dynamic | UnaryMinus,
 
         BoolLogicalNegation = Bool | LogicalNegation,
         UserDefinedLogicalNegation = UserDefined | LogicalNegation,
         LiftedBoolLogicalNegation = Lifted | Bool | LogicalNegation,
         LiftedUserDefinedLogicalNegation = Lifted | UserDefined | LogicalNegation,
-        DynamicLogicalNegation = Dynamic | LogicalNegation,
 
         Int32BitwiseComplement = Int32 | BitwiseComplement,
         UInt32BitwiseComplement = UInt32 | BitwiseComplement,
@@ -274,19 +267,10 @@ namespace StarkPlatform.Compiler.Stark
         LiftedUIntBitwiseComplement = Lifted | UInt | BitwiseComplement,
         LiftedEnumBitwiseComplement = Lifted | Enum | BitwiseComplement,
         LiftedUserDefinedBitwiseComplement = Lifted | UserDefined | BitwiseComplement,
-        DynamicBitwiseComplement = Dynamic | BitwiseComplement,
 
         // operator true and operator false are almost always user-defined, and never lifted.
         UserDefinedTrue = UserDefined | True,
         UserDefinedFalse = UserDefined | False,
-
-        // The one time operator true is not user-defined is "if(dyn)" where dyn is of type dynamic.
-        // In that case we bind this as a dynamic "operator true" invocation, rather than as a 
-        // dynamic conversion to bool.
-        DynamicTrue = Dynamic | True,
-
-        // Used during lowering of dynamic logical operators.
-        DynamicFalse = Dynamic | False,
     }
 
     [Flags]
@@ -326,7 +310,6 @@ namespace StarkPlatform.Compiler.Stark
         UInt64AndPointer = UnaryOperatorKind._UInt64AndPointer,
         NullableNull = UnaryOperatorKind._NullableNull,
         UserDefined = UnaryOperatorKind.UserDefined,
-        Dynamic = UnaryOperatorKind.Dynamic,
         PointerAndInt = UnaryOperatorKind._PointerAndInt,
         PointerAndUInt = UnaryOperatorKind._PointerAndUInt,
         IntAndPointer = UnaryOperatorKind._IntAndPointer,
@@ -375,7 +358,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedIntMultiplication = Lifted | Int | Multiplication,
         LiftedUIntMultiplication = Lifted | UInt | Multiplication,
         LiftedUserDefinedMultiplication = Lifted | UserDefined | Multiplication,
-        DynamicMultiplication = Dynamic | Multiplication,
 
         Int32Division = Int32 | Division,
         UInt32Division = UInt32 | Division,
@@ -396,7 +378,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedIntDivision = Lifted | Int | Division,
         LiftedUIntDivision = Lifted | UInt | Division,
         LiftedUserDefinedDivision = Lifted | UserDefined | Division,
-        DynamicDivision = Dynamic | Division,
 
         Int32Remainder = Int32 | Remainder,
         UInt32Remainder = UInt32 | Remainder,
@@ -417,7 +398,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedIntRemainder = Lifted | Int | Remainder,
         LiftedUIntRemainder = Lifted | UInt | Remainder,
         LiftedUserDefinedRemainder = Lifted | UserDefined | Remainder,
-        DynamicRemainder = Dynamic | Remainder,
 
         Int32Addition = Int32 | Addition,
         UInt32Addition = UInt32 | Addition,
@@ -459,7 +439,6 @@ namespace StarkPlatform.Compiler.Stark
         StringAndObjectConcatenation = StringAndObject | Addition,
         ObjectAndStringConcatenation = ObjectAndString | Addition,
         DelegateCombination = Delegate | Addition,
-        DynamicAddition = Dynamic | Addition,
 
         Int32Subtraction = Int32 | Subtraction,
         UInt32Subtraction = UInt32 | Subtraction,
@@ -493,7 +472,6 @@ namespace StarkPlatform.Compiler.Stark
         PointerAndIntSubtraction = PointerAndInt | Subtraction,
         PointerAndUIntSubtraction = PointerAndUInt | Subtraction,
         PointerSubtraction = Pointer | Subtraction,
-        DynamicSubtraction = Dynamic | Subtraction,
 
         Int32LeftShift = Int32 | LeftShift,
         UInt32LeftShift = UInt32 | LeftShift,
@@ -509,7 +487,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedIntLeftShift = Lifted | Int | LeftShift,
         LiftedUIntLeftShift = Lifted | UInt | LeftShift,
         LiftedUserDefinedLeftShift = Lifted | UserDefined | LeftShift,
-        DynamicLeftShift = Dynamic | LeftShift,
 
         Int32RightShift = Int32 | RightShift,
         UInt32RightShift = UInt32 | RightShift,
@@ -525,7 +502,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedIntRightShift = Lifted | Int | RightShift,
         LiftedUIntRightShift = Lifted | UInt | RightShift,
         LiftedUserDefinedRightShift = Lifted | UserDefined | RightShift,
-        DynamicRightShift = Dynamic | RightShift,
 
         Int32Equal = Int32 | Equal,
         UInt32Equal = UInt32 | Equal,
@@ -554,7 +530,6 @@ namespace StarkPlatform.Compiler.Stark
         StringEqual = String | Equal,
         DelegateEqual = Delegate | Equal,
         PointerEqual = Pointer | Equal,
-        DynamicEqual = Dynamic | Equal,
 
         Int32NotEqual = Int32 | NotEqual,
         UInt32NotEqual = UInt32 | NotEqual,
@@ -583,7 +558,6 @@ namespace StarkPlatform.Compiler.Stark
         StringNotEqual = String | NotEqual,
         DelegateNotEqual = Delegate | NotEqual,
         PointerNotEqual = Pointer | NotEqual,
-        DynamicNotEqual = Dynamic | NotEqual,
 
         Int32LessThan = Int32 | LessThan,
         UInt32LessThan = UInt32 | LessThan,
@@ -606,7 +580,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumLessThan = Lifted | Enum | LessThan,
         LiftedUserDefinedLessThan = Lifted | UserDefined | LessThan,
         PointerLessThan = Pointer | LessThan,
-        DynamicLessThan = Dynamic | LessThan,
 
         Int32GreaterThan = Int32 | GreaterThan,
         UInt32GreaterThan = UInt32 | GreaterThan,
@@ -629,7 +602,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumGreaterThan = Lifted | Enum | GreaterThan,
         LiftedUserDefinedGreaterThan = Lifted | UserDefined | GreaterThan,
         PointerGreaterThan = Pointer | GreaterThan,
-        DynamicGreaterThan = Dynamic | GreaterThan,
 
         Int32LessThanOrEqual = Int32 | LessThanOrEqual,
         UInt32LessThanOrEqual = UInt32 | LessThanOrEqual,
@@ -652,7 +624,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumLessThanOrEqual = Lifted | Enum | LessThanOrEqual,
         LiftedUserDefinedLessThanOrEqual = Lifted | UserDefined | LessThanOrEqual,
         PointerLessThanOrEqual = Pointer | LessThanOrEqual,
-        DynamicLessThanOrEqual = Dynamic | LessThanOrEqual,
 
         Int32GreaterThanOrEqual = Int32 | GreaterThanOrEqual,
         UInt32GreaterThanOrEqual = UInt32 | GreaterThanOrEqual,
@@ -675,7 +646,6 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumGreaterThanOrEqual = Lifted | Enum | GreaterThanOrEqual,
         LiftedUserDefinedGreaterThanOrEqual = Lifted | UserDefined | GreaterThanOrEqual,
         PointerGreaterThanOrEqual = Pointer | GreaterThanOrEqual,
-        DynamicGreaterThanOrEqual = Dynamic | GreaterThanOrEqual,
 
         Int32And = Int32 | And,
         UInt32And = UInt32 | And,
@@ -695,12 +665,10 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumAnd = Lifted | Enum | And,
         LiftedBoolAnd = Lifted | Bool | And,
         LiftedUserDefinedAnd = Lifted | UserDefined | And,
-        DynamicAnd = Dynamic | And,
 
         LogicalAnd = And | Logical,
         LogicalBoolAnd = Bool | LogicalAnd,
         LogicalUserDefinedAnd = UserDefined | LogicalAnd,
-        DynamicLogicalAnd = Dynamic | LogicalAnd,
 
         Int32Or = Int32 | Or,
         UInt32Or = UInt32 | Or,
@@ -720,12 +688,10 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumOr = Lifted | Enum | Or,
         LiftedBoolOr = Lifted | Bool | Or,
         LiftedUserDefinedOr = Lifted | UserDefined | Or,
-        DynamicOr = Dynamic | Or,
 
         LogicalOr = Or | Logical,
         LogicalBoolOr = Bool | LogicalOr,
         LogicalUserDefinedOr = UserDefined | LogicalOr,
-        DynamicLogicalOr = Dynamic | LogicalOr,
 
         Int32Xor = Int32 | Xor,
         UInt32Xor = UInt32 | Xor,
@@ -745,6 +711,5 @@ namespace StarkPlatform.Compiler.Stark
         LiftedEnumXor = Lifted | Enum | Xor,
         LiftedBoolXor = Lifted | Bool | Xor,
         LiftedUserDefinedXor = Lifted | UserDefined | Xor,
-        DynamicXor = Dynamic | Xor,
     }
 }

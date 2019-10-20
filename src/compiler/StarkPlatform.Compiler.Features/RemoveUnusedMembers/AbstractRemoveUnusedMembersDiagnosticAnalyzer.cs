@@ -160,8 +160,6 @@ namespace StarkPlatform.Compiler.RemoveUnusedMembers
                     symbolStartContext.RegisterOperationAction(AnalyzeInvocationOperation, OperationKind.Invocation);
                     symbolStartContext.RegisterOperationAction(AnalyzeNameOfOperation, OperationKind.NameOf);
                     symbolStartContext.RegisterOperationAction(AnalyzeObjectCreationOperation, OperationKind.ObjectCreation);
-                    symbolStartContext.RegisterOperationAction(_ => hasInvalidOrDynamicOperation = true, OperationKind.Invalid,
-                        OperationKind.DynamicIndexerAccess, OperationKind.DynamicInvocation, OperationKind.DynamicMemberReference, OperationKind.DynamicObjectCreation);
                     symbolStartContext.RegisterSymbolEndAction(symbolEndContext => OnSymbolEnd(symbolEndContext, hasInvalidOrDynamicOperation));
 
                     // Register custom language-specific actions, if any.

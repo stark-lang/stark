@@ -112,7 +112,6 @@ namespace StarkPlatform.Compiler.Completion.Providers
             {
                 if (type.TypeKind == TypeKind.Interface ||
                     type.TypeKind == TypeKind.Pointer ||
-                    type.TypeKind == TypeKind.Dynamic ||
                     type.IsAbstract)
                 {
                     return SpecializedTasks.EmptyImmutableArray<ISymbol>();

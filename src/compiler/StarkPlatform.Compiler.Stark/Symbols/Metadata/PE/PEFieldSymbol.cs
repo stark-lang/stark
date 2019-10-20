@@ -208,8 +208,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 TypeSymbol typeSymbol = (new MetadataDecoder(moduleSymbol, _containingType)).DecodeFieldSignature(_handle, out customModifiers);
                 ImmutableArray<CustomModifier> customModifiersArray = CSharpCustomModifier.Convert(customModifiers);
 
-                typeSymbol = DynamicTypeDecoder.TransformType(typeSymbol, customModifiersArray.Length, _handle, moduleSymbol);
-
                 // We start without annotations
                 var type = TypeSymbolWithAnnotations.Create(typeSymbol, customModifiers: customModifiersArray);
 

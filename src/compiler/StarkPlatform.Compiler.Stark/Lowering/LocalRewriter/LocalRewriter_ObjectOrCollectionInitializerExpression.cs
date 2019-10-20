@@ -33,7 +33,6 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression rewrittenReceiver,
             BoundExpression initializerExpression)
         {
-            Debug.Assert(!_inExpressionLambda);
             Debug.Assert(rewrittenReceiver != null);
 
             switch (initializerExpression.Kind)
@@ -51,36 +50,12 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private ImmutableArray<BoundExpression> MakeObjectOrCollectionInitializersForExpressionTree(BoundExpression initializerExpression)
-        {
-            Debug.Assert(_inExpressionLambda);
-
-            switch (initializerExpression.Kind)
-            {
-                case BoundKind.ObjectInitializerExpression:
-                    return VisitList(((BoundObjectInitializerExpression)initializerExpression).Initializers);
-
-                case BoundKind.CollectionInitializerExpression:
-                    var result = ArrayBuilder<BoundExpression>.GetInstance();
-                    ArrayBuilder<BoundExpression> dynamicSiteInitializers = null;
-                    AddCollectionInitializers(ref dynamicSiteInitializers, result, null, ((BoundCollectionInitializerExpression)initializerExpression).Initializers);
-
-                    // dynamic sites not allowed in ET:
-                    Debug.Assert(dynamicSiteInitializers == null);
-
-                    return result.ToImmutableAndFree();
-
-                default:
-                    throw ExceptionUtilities.UnexpectedValue(initializerExpression.Kind);
-            }
-        }
-
         // Rewrite collection initializer add method calls:
         // 2) new List<int> { 1 };
         //                    ~
         private void AddCollectionInitializers(ref ArrayBuilder<BoundExpression> dynamicSiteInitializers, ArrayBuilder<BoundExpression> result, BoundExpression rewrittenReceiver, ImmutableArray<BoundExpression> initializers)
         {
-            Debug.Assert(rewrittenReceiver != null || _inExpressionLambda);
+            Debug.Assert(rewrittenReceiver != null);
 
             foreach (var initializer in initializers)
             {
@@ -88,17 +63,8 @@ namespace StarkPlatform.Compiler.Stark
                 // We don't lower them if they contain errors, so it's safe to assume an element initializer.
 
                 BoundExpression rewrittenInitializer;
-                if (initializer.Kind == BoundKind.CollectionElementInitializer)
-                {
-                    rewrittenInitializer = MakeCollectionInitializer(rewrittenReceiver, (BoundCollectionElementInitializer)initializer);
-                }
-                else
-                {
-                    Debug.Assert(!_inExpressionLambda);
-                    Debug.Assert(initializer.Kind == BoundKind.DynamicCollectionElementInitializer);
-
-                    rewrittenInitializer = MakeDynamicCollectionInitializer(rewrittenReceiver, (BoundDynamicCollectionElementInitializer)initializer);
-                }
+                Debug.Assert(initializer.Kind == BoundKind.CollectionElementInitializer);
+                rewrittenInitializer = MakeCollectionInitializer(rewrittenReceiver, (BoundCollectionElementInitializer)initializer);
 
                 // the call to Add may be omitted
                 if (rewrittenInitializer != null)
@@ -106,25 +72,6 @@ namespace StarkPlatform.Compiler.Stark
                     result.Add(rewrittenInitializer);
                 }
             }
-        }
-
-        private BoundExpression MakeDynamicCollectionInitializer(BoundExpression rewrittenReceiver, BoundDynamicCollectionElementInitializer initializer)
-        {
-            var rewrittenArguments = VisitList(initializer.Arguments);
-
-            // If we are calling a method on a NoPIA type, we need to embed all methods/properties
-            // with the matching name of this dynamic invocation.
-            EmbedIfNeedTo(rewrittenReceiver, initializer.ApplicableMethods, initializer.Syntax);
-
-            return _dynamicFactory.MakeDynamicMemberInvocation(
-                WellKnownMemberNames.CollectionInitializerAddMethodName,
-                rewrittenReceiver,
-                ImmutableArray<TypeSymbolWithAnnotations>.Empty,
-                rewrittenArguments,
-                default(ImmutableArray<string>),
-                default(ImmutableArray<RefKind>),
-                hasImplicitReceiver: false,
-                resultDiscarded: true).ToExpression();
         }
 
         // Rewrite collection initializer element Add method call:
@@ -139,7 +86,7 @@ namespace StarkPlatform.Compiler.Stark
                 .Skip(addMethod.IsExtensionMethod ? 1 : 0)
                 .All(p => p.RefKind == RefKind.None || p.RefKind == RefKind.In));
             Debug.Assert(initializer.Arguments.Any());
-            Debug.Assert(rewrittenReceiver != null || _inExpressionLambda);
+            Debug.Assert(rewrittenReceiver != null);
 
             var syntax = initializer.Syntax;
 
@@ -177,14 +124,8 @@ namespace StarkPlatform.Compiler.Stark
                 // the add method was found as an extension method.  Replace the implicit receiver (first argument) with the rewritten receiver.
                 Debug.Assert(addMethod.IsStatic && addMethod.IsExtensionMethod);
                 Debug.Assert(rewrittenArguments[0].Kind == BoundKind.ImplicitReceiver);
-                Debug.Assert(!_inExpressionLambda, "Expression trees do not support extension Add");
                 rewrittenArguments = rewrittenArguments.SetItem(0, rewrittenReceiver);
                 rewrittenReceiver = null;
-            }
-
-            if (_inExpressionLambda)
-            {
-                return initializer.Update(addMethod, rewrittenArguments, rewrittenReceiver, expanded: false, argsToParamsOpt: default, initializer.InvokedAsExtensionMethod, initializer.ResultKind, initializer.BinderOpt, rewrittenType);
             }
 
             return MakeCall(null, syntax, rewrittenReceiver, addMethod, rewrittenArguments, argumentRefKindsOpt, initializer.InvokedAsExtensionMethod, initializer.ResultKind, addMethod.ReturnType.TypeSymbol, temps);
@@ -198,8 +139,6 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression rewrittenReceiver,
             ImmutableArray<BoundExpression> initializers)
         {
-            Debug.Assert(!_inExpressionLambda);
-
             foreach (var initializer in initializers)
             {
                 // In general bound initializers may contain bad expressions or assignments.
@@ -219,7 +158,6 @@ namespace StarkPlatform.Compiler.Stark
             BoundAssignmentOperator assignment)
         {
             Debug.Assert(rewrittenReceiver != null);
-            Debug.Assert(!_inExpressionLambda);
 
             // Update the receiver for the field/property access as we might have introduced a temp for the initializer rewrite.
 
@@ -262,72 +200,14 @@ namespace StarkPlatform.Compiler.Stark
                                 memberInit.Type);
                         }
 
-                        if (memberInit.MemberSymbol == null && memberInit.Type.IsDynamic())
-                        {
-                            if (dynamicSiteInitializers == null)
-                            {
-                                dynamicSiteInitializers = ArrayBuilder<BoundExpression>.GetInstance();
-                            }
-
-                            if (!isRhsNestedInitializer)
-                            {
-                                var rewrittenRight = VisitExpression(assignment.Right);
-                                var setMember = _dynamicFactory.MakeDynamicSetIndex(
-                                    rewrittenReceiver,
-                                    memberInit.Arguments,
-                                    memberInit.ArgumentNamesOpt,
-                                    memberInit.ArgumentRefKindsOpt,
-                                    rewrittenRight);
-
-                                dynamicSiteInitializers.Add(setMember.SiteInitialization);
-                                result.Add(setMember.SiteInvocation);
-                                return;
-                            }
-
-                            var getMember = _dynamicFactory.MakeDynamicGetIndex(
-                                rewrittenReceiver,
-                                memberInit.Arguments,
-                                memberInit.ArgumentNamesOpt,
-                                memberInit.ArgumentRefKindsOpt);
-
-                            dynamicSiteInitializers.Add(getMember.SiteInitialization);
-                            rewrittenAccess = getMember.SiteInvocation;
-                        }
-                        else
-                        {
-                            rewrittenAccess = MakeObjectInitializerMemberAccess(rewrittenReceiver, memberInit, isRhsNestedInitializer);
-                            if (!isRhsNestedInitializer)
-                            {
-                                // Rewrite simple assignment to field/property.
-                                var rewrittenRight = VisitExpression(assignment.Right);
-                                result.Add(MakeStaticAssignmentOperator(assignment.Syntax, rewrittenAccess, rewrittenRight, false, assignment.Type, used: false));
-                                return;
-                            }
-                        }
-                        break;
-                    }
-
-                case BoundKind.DynamicObjectInitializerMember:
-                    {
-                        if (dynamicSiteInitializers == null)
-                        {
-                            dynamicSiteInitializers = ArrayBuilder<BoundExpression>.GetInstance();
-                        }
-
-                        var initializerMember = (BoundDynamicObjectInitializerMember)rewrittenLeft;
-
+                        rewrittenAccess = MakeObjectInitializerMemberAccess(rewrittenReceiver, memberInit, isRhsNestedInitializer);
                         if (!isRhsNestedInitializer)
                         {
+                            // Rewrite simple assignment to field/property.
                             var rewrittenRight = VisitExpression(assignment.Right);
-                            var setMember = _dynamicFactory.MakeDynamicSetMember(rewrittenReceiver, initializerMember.MemberName, rewrittenRight);
-                            dynamicSiteInitializers.Add(setMember.SiteInitialization);
-                            result.Add(setMember.SiteInvocation);
+                            result.Add(MakeStaticAssignmentOperator(assignment.Syntax, rewrittenAccess, rewrittenRight, false, assignment.Type, used: false));
                             return;
                         }
-
-                        var getMember = _dynamicFactory.MakeDynamicGetMember(rewrittenReceiver, initializerMember.MemberName, resultIndexed: false);
-                        dynamicSiteInitializers.Add(getMember.SiteInitialization);
-                        rewrittenAccess = getMember.SiteInvocation;
                         break;
                     }
 

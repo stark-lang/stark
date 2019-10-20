@@ -46,10 +46,8 @@ namespace StarkPlatform.Compiler
                     return 15;
                 case SymbolKind.PointerType:
                     return 16;
-                case SymbolKind.DynamicType:
-                    return 17;
                 case SymbolKind.Preprocessing:
-                    return 18;
+                    return 17;
                 default:
                     throw ExceptionUtilities.UnexpectedValue(kind);
             }

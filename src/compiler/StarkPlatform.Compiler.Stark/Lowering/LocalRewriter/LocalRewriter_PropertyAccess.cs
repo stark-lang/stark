@@ -72,26 +72,17 @@ namespace StarkPlatform.Compiler.Stark
             MethodSymbol getMethodOpt = null,
             BoundPropertyAccess oldNodeOpt = null)
         {
-            if (_inExpressionLambda && rewrittenArguments.IsEmpty)
-            {
-                return oldNodeOpt != null ?
-                    oldNodeOpt.Update(rewrittenReceiver, property, LookupResultKind.Viable, property.Type.TypeSymbol) :
-                    new BoundPropertyAccess(syntax, rewrittenReceiver, property, LookupResultKind.Viable, property.Type.TypeSymbol);
-            }
-            else
-            {
-                var getMethod = getMethodOpt ?? property.GetOwnOrInheritedGetMethod();
+            var getMethod = getMethodOpt ?? property.GetOwnOrInheritedGetMethod();
 
-                Debug.Assert((object)getMethod != null);
-                Debug.Assert(getMethod.ParameterCount == rewrittenArguments.Length);
-                Debug.Assert(((object)getMethodOpt == null) || ReferenceEquals(getMethod, getMethodOpt));
+            Debug.Assert((object)getMethod != null);
+            Debug.Assert(getMethod.ParameterCount == rewrittenArguments.Length);
+            Debug.Assert(((object)getMethodOpt == null) || ReferenceEquals(getMethod, getMethodOpt));
 
-                return BoundCall.Synthesized(
-                    syntax,
-                    rewrittenReceiver,
-                    getMethod,
-                    rewrittenArguments);
-            }
+            return BoundCall.Synthesized(
+                syntax,
+                rewrittenReceiver,
+                getMethod,
+                rewrittenArguments);
         }
     }
 }

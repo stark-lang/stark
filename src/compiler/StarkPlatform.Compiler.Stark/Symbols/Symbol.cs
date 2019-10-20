@@ -470,7 +470,6 @@ namespace StarkPlatform.Compiler.Stark
                     case SymbolKind.ArrayType:
                     case SymbolKind.PointerType:
                     case SymbolKind.Assembly:
-                    case SymbolKind.DynamicType:
                     case SymbolKind.NetModule:
                     case SymbolKind.Discard:
                         return false;

@@ -77,11 +77,6 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression loweredLeft = VisitExpression(node.Left);
             BoundExpression loweredRight = VisitExpression(node.Right);
 
-            if (_inExpressionLambda)
-            {
-                return node.Update(operatorKind, node.LogicalOperator, node.TrueOperator, node.FalseOperator, node.ResultKind, loweredLeft, loweredRight, type);
-            }
-
             BoundAssignmentOperator tempAssignment;
             var boundTemp = _factory.StoreToTemp(loweredLeft, out tempAssignment);
 
@@ -165,304 +160,267 @@ namespace StarkPlatform.Compiler.Stark
         {
             Debug.Assert(oldNode == null || (oldNode.Syntax == syntax));
 
-            if (_inExpressionLambda)
+            if (operatorKind.IsLifted())
             {
-                switch (operatorKind.Operator() | operatorKind.OperandTypes())
-                {
-                    case BinaryOperatorKind.ObjectAndStringConcatenation:
-                    case BinaryOperatorKind.StringAndObjectConcatenation:
-                    case BinaryOperatorKind.StringConcatenation:
-                        return RewriteStringConcatenation(syntax, operatorKind, loweredLeft, loweredRight, type);
-                    case BinaryOperatorKind.DelegateCombination:
-                        return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__Combine);
-                    case BinaryOperatorKind.DelegateRemoval:
-                        return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__Remove);
-                    case BinaryOperatorKind.DelegateEqual:
-                        return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__op_Equality);
-                    case BinaryOperatorKind.DelegateNotEqual:
-                        return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__op_Inequality);
-                }
+                return RewriteLiftedBinaryOperator(syntax, operatorKind, loweredLeft, loweredRight, type, method);
             }
-            else
-            // try to lower the expression.
+
+            if (operatorKind.IsUserDefined())
             {
-                if (operatorKind.IsDynamic())
-                {
-                    Debug.Assert(!isPointerElementAccess);
+                return LowerUserDefinedBinaryOperator(syntax, operatorKind, loweredLeft, loweredRight, type, method);
+            }
 
-                    if (operatorKind.IsLogical())
+            switch (operatorKind.OperatorWithLogical() | operatorKind.OperandTypes())
+            {
+                case BinaryOperatorKind.NullableNullEqual:
+                case BinaryOperatorKind.NullableNullNotEqual:
+                    return RewriteNullableNullEquality(syntax, operatorKind, loweredLeft, loweredRight, type);
+
+                case BinaryOperatorKind.ObjectAndStringConcatenation:
+                case BinaryOperatorKind.StringAndObjectConcatenation:
+                case BinaryOperatorKind.StringConcatenation:
+                    return RewriteStringConcatenation(syntax, operatorKind, loweredLeft, loweredRight, type);
+
+                case BinaryOperatorKind.StringEqual:
+                    return RewriteStringEquality(oldNode, syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_String__op_Equality);
+
+                case BinaryOperatorKind.StringNotEqual:
+                    return RewriteStringEquality(oldNode, syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_String__op_Inequality);
+
+                case BinaryOperatorKind.DelegateCombination:
+                    return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__Combine);
+
+                case BinaryOperatorKind.DelegateRemoval:
+                    return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__Remove);
+
+                case BinaryOperatorKind.DelegateEqual:
+                    return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__op_Equality);
+
+                case BinaryOperatorKind.DelegateNotEqual:
+                    return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__op_Inequality);
+
+                case BinaryOperatorKind.LogicalBoolAnd:
+                    if (loweredRight.ConstantValue == ConstantValue.True) return loweredLeft;
+                    if (loweredLeft.ConstantValue == ConstantValue.True) return loweredRight;
+                    if (loweredLeft.ConstantValue == ConstantValue.False) return loweredLeft;
+
+                    if (loweredRight.Kind == BoundKind.Local || loweredRight.Kind == BoundKind.Parameter)
                     {
-                        return MakeDynamicLogicalBinaryOperator(syntax, operatorKind, loweredLeft, loweredRight, method, type, isCompoundAssignment, applyParentUnaryOperator);
+                        operatorKind &= ~BinaryOperatorKind.Logical;
                     }
-                    else
+
+                    goto default;
+
+                case BinaryOperatorKind.LogicalBoolOr:
+                    if (loweredRight.ConstantValue == ConstantValue.False) return loweredLeft;
+                    if (loweredLeft.ConstantValue == ConstantValue.False) return loweredRight;
+                    if (loweredLeft.ConstantValue == ConstantValue.True) return loweredLeft;
+
+                    if (loweredRight.Kind == BoundKind.Local || loweredRight.Kind == BoundKind.Parameter)
                     {
-                        Debug.Assert((object)method == null);
-                        return _dynamicFactory.MakeDynamicBinaryOperator(operatorKind, loweredLeft, loweredRight, isCompoundAssignment, type).ToExpression();
+                        operatorKind &= ~BinaryOperatorKind.Logical;
                     }
-                }
 
-                if (operatorKind.IsLifted())
-                {
-                    return RewriteLiftedBinaryOperator(syntax, operatorKind, loweredLeft, loweredRight, type, method);
-                }
+                    goto default;
 
-                if (operatorKind.IsUserDefined())
-                {
-                    return LowerUserDefinedBinaryOperator(syntax, operatorKind, loweredLeft, loweredRight, type, method);
-                }
+                case BinaryOperatorKind.BoolAnd:
+                    if (loweredRight.ConstantValue == ConstantValue.True) return loweredLeft;
+                    if (loweredLeft.ConstantValue == ConstantValue.True) return loweredRight;
 
-                switch (operatorKind.OperatorWithLogical() | operatorKind.OperandTypes())
-                {
-                    case BinaryOperatorKind.NullableNullEqual:
-                    case BinaryOperatorKind.NullableNullNotEqual:
-                        return RewriteNullableNullEquality(syntax, operatorKind, loweredLeft, loweredRight, type);
+                    // Note that we are using IsDefaultValue instead of False.
+                    // That is just to catch cases like default(bool) or others resulting in 
+                    // a default bool value, that we know to be "false"
+                    // bool? generally should not reach here, since it is handled by RewriteLiftedBinaryOperator.
+                    // Regardless, the following code should handle default(bool?) correctly since
+                    // default(bool?) & <expr> == default(bool?)  with sideeffects of <expr>
+                    if (loweredLeft.IsDefaultValue())
+                    {
+                        return _factory.MakeSequence(loweredRight, loweredLeft);
+                    }
+                    if (loweredRight.IsDefaultValue())
+                    {
+                        return _factory.MakeSequence(loweredLeft, loweredRight);
+                    }
 
-                    case BinaryOperatorKind.ObjectAndStringConcatenation:
-                    case BinaryOperatorKind.StringAndObjectConcatenation:
-                    case BinaryOperatorKind.StringConcatenation:
-                        return RewriteStringConcatenation(syntax, operatorKind, loweredLeft, loweredRight, type);
+                    goto default;
 
-                    case BinaryOperatorKind.StringEqual:
-                        return RewriteStringEquality(oldNode, syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_String__op_Equality);
+                case BinaryOperatorKind.BoolOr:
+                    if (loweredRight.ConstantValue == ConstantValue.False) return loweredLeft;
+                    if (loweredLeft.ConstantValue == ConstantValue.False) return loweredRight;
+                    goto default;
 
-                    case BinaryOperatorKind.StringNotEqual:
-                        return RewriteStringEquality(oldNode, syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_String__op_Inequality);
+                case BinaryOperatorKind.BoolEqual:
+                    if (loweredLeft.ConstantValue == ConstantValue.True) return loweredRight;
+                    if (loweredRight.ConstantValue == ConstantValue.True) return loweredLeft;
 
-                    case BinaryOperatorKind.DelegateCombination:
-                        return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__Combine);
+                    if (loweredLeft.ConstantValue == ConstantValue.False)
+                        return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredRight, loweredRight.Type);
 
-                    case BinaryOperatorKind.DelegateRemoval:
-                        return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__Remove);
+                    if (loweredRight.ConstantValue == ConstantValue.False)
+                        return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredLeft, loweredLeft.Type);
 
-                    case BinaryOperatorKind.DelegateEqual:
-                        return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__op_Equality);
+                    goto default;
 
-                    case BinaryOperatorKind.DelegateNotEqual:
-                        return RewriteDelegateOperation(syntax, operatorKind, loweredLeft, loweredRight, type, SpecialMember.System_Delegate__op_Inequality);
+                case BinaryOperatorKind.BoolNotEqual:
+                    if (loweredLeft.ConstantValue == ConstantValue.False) return loweredRight;
+                    if (loweredRight.ConstantValue == ConstantValue.False) return loweredLeft;
 
-                    case BinaryOperatorKind.LogicalBoolAnd:
-                        if (loweredRight.ConstantValue == ConstantValue.True) return loweredLeft;
-                        if (loweredLeft.ConstantValue == ConstantValue.True) return loweredRight;
-                        if (loweredLeft.ConstantValue == ConstantValue.False) return loweredLeft;
+                    if (loweredLeft.ConstantValue == ConstantValue.True)
+                        return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredRight, loweredRight.Type);
 
-                        if (loweredRight.Kind == BoundKind.Local || loweredRight.Kind == BoundKind.Parameter)
-                        {
-                            operatorKind &= ~BinaryOperatorKind.Logical;
-                        }
+                    if (loweredRight.ConstantValue == ConstantValue.True)
+                        return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredLeft, loweredLeft.Type);
 
-                        goto default;
+                    goto default;
 
-                    case BinaryOperatorKind.LogicalBoolOr:
-                        if (loweredRight.ConstantValue == ConstantValue.False) return loweredLeft;
-                        if (loweredLeft.ConstantValue == ConstantValue.False) return loweredRight;
-                        if (loweredLeft.ConstantValue == ConstantValue.True) return loweredLeft;
+                case BinaryOperatorKind.BoolXor:
+                    if (loweredLeft.ConstantValue == ConstantValue.False) return loweredRight;
+                    if (loweredRight.ConstantValue == ConstantValue.False) return loweredLeft;
 
-                        if (loweredRight.Kind == BoundKind.Local || loweredRight.Kind == BoundKind.Parameter)
-                        {
-                            operatorKind &= ~BinaryOperatorKind.Logical;
-                        }
+                    if (loweredLeft.ConstantValue == ConstantValue.True)
+                        return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredRight, loweredRight.Type);
 
-                        goto default;
+                    if (loweredRight.ConstantValue == ConstantValue.True)
+                        return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredLeft, loweredLeft.Type);
 
-                    case BinaryOperatorKind.BoolAnd:
-                        if (loweredRight.ConstantValue == ConstantValue.True) return loweredLeft;
-                        if (loweredLeft.ConstantValue == ConstantValue.True) return loweredRight;
+                    goto default;
 
-                        // Note that we are using IsDefaultValue instead of False.
-                        // That is just to catch cases like default(bool) or others resulting in 
-                        // a default bool value, that we know to be "false"
-                        // bool? generally should not reach here, since it is handled by RewriteLiftedBinaryOperator.
-                        // Regardless, the following code should handle default(bool?) correctly since
-                        // default(bool?) & <expr> == default(bool?)  with sideeffects of <expr>
-                        if (loweredLeft.IsDefaultValue())
-                        {
-                            return _factory.MakeSequence(loweredRight, loweredLeft);
-                        }
-                        if (loweredRight.IsDefaultValue())
-                        {
-                            return _factory.MakeSequence(loweredLeft, loweredRight);
-                        }
+                case BinaryOperatorKind.Int32LeftShift:
+                case BinaryOperatorKind.UInt32LeftShift:
+                case BinaryOperatorKind.Int32RightShift:
+                case BinaryOperatorKind.UInt32RightShift:
+                    return RewriteBuiltInShiftOperation(oldNode, syntax, operatorKind, loweredLeft, loweredRight, type, 0x1F);
 
-                        goto default;
+                case BinaryOperatorKind.Int64LeftShift:
+                case BinaryOperatorKind.UInt64LeftShift:
+                case BinaryOperatorKind.Int64RightShift:
+                case BinaryOperatorKind.UInt64RightShift:
+                    return RewriteBuiltInShiftOperation(oldNode, syntax, operatorKind, loweredLeft, loweredRight, type, 0x3F);
 
-                    case BinaryOperatorKind.BoolOr:
-                        if (loweredRight.ConstantValue == ConstantValue.False) return loweredLeft;
-                        if (loweredLeft.ConstantValue == ConstantValue.False) return loweredRight;
-                        goto default;
+                case BinaryOperatorKind.PointerAndInt32Addition:
+                case BinaryOperatorKind.PointerAndUInt32Addition:
+                case BinaryOperatorKind.PointerAndInt64Addition:
+                case BinaryOperatorKind.PointerAndUInt64Addition:
+                case BinaryOperatorKind.PointerAndInt32Subtraction:
+                case BinaryOperatorKind.PointerAndUInt32Subtraction:
+                case BinaryOperatorKind.PointerAndInt64Subtraction:
+                case BinaryOperatorKind.PointerAndUInt64Subtraction:
+                    if (loweredRight.IsDefaultValue())
+                    {
+                        return loweredLeft;
+                    }
+                    return RewritePointerNumericOperator(syntax, operatorKind, loweredLeft, loweredRight, type, isPointerElementAccess, isLeftPointer: true);
 
-                    case BinaryOperatorKind.BoolEqual:
-                        if (loweredLeft.ConstantValue == ConstantValue.True) return loweredRight;
-                        if (loweredRight.ConstantValue == ConstantValue.True) return loweredLeft;
+                case BinaryOperatorKind.Int32AndPointerAddition:
+                case BinaryOperatorKind.UInt32AndPointerAddition:
+                case BinaryOperatorKind.Int64AndPointerAddition:
+                case BinaryOperatorKind.UInt64AndPointerAddition:
+                    if (loweredLeft.IsDefaultValue())
+                    {
+                        return loweredRight;
+                    }
+                    return RewritePointerNumericOperator(syntax, operatorKind, loweredLeft, loweredRight, type, isPointerElementAccess, isLeftPointer: false);
 
-                        if (loweredLeft.ConstantValue == ConstantValue.False)
-                            return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredRight, loweredRight.Type);
+                case BinaryOperatorKind.PointerSubtraction:
+                    return RewritePointerSubtraction(operatorKind, loweredLeft, loweredRight, type);
 
-                        if (loweredRight.ConstantValue == ConstantValue.False)
-                            return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredLeft, loweredLeft.Type);
+                case BinaryOperatorKind.IntAddition:
+                case BinaryOperatorKind.UIntAddition:
+                case BinaryOperatorKind.Int32Addition:
+                case BinaryOperatorKind.UInt32Addition:
+                case BinaryOperatorKind.Int64Addition:
+                case BinaryOperatorKind.UInt64Addition:
+                    if (loweredLeft.IsDefaultValue())
+                    {
+                        return loweredRight;
+                    }
+                    if (loweredRight.IsDefaultValue())
+                    {
+                        return loweredLeft;
+                    }
+                    goto default;
 
-                        goto default;
+                case BinaryOperatorKind.IntSubtraction:
+                case BinaryOperatorKind.UIntSubtraction:
+                case BinaryOperatorKind.Int32Subtraction:
+                case BinaryOperatorKind.Int64Subtraction:
+                case BinaryOperatorKind.UInt32Subtraction:
+                case BinaryOperatorKind.UInt64Subtraction:
+                    if (loweredRight.IsDefaultValue())
+                    {
+                        return loweredLeft;
+                    }
+                    goto default;
 
-                    case BinaryOperatorKind.BoolNotEqual:
-                        if (loweredLeft.ConstantValue == ConstantValue.False) return loweredRight;
-                        if (loweredRight.ConstantValue == ConstantValue.False) return loweredLeft;
+                case BinaryOperatorKind.IntMultiplication:
+                case BinaryOperatorKind.UIntMultiplication:
+                case BinaryOperatorKind.Int32Multiplication:
+                case BinaryOperatorKind.Int64Multiplication:
+                case BinaryOperatorKind.UInt32Multiplication:
+                case BinaryOperatorKind.UInt64Multiplication:
+                    if (loweredLeft.IsDefaultValue())
+                    {
+                        return _factory.MakeSequence(loweredRight, loweredLeft);
+                    }
+                    if (loweredRight.IsDefaultValue())
+                    {
+                        return _factory.MakeSequence(loweredLeft, loweredRight);
+                    }
+                    if (loweredLeft.ConstantValue?.UInt64Value == 1)
+                    {
+                        return loweredRight;
+                    }
+                    if (loweredRight.ConstantValue?.UInt64Value == 1)
+                    {
+                        return loweredLeft;
+                    }
+                    goto default;
 
-                        if (loweredLeft.ConstantValue == ConstantValue.True)
-                            return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredRight, loweredRight.Type);
+                case BinaryOperatorKind.Int32GreaterThan:
+                case BinaryOperatorKind.Int32LessThanOrEqual:
+                    if (loweredLeft.Kind == BoundKind.ArraySize && loweredRight.IsDefaultValue())
+                    {
+                        //array length is never negative
+                        var newOp = operatorKind == BinaryOperatorKind.Int32GreaterThan ?
+                                                    BinaryOperatorKind.NotEqual :
+                                                    BinaryOperatorKind.Equal;
 
-                        if (loweredRight.ConstantValue == ConstantValue.True)
-                            return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredLeft, loweredLeft.Type);
+                        operatorKind &= ~BinaryOperatorKind.OpMask;
+                        operatorKind |= newOp;
+                        loweredLeft = UnconvertArrayLength((BoundArraySize)loweredLeft);
+                    }
+                    goto default;
 
-                        goto default;
+                case BinaryOperatorKind.Int32LessThan:
+                case BinaryOperatorKind.Int32GreaterThanOrEqual:
+                    if (loweredRight.Kind == BoundKind.ArraySize && loweredLeft.IsDefaultValue())
+                    {
+                        //array length is never negative
+                        var newOp = operatorKind == BinaryOperatorKind.Int32LessThan ?
+                                                    BinaryOperatorKind.NotEqual :
+                                                    BinaryOperatorKind.Equal;
 
-                    case BinaryOperatorKind.BoolXor:
-                        if (loweredLeft.ConstantValue == ConstantValue.False) return loweredRight;
-                        if (loweredRight.ConstantValue == ConstantValue.False) return loweredLeft;
+                        operatorKind &= ~BinaryOperatorKind.OpMask;
+                        operatorKind |= newOp;
+                        loweredRight = UnconvertArrayLength((BoundArraySize)loweredRight);
+                    }
+                    goto default;
 
-                        if (loweredLeft.ConstantValue == ConstantValue.True)
-                            return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredRight, loweredRight.Type);
+                case BinaryOperatorKind.Int32Equal:
+                case BinaryOperatorKind.Int32NotEqual:
+                    if (loweredLeft.Kind == BoundKind.ArraySize && loweredRight.IsDefaultValue())
+                    {
+                        loweredLeft = UnconvertArrayLength((BoundArraySize)loweredLeft);
+                    }
+                    else if (loweredRight.Kind == BoundKind.ArraySize && loweredLeft.IsDefaultValue())
+                    {
+                        loweredRight = UnconvertArrayLength((BoundArraySize)loweredRight);
+                    }
 
-                        if (loweredRight.ConstantValue == ConstantValue.True)
-                            return MakeUnaryOperator(UnaryOperatorKind.BoolLogicalNegation, syntax, null, loweredLeft, loweredLeft.Type);
+                    goto default;
 
-                        goto default;
-
-                    case BinaryOperatorKind.Int32LeftShift:
-                    case BinaryOperatorKind.UInt32LeftShift:
-                    case BinaryOperatorKind.Int32RightShift:
-                    case BinaryOperatorKind.UInt32RightShift:
-                        return RewriteBuiltInShiftOperation(oldNode, syntax, operatorKind, loweredLeft, loweredRight, type, 0x1F);
-
-                    case BinaryOperatorKind.Int64LeftShift:
-                    case BinaryOperatorKind.UInt64LeftShift:
-                    case BinaryOperatorKind.Int64RightShift:
-                    case BinaryOperatorKind.UInt64RightShift:
-                        return RewriteBuiltInShiftOperation(oldNode, syntax, operatorKind, loweredLeft, loweredRight, type, 0x3F);
-
-                    case BinaryOperatorKind.PointerAndInt32Addition:
-                    case BinaryOperatorKind.PointerAndUInt32Addition:
-                    case BinaryOperatorKind.PointerAndInt64Addition:
-                    case BinaryOperatorKind.PointerAndUInt64Addition:
-                    case BinaryOperatorKind.PointerAndInt32Subtraction:
-                    case BinaryOperatorKind.PointerAndUInt32Subtraction:
-                    case BinaryOperatorKind.PointerAndInt64Subtraction:
-                    case BinaryOperatorKind.PointerAndUInt64Subtraction:
-                        if (loweredRight.IsDefaultValue())
-                        {
-                            return loweredLeft;
-                        }
-                        return RewritePointerNumericOperator(syntax, operatorKind, loweredLeft, loweredRight, type, isPointerElementAccess, isLeftPointer: true);
-
-                    case BinaryOperatorKind.Int32AndPointerAddition:
-                    case BinaryOperatorKind.UInt32AndPointerAddition:
-                    case BinaryOperatorKind.Int64AndPointerAddition:
-                    case BinaryOperatorKind.UInt64AndPointerAddition:
-                        if (loweredLeft.IsDefaultValue())
-                        {
-                            return loweredRight;
-                        }
-                        return RewritePointerNumericOperator(syntax, operatorKind, loweredLeft, loweredRight, type, isPointerElementAccess, isLeftPointer: false);
-
-                    case BinaryOperatorKind.PointerSubtraction:
-                        return RewritePointerSubtraction(operatorKind, loweredLeft, loweredRight, type);
-
-                    case BinaryOperatorKind.IntAddition:
-                    case BinaryOperatorKind.UIntAddition:
-                    case BinaryOperatorKind.Int32Addition:
-                    case BinaryOperatorKind.UInt32Addition:
-                    case BinaryOperatorKind.Int64Addition:
-                    case BinaryOperatorKind.UInt64Addition:
-                        if (loweredLeft.IsDefaultValue())
-                        {
-                            return loweredRight;
-                        }
-                        if (loweredRight.IsDefaultValue())
-                        {
-                            return loweredLeft;
-                        }
-                        goto default;
-
-                    case BinaryOperatorKind.IntSubtraction:
-                    case BinaryOperatorKind.UIntSubtraction:
-                    case BinaryOperatorKind.Int32Subtraction:
-                    case BinaryOperatorKind.Int64Subtraction:
-                    case BinaryOperatorKind.UInt32Subtraction:
-                    case BinaryOperatorKind.UInt64Subtraction:
-                        if (loweredRight.IsDefaultValue())
-                        {
-                            return loweredLeft;
-                        }
-                        goto default;
-
-                    case BinaryOperatorKind.IntMultiplication:
-                    case BinaryOperatorKind.UIntMultiplication:
-                    case BinaryOperatorKind.Int32Multiplication:
-                    case BinaryOperatorKind.Int64Multiplication:
-                    case BinaryOperatorKind.UInt32Multiplication:
-                    case BinaryOperatorKind.UInt64Multiplication:
-                        if (loweredLeft.IsDefaultValue())
-                        {
-                            return _factory.MakeSequence(loweredRight, loweredLeft);
-                        }
-                        if (loweredRight.IsDefaultValue())
-                        {
-                            return _factory.MakeSequence(loweredLeft, loweredRight);
-                        }
-                        if (loweredLeft.ConstantValue?.UInt64Value == 1)
-                        {
-                            return loweredRight;
-                        }
-                        if (loweredRight.ConstantValue?.UInt64Value == 1)
-                        {
-                            return loweredLeft;
-                        }
-                        goto default;
-
-                    case BinaryOperatorKind.Int32GreaterThan:
-                    case BinaryOperatorKind.Int32LessThanOrEqual:
-                        if (loweredLeft.Kind == BoundKind.ArraySize && loweredRight.IsDefaultValue())
-                        {
-                            //array length is never negative
-                            var newOp = operatorKind == BinaryOperatorKind.Int32GreaterThan ?
-                                                        BinaryOperatorKind.NotEqual :
-                                                        BinaryOperatorKind.Equal;
-
-                            operatorKind &= ~BinaryOperatorKind.OpMask;
-                            operatorKind |= newOp;
-                            loweredLeft = UnconvertArrayLength((BoundArraySize)loweredLeft);
-                        }
-                        goto default;
-
-                    case BinaryOperatorKind.Int32LessThan:
-                    case BinaryOperatorKind.Int32GreaterThanOrEqual:
-                        if (loweredRight.Kind == BoundKind.ArraySize && loweredLeft.IsDefaultValue())
-                        {
-                            //array length is never negative
-                            var newOp = operatorKind == BinaryOperatorKind.Int32LessThan ?
-                                                        BinaryOperatorKind.NotEqual :
-                                                        BinaryOperatorKind.Equal;
-
-                            operatorKind &= ~BinaryOperatorKind.OpMask;
-                            operatorKind |= newOp;
-                            loweredRight = UnconvertArrayLength((BoundArraySize)loweredRight);
-                        }
-                        goto default;
-
-                    case BinaryOperatorKind.Int32Equal:
-                    case BinaryOperatorKind.Int32NotEqual:
-                        if (loweredLeft.Kind == BoundKind.ArraySize && loweredRight.IsDefaultValue())
-                        {
-                            loweredLeft = UnconvertArrayLength((BoundArraySize)loweredLeft);
-                        }
-                        else if (loweredRight.Kind == BoundKind.ArraySize && loweredLeft.IsDefaultValue())
-                        {
-                            loweredRight = UnconvertArrayLength((BoundArraySize)loweredRight);
-                        }
-
-                        goto default;
-
-                    default:
-                        break;
-                }
+                default:
+                    break;
             }
 
             return (oldNode != null) ?
@@ -526,120 +484,6 @@ namespace StarkPlatform.Compiler.Stark
             return arrSize.Update(arrSize.Expression, _factory.SpecialType(SpecialType.System_UInt));
         }
 
-        private BoundExpression MakeDynamicLogicalBinaryOperator(
-            SyntaxNode syntax,
-            BinaryOperatorKind operatorKind,
-            BoundExpression loweredLeft,
-            BoundExpression loweredRight,
-            MethodSymbol leftTruthOperator,
-            TypeSymbol type,
-            bool isCompoundAssignment,
-            BoundUnaryOperator applyParentUnaryOperator)
-        {
-            Debug.Assert(operatorKind.Operator() == BinaryOperatorKind.And || operatorKind.Operator() == BinaryOperatorKind.Or);
-
-            // Dynamic logical && and || operators are lowered as follows:
-            //   left && right  ->  IsFalse(left) ? left : And(left, right)
-            //   left || right  ->  IsTrue(left) ? left : Or(left, right)
-            // 
-            // Optimization: If the binary AND/OR is directly contained in IsFalse/IsTrue operator (parentUnaryOperator != null)
-            // we can avoid calling IsFalse/IsTrue twice on the same object.
-            //   IsFalse(left && right)  ->  IsFalse(left) || IsFalse(And(left, right))
-            //   IsTrue(left || right)   ->  IsTrue(left) || IsTrue(Or(left, right))
-
-            bool isAnd = operatorKind.Operator() == BinaryOperatorKind.And;
-
-            // Operator to be used to test the left operand:
-            var testOperator = isAnd ? UnaryOperatorKind.DynamicFalse : UnaryOperatorKind.DynamicTrue;
-
-            // VisitUnaryOperator ensures we are never called with parentUnaryOperator != null when we can't perform the optimization.
-            Debug.Assert(applyParentUnaryOperator == null || applyParentUnaryOperator.OperatorKind == testOperator);
-
-            ConstantValue constantLeft = loweredLeft.ConstantValue ?? UnboxConstant(loweredLeft);
-            if (testOperator == UnaryOperatorKind.DynamicFalse && constantLeft == ConstantValue.False ||
-                testOperator == UnaryOperatorKind.DynamicTrue && constantLeft == ConstantValue.True)
-            {
-                Debug.Assert(leftTruthOperator == null);
-
-                if (applyParentUnaryOperator != null)
-                {
-                    // IsFalse(false && right) -> true
-                    // IsTrue(true || right)   -> true
-                    return _factory.Literal(true);
-                }
-                else
-                {
-                    // false && right  ->  box(false)
-                    // true || right   ->  box(true)
-                    return MakeConversionNode(loweredLeft, type, @checked: false);
-                }
-            }
-
-            BoundExpression result;
-            var boolean = _compilation.GetSpecialType(SpecialType.System_Boolean);
-
-            // Store left to local if needed. If constant or already local we don't need a temp 
-            // since the value of left can't change until right is evaluated.
-            BoundAssignmentOperator tempAssignment;
-            BoundLocal temp;
-            if (constantLeft == null && loweredLeft.Kind != BoundKind.Local && loweredLeft.Kind != BoundKind.Parameter)
-            {
-                BoundAssignmentOperator assignment;
-                var local = _factory.StoreToTemp(loweredLeft, out assignment);
-                loweredLeft = local;
-                tempAssignment = assignment;
-                temp = local;
-            }
-            else
-            {
-                tempAssignment = null;
-                temp = null;
-            }
-
-            var op = _dynamicFactory.MakeDynamicBinaryOperator(operatorKind, loweredLeft, loweredRight, isCompoundAssignment, type).ToExpression();
-
-            // IsFalse(true) or IsTrue(false) are always false:
-            bool leftTestIsConstantFalse = testOperator == UnaryOperatorKind.DynamicFalse && constantLeft == ConstantValue.True ||
-                                           testOperator == UnaryOperatorKind.DynamicTrue && constantLeft == ConstantValue.False;
-
-            if (applyParentUnaryOperator != null)
-            {
-                // IsFalse(left && right)  ->  IsFalse(left) || IsFalse(And(left, right))
-                // IsTrue(left || right)   ->  IsTrue(left) || IsTrue(Or(left, right))
-
-                result = _dynamicFactory.MakeDynamicUnaryOperator(testOperator, op, boolean).ToExpression();
-                if (!leftTestIsConstantFalse)
-                {
-                    BoundExpression leftTest = MakeTruthTestForDynamicLogicalOperator(syntax, loweredLeft, boolean, leftTruthOperator, negative: isAnd);
-                    result = _factory.Binary(BinaryOperatorKind.LogicalOr, boolean, leftTest, result);
-                }
-            }
-            else
-            {
-                // left && right  ->  IsFalse(left) ? left : And(left, right)
-                // left || right  ->  IsTrue(left) ? left : Or(left, right)
-
-                if (leftTestIsConstantFalse)
-                {
-                    result = op;
-                }
-                else
-                {
-                    // We might need to box.
-                    BoundExpression leftTest = MakeTruthTestForDynamicLogicalOperator(syntax, loweredLeft, boolean, leftTruthOperator, negative: isAnd);
-                    var convertedLeft = MakeConversionNode(loweredLeft, type, @checked: false);
-                    result = _factory.Conditional(leftTest, convertedLeft, op, type);
-                }
-            }
-
-            if (tempAssignment != null)
-            {
-                return _factory.Sequence(ImmutableArray.Create(temp.LocalSymbol), ImmutableArray.Create<BoundExpression>(tempAssignment), result);
-            }
-
-            return result;
-        }
-
         private static ConstantValue UnboxConstant(BoundExpression expression)
         {
             if (expression.Kind == BoundKind.Conversion)
@@ -652,43 +496,6 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             return null;
-        }
-
-        private BoundExpression MakeTruthTestForDynamicLogicalOperator(SyntaxNode syntax, BoundExpression loweredLeft, TypeSymbol boolean, MethodSymbol leftTruthOperator, bool negative)
-        {
-            if (loweredLeft.HasDynamicType())
-            {
-                Debug.Assert(leftTruthOperator == null);
-                return _dynamicFactory.MakeDynamicUnaryOperator(negative ? UnaryOperatorKind.DynamicFalse : UnaryOperatorKind.DynamicTrue, loweredLeft, boolean).ToExpression();
-            }
-
-            // Although the spec doesn't capture it we do the same that Dev11 does:
-            // Use implicit conversion to Boolean if it is defined on the static type of the left operand.
-            // If not the type has to implement IsTrue/IsFalse operator - we checked it during binding.
-
-            HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-            var conversion = _compilation.Conversions.ClassifyConversionFromExpression(loweredLeft, boolean, ref useSiteDiagnostics);
-            _diagnostics.Add(loweredLeft.Syntax, useSiteDiagnostics);
-            if (conversion.IsImplicit)
-            {
-                Debug.Assert(leftTruthOperator == null);
-
-                var converted = MakeConversionNode(loweredLeft, boolean, @checked: false);
-                if (negative)
-                {
-                    return new BoundUnaryOperator(syntax, UnaryOperatorKind.BoolLogicalNegation, converted, ConstantValue.NotAvailable, MethodSymbol.None, LookupResultKind.Viable, boolean)
-                    {
-                        WasCompilerGenerated = true
-                    };
-                }
-                else
-                {
-                    return converted;
-                }
-            }
-
-            Debug.Assert(leftTruthOperator != null);
-            return BoundCall.Synthesized(syntax, null, leftTruthOperator, loweredLeft);
         }
 
         private BoundExpression LowerUserDefinedBinaryOperator(
@@ -1855,9 +1662,7 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             Debug.Assert((object)method != null);
-            BoundExpression call = _inExpressionLambda
-                ? new BoundBinaryOperator(syntax, operatorKind, null, method, default(LookupResultKind), loweredLeft, loweredRight, method.ReturnType.TypeSymbol)
-                : (BoundExpression)BoundCall.Synthesized(syntax, null, method, loweredLeft, loweredRight);
+            BoundExpression call = BoundCall.Synthesized(syntax, null, method, loweredLeft, loweredRight);
             BoundExpression result = method.ReturnType.SpecialType == SpecialType.System_Delegate ?
                 MakeConversionNode(syntax, call, Conversion.ExplicitReference, type, @checked: false) :
                 call;

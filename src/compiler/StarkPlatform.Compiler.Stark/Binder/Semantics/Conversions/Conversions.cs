@@ -226,20 +226,6 @@ namespace StarkPlatform.Compiler.Stark
             foreach (var p in delegateParameters)
             {
                 ParameterSymbol parameter = p;
-
-                // In ExpressionBinder::BindGrpConversion, the native compiler substitutes object in place of dynamic.  This is
-                // necessary because conversions from expressions of type dynamic always succeed, whereas conversions from the
-                // type generally fail (modulo identity conversions).  This is not reflected in the C# 4 spec, but will be
-                // incorporated going forward.  See DevDiv #742345 for additional details.
-                // NOTE: Dev11 does a deep substitution (e.g. C<C<C<dynamic>>> -> C<C<C<object>>>), but that seems redundant.
-                if (parameter.Type.IsDynamic())
-                {
-                    // If we don't have System.Object, then we'll get an error type, which will cause overload resolution to fail, 
-                    // which will cause some error to be reported.  That's sufficient (i.e. no need to specifically report its absence here).
-                    parameter = new SignatureOnlyParameterSymbol(
-                        TypeSymbolWithAnnotations.Create(compilation.GetSpecialType(SpecialType.System_Object), customModifiers: parameter.Type.CustomModifiers), parameter.RefCustomModifiers, parameter.IsParams, parameter.RefKind);
-                }
-
                 analyzedArguments.Arguments.Add(new BoundParameter(syntax, parameter) { WasCompilerGenerated = true });
                 analyzedArguments.RefKinds.Add(parameter.RefKind);
             }

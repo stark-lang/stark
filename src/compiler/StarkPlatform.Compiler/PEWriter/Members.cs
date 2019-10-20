@@ -269,11 +269,6 @@ namespace StarkPlatform.Cci
         LocalVariableAttributes PdbAttributes { get; }
 
         /// <summary>
-        /// The synthesized dynamic attributes of the local definition if any, or empty.
-        /// </summary>
-        ImmutableArray<bool> DynamicTransformFlags { get; }
-
-        /// <summary>
         /// The tuple element names of the local definition if any, or empty.
         /// </summary>
         ImmutableArray<string> TupleElementNames { get; }
@@ -350,11 +345,6 @@ namespace StarkPlatform.Cci
 
         ImmutableArray<byte> IL { get; }
         ImmutableArray<SequencePoint> SequencePoints { get; }
-
-        /// <summary>
-        /// Returns true if there is at least one dynamic local within the MethodBody
-        /// </summary>
-        bool HasDynamicLocalVariables { get; }
 
         /// <summary>
         /// Returns zero or more local (block) scopes into which the CLR IL operations in the given method body is organized.

@@ -308,15 +308,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     return true;
                 }
 
-                // if ignoring dynamic, then treat dynamic the same as the type 'object'
-                if ((comparison & TypeCompareKind.IgnoreDynamic) != 0 &&
-                    (object)t2 != null &&
-                    t2.TypeKind == TypeKind.Dynamic &&
-                    this.SpecialType == StarkPlatform.Compiler.SpecialType.System_Object)
-                {
-                    return true;
-                }
-
                 var other = t2 as TopLevel;
 
                 return (object)other != null &&

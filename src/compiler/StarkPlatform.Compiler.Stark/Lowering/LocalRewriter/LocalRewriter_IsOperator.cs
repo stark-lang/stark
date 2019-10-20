@@ -50,20 +50,17 @@ namespace StarkPlatform.Compiler.Stark
 
             // TODO: Handle dynamic operand type and target type
 
-            if (!_inExpressionLambda)
-            {
-                ConstantValue constantValue = Binder.GetIsOperatorConstantResult(operandType, targetType, conversion.Kind, rewrittenOperand.ConstantValue);
+            ConstantValue constantValue = Binder.GetIsOperatorConstantResult(operandType, targetType, conversion.Kind, rewrittenOperand.ConstantValue);
 
-                if (constantValue != null)
-                {
-                    return RewriteConstantIsOperator(syntax, rewrittenOperand, constantValue, rewrittenType);
-                }
-                else if (conversion.IsImplicit)
-                {
-                    // operand is a reference type with bound identity or implicit conversion
-                    // We can replace the "is" instruction with a null check
-                    return MakeNullCheck(syntax, rewrittenOperand, BinaryOperatorKind.NotEqual);
-                }
+            if (constantValue != null)
+            {
+                return RewriteConstantIsOperator(syntax, rewrittenOperand, constantValue, rewrittenType);
+            }
+            else if (conversion.IsImplicit)
+            {
+                // operand is a reference type with bound identity or implicit conversion
+                // We can replace the "is" instruction with a null check
+                return MakeNullCheck(syntax, rewrittenOperand, BinaryOperatorKind.NotEqual);
             }
 
             return oldNode.Update(rewrittenOperand, rewrittenTargetType, conversion, rewrittenType);

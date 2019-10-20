@@ -26,9 +26,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 case SymbolKind.ArrayType:
                     return ((IArrayTypeSymbol)symbol).ElementType.GetGlyph();
 
-                case SymbolKind.DynamicType:
-                    return Glyph.ClassPublic;
-
                 case SymbolKind.Event:
                     publicIcon = Glyph.EventPublic;
                     break;

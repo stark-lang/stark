@@ -14,7 +14,7 @@ namespace StarkPlatform.Compiler.Stark
             var stores = ArrayBuilder<BoundExpression>.GetInstance();
 
             // Rewrite LHS with temporaries to prevent double-evaluation of side effects, as we'll need to use it multiple times.
-            BoundExpression transformedLHS = TransformCompoundAssignmentLHS(node.LeftOperand, stores, temps, node.LeftOperand.HasDynamicType());
+            BoundExpression transformedLHS = TransformCompoundAssignmentLHS(node.LeftOperand, stores, temps);
             var lhsRead = MakeRValue(transformedLHS);
             BoundExpression loweredRight = VisitExpression(node.RightOperand);
 

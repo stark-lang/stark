@@ -460,7 +460,6 @@ namespace StarkPlatform.Compiler.Stark
                     break;
                 case BoundKind.DefaultExpression:
                 case BoundKind.ObjectCreationExpression:
-                case BoundKind.DynamicObjectCreationExpression:
                 case BoundKind.AnonymousObjectCreationExpression:
                 case BoundKind.TupleLiteral:
                 case BoundKind.ConvertedTupleLiteral:
@@ -785,7 +784,7 @@ namespace StarkPlatform.Compiler.Stark
                     //     C() { F = this; }
                     // }
                     // For now, we copy a limited set of BoundNode types that shouldn't contain cycles.
-                    if ((value.Kind == BoundKind.ObjectCreationExpression || value.Kind == BoundKind.AnonymousObjectCreationExpression || value.Kind == BoundKind.DynamicObjectCreationExpression || targetType.TypeSymbol.IsAnonymousType) &&
+                    if ((value.Kind == BoundKind.ObjectCreationExpression || value.Kind == BoundKind.AnonymousObjectCreationExpression || targetType.TypeSymbol.IsAnonymousType) &&
                         areEquivalentTypes(targetType, valueType)) // https://github.com/dotnet/roslyn/issues/29968 Allow assignment to base type.
                     {
                         if (valueSlot > 0)
@@ -1276,7 +1275,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 return false;
             }
-            bool canIgnoreType(TypeSymbol type) => (object)type.VisitType((t, unused1, unused2) => t.IsErrorType() || t.IsDynamic() || t.HasUseSiteError, (object)null) != null;
+            bool canIgnoreType(TypeSymbol type) => (object)type.VisitType((t, unused1, unused2) => t.IsErrorType() || t.HasUseSiteError, (object)null) != null;
             return canIgnoreType(typeA) ||
                 canIgnoreType(typeB) ||
                 typeA.Equals(typeB, TypeCompareKind.IgnoreCustomModifiersAndArraySizesAndLowerBounds | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes | TypeCompareKind.IgnoreDynamicAndTupleNames); // Ignore TupleElementNames (see https://github.com/dotnet/roslyn/issues/23651).
@@ -1305,7 +1304,7 @@ namespace StarkPlatform.Compiler.Stark
             ImmutableArray<TypeSymbolWithAnnotations> argumentTypes,
             BoundExpression initializerOpt)
         {
-            Debug.Assert(node.Kind == BoundKind.ObjectCreationExpression || node.Kind == BoundKind.DynamicObjectCreationExpression);
+            Debug.Assert(node.Kind == BoundKind.ObjectCreationExpression);
 
             int slot = -1;
             TypeSymbol type = node.Type;
@@ -1721,7 +1720,7 @@ namespace StarkPlatform.Compiler.Stark
                     return methodOpt.ReturnType;
                 }
             }
-            else if (!operatorKind.IsDynamic() && !resultType.IsValueType)
+            else if (!resultType.IsValueType)
             {
                 switch (operatorKind.Operator() | operatorKind.OperandTypes())
                 {
@@ -3332,7 +3331,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 return false;
             }
-            if (value.Type is null || value.Type.IsDynamic() || value.ConstantValue != null)
+            if (value.Type is null || value.ConstantValue != null)
             {
                 return true;
             }
@@ -3883,20 +3882,6 @@ namespace StarkPlatform.Compiler.Stark
                         return operandType;
                     }
 
-                case ConversionKind.ExplicitDynamic:
-                case ConversionKind.ImplicitDynamic:
-                    resultAnnotation = operandType.IsNull ? NullableAnnotation.Unknown : operandType.NullableAnnotation;
-                    if (resultAnnotation == NullableAnnotation.NotAnnotated && targetType.IsTypeParameter())
-                    {
-                        resultAnnotation = NullableAnnotation.NotNullable;
-                    }
-                    else if (targetType.IsValueType)
-                    {
-                        Debug.Assert(!operandType.IsNull); // If assert fails, add a test that verifies resulting type is nullable.
-                        resultAnnotation = (targetType.IsNullableType() && (operandType.IsNull || operandType.NullableAnnotation.IsAnyNullable())) ? NullableAnnotation.Nullable : NullableAnnotation.NotNullable;
-                    }
-                    break;
-
                 case ConversionKind.ImplicitThrow:
                     break;
 
@@ -3941,8 +3926,7 @@ namespace StarkPlatform.Compiler.Stark
                     }
                     Debug.Assert(operandType.IsNull ||
                         !operandType.IsReferenceType ||
-                        operandType.TypeKind == TypeKind.Interface ||
-                        operandType.TypeKind == TypeKind.Dynamic);
+                        operandType.TypeKind == TypeKind.Interface);
                     break;
 
                 case ConversionKind.NoConversion:
@@ -4709,12 +4693,6 @@ namespace StarkPlatform.Compiler.Stark
             throw ExceptionUtilities.Unreachable;
         }
 
-        public override BoundNode VisitDynamicObjectInitializerMember(BoundDynamicObjectInitializerMember node)
-        {
-            SetResult(node);
-            return null;
-        }
-
         public override BoundNode VisitBadExpression(BoundBadExpression node)
         {
             var result = base.VisitBadExpression(node);
@@ -5115,31 +5093,6 @@ namespace StarkPlatform.Compiler.Stark
             return result;
         }
 
-        public override BoundNode VisitDynamicMemberAccess(BoundDynamicMemberAccess node)
-        {
-            var receiver = node.Receiver;
-            VisitRvalue(receiver);
-            CheckPossibleNullReceiver(receiver);
-
-            Debug.Assert(node.Type.IsDynamic());
-            _resultType = TypeSymbolWithAnnotations.Create(node.Type);
-            return null;
-        }
-
-        public override BoundNode VisitDynamicInvocation(BoundDynamicInvocation node)
-        {
-            VisitRvalue(node.Expression);
-            VisitArgumentsEvaluate(node.Arguments, node.ArgumentRefKindsOpt);
-
-            Debug.Assert(node.Type.IsDynamic());
-            Debug.Assert(node.Type.IsReferenceType);
-
-            // https://github.com/dotnet/roslyn/issues/29893 Update applicable members based on inferred argument types.
-            NullableAnnotation nullableAnnotation = InferResultNullabilityFromApplicableCandidates(StaticCast<Symbol>.From(node.ApplicableMethods));
-            _resultType = TypeSymbolWithAnnotations.Create(node.Type, nullableAnnotation);
-            return null;
-        }
-
         public override BoundNode VisitEventAssignmentOperator(BoundEventAssignmentOperator node)
         {
             VisitRvalue(node.ReceiverOpt);
@@ -5159,15 +5112,6 @@ namespace StarkPlatform.Compiler.Stark
             return null;
         }
 
-        public override BoundNode VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node)
-        {
-            Debug.Assert(!IsConditionalState);
-            var arguments = node.Arguments;
-            var argumentTypes = VisitArgumentsEvaluate(arguments, node.ArgumentRefKindsOpt);
-            VisitObjectOrDynamicObjectCreation(node, arguments, argumentTypes, node.InitializerExpressionOpt);
-            return null;
-        }
-
         public override BoundNode VisitObjectInitializerExpression(BoundObjectInitializerExpression node)
         {
             // Only reachable from bad expression. Otherwise handled in VisitObjectCreationExpression().
@@ -5176,13 +5120,6 @@ namespace StarkPlatform.Compiler.Stark
         }
 
         public override BoundNode VisitCollectionInitializerExpression(BoundCollectionInitializerExpression node)
-        {
-            // Only reachable from bad expression. Otherwise handled in VisitObjectCreationExpression().
-            SetResult(node);
-            return null;
-        }
-
-        public override BoundNode VisitDynamicCollectionElementInitializer(BoundDynamicCollectionElementInitializer node)
         {
             // Only reachable from bad expression. Otherwise handled in VisitObjectCreationExpression().
             SetResult(node);
@@ -5235,25 +5172,6 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert((object)node.Type == null || node.Type.IsPointerType() || node.Type.IsRefLikeType);
             SetResult(node);
             return result;
-        }
-
-        public override BoundNode VisitDynamicIndexerAccess(BoundDynamicIndexerAccess node)
-        {
-            var receiver = node.ReceiverOpt;
-            VisitRvalue(receiver);
-            // https://github.com/dotnet/roslyn/issues/30598: Mark receiver as not null
-            // after indices have been visited, and only if the receiver has not changed.
-            CheckPossibleNullReceiver(receiver);
-            VisitArgumentsEvaluate(node.Arguments, node.ArgumentRefKindsOpt);
-
-            Debug.Assert(node.Type.IsDynamic());
-
-            // https://github.com/dotnet/roslyn/issues/29893 Update applicable members based on inferred argument types.
-            NullableAnnotation nullableAnnotation = (object)node.Type != null && !node.Type.IsValueType ?
-                InferResultNullabilityFromApplicableCandidates(StaticCast<Symbol>.From(node.ApplicableIndexers)) :
-                NullableAnnotation.Unknown;
-            _resultType = TypeSymbolWithAnnotations.Create(node.Type, nullableAnnotation);
-            return null;
         }
 
         private void CheckPossibleNullReceiver(BoundExpression receiverOpt, bool checkNullableValueType = false, SyntaxNode syntaxOpt = null)

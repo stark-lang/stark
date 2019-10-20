@@ -140,10 +140,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             // adversely effect the compilation or potentially change overload resolution.  
             var compilation = this.DeclaringCompilation;
             var type = this.Type;
-            if (type.TypeSymbol.ContainsDynamic() && compilation.HasDynamicEmitAttributes() && compilation.CanEmitBoolean())
-            {
-                AddSynthesizedAttribute(ref attributes, compilation.SynthesizeDynamicAttribute(type.TypeSymbol, type.CustomModifiers.Length + this.RefCustomModifiers.Length, this.RefKind));
-            }
 
             if (type.TypeSymbol.ContainsTupleNames() &&
                 compilation.HasTupleNamesAttributes &&

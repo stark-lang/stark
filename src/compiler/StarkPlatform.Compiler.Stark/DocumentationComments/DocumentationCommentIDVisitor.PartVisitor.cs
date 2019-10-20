@@ -245,17 +245,6 @@ namespace StarkPlatform.Compiler.Stark
                 return VisitNamedType(symbol, builder);
             }
 
-            public override object VisitDynamicType(DynamicTypeSymbol symbol, StringBuilder builder)
-            {
-                // NOTE: this is a change from dev11, which did not allow dynamic in parameter types.
-                // If we wanted to be really conservative, we would actually visit the symbol for
-                // System.Object.  However, the System.Object type must always have exactly this
-                // doc comment ID, so the hassle seems unjustifiable.
-                builder.Append("System.Object");
-
-                return null;
-            }
-
             private static string GetEscapedMetadataName(Symbol symbol)
             {
                 string metadataName = symbol.MetadataName;

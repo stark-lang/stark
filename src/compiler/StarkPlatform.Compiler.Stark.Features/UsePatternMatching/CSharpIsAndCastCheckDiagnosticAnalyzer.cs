@@ -112,12 +112,6 @@ namespace StarkPlatform.Compiler.Stark.UsePatternMatching
                 return;
             }
 
-            if (isType?.TypeKind == TypeKind.Dynamic)
-            {
-                // Not legal to use dynamic in a pattern.
-                return;
-            }
-
             if (!localSymbol.Type.Equals(isType))
             {
                 // we have something like:

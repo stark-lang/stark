@@ -96,8 +96,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                 case ConversionKind.ImplicitTuple:
                 case ConversionKind.ExplicitTupleLiteral:
                 case ConversionKind.ExplicitTuple:
-                case ConversionKind.ImplicitDynamic:
-                case ConversionKind.ExplicitDynamic:
                 case ConversionKind.ImplicitThrow:
                     // None of these things should reach codegen (yet? maybe?)
                     throw ExceptionUtilities.UnexpectedValue(conversion.ConversionKind);

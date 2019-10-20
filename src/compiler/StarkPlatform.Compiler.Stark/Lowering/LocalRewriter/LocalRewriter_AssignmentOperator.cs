@@ -32,30 +32,6 @@ namespace StarkPlatform.Compiler.Stark
                     loweredLeft = VisitIndexerAccess((BoundIndexerAccess)left, isLeftOfAssignment: true);
                     break;
 
-                case BoundKind.DynamicMemberAccess:
-                    {
-                        // dyn.m = expr
-                        var memberAccess = (BoundDynamicMemberAccess)left;
-                        var loweredReceiver = VisitExpression(memberAccess.Receiver);
-                        return _dynamicFactory.MakeDynamicSetMember(loweredReceiver, memberAccess.Name, loweredRight).ToExpression();
-                    }
-
-                case BoundKind.DynamicIndexerAccess:
-                    {
-                        // dyn[args] = expr
-                        var indexerAccess = (BoundDynamicIndexerAccess)left;
-                        Debug.Assert(indexerAccess.ReceiverOpt != null);
-                        var loweredReceiver = VisitExpression(indexerAccess.ReceiverOpt);
-                        var loweredArguments = VisitList(indexerAccess.Arguments);
-                        return MakeDynamicSetIndex(
-                            indexerAccess,
-                            loweredReceiver,
-                            loweredArguments,
-                            indexerAccess.ArgumentNamesOpt,
-                            indexerAccess.ArgumentRefKindsOpt,
-                            loweredRight);
-                    }
-
                 default:
                     loweredLeft = VisitExpression(left);
                     break;
@@ -73,26 +49,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             switch (rewrittenLeft.Kind)
             {
-                case BoundKind.DynamicIndexerAccess:
-                    var indexerAccess = (BoundDynamicIndexerAccess)rewrittenLeft;
-                    return MakeDynamicSetIndex(
-                        indexerAccess,
-                        indexerAccess.ReceiverOpt,
-                        indexerAccess.Arguments,
-                        indexerAccess.ArgumentNamesOpt,
-                        indexerAccess.ArgumentRefKindsOpt,
-                        rewrittenRight,
-                        isCompoundAssignment, isChecked);
-
-                case BoundKind.DynamicMemberAccess:
-                    var memberAccess = (BoundDynamicMemberAccess)rewrittenLeft;
-                    return _dynamicFactory.MakeDynamicSetMember(
-                        memberAccess.Receiver,
-                        memberAccess.Name,
-                        rewrittenRight,
-                        isCompoundAssignment,
-                        isChecked).ToExpression();
-
                 case BoundKind.EventAccess:
                     var eventAccess = (BoundEventAccess)rewrittenLeft;
                     Debug.Assert(eventAccess.IsUsableAsField);
@@ -106,29 +62,6 @@ namespace StarkPlatform.Compiler.Stark
                 default:
                     return MakeStaticAssignmentOperator(syntax, rewrittenLeft, rewrittenRight, isRef: false, type: type, used: used);
             }
-        }
-
-        private BoundExpression MakeDynamicSetIndex(
-            BoundDynamicIndexerAccess indexerAccess,
-            BoundExpression loweredReceiver,
-            ImmutableArray<BoundExpression> loweredArguments,
-            ImmutableArray<string> argumentNames,
-            ImmutableArray<RefKind> refKinds,
-            BoundExpression loweredRight,
-            bool isCompoundAssignment = false,
-            bool isChecked = false)
-        {
-            // If we are calling a method on a NoPIA type, we need to embed all methods/properties
-            // with the matching name of this dynamic invocation.
-            EmbedIfNeedTo(loweredReceiver, indexerAccess.ApplicableIndexers, indexerAccess.Syntax);
-
-            return _dynamicFactory.MakeDynamicSetIndex(
-                MakeDynamicIndexerAccessReceiver(indexerAccess, loweredReceiver),
-                loweredArguments,
-                argumentNames,
-                refKinds,
-                loweredRight,
-                isCompoundAssignment, isChecked).ToExpression();
         }
 
         /// <summary>
@@ -145,10 +78,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             switch (rewrittenLeft.Kind)
             {
-                case BoundKind.DynamicIndexerAccess:
-                case BoundKind.DynamicMemberAccess:
-                    throw ExceptionUtilities.UnexpectedValue(rewrittenLeft.Kind);
-
                 case BoundKind.PropertyAccess:
                     {
                         Debug.Assert(!isRef);

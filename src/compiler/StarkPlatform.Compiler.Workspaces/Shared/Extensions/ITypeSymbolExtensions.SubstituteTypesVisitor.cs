@@ -39,11 +39,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 return symbol;
             }
 
-            public override ITypeSymbol VisitDynamicType(IDynamicTypeSymbol symbol)
-            {
-                return VisitType(symbol);
-            }
-
             public override ITypeSymbol VisitTypeParameter(ITypeParameterSymbol symbol)
             {
                 return VisitType(symbol);

@@ -33,11 +33,6 @@ namespace StarkPlatform.Compiler.Stark
             DefaultVisit(symbol);
         }
 
-        public virtual void VisitDynamicType(DynamicTypeSymbol symbol)
-        {
-            DefaultVisit(symbol);
-        }
-
         public virtual void VisitDiscard(DiscardSymbol symbol)
         {
             DefaultVisit(symbol);

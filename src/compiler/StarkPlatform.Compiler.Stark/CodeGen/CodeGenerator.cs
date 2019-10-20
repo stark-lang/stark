@@ -168,7 +168,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                             id: new LocalDebugId(syntaxOffset, ordinal: 0),
                             pdbAttributes: localSymbol.SynthesizedKind.PdbAttributes(),
                             constraints: slotConstraints,
-                            dynamicTransformFlags: ImmutableArray<bool>.Empty,
                             tupleElementNames: ImmutableArray<string>.Empty,
                             isSlotReusable: false);
                     }

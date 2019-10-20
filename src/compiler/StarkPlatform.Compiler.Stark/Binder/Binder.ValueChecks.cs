@@ -420,9 +420,6 @@ namespace StarkPlatform.Compiler.Stark
                 case BoundKind.PointerIndirectionOperator:
                 // The undocumented __refvalue(tr, T) expression results in a variable of type T.
                 case BoundKind.RefValueOperator:
-                // dynamic expressions are readwrite, and can even be passed by ref (which is implemented via a temp)
-                case BoundKind.DynamicMemberAccess:
-                case BoundKind.DynamicIndexerAccess:
                     {
                         if (RequiresRefAssignableVariable(valueKind))
                         {
@@ -1818,13 +1815,6 @@ moreArguments:
                     // same as write-only byval local
                     break;
 
-                case BoundKind.DynamicMemberAccess:
-                case BoundKind.DynamicIndexerAccess:
-                    // dynamic expressions can be read and written to
-                    // can even be passed by reference (which is implemented via a temp)
-                    // it is not valid to escape them by reference though, so treat them as RValues here
-                    break;
-
                 case BoundKind.Parameter:
                     var parameter = ((BoundParameter)expr).ParameterSymbol;
 
@@ -2011,13 +2001,6 @@ moreArguments:
 
                 case BoundKind.DiscardExpression:
                     // same as write-only byval local
-                    break;
-
-                case BoundKind.DynamicMemberAccess:
-                case BoundKind.DynamicIndexerAccess:
-                    // dynamic expressions can be read and written to
-                    // can even be passed by reference (which is implemented via a temp)
-                    // it is not valid to escape them by reference though.
                     break;
 
                 case BoundKind.Parameter:

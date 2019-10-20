@@ -2106,11 +2106,6 @@ namespace StarkPlatform.Compiler.Stark
             return result;
         }
 
-        public override BoundNode VisitDynamicObjectInitializerMember(BoundDynamicObjectInitializerMember node)
-        {
-            return null;
-        }
-
         public override BoundNode VisitInlineILStatement(BoundInlineILStatement node)
         {
             switch (node.Instruction.OpCode)

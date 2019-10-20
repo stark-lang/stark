@@ -137,7 +137,6 @@ namespace StarkPlatform.Compiler.Emit
             LocalDebugId id,
             LocalVariableAttributes pdbAttributes,
             LocalSlotConstraints constraints,
-            ImmutableArray<bool> dynamicTransformFlags,
             ImmutableArray<string> tupleElementNames)
         {
             if (id.IsNone)
@@ -176,7 +175,6 @@ namespace StarkPlatform.Compiler.Emit
                 id,
                 pdbAttributes,
                 constraints,
-                dynamicTransformFlags,
                 tupleElementNames);
         }
 

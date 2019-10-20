@@ -2034,12 +2034,6 @@ namespace StarkPlatform.Compiler.FlowAnalysis
                     {
                         return VisitObjectBinaryConditionalOperator(operation, captureIdForResult);
                     }
-                    else if (ITypeSymbolHelpers.IsDynamicType(operation.Type) &&
-                             (ITypeSymbolHelpers.IsDynamicType(operation.LeftOperand.Type) ||
-                             ITypeSymbolHelpers.IsDynamicType(operation.RightOperand.Type)))
-                    {
-                        return VisitDynamicBinaryConditionalOperator(operation, captureIdForResult);
-                    }
                 }
                 else
                 {
@@ -2301,7 +2295,7 @@ namespace StarkPlatform.Compiler.FlowAnalysis
                 Debug.Assert(unaryOperatorMethod == null);
                 jumpIfTrue = isAndAlso;
             }
-            else if (ITypeSymbolHelpers.IsDynamicType(left.Type) || unaryOperatorMethod != null)
+            else if (unaryOperatorMethod != null)
             {
                 jumpIfTrue = false;
 
@@ -2331,10 +2325,7 @@ namespace StarkPlatform.Compiler.FlowAnalysis
             int resultId = captureIdForResult ?? GetNextCaptureId(resultCaptureRegion);
             IOperation resultFromLeft = OperationCloner.CloneOperation(capturedLeft);
 
-            if (!ITypeSymbolHelpers.IsDynamicType(left.Type))
-            {
-                resultFromLeft = CreateConversion(resultFromLeft, binOp.Type);
-            }
+            resultFromLeft = CreateConversion(resultFromLeft, binOp.Type);
 
             AddStatement(new FlowCaptureOperation(resultId, binOp.Syntax, resultFromLeft));
             UnconditionalBranch(done);
@@ -3594,7 +3585,7 @@ oneMoreTime:
 
             bool shouldConvertToIDisposableBeforeTry(IOperation resource)
             {
-                return resource.Type == null || resource.Type.Kind == SymbolKind.DynamicType;
+                return resource.Type == null;
             }
 
             void processResource(IOperation resource, ArrayBuilder<IVariableDeclarationOperation> resourceQueueOpt)
@@ -4190,7 +4181,7 @@ oneMoreTime:
 
             IOperation tryCallObjectForLoopControlHelper(SyntaxNode syntax, WellKnownMember helper)
             {
-                bool isInitialization = (helper == WellKnownMember.Microsoft_VisualBasic_CompilerServices_ObjectFlowControl_ForLoopControl__ForLoopInitObj);
+                bool isInitialization = false;
                 var loopObjectReference = new LocalReferenceOperation(loopObject,
                                                                        isDeclaration: isInitialization,
                                                                        semanticModel: null,
@@ -4273,14 +4264,7 @@ oneMoreTime:
                     // }
                     // exit:
 
-                    PushOperand(Visit(operation.LimitValue));
-                    PushOperand(Visit(operation.StepValue));
-
-                    IOperation condition = tryCallObjectForLoopControlHelper(operation.LoopControlVariable.Syntax,
-                                                                             WellKnownMember.Microsoft_VisualBasic_CompilerServices_ObjectFlowControl_ForLoopControl__ForLoopInitObj);
-
-                    ConditionalBranch(condition, jumpIfTrue: false, @break);
-                    UnconditionalBranch(bodyBlock);
+                    throw new InvalidOperationException("Should be only VisualBasic. TODO remove that part");
                 }
                 else
                 {
@@ -4428,16 +4412,7 @@ oneMoreTime:
                     // }
                     // exit:
 
-                    EvalStackFrame frame = PushStackFrame();
-                    PushOperand(visitLoopControlVariableReference(forceImplicit: true));
-
-                    IOperation condition = tryCallObjectForLoopControlHelper(operation.LimitValue.Syntax,
-                                                                             WellKnownMember.Microsoft_VisualBasic_CompilerServices_ObjectFlowControl_ForLoopControl__ForNextCheckObj);
-                    ConditionalBranch(condition, jumpIfTrue: false, @break);
-                    UnconditionalBranch(bodyBlock);
-
-                    PopStackFrameAndLeaveRegion(frame);
-                    return;
+                    throw new InvalidOperationException("Should be valid only for VisualBasic. TODO remove that part");
                 }
                 else if (userDefinedInfo != null)
                 {
@@ -5363,21 +5338,6 @@ oneMoreTime:
             return PopStackFrame(frame, HandleObjectOrCollectionInitializer(operation.Initializer, initializedInstance));
         }
 
-        public override IOperation VisitDynamicObjectCreation(IDynamicObjectCreationOperation operation, int? captureIdForResult)
-        {
-            EvalStackFrame frame = PushStackFrame();
-            EvalStackFrame argumentsFrame = PushStackFrame();
-            ImmutableArray<IOperation> visitedArguments = VisitArray(operation.Arguments);
-            PopStackFrame(argumentsFrame);
-
-            var hasDynamicArguments = (HasDynamicArgumentsExpression)operation;
-            IOperation initializedInstance = new DynamicObjectCreationOperation(visitedArguments, hasDynamicArguments.ArgumentNames, hasDynamicArguments.ArgumentRefKinds,
-                                                                                 initializer: null, semanticModel: null, operation.Syntax, operation.Type,
-                                                                                 operation.ConstantValue, IsImplicit(operation));
-
-            return PopStackFrame(frame, HandleObjectOrCollectionInitializer(operation.Initializer, initializedInstance));
-        }
-
         private IOperation HandleObjectOrCollectionInitializer(IObjectOrCollectionInitializerOperation initializer, IOperation objectCreation)
         {
             // If the initializer is null, nothing to spill. Just return the original instance.
@@ -5425,11 +5385,6 @@ oneMoreTime:
                         // are other nodes that will go through here, and if a new test triggers this assert, it will likely be fine to just add
                         // the node type to the assert. It's here merely to ensure that we think about whether that node type actually does need
                         // special handling in the context of a collection or object initializer before just assuming that it's fine.
-#if DEBUG
-                        var validKinds = ImmutableArray.Create(OperationKind.Invocation, OperationKind.DynamicInvocation, OperationKind.Increment, OperationKind.Literal,
-                                                               OperationKind.LocalReference, OperationKind.Binary, OperationKind.FieldReference, OperationKind.Invalid);
-                        Debug.Assert(validKinds.Contains(innerInitializer.Kind));
-#endif
                         EvalStackFrame frame = PushStackFrame();
                         AddStatement(Visit(innerInitializer));
                         PopStackFrameAndLeaveRegion(frame);
@@ -5544,24 +5499,6 @@ oneMoreTime:
                         PushOperand(Visit(arrayReference.ArrayReference));
                         return true;
 
-                    case OperationKind.DynamicIndexerAccess:
-                        var dynamicIndexer = (IDynamicIndexerAccessOperation)instance;
-                        VisitAndPushArray(dynamicIndexer.Arguments);
-                        SpillEvalStack();
-                        if (dynamicIndexer.Operation != null)
-                        {
-                            PushOperand(Visit(dynamicIndexer.Operation));
-                        }
-                        return true;
-
-                    case OperationKind.DynamicMemberReference:
-                        var dynamicReference = (IDynamicMemberReferenceOperation)instance;
-                        if (dynamicReference.Instance != null)
-                        {
-                            PushOperand(Visit(dynamicReference.Instance));
-                        }
-                        return true;
-
                     default:
                         // As in the assert in handleInitializer, this assert documents the operation kinds that we know go through this path,
                         // and it is possible others go through here as well. If they are encountered, we simply need to ensure
@@ -5599,18 +5536,6 @@ oneMoreTime:
                         ImmutableArray<IOperation> indices = PopArray(arrayElementReference.Indices);
                         return new ArrayElementReferenceOperation(instance, indices, semanticModel: null, originalTarget.Syntax, originalTarget.Type,
                                                                    originalTarget.ConstantValue, IsImplicit(originalTarget));
-                    case OperationKind.DynamicIndexerAccess:
-                        var dynamicAccess = (BaseDynamicIndexerAccessOperation)originalTarget;
-                        instance = dynamicAccess.Operation != null ? PopOperand() : null;
-                        ImmutableArray<IOperation> arguments = PopArray(dynamicAccess.Arguments);
-                        return new DynamicIndexerAccessOperation(instance, arguments, dynamicAccess.ArgumentNames, dynamicAccess.ArgumentRefKinds, semanticModel: null,
-                                                                  dynamicAccess.Syntax, dynamicAccess.Type, dynamicAccess.ConstantValue, IsImplicit(dynamicAccess));
-                    case OperationKind.DynamicMemberReference:
-                        var dynamicReference = (IDynamicMemberReferenceOperation)originalTarget;
-                        instance = dynamicReference.Instance != null ? PopOperand() : null;
-                        return new DynamicMemberReferenceOperation(instance, dynamicReference.MemberName, dynamicReference.TypeArguments,
-                                                                    dynamicReference.ContainingType, semanticModel: null, dynamicReference.Syntax,
-                                                                    dynamicReference.Type, dynamicReference.ConstantValue, IsImplicit(dynamicReference));
                     default:
                         // Unlike in tryPushTarget, we assume that if this method is called, we were successful in pushing, so
                         // this must be one of the explicitly handled kinds
@@ -5823,70 +5748,6 @@ oneMoreTime:
                 return new InstanceReferenceOperation(operation.ReferenceKind, semanticModel: null, operation.Syntax, operation.Type,
                                                        operation.ConstantValue, IsImplicit(operation));
             }
-        }
-
-        public override IOperation VisitDynamicInvocation(IDynamicInvocationOperation operation, int? captureIdForResult)
-        {
-            EvalStackFrame frame = PushStackFrame();
-
-            if (operation.Operation != null)
-            {
-                if (operation.Operation.Kind == OperationKind.DynamicMemberReference)
-                {
-                    var instance = ((IDynamicMemberReferenceOperation)operation.Operation).Instance;
-                    if (instance != null)
-                    {
-                        PushOperand(Visit(instance));
-                    }
-                }
-                else
-                {
-                    PushOperand(Visit(operation.Operation));
-                }
-            }
-
-            ImmutableArray<IOperation> rewrittenArguments = VisitArray(operation.Arguments);
-
-            IOperation rewrittenOperation;
-            if (operation.Operation == null)
-            {
-                rewrittenOperation = null;
-            }
-            else if (operation.Operation.Kind == OperationKind.DynamicMemberReference)
-            {
-                var dynamicMemberReference = (IDynamicMemberReferenceOperation)operation.Operation;
-                IOperation rewrittenInstance = dynamicMemberReference.Instance != null ? PopOperand() : null;
-                rewrittenOperation = new DynamicMemberReferenceOperation(rewrittenInstance, dynamicMemberReference.MemberName, dynamicMemberReference.TypeArguments,
-                    dynamicMemberReference.ContainingType, semanticModel: null, dynamicMemberReference.Syntax, dynamicMemberReference.Type, dynamicMemberReference.ConstantValue, IsImplicit(dynamicMemberReference));
-            }
-            else
-            {
-                rewrittenOperation = PopOperand();
-            }
-
-            PopStackFrame(frame);
-            return new DynamicInvocationOperation(rewrittenOperation, rewrittenArguments, ((HasDynamicArgumentsExpression)operation).ArgumentNames,
-                ((HasDynamicArgumentsExpression)operation).ArgumentRefKinds, semanticModel: null, operation.Syntax, operation.Type, operation.ConstantValue, IsImplicit(operation));
-        }
-
-        public override IOperation VisitDynamicIndexerAccess(IDynamicIndexerAccessOperation operation, int? captureIdForResult)
-        {
-            if (operation.Operation != null)
-            {
-                PushOperand(Visit(operation.Operation));
-            }
-
-            ImmutableArray<IOperation> rewrittenArguments = VisitArray(operation.Arguments);
-            IOperation rewrittenOperation = operation.Operation != null ? PopOperand() : null;
-
-            return new DynamicIndexerAccessOperation(rewrittenOperation, rewrittenArguments, ((HasDynamicArgumentsExpression)operation).ArgumentNames,
-                ((HasDynamicArgumentsExpression)operation).ArgumentRefKinds, semanticModel: null, operation.Syntax, operation.Type, operation.ConstantValue, IsImplicit(operation));
-        }
-
-        public override IOperation VisitDynamicMemberReference(IDynamicMemberReferenceOperation operation, int? captureIdForResult)
-        {
-            return new DynamicMemberReferenceOperation(Visit(operation.Instance), operation.MemberName, operation.TypeArguments,
-                operation.ContainingType, semanticModel: null, operation.Syntax, operation.Type, operation.ConstantValue, IsImplicit(operation));
         }
 
         public override IOperation VisitDeconstructionAssignment(IDeconstructionAssignmentOperation operation, int? captureIdForResult)

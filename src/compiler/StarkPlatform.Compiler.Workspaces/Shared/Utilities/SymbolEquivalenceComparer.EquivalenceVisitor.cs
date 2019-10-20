@@ -59,12 +59,7 @@ namespace StarkPlatform.Compiler.Shared.Utilities
                 // Normally, if they're different types, then they're not the same.
                 if (xKind != yKind)
                 {
-                    // Special case.  If we're comparing signatures then we want to compare 'object'
-                    // and 'dynamic' as the same.  However, since they're different types, we don't
-                    // want to bail out using the above check.
-                    return _objectAndDynamicCompareEqually &&
-                           ((yKind == SymbolKind.DynamicType && xKind == SymbolKind.NamedType && ((ITypeSymbol)x).SpecialType == SpecialType.System_Object) ||
-                            (xKind == SymbolKind.DynamicType && yKind == SymbolKind.NamedType && ((ITypeSymbol)y).SpecialType == SpecialType.System_Object));
+                    return false;
                 }
 
                 return AreEquivalentWorker(x, y, xKind, equivalentTypesWithDifferingAssemblies);
@@ -111,8 +106,6 @@ namespace StarkPlatform.Compiler.Shared.Utilities
                         return ArrayTypesAreEquivalent((IArrayTypeSymbol)x, (IArrayTypeSymbol)y, equivalentTypesWithDifferingAssemblies);
                     case SymbolKind.Assembly:
                         return AssembliesAreEquivalent((IAssemblySymbol)x, (IAssemblySymbol)y);
-                    case SymbolKind.DynamicType:
-                        return DynamicTypesAreEquivalent((IDynamicTypeSymbol)x, (IDynamicTypeSymbol)y);
                     case SymbolKind.Event:
                         return EventsAreEquivalent((IEventSymbol)x, (IEventSymbol)y, equivalentTypesWithDifferingAssemblies);
                     case SymbolKind.Field:
@@ -156,11 +149,6 @@ namespace StarkPlatform.Compiler.Shared.Utilities
             private bool AssembliesAreEquivalent(IAssemblySymbol x, IAssemblySymbol y)
             {
                 return _symbolEquivalenceComparer._assemblyComparerOpt?.Equals(x, y) ?? true;
-            }
-
-            private bool DynamicTypesAreEquivalent(IDynamicTypeSymbol x, IDynamicTypeSymbol y)
-            {
-                return true;
             }
 
             private bool FieldsAreEquivalent(IFieldSymbol x, IFieldSymbol y, Dictionary<INamedTypeSymbol, INamedTypeSymbol> equivalentTypesWithDifferingAssemblies)

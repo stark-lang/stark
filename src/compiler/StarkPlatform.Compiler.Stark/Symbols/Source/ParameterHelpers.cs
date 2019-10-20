@@ -422,34 +422,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 diagnostics.Add(ErrorCode.ERR_DefaultValueMustBeConstant, parameterSyntax.Default.Value.Location, parameterSyntax.Identifier.ValueText);
                 hasErrors = true;
             }
-            else if (!conversion.Exists ||
-                conversion.IsUserDefined ||
-                conversion.IsIdentity && parameterType.SpecialType == SpecialType.System_Object && defaultExpression.Type.IsDynamic())
-            {
-                // If we had no implicit conversion, or a user-defined conversion, report an error.
-                //
-                // Even though "object x = (dynamic)null" is a legal identity conversion, we do not allow it. 
-                // CONSIDER: We could. Doesn't hurt anything.
-
-                // error CS1750: A value of type '{0}' cannot be used as a default parameter because there are no standard conversions to type '{1}'
-                diagnostics.Add(ErrorCode.ERR_NoConversionForDefaultParam, parameterSyntax.Identifier.GetLocation(),
-                    defaultExpression.Display, parameterType);
-
-                hasErrors = true;
-            }
-            else if (conversion.IsReference &&
-                (parameterType.SpecialType == SpecialType.System_Object || parameterType.Kind == SymbolKind.DynamicType) &&
-                (object)defaultExpression.Type != null &&
-                defaultExpression.Type.SpecialType == SpecialType.System_String ||
-                conversion.IsBoxing)
-            {
-                // We don't allow object x = "hello", object x = 123, dynamic x = "hello", etc.
-                // error CS1763: '{0}' is of type '{1}'. A default parameter value of a reference type other than string can only be initialized with null
-                diagnostics.Add(ErrorCode.ERR_NotNullRefDefaultParameter, parameterSyntax.Identifier.GetLocation(),
-                    parameterSyntax.Identifier.ValueText, parameterType);
-
-                hasErrors = true;
-            }
             else if (conversion.IsNullable && !defaultExpression.Type.IsNullableType() &&
                 !(parameterType.GetNullableUnderlyingType().IsEnumType() || parameterType.GetNullableUnderlyingType().IsIntrinsicType()))
             {

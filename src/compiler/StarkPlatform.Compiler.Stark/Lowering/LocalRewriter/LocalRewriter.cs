@@ -22,10 +22,8 @@ namespace StarkPlatform.Compiler.Stark
         private readonly SyntheticBoundNodeFactory _factory;
         private readonly SynthesizedSubmissionFields _previousSubmissionFields;
         private readonly bool _allowOmissionOfConditionalCalls;
-        private readonly LoweredDynamicOperationFactory _dynamicFactory;
         private bool _sawLambdas;
         private bool _sawLocalFunctions;
-        private bool _inExpressionLambda;
 
         private bool _sawAwait;
         private bool _sawAwaitInExceptionHandler;
@@ -52,7 +50,6 @@ namespace StarkPlatform.Compiler.Stark
             _factory = factory;
             _factory.CurrentFunction = containingMethod;
             Debug.Assert(TypeSymbol.Equals(factory.CurrentType, (containingType ?? containingMethod.ContainingType), TypeCompareKind.ConsiderEverything2));
-            _dynamicFactory = new LoweredDynamicOperationFactory(factory, containingMethodOrdinal);
             _previousSubmissionFields = previousSubmissionFields;
             _allowOmissionOfConditionalCalls = allowOmissionOfConditionalCalls;
             _diagnostics = diagnostics;
@@ -129,10 +126,7 @@ namespace StarkPlatform.Compiler.Stark
 
         private bool Instrument
         {
-            get
-            {
-                return !_inExpressionLambda;
-            }
+            get { return true; }
         }
 
         private PEModuleBuilder EmitModule

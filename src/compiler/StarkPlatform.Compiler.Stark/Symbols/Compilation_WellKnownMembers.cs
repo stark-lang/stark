@@ -657,31 +657,6 @@ namespace StarkPlatform.Compiler.Stark
                 ImmutableArray.Create(typedConstantDebugMode));
         }
 
-        /// <summary>
-        /// Given a type <paramref name="type"/>, which is either dynamic type OR is a constructed type with dynamic type present in it's type argument tree,
-        /// returns a synthesized DynamicAttribute with encoded dynamic transforms array.
-        /// </summary>
-        /// <remarks>This method is port of AttrBind::CompileDynamicAttr from the native C# compiler.</remarks>
-        internal SynthesizedAttributeData SynthesizeDynamicAttribute(TypeSymbol type, int customModifiersCount, RefKind refKindOpt = RefKind.None)
-        {
-            Debug.Assert((object)type != null);
-            Debug.Assert(type.ContainsDynamic());
-
-            if (type.IsDynamic() && refKindOpt == RefKind.None && customModifiersCount == 0)
-            {
-                return TrySynthesizeAttribute(WellKnownMember.System_Runtime_CompilerServices_DynamicAttribute__ctor);
-            }
-            else
-            {
-                NamedTypeSymbol booleanType = GetSpecialType(SpecialType.System_Boolean);
-                Debug.Assert((object)booleanType != null);
-                var transformFlags = DynamicTransformsEncoder.Encode(type, refKindOpt, customModifiersCount, booleanType);
-                var boolArray = ArrayTypeSymbol.CreateArray(booleanType.ContainingAssembly, TypeSymbolWithAnnotations.Create(booleanType));
-                var arguments = ImmutableArray.Create<TypedConstant>(new TypedConstant(boolArray, transformFlags));
-                return TrySynthesizeAttribute(WellKnownMember.System_Runtime_CompilerServices_DynamicAttribute__ctorTransformFlags, arguments);
-            }
-        }
-
         internal SynthesizedAttributeData SynthesizeTupleNamesAttribute(TypeSymbol type)
         {
             Debug.Assert((object)type != null);
@@ -817,10 +792,6 @@ namespace StarkPlatform.Compiler.Stark
                 // Encode transforms flag for this type and it's custom modifiers (if any).
                 switch (type.TypeKind)
                 {
-                    case TypeKind.Dynamic:
-                        transformFlagsBuilder.Add(true);
-                        break;
-
                     case TypeKind.Array:
                         if (addCustomModifierFlags)
                         {

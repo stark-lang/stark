@@ -111,7 +111,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 case SymbolKind.Local:
                 case SymbolKind.Label:
                 case SymbolKind.Namespace:
-                case SymbolKind.DynamicType:
                 case SymbolKind.Assembly:
                 case SymbolKind.NetModule:
                 case SymbolKind.RangeVariable:
@@ -128,14 +127,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                         // null out the "through" instance here.  This ensures that we'll understand
                         // accessing protected statics properly.
                         throughTypeOpt = null;
-                    }
-
-                    // If this is a synthesized operator of dynamic, it's always accessible.
-                    if (symbol.IsKind(SymbolKind.Method) &&
-                        ((IMethodSymbol)symbol).MethodKind == MethodKind.BuiltinOperator &&
-                        symbol.ContainingSymbol.IsKind(SymbolKind.DynamicType))
-                    {
-                        return true;
                     }
 
                     // If it's a synthesized operator on a pointer, use the pointer's PointedAtType.

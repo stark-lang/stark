@@ -29,7 +29,7 @@ namespace StarkPlatform.Compiler.Stark
             // The expression await t is classified the same way as the expression (t).GetAwaiter().GetResult(). Thus,
             // if the return type of GetResult is void, the await-expression is classified as nothing. If it has a
             // non-void return type T, the await-expression is classified as a value of type T.
-            TypeSymbol awaitExpressionType = info.GetResult?.ReturnType.TypeSymbol ?? (hasErrors ? CreateErrorType() : Compilation.DynamicType);
+            TypeSymbol awaitExpressionType = info.GetResult?.ReturnType.TypeSymbol ?? (hasErrors ? CreateErrorType() : null);
 
             return new BoundAwaitExpression(node, expression, info, awaitExpressionType, hasErrors);
         }
@@ -70,9 +70,7 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             var type = expression.Type;
-            if (((object)type == null) ||
-                type.IsDynamic() ||
-                (type.SpecialType == SpecialType.System_Void))
+            if (((object)type == null) || (type.SpecialType == SpecialType.System_Void))
             {
                 return false;
             }
@@ -237,11 +235,6 @@ namespace StarkPlatform.Compiler.Stark
             if (!ValidateAwaitedExpression(expression, node, diagnostics))
             {
                 return false;
-            }
-
-            if (expression.HasDynamicType())
-            {
-                return true;
             }
 
             BoundExpression getAwaiterCall = null;

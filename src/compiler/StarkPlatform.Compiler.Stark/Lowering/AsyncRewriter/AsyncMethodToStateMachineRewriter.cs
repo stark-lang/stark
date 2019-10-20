@@ -53,8 +53,6 @@ namespace StarkPlatform.Compiler.Stark
         /// </summary>
         private readonly LocalSymbol _exprRetValue;
 
-        private readonly LoweredDynamicOperationFactory _dynamicFactory;
-
         private readonly Dictionary<TypeSymbol, FieldSymbol> _awaiterFields;
         private int _nextAwaiterId;
 
@@ -83,7 +81,6 @@ namespace StarkPlatform.Compiler.Stark
                 ? F.SynthesizedLocal(asyncMethodBuilderMemberCollection.ResultType, syntax: F.Syntax, kind: SynthesizedLocalKind.AsyncMethodReturnValue)
                 : null;
 
-            _dynamicFactory = new LoweredDynamicOperationFactory(F, methodOrdinal);
             _awaiterFields = new Dictionary<TypeSymbol, FieldSymbol>(TypeSymbol.EqualsIgnoringDynamicTupleNamesAndNullabilityComparer);
             _nextAwaiterId = slotAllocatorOpt?.PreviousAwaiterSlotCount ?? 0;
         }
@@ -295,7 +292,7 @@ namespace StarkPlatform.Compiler.Stark
             // The awaiter temp facilitates EnC method remapping and thus have to be long-lived.
             // It transfers the awaiter objects from the old version of the MoveNext method to the new one.
             Debug.Assert(node.Syntax.IsKind(SyntaxKind.AwaitExpression) || node.WasCompilerGenerated);
-            TypeSymbol awaiterType = node.AwaitableInfo.IsDynamic ? DynamicTypeSymbol.Instance : getAwaiter.ReturnType.TypeSymbol;
+            TypeSymbol awaiterType = getAwaiter.ReturnType.TypeSymbol;
             var awaiterTemp = F.SynthesizedLocal(awaiterType, syntax: node.Syntax, kind: SynthesizedLocalKind.Awaiter);
             var awaitIfIncomplete = F.Block(
                     // temp $awaiterTemp = <expr>.GetAwaiter();
@@ -333,44 +330,17 @@ namespace StarkPlatform.Compiler.Stark
             string methodName = null,
             bool resultsDiscarded = false)
         {
-            if ((object)methodSymbol != null)
-            {
-                // non-dynamic:
-                Debug.Assert(receiver != null);
+            Debug.Assert((object) methodSymbol != null);
+            // non-dynamic:
+            Debug.Assert(receiver != null);
 
-                return methodSymbol.IsStatic
-                    ? F.StaticCall(methodSymbol.ContainingType, methodSymbol, receiver)
-                    : F.Call(receiver, methodSymbol);
-            }
-
-            // dynamic:
-            Debug.Assert(methodName != null);
-            return _dynamicFactory.MakeDynamicMemberInvocation(
-                methodName,
-                receiver,
-                typeArguments: ImmutableArray<TypeSymbolWithAnnotations>.Empty,
-                loweredArguments: ImmutableArray<BoundExpression>.Empty,
-                argumentNames: ImmutableArray<string>.Empty,
-                refKinds: ImmutableArray<RefKind>.Empty,
-                hasImplicitReceiver: false,
-                resultDiscarded: resultsDiscarded).ToExpression();
+            return methodSymbol.IsStatic
+                ? F.StaticCall(methodSymbol.ContainingType, methodSymbol, receiver)
+                : F.Call(receiver, methodSymbol);
         }
 
         private BoundExpression GenerateGetIsCompleted(LocalSymbol awaiterTemp, MethodSymbol getIsCompletedMethod)
         {
-            if (awaiterTemp.Type.IsDynamic())
-            {
-                return _dynamicFactory.MakeDynamicConversion(
-                    _dynamicFactory.MakeDynamicGetMember(
-                        F.Local(awaiterTemp),
-                        WellKnownMemberNames.IsCompleted,
-                        false).ToExpression(),
-                    isExplicit: true,
-                    isArrayIndex: false,
-                    isChecked: false,
-                    resultType: F.SpecialType(SpecialType.System_Boolean)).ToExpression();
-            }
-
             return F.Call(F.Local(awaiterTemp), getIsCompletedMethod);
         }
 
@@ -402,9 +372,7 @@ namespace StarkPlatform.Compiler.Stark
                         ? F.Local(awaiterTemp)
                         : F.Convert(awaiterFieldType, F.Local(awaiterTemp))));
 
-            blockBuilder.Add(awaiterTemp.Type.IsDynamic()
-                ? GenerateAwaitOnCompletedDynamic(awaiterTemp)
-                : GenerateAwaitOnCompleted(awaiterTemp.Type.TypeSymbol, awaiterTemp));
+            blockBuilder.Add(GenerateAwaitOnCompleted(awaiterTemp.Type.TypeSymbol, awaiterTemp));
 
             blockBuilder.Add(
                 GenerateReturn(false));
@@ -433,86 +401,6 @@ namespace StarkPlatform.Compiler.Stark
                     GenerateSetBothStates(StateMachineStates.NotStartedStateMachine));
 
             return F.Block(blockBuilder.ToImmutableAndFree());
-        }
-
-        private BoundStatement GenerateAwaitOnCompletedDynamic(LocalSymbol awaiterTemp)
-        {
-            //  temp $criticalNotifyCompletedTemp = $awaiterTemp as ICriticalNotifyCompletion
-            //  if ($criticalNotifyCompletedTemp != null)
-            //  {
-            //    this.builder.AwaitUnsafeOnCompleted<ICriticalNotifyCompletion,TSM>(
-            //      ref $criticalNotifyCompletedTemp,
-            //      ref this)
-            //  }
-            //  else
-            //  {
-            //    temp $notifyCompletionTemp = (INotifyCompletion)$awaiterTemp
-            //    this.builder.AwaitOnCompleted<INotifyCompletion,TSM>(ref $notifyCompletionTemp, ref this)
-            //    free $notifyCompletionTemp
-            //  }
-            //  free $criticalNotifyCompletedTemp
-
-            var criticalNotifyCompletedTemp = F.SynthesizedLocal(
-                F.WellKnownType(WellKnownType.core_runtime_compiler_ICriticalNotifyCompletion),
-                null);
-
-            var notifyCompletionTemp = F.SynthesizedLocal(
-                F.WellKnownType(WellKnownType.core_runtime_compiler_INotifyCompletion),
-                null);
-
-            LocalSymbol thisTemp = (F.CurrentType.TypeKind == TypeKind.Class) ? F.SynthesizedLocal(F.CurrentType) : null;
-
-            var blockBuilder = ArrayBuilder<BoundStatement>.GetInstance();
-
-            blockBuilder.Add(
-                F.Assignment(
-                    F.Local(criticalNotifyCompletedTemp),
-                        // Use reference conversion rather than dynamic conversion:
-                        F.As(F.Local(awaiterTemp), criticalNotifyCompletedTemp.Type.TypeSymbol)));
-
-            if (thisTemp != null)
-            {
-                blockBuilder.Add(F.Assignment(F.Local(thisTemp), F.This()));
-            }
-
-            blockBuilder.Add(
-                F.If(
-                    condition: F.ObjectEqual(F.Local(criticalNotifyCompletedTemp), F.Null(criticalNotifyCompletedTemp.Type.TypeSymbol)),
-
-                    thenClause: F.Block(
-                        ImmutableArray.Create(notifyCompletionTemp),
-                        F.Assignment(
-                            F.Local(notifyCompletionTemp),
-                                // Use reference conversion rather than dynamic conversion:
-                                F.Convert(notifyCompletionTemp.Type.TypeSymbol, F.Local(awaiterTemp), Conversion.ExplicitReference)),
-                        F.ExpressionStatement(
-                            F.Call(
-                                F.Field(F.This(), _asyncMethodBuilderField),
-                                _asyncMethodBuilderMemberCollection.AwaitOnCompleted.Construct(
-                                    notifyCompletionTemp.Type.TypeSymbol,
-                                    F.This().Type),
-                                F.Local(notifyCompletionTemp), F.This(thisTemp))),
-                        F.Assignment(
-                            F.Local(notifyCompletionTemp),
-                            F.NullOrDefault(notifyCompletionTemp.Type.TypeSymbol))),
-
-                    elseClauseOpt: F.Block(
-                        F.ExpressionStatement(
-                            F.Call(
-                                F.Field(F.This(), _asyncMethodBuilderField),
-                                _asyncMethodBuilderMemberCollection.AwaitUnsafeOnCompleted.Construct(
-                                    criticalNotifyCompletedTemp.Type.TypeSymbol,
-                                    F.This().Type),
-                                F.Local(criticalNotifyCompletedTemp), F.This(thisTemp))))));
-
-            blockBuilder.Add(
-                F.Assignment(
-                    F.Local(criticalNotifyCompletedTemp),
-                    F.NullOrDefault(criticalNotifyCompletedTemp.Type.TypeSymbol)));
-
-            return F.Block(
-                SingletonOrPair(criticalNotifyCompletedTemp, thisTemp),
-                blockBuilder.ToImmutableAndFree());
         }
 
         private BoundStatement GenerateAwaitOnCompleted(TypeSymbol loweredAwaiterType, LocalSymbol awaiterTemp)

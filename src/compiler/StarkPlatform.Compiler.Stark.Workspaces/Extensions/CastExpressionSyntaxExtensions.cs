@@ -282,46 +282,6 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                 && typeSymbol.IsDelegateType();
         }
 
-        private static bool IsDynamicInvocation(ExpressionSyntax castExpression, SemanticModel semanticModel, CancellationToken cancellationToken)
-        {
-            if (castExpression.IsParentKind(SyntaxKind.Argument) &&
-                castExpression.Parent.Parent.IsKind(SyntaxKind.ArgumentList, SyntaxKind.BracketedArgumentList) &&
-                castExpression.Parent.Parent.Parent.IsKind(SyntaxKind.InvocationExpression, SyntaxKind.ElementAccessExpression))
-            {
-                var typeInfo = default(TypeInfo);
-
-                if (castExpression.Parent.Parent.IsParentKind(SyntaxKind.InvocationExpression))
-                {
-                    typeInfo = semanticModel.GetTypeInfo((InvocationExpressionSyntax)castExpression.Parent.Parent.Parent, cancellationToken);
-                }
-
-                if (castExpression.Parent.Parent.IsParentKind(SyntaxKind.ElementAccessExpression))
-                {
-                    typeInfo = semanticModel.GetTypeInfo((ElementAccessExpressionSyntax)castExpression.Parent.Parent.Parent, cancellationToken);
-                }
-
-                if (typeInfo.Type != null && typeInfo.Type.Kind == SymbolKind.DynamicType)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private static bool IsDynamicAssignment(ExpressionSyntax castExpression, SemanticModel semanticModel, CancellationToken cancellationToken)
-        {
-            if (castExpression.IsRightSideOfAnyAssignExpression())
-            {
-                var assignmentExpression = (AssignmentExpressionSyntax)castExpression.Parent;
-                var assignmentType = semanticModel.GetTypeInfo(assignmentExpression.Left, cancellationToken).Type;
-
-                return assignmentType?.Kind == SymbolKind.DynamicType;
-            }
-
-            return false;
-        }
-
         public static bool IsUnnecessaryCast(this CastExpressionSyntax cast, SemanticModel semanticModel, CancellationToken cancellationToken)
         {
             var speculationAnalyzer = new SpeculationAnalyzer(cast,
@@ -340,7 +300,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions
 
             // Case:
             // 1 . Console.WriteLine(await (dynamic)task); Any Dynamic Cast will not be removed.
-            if (castType == null || castType.Kind == SymbolKind.DynamicType || castType.IsErrorType())
+            if (castType == null || castType.IsErrorType())
             {
                 return false;
             }
@@ -353,16 +313,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                 return false;
             }
 
-            // We do not remove any cast on 
-            // 1. Dynamic Expressions
-            // 2. If there is any other argument which is dynamic
-            // 3. Dynamic Invocation
-            // 4. Assignment to dynamic
-            if ((expressionType != null &&
-                (expressionType.IsErrorType() ||
-                 expressionType.Kind == SymbolKind.DynamicType)) ||
-                IsDynamicInvocation(cast, semanticModel, cancellationToken) ||
-                IsDynamicAssignment(cast, semanticModel, cancellationToken))
+            if (expressionType != null && expressionType.IsErrorType())
             {
                 return false;
             }

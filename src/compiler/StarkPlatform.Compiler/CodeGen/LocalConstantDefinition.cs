@@ -17,7 +17,6 @@ namespace StarkPlatform.Compiler.CodeGen
             string name,
             Location location,
             MetadataConstant compileTimeValue,
-            ImmutableArray<bool> dynamicTransformFlags,
             ImmutableArray<string> tupleElementNames)
         {
             Debug.Assert(!string.IsNullOrEmpty(name));
@@ -26,7 +25,6 @@ namespace StarkPlatform.Compiler.CodeGen
             Name = name;
             Location = location;
             CompileTimeValue = compileTimeValue;
-            DynamicTransformFlags = dynamicTransformFlags.NullToEmpty();
             TupleElementNames = tupleElementNames.NullToEmpty();
         }
 
@@ -52,8 +50,6 @@ namespace StarkPlatform.Compiler.CodeGen
         public LocalSlotConstraints Constraints => LocalSlotConstraints.None;
 
         public LocalVariableAttributes PdbAttributes => LocalVariableAttributes.None;
-
-        public ImmutableArray<bool> DynamicTransformFlags { get; }
 
         public ImmutableArray<string> TupleElementNames { get; }
 

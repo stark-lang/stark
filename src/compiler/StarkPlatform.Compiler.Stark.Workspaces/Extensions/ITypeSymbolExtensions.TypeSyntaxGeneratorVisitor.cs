@@ -82,12 +82,6 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                 return AddInformationTo(arrayTypeSyntax, symbol);
             }
 
-            public override TypeSyntax VisitDynamicType(IDynamicTypeSymbol symbol)
-            {
-                return AddInformationTo(
-                    SyntaxFactory.IdentifierName("dynamic"), symbol);
-            }
-
             public TypeSyntax CreateSimpleTypeSyntax(INamedTypeSymbol symbol)
             {
                 if (!_nameOnly)

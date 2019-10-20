@@ -1007,28 +1007,6 @@ namespace StarkPlatform.Compiler
             return FindTargetAttribute(token, description).Handle;
         }
 
-        private static readonly ImmutableArray<bool> s_simpleDynamicTransforms = ImmutableArray.Create(true);
-
-        internal bool HasDynamicAttribute(EntityHandle token, out ImmutableArray<bool> dynamicTransforms)
-        {
-            AttributeInfo info = FindTargetAttribute(token, AttributeDescription.DynamicAttribute);
-            Debug.Assert(!info.HasValue || info.SignatureIndex == 0 || info.SignatureIndex == 1);
-
-            if (!info.HasValue)
-            {
-                dynamicTransforms = default(ImmutableArray<bool>);
-                return false;
-            }
-
-            if (info.SignatureIndex == 0)
-            {
-                dynamicTransforms = s_simpleDynamicTransforms;
-                return true;
-            }
-
-            return TryExtractBoolArrayValueFromAttribute(info.Handle, out dynamicTransforms);
-        }
-
         internal bool HasTupleElementNamesAttribute(EntityHandle token, out ImmutableArray<string> tupleElementNames)
         {
             var info = FindTargetAttribute(token, AttributeDescription.TupleElementNamesAttribute);

@@ -250,7 +250,6 @@ namespace StarkPlatform.Compiler.Stark
                 /// Null if we're not inside a closure scope, otherwise the nearest closure scope
                 /// </summary>
                 private Closure _currentClosure = null;
-                private bool _inExpressionTree = false;
 
                 /// <summary>
                 /// A mapping from all captured vars to the scope they were declared in. This
@@ -366,13 +365,8 @@ namespace StarkPlatform.Compiler.Stark
 
                 public override BoundNode VisitLambda(BoundLambda node)
                 {
-                    var oldInExpressionTree = _inExpressionTree;
-                    _inExpressionTree |= node.Type.IsExpressionTree();
-
                     _methodsConvertedToDelegates.Add(node.Symbol.OriginalDefinition);
                     var result = VisitClosure(node.Symbol, node.Body);
-
-                    _inExpressionTree = oldInExpressionTree;
                     return result;
                 }
 
@@ -460,11 +454,9 @@ namespace StarkPlatform.Compiler.Stark
                     // For the purposes of scoping, parameters live in the same scope as the
                     // closure block. Expression tree variables are free variables for the
                     // purposes of closure conversion
-                    DeclareLocals(_currentScope, closureSymbol.Parameters, _inExpressionTree);
+                    DeclareLocals(_currentScope, closureSymbol.Parameters);
 
-                    var result = _inExpressionTree
-                        ? base.VisitBlock(body)
-                        : VisitBlock(body);
+                    var result = VisitBlock(body);
 
                     _currentScope = oldScope;
                     _currentClosure = oldClosure;

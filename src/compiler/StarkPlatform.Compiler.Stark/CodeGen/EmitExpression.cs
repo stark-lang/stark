@@ -620,11 +620,8 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                     var unexpectedTemp = EmitAddress(argument, refKind == RefKindExtensions.StrictIn ? AddressKind.ReadOnlyStrict : AddressKind.Writeable);
                     if (unexpectedTemp != null)
                     {
-                        // interestingly enough "ref dynamic" sometimes is passed via a clone
-                        Debug.Assert(argument.Type.IsDynamic(), "passing args byref should not clone them into temps");
                         AddExpressionTemp(unexpectedTemp);
                     }
-
                     break;
             }
         }

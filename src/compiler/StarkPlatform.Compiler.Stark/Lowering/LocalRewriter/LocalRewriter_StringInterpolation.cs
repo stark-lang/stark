@@ -39,8 +39,7 @@ namespace StarkPlatform.Compiler.Stark
                 if (part is BoundStringInsert fillin)
                 {
                     // this is one of the expression holes
-                    if (_inExpressionLambda ||
-                        fillin.HasErrors ||
+                    if (fillin.HasErrors ||
                         fillin.Value.Type?.SpecialType != SpecialType.System_String ||
                         fillin.Alignment != null ||
                         fillin.Format != null)
@@ -102,10 +101,6 @@ namespace StarkPlatform.Compiler.Stark
                     }
                     stringBuilder.Append('}');
                     var value = fillin.Value;
-                    if (value.Type?.TypeKind == TypeKind.Dynamic)
-                    {
-                        value = MakeConversionNode(value, _compilation.ObjectType, @checked: false);
-                    }
 
                     expressions.Add(value); // NOTE: must still be lowered
                 }

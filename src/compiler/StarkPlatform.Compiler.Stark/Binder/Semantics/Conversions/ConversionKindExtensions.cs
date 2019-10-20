@@ -10,11 +10,6 @@ namespace StarkPlatform.Compiler.Stark
 {
     internal static class ConversionKindExtensions
     {
-        public static bool IsDynamic(this ConversionKind conversionKind)
-        {
-            return conversionKind == ConversionKind.ImplicitDynamic || conversionKind == ConversionKind.ExplicitDynamic;
-        }
-
         // Is the particular conversion an implicit conversion?
         public static bool IsImplicitConversion(this ConversionKind conversionKind)
         {
@@ -32,7 +27,6 @@ namespace StarkPlatform.Compiler.Stark
                 case ConversionKind.ImplicitNullable:
                 case ConversionKind.DefaultOrNullLiteral:
                 case ConversionKind.ImplicitReference:
-                case ConversionKind.ImplicitDynamic:
                 case ConversionKind.ImplicitConstant:
                 case ConversionKind.ImplicitUserDefined:
                 case ConversionKind.AnonymousFunction:
@@ -52,7 +46,6 @@ namespace StarkPlatform.Compiler.Stark
                 case ConversionKind.ExplicitNullable:
                 case ConversionKind.ExplicitReference:
                 case ConversionKind.Unboxing:
-                case ConversionKind.ExplicitDynamic:
                 case ConversionKind.ExplicitUserDefined:
                 case ConversionKind.PointerToPointer:
                 case ConversionKind.PointerToInteger:

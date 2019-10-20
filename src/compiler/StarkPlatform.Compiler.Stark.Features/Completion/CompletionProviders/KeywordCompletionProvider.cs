@@ -52,7 +52,6 @@ namespace StarkPlatform.Compiler.Stark.Completion.Providers
                 new DisableKeywordRecommender(),
                 new DoKeywordRecommender(),
                 new DoubleKeywordRecommender(),
-                new DynamicKeywordRecommender(),
                 new ElifKeywordRecommender(),
                 new ElseKeywordRecommender(),
                 new EnableKeywordRecommender(),

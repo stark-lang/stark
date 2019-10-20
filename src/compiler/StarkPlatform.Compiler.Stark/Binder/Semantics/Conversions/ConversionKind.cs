@@ -23,8 +23,6 @@ namespace StarkPlatform.Compiler.Stark
         Boxing,
         PointerToVoid,
         NullToPointer,
-        ImplicitDynamic,
-        ExplicitDynamic,
         ImplicitConstant,
         ImplicitUserDefined,
         AnonymousFunction,

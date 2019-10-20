@@ -146,7 +146,7 @@ namespace StarkPlatform.Compiler.Stark
 
             BoundAssignmentOperator tempAssignment;
             BoundLocal boundTemp;
-            if ((object)expressionType == null || expressionType.IsDynamic())
+            if ((object)expressionType == null)
             {
                 // IDisposable temp = (IDisposable) expr;
                 // or
@@ -215,39 +215,10 @@ namespace StarkPlatform.Compiler.Stark
                 return BoundBlock.SynthesizedNoLocals(usingSyntax, rewrittenDeclaration, tryBlock);
             }
 
-            if (localType.IsDynamic())
-            {
-                TypeSymbol iDisposableType = awaitOpt is null ?
-                    _compilation.GetSpecialType(SpecialType.System_IDisposable) :
-                    _compilation.GetWellKnownType(WellKnownType.core_IAsyncDisposable);
+            BoundStatement tryFinally = RewriteUsingStatementTryFinally(usingSyntax, tryBlock, boundLocal, awaitKeywordOpt, awaitOpt, methodSymbol);
 
-                BoundExpression tempInit = MakeConversionNode(
-                    declarationSyntax,
-                    boundLocal,
-                    iDisposableConversion,
-                    iDisposableType,
-                    @checked: false);
-
-                BoundAssignmentOperator tempAssignment;
-                BoundLocal boundTemp = _factory.StoreToTemp(tempInit, out tempAssignment, kind: SynthesizedLocalKind.Using);
-
-                BoundStatement tryFinally = RewriteUsingStatementTryFinally(usingSyntax, tryBlock, boundTemp, awaitKeywordOpt, awaitOpt, methodSymbol);
-
-                return new BoundBlock(
-                    syntax: usingSyntax,
-                    locals: ImmutableArray.Create<LocalSymbol>(boundTemp.LocalSymbol), //localSymbol will be declared by an enclosing block
-                    statements: ImmutableArray.Create<BoundStatement>(
-                        rewrittenDeclaration,
-                        new BoundExpressionStatement(declarationSyntax, tempAssignment),
-                        tryFinally));
-            }
-            else
-            {
-                BoundStatement tryFinally = RewriteUsingStatementTryFinally(usingSyntax, tryBlock, boundLocal, awaitKeywordOpt, awaitOpt, methodSymbol);
-
-                // localSymbol will be declared by an enclosing block
-                return BoundBlock.SynthesizedNoLocals(usingSyntax, rewrittenDeclaration, tryFinally);
-            }
+            // localSymbol will be declared by an enclosing block
+            return BoundBlock.SynthesizedNoLocals(usingSyntax, rewrittenDeclaration, tryFinally);
         }
 
         private BoundStatement RewriteUsingStatementTryFinally(SyntaxNode syntax, BoundBlock tryBlock, BoundLocal local, SyntaxToken awaitKeywordOpt, AwaitableInfo awaitOpt, MethodSymbol methodOpt)
@@ -426,7 +397,7 @@ namespace StarkPlatform.Compiler.Stark
                     // await local.DisposeAsync()
                     _sawAwaitInExceptionHandler = true;
 
-                    TypeSymbol awaitExpressionType = awaitOpt.GetResult?.ReturnType.TypeSymbol ?? _compilation.DynamicType;
+                    TypeSymbol awaitExpressionType = awaitOpt.GetResult?.ReturnType.TypeSymbol;
                     disposeCall = RewriteAwaitExpression(syntax, disposeCall, awaitOpt, awaitExpressionType, false);
                 }
             }

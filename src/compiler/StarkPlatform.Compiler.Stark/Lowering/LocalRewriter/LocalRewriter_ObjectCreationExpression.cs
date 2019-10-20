@@ -10,19 +10,6 @@ namespace StarkPlatform.Compiler.Stark
 {
     internal sealed partial class LocalRewriter
     {
-        public override BoundNode VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node)
-        {
-            var loweredArguments = VisitList(node.Arguments);
-            var constructorInvocation = _dynamicFactory.MakeDynamicConstructorInvocation(node.Syntax, node.Type, loweredArguments, node.ArgumentNamesOpt, node.ArgumentRefKindsOpt).ToExpression();
-
-            if (node.InitializerExpressionOpt == null || node.InitializerExpressionOpt.HasErrors)
-            {
-                return constructorInvocation;
-            }
-
-            return MakeObjectCreationWithInitializer(node.Syntax, constructorInvocation, node.InitializerExpressionOpt, node.Type);
-        }
-
         public override BoundNode VisitObjectCreationExpression(BoundObjectCreationExpression node)
         {
             Debug.Assert(node != null);
@@ -48,23 +35,6 @@ namespace StarkPlatform.Compiler.Stark
                 out temps);
 
             BoundExpression rewrittenObjectCreation;
-
-            if (_inExpressionLambda)
-            {
-                if (!temps.IsDefaultOrEmpty)
-                {
-                    throw ExceptionUtilities.UnexpectedValue(temps.Length);
-                }
-
-                rewrittenObjectCreation = node.UpdateArgumentsAndInitializer(rewrittenArguments, argumentRefKindsOpt, MakeObjectCreationInitializerForExpressionTree(node.InitializerExpressionOpt), changeTypeOpt: node.Constructor.ContainingType);
-
-                if (node.Type.IsInterfaceType())
-                {
-                    rewrittenObjectCreation = MakeConversionNode(rewrittenObjectCreation, node.Type, false, false);
-                }
-
-                return rewrittenObjectCreation;
-            }
 
             rewrittenObjectCreation = node.UpdateArgumentsAndInitializer(rewrittenArguments, argumentRefKindsOpt, newInitializerExpression: null, changeTypeOpt: node.Type);
 
@@ -97,17 +67,6 @@ namespace StarkPlatform.Compiler.Stark
             return MakeObjectCreationWithInitializer(node.Syntax, rewrittenObjectCreation, node.InitializerExpressionOpt, node.Type);
         }
 
-        private BoundObjectInitializerExpressionBase MakeObjectCreationInitializerForExpressionTree(BoundObjectInitializerExpressionBase initializerExpressionOpt)
-        {
-            if (initializerExpressionOpt != null && !initializerExpressionOpt.HasErrors)
-            {
-                // We may need to MakeArguments for collection initializer add method call if the method has a param array parameter.
-                var rewrittenInitializers = MakeObjectOrCollectionInitializersForExpressionTree(initializerExpressionOpt);
-                return UpdateInitializers(initializerExpressionOpt, rewrittenInitializers);
-            }
-
-            return null;
-        }
 
         // Shared helper for MakeObjectCreationWithInitializer and MakeNewT
         private BoundExpression MakeObjectCreationWithInitializer(
@@ -116,7 +75,6 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression initializerExpression,
             TypeSymbol type)
         {
-            Debug.Assert(!_inExpressionLambda);
             Debug.Assert(initializerExpression != null && !initializerExpression.HasErrors);
 
             // Create a temp and assign it with the object creation expression.
@@ -164,11 +122,6 @@ namespace StarkPlatform.Compiler.Stark
 
         public override BoundNode VisitNewT(BoundNewT node)
         {
-            if (_inExpressionLambda)
-            {
-                return node.Update(MakeObjectCreationInitializerForExpressionTree(node.InitializerExpressionOpt), node.Type);
-            }
-
             var rewrittenNewT = MakeNewT(node.Syntax, (TypeParameterSymbol)node.Type);
             if (node.InitializerExpressionOpt == null || node.InitializerExpressionOpt.HasErrors)
             {

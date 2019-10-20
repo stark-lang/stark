@@ -33,11 +33,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 throw new NotImplementedException();
             }
 
-            public override ITypeSymbol VisitDynamicType(IDynamicTypeSymbol symbol)
-            {
-                return symbol;
-            }
-
             public override ITypeSymbol VisitArrayType(IArrayTypeSymbol symbol)
             {
                 var elementType = symbol.ElementType.Accept(this);

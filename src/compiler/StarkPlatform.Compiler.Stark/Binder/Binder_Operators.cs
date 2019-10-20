@@ -46,38 +46,6 @@ namespace StarkPlatform.Compiler.Stark
 
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
 
-            if (left.HasDynamicType() || right.HasDynamicType())
-            {
-                if (IsLegalDynamicOperand(right) && IsLegalDynamicOperand(left))
-                {
-                    var finalDynamicConversion = this.Compilation.Conversions.ClassifyConversionFromExpression(right, left.Type, ref useSiteDiagnostics);
-                    diagnostics.Add(node, useSiteDiagnostics);
-
-                    return new BoundCompoundAssignmentOperator(
-                        node,
-                        new BinaryOperatorSignature(
-                            kind.WithType(BinaryOperatorKind.Dynamic).WithOverflowChecksIfApplicable(CheckOverflowAtRuntime),
-                            left.Type,
-                            right.Type,
-                            Compilation.DynamicType),
-                        left,
-                        right,
-                        Conversion.NoConversion,
-                        finalDynamicConversion,
-                        LookupResultKind.Viable,
-                        left.Type,
-                        hasErrors: false);
-                }
-                else
-                {
-                    Error(diagnostics, ErrorCode.ERR_BadBinaryOps, node, node.OperatorToken.Text, left.Display, right.Display);
-
-                    // error: operator can't be applied on dynamic and a type that is not convertible to dynamic:
-                    return new BoundCompoundAssignmentOperator(node, BinaryOperatorSignature.Error, left, right,
-                        Conversion.NoConversion, Conversion.NoConversion, LookupResultKind.Empty, CreateErrorType(), hasErrors: true);
-                }
-            }
-
             if (left.Kind == BoundKind.EventAccess && !CheckEventValueKind((BoundEventAccess)left, BindValueKind.Assignable, diagnostics))
             {
                 // If we're in a place where the event can be assigned, then continue so that we give errors
@@ -276,7 +244,6 @@ namespace StarkPlatform.Compiler.Stark
                 syntax: node,
                 @event: eventSymbol,
                 isAddition: isAddition,
-                isDynamic: right.HasDynamicType(),
                 receiverOpt: receiverOpt,
                 argument: argument,
                 type: type,
@@ -304,59 +271,6 @@ namespace StarkPlatform.Compiler.Stark
             // Pointer types and very special types are not convertible to object.
 
             return !type.IsPointerType() && !type.IsRestrictedType() && type.SpecialType != SpecialType.System_Void;
-        }
-
-        private BoundExpression BindDynamicBinaryOperator(
-            BinaryExpressionSyntax node,
-            BinaryOperatorKind kind,
-            BoundExpression left,
-            BoundExpression right,
-            DiagnosticBag diagnostics)
-        {
-            // This method binds binary * / % + - << >> < > <= >= == != & ! ^ && || operators where one or both
-            // of the operands are dynamic.
-            Debug.Assert((object)left.Type != null && left.Type.IsDynamic() || (object)right.Type != null && right.Type.IsDynamic());
-
-            bool hasError = false;
-            bool leftValidOperand = IsLegalDynamicOperand(left);
-            bool rightValidOperand = IsLegalDynamicOperand(right);
-
-            if (!leftValidOperand || !rightValidOperand)
-            {
-                // Operator '{0}' cannot be applied to operands of type '{1}' and '{2}'
-                Error(diagnostics, ErrorCode.ERR_BadBinaryOps, node, node.OperatorToken.Text, left.Display, right.Display);
-                hasError = true;
-            }
-
-            MethodSymbol userDefinedOperator = null;
-
-            if (kind.IsLogical() && leftValidOperand)
-            {
-                // We need to make sure left is either implicitly convertible to Boolean or has user defined truth operator.
-                //   left && right is lowered to {op_False|op_Implicit}(left) ? left : And(left, right)
-                //   left || right is lowered to {op_True|!op_Implicit}(left) ? left : Or(left, right)
-                HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-                if (!IsValidDynamicCondition(left, isNegative: kind == BinaryOperatorKind.LogicalAnd, useSiteDiagnostics: ref useSiteDiagnostics, userDefinedOperator: out userDefinedOperator))
-                {
-                    // Dev11 reports ERR_MustHaveOpTF. The error was shared between this case and user-defined binary Boolean operators.
-                    // We report two distinct more specific error messages.
-                    Error(diagnostics, ErrorCode.ERR_InvalidDynamicCondition, node.Left, left.Type, kind == BinaryOperatorKind.LogicalAnd ? "false" : "true");
-
-                    hasError = true;
-                }
-                diagnostics.Add(node, useSiteDiagnostics);
-            }
-
-            return new BoundBinaryOperator(
-                syntax: node,
-                operatorKind: (hasError ? kind : kind.WithType(BinaryOperatorKind.Dynamic)).WithOverflowChecksIfApplicable(CheckOverflowAtRuntime),
-                left: left,
-                right: right,
-                constantValueOpt: ConstantValue.NotAvailable,
-                methodOpt: userDefinedOperator,
-                resultKind: LookupResultKind.Viable,
-                type: Compilation.DynamicType,
-                hasErrors: hasError);
         }
 
         protected static bool IsSimpleBinaryOperator(SyntaxKind kind)
@@ -458,11 +372,6 @@ namespace StarkPlatform.Compiler.Stark
 
             TypeSymbol leftType = left.Type;
             TypeSymbol rightType = right.Type;
-
-            if ((object)leftType != null && leftType.IsDynamic() || (object)rightType != null && rightType.IsDynamic())
-            {
-                return BindDynamicBinaryOperator(node, kind, left, right, diagnostics);
-            }
 
             // SPEC OMISSION: The C# 2.0 spec had a line in it that noted that the expressions "null == null"
             // SPEC OMISSION: and "null != null" were to be automatically treated as the appropriate constant;
@@ -744,11 +653,6 @@ namespace StarkPlatform.Compiler.Stark
                     resultKind: LookupResultKind.Empty, left, right, type: GetBinaryOperatorErrorType(kind, diagnostics, node), hasErrors: true);
             }
 
-            if (left.HasDynamicType() || right.HasDynamicType())
-            {
-                return BindDynamicBinaryOperator(node, kind, left, right, diagnostics);
-            }
-
             LookupResultKind lookupResult;
             ImmutableArray<MethodSymbol> originalUserDefinedOperators;
             var best = this.BinaryOperatorOverloadResolution(kind, left, right, node, diagnostics, out lookupResult, out originalUserDefinedOperators);
@@ -838,11 +742,6 @@ namespace StarkPlatform.Compiler.Stark
             if ((object)type == null)
             {
                 return false;
-            }
-
-            if (type.IsDynamic())
-            {
-                return true;
             }
 
             var implicitConversion = Conversions.ClassifyImplicitConversionFromExpression(left, Compilation.GetSpecialType(SpecialType.System_Boolean), ref useSiteDiagnostics);
@@ -1896,21 +1795,6 @@ namespace StarkPlatform.Compiler.Stark
             var operandType = operand.Type;
             Debug.Assert((object)operandType != null);
 
-            if (operandType.IsDynamic())
-            {
-                return new BoundIncrementOperator(
-                    node,
-                    kind.WithType(UnaryOperatorKind.Dynamic).WithOverflowChecksIfApplicable(CheckOverflowAtRuntime),
-                    operand,
-                    methodOpt: null,
-                    operandConversion: Conversion.NoConversion,
-                    resultConversion: Conversion.NoConversion,
-                    resultKind: LookupResultKind.Viable,
-                    originalUserDefinedOperatorsOpt: default(ImmutableArray<MethodSymbol>),
-                    type: operandType,
-                    hasErrors: false);
-            }
-
             LookupResultKind resultKind;
             ImmutableArray<MethodSymbol> originalUserDefinedOperators;
             var best = this.UnaryOperatorOverloadResolution(kind, operand, node, diagnostics, out resultKind, out originalUserDefinedOperators);
@@ -2244,18 +2128,6 @@ namespace StarkPlatform.Compiler.Stark
             // signature, and therefore every operator would be an applicable candidate. Instead
             // of changing overload resolution to handle dynamic, we just handle it here and let
             // overload resolution implement the specification.
-
-            if (operand.HasDynamicType())
-            {
-                return new BoundUnaryOperator(
-                    syntax: node,
-                    operatorKind: kind.WithType(UnaryOperatorKind.Dynamic).WithOverflowChecksIfApplicable(CheckOverflowAtRuntime),
-                    operand: operand,
-                    constantValueOpt: ConstantValue.NotAvailable,
-                    methodOpt: null,
-                    resultKind: LookupResultKind.Viable,
-                    type: operand.Type);
-            }
 
             LookupResultKind resultKind;
             ImmutableArray<MethodSymbol> originalUserDefinedOperators;
@@ -2742,22 +2614,8 @@ namespace StarkPlatform.Compiler.Stark
                 return new BoundIsOperator(node, operand, typeExpression, conv, resultType);
             }
 
-            if (targetTypeKind == TypeKind.Dynamic)
-            {
-                // warning for dynamic target type
-                Error(diagnostics, ErrorCode.WRN_IsDynamicIsConfusing,
-                    node, node.OperatorToken.Text, targetType.Name,
-                    GetSpecialType(SpecialType.System_Object, diagnostics, node).Name // a pretty way of getting the string "Object"
-                    );
-            }
-
             var operandType = operand.Type;
             Debug.Assert((object)operandType != null);
-            if (operandType.TypeKind == TypeKind.Dynamic)
-            {
-                // if operand has a dynamic type, we do the same thing as though it were an object
-                operandType = GetSpecialType(SpecialType.System_Object, diagnostics, node);
-            }
 
             Conversion conversion = Conversions.ClassifyBuiltInConversion(operandType, targetType, ref useSiteDiagnostics);
             diagnostics.Add(node, useSiteDiagnostics);
@@ -3028,8 +2886,6 @@ namespace StarkPlatform.Compiler.Stark
                         ? ConstantValue.True : ConstantValue.False;
 
                 default:
-                case ConversionKind.ImplicitDynamic:
-                case ConversionKind.ExplicitDynamic:
                 case ConversionKind.PointerToInteger:
                 case ConversionKind.PointerToPointer:
                 case ConversionKind.PointerToVoid:
@@ -3157,20 +3013,6 @@ namespace StarkPlatform.Compiler.Stark
                 // operand for an is or as expression cannot be of pointer type
                 Error(diagnostics, ErrorCode.ERR_PointerInAsOrIs, node);
                 return new BoundAsOperator(node, operand, typeExpression, Conversion.NoConversion, resultType, hasErrors: true);
-            }
-
-            if (operandTypeKind == TypeKind.Dynamic)
-            {
-                // if operand has a dynamic type, we do the same thing as though it were an object
-                operandType = GetSpecialType(SpecialType.System_Object, diagnostics, node);
-                operandTypeKind = operandType.TypeKind;
-            }
-
-            if (targetTypeKind == TypeKind.Dynamic)
-            {
-                // for "as dynamic", we do the same thing as though it were an "as object"
-                targetType = GetSpecialType(SpecialType.System_Object, diagnostics, node);
-                targetTypeKind = targetType.TypeKind;
             }
 
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
@@ -3343,20 +3185,7 @@ namespace StarkPlatform.Compiler.Stark
                 }
             }
 
-            // SPEC:    If b is a dynamic expression, the result is dynamic. At runtime, a is first
-            // SPEC:    evaluated. If a is not null, a is converted to a dynamic type, and this becomes
-            // SPEC:    the result. Otherwise, b is evaluated, and the outcome becomes the result.
-            //
-            // Note that there is no runtime dynamic dispatch since comparison with null is not a dynamic operation.
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
-
-            if ((object)optRightType != null && optRightType.IsDynamic())
-            {
-                var leftConversion = Conversions.ClassifyConversionFromExpression(leftOperand, GetSpecialType(SpecialType.System_Object, diagnostics, node), ref useSiteDiagnostics);
-                diagnostics.Add(node, useSiteDiagnostics);
-                return new BoundNullCoalescingOperator(node, leftOperand, rightOperand,
-                    leftConversion, BoundNullCoalescingOperatorResultKind.RightDynamicType, optRightType);
-            }
 
             // SPEC:    Otherwise, if A exists and is a nullable type and an implicit conversion exists from b to A0,
             // SPEC:    the result type is A0. At run-time, a is first evaluated. If a is not null,

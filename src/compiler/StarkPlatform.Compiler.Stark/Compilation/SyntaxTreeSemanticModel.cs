@@ -258,10 +258,10 @@ namespace StarkPlatform.Compiler.Stark
                             result = SymbolInfo.None;
                             break;
                         case 1:
-                            result = SymbolInfoFactory.Create(symbols, LookupResultKind.Viable, isDynamic: false);
+                            result = SymbolInfoFactory.Create(symbols, LookupResultKind.Viable);
                             break;
                         default:
-                            result = SymbolInfoFactory.Create(symbols, LookupResultKind.Ambiguous, isDynamic: false);
+                            result = SymbolInfoFactory.Create(symbols, LookupResultKind.Ambiguous);
                             break;
                     }
                 }

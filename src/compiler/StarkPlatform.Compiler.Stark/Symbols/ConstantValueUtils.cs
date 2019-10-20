@@ -89,7 +89,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     while (unconvertedBoundValue.Kind == BoundKind.Conversion)
                     {
                         var conversion = (BoundConversion)unconvertedBoundValue;
-                        hasDynamicConversion = hasDynamicConversion || conversion.ConversionKind.IsDynamic();
                         unconvertedBoundValue = conversion.Operand;
                     }
 

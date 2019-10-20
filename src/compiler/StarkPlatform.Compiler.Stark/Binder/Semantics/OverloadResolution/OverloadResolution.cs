@@ -98,7 +98,7 @@ namespace StarkPlatform.Compiler.Stark
             // First, attempt overload resolution not getting complete results.
             PerformObjectCreationOverloadResolution(results, constructors, arguments, false, ref useSiteDiagnostics);
 
-            if (!OverloadResolutionResultIsValid(results, arguments.HasDynamicArgument))
+            if (!OverloadResolutionResultIsValid(results))
             {
                 // We didn't get a single good result. Get full results of overload resolution and return those.
                 result.Clear();
@@ -173,7 +173,7 @@ namespace StarkPlatform.Compiler.Stark
                 allowRefOmittedArguments: allowRefOmittedArguments, useSiteDiagnostics: ref useSiteDiagnostics,
                 inferWithDynamic: inferWithDynamic, allowUnexpandedForm: allowUnexpandedForm);
 
-            if (!OverloadResolutionResultIsValid(results, arguments.HasDynamicArgument))
+            if (!OverloadResolutionResultIsValid(results))
             {
                 // We didn't get a single good result. Get full results of overload resolution and return those.
                 result.Clear();
@@ -186,34 +186,9 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private static bool OverloadResolutionResultIsValid<TMember>(ArrayBuilder<MemberResolutionResult<TMember>> results, bool hasDynamicArgument)
+        private static bool OverloadResolutionResultIsValid<TMember>(ArrayBuilder<MemberResolutionResult<TMember>> results)
             where TMember : Symbol
         {
-            // If there were no dynamic arguments then overload resolution succeeds if there is exactly one method
-            // that is applicable and not worse than another method.
-            //
-            // If there were dynamic arguments then overload resolution succeeds if there were one or more applicable
-            // methods; which applicable method that will be invoked, if any, will be worked out at runtime.
-            //
-            // Note that we could in theory do a better job of detecting situations that we know will fail. We do not
-            // treat methods that violate generic type constraints as inapplicable; rather, if such a method is chosen
-            // as the best method we give an error during the "final validation" phase. In the dynamic argument
-            // scenario there could be two methods, both applicable, ambiguous as to which is better, and neither
-            // would pass final validation. In that case we could give the error at compile time, but we do not.
-
-            if (hasDynamicArgument)
-            {
-                foreach (var curResult in results)
-                {
-                    if (curResult.Result.IsApplicable)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
             return SingleValidResult(results);
         }
 
@@ -2101,15 +2076,6 @@ namespace StarkPlatform.Compiler.Stark
                 return MoreSpecificType(p1.PointedAtType.TypeSymbol, p2.PointedAtType.TypeSymbol, ref useSiteDiagnostics);
             }
 
-            if (t1.IsDynamic() || t2.IsDynamic())
-            {
-                Debug.Assert(t1.IsDynamic() && t2.IsDynamic() ||
-                             t1.IsDynamic() && t2.SpecialType == SpecialType.System_Object ||
-                             t2.IsDynamic() && t1.SpecialType == SpecialType.System_Object);
-
-                return BetterResult.Neither;
-            }
-
             // Spec:
             // - A constructed type is more specific than another
             //   constructed type (with the same number of type arguments) if at least one type
@@ -3181,99 +3147,82 @@ namespace StarkPlatform.Compiler.Stark
             EffectiveParameters effectiveParameters;
             if (member.Kind == SymbolKind.Method && (method = (MethodSymbol)(Symbol)member).Arity > 0)
             {
-                if (typeArgumentsBuilder.Count == 0 && arguments.HasDynamicArgument && !inferWithDynamic)
-                {
-                    // Spec 7.5.4: Compile-time checking of dynamic overload resolution:
-                    // * First, if F is a generic method and type arguments were provided, 
-                    //   then those are substituted for the type parameters in the parameter list. 
-                    //   However, if type arguments were not provided, no such substitution happens.
-                    // * Then, any parameter whose type contains a an unsubstituted type parameter of F 
-                    //   is elided, along with the corresponding arguments(s).
+                MethodSymbol leastOverriddenMethod = (MethodSymbol)(Symbol)leastOverriddenMember;
 
-                    // We don't need to check constraints of types of the non-elided parameters since they 
-                    // have no effect on applicability of this candidate.
-                    ignoreOpenTypes = true;
-                    effectiveParameters = constructedEffectiveParameters;
+                ImmutableArray<TypeSymbolWithAnnotations> typeArguments;
+                if (typeArgumentsBuilder.Count > 0)
+                {
+                    // generic type arguments explicitly specified at call-site:
+                    typeArguments = typeArgumentsBuilder.ToImmutable();
                 }
                 else
                 {
-                    MethodSymbol leastOverriddenMethod = (MethodSymbol)(Symbol)leastOverriddenMember;
-
-                    ImmutableArray<TypeSymbolWithAnnotations> typeArguments;
-                    if (typeArgumentsBuilder.Count > 0)
+                    // infer generic type arguments:
+                    MemberAnalysisResult inferenceError;
+                    typeArguments = InferMethodTypeArguments(method,
+                                        leastOverriddenMethod.ConstructedFrom.TypeParameters,
+                                        arguments,
+                                        originalEffectiveParameters,
+                                        out inferenceError,
+                                        ref useSiteDiagnostics);
+                    if (typeArguments.IsDefault)
                     {
-                        // generic type arguments explicitly specified at call-site:
-                        typeArguments = typeArgumentsBuilder.ToImmutable();
+                        return new MemberResolutionResult<TMember>(member, leastOverriddenMember, inferenceError);
                     }
-                    else
-                    {
-                        // infer generic type arguments:
-                        MemberAnalysisResult inferenceError;
-                        typeArguments = InferMethodTypeArguments(method,
-                                            leastOverriddenMethod.ConstructedFrom.TypeParameters,
-                                            arguments,
-                                            originalEffectiveParameters,
-                                            out inferenceError,
-                                            ref useSiteDiagnostics);
-                        if (typeArguments.IsDefault)
-                        {
-                            return new MemberResolutionResult<TMember>(member, leastOverriddenMember, inferenceError);
-                        }
-                    }
-
-                    member = (TMember)(Symbol)method.Construct(typeArguments);
-                    leastOverriddenMember = (TMember)(Symbol)leastOverriddenMethod.ConstructedFrom.Construct(typeArguments);
-
-                    // Spec (§7.6.5.1)
-                    //   Once the (inferred) type arguments are substituted for the corresponding method type parameters, 
-                    //   all constructed types in the parameter list of F satisfy *their* constraints (§4.4.4), 
-                    //   and the parameter list of F is applicable with respect to A (§7.5.3.1).
-                    //
-                    // This rule is a bit complicated; let's take a look at an example. Suppose we have
-                    // class X<U> where U : struct {}
-                    // ...
-                    // void M<T>(T t, X<T> xt) where T : struct {}
-                    // void M(object o1, object o2) {}
-                    //
-                    // Suppose there is a call M("", null). Type inference infers that T is string.
-                    // M<string> is then not an applicable candidate *NOT* because string violates the
-                    // constraint on T. That is not checked until "final validation" (although when
-                    // feature 'ImprovedOverloadCandidates' is enabled in later language versions
-                    // it is checked on the candidate before overload resolution). Rather, the 
-                    // method is not a candidate because string violates the constraint *on U*. 
-                    // The constructed method has formal parameter type X<string>, which is not legal.
-                    // In the case given, the generic method is eliminated and the object version wins.
-                    //
-                    // Note also that the constraints need to be checked on *all* the formal parameter
-                    // types, not just the ones in the *effective parameter list*. If we had:
-                    // void M<T>(T t, X<T> xt = null) where T : struct {}
-                    // void M<T>(object o1, object o2 = null) where T : struct {}
-                    // and a call M("") then type inference still works out that T is string, and
-                    // the generic method still needs to be discarded, even though type inference
-                    // never saw the second formal parameter.
-
-                    var parameterTypes = leastOverriddenMember.GetParameterTypes();
-                    for (int i = 0; i < parameterTypes.Length; i++)
-                    {
-                        if (!parameterTypes[i].TypeSymbol.CheckAllConstraints(Compilation, Conversions))
-                        {
-                            return new MemberResolutionResult<TMember>(member, leastOverriddenMember, MemberAnalysisResult.ConstructedParameterFailedConstraintsCheck(i));
-                        }
-                    }
-
-                    // Types of constructed effective parameters might originate from a virtual/abstract method 
-                    // that the current "method" overrides. If the virtual/abstract method is generic we constructed it 
-                    // using the generic parameters of "method", so we can now substitute these type parameters 
-                    // in the constructed effective parameters.
-
-                    var map = new TypeMap(method.TypeParameters, typeArguments, allowAlpha: true);
-
-                    effectiveParameters = new EffectiveParameters(
-                        map.SubstituteTypes(constructedEffectiveParameters.ParameterTypes),
-                        constructedEffectiveParameters.ParameterRefKinds);
-
-                    ignoreOpenTypes = false;
                 }
+
+                member = (TMember)(Symbol)method.Construct(typeArguments);
+                leastOverriddenMember = (TMember)(Symbol)leastOverriddenMethod.ConstructedFrom.Construct(typeArguments);
+
+                // Spec (§7.6.5.1)
+                //   Once the (inferred) type arguments are substituted for the corresponding method type parameters, 
+                //   all constructed types in the parameter list of F satisfy *their* constraints (§4.4.4), 
+                //   and the parameter list of F is applicable with respect to A (§7.5.3.1).
+                //
+                // This rule is a bit complicated; let's take a look at an example. Suppose we have
+                // class X<U> where U : struct {}
+                // ...
+                // void M<T>(T t, X<T> xt) where T : struct {}
+                // void M(object o1, object o2) {}
+                //
+                // Suppose there is a call M("", null). Type inference infers that T is string.
+                // M<string> is then not an applicable candidate *NOT* because string violates the
+                // constraint on T. That is not checked until "final validation" (although when
+                // feature 'ImprovedOverloadCandidates' is enabled in later language versions
+                // it is checked on the candidate before overload resolution). Rather, the 
+                // method is not a candidate because string violates the constraint *on U*. 
+                // The constructed method has formal parameter type X<string>, which is not legal.
+                // In the case given, the generic method is eliminated and the object version wins.
+                //
+                // Note also that the constraints need to be checked on *all* the formal parameter
+                // types, not just the ones in the *effective parameter list*. If we had:
+                // void M<T>(T t, X<T> xt = null) where T : struct {}
+                // void M<T>(object o1, object o2 = null) where T : struct {}
+                // and a call M("") then type inference still works out that T is string, and
+                // the generic method still needs to be discarded, even though type inference
+                // never saw the second formal parameter.
+
+                var parameterTypes = leastOverriddenMember.GetParameterTypes();
+                for (int i = 0; i < parameterTypes.Length; i++)
+                {
+                    if (!parameterTypes[i].TypeSymbol.CheckAllConstraints(Compilation, Conversions))
+                    {
+                        return new MemberResolutionResult<TMember>(member, leastOverriddenMember, MemberAnalysisResult.ConstructedParameterFailedConstraintsCheck(i));
+                    }
+                }
+
+                // Types of constructed effective parameters might originate from a virtual/abstract method 
+                // that the current "method" overrides. If the virtual/abstract method is generic we constructed it 
+                // using the generic parameters of "method", so we can now substitute these type parameters 
+                // in the constructed effective parameters.
+
+                var map = new TypeMap(method.TypeParameters, typeArguments, allowAlpha: true);
+
+                effectiveParameters = new EffectiveParameters(
+                    map.SubstituteTypes(constructedEffectiveParameters.ParameterTypes),
+                    constructedEffectiveParameters.ParameterRefKinds);
+
+                ignoreOpenTypes = false;
             }
             else
             {
@@ -3500,23 +3449,12 @@ namespace StarkPlatform.Compiler.Stark
             // effective RefKind has to match unless argument expression is of the type dynamic. 
             // This is a bug in Dev11 which we also implement. 
             //       The spec is correct, this is not an intended behavior. We don't fix the bug to avoid a breaking change.
-            if (!(argRefKind == parRefKind ||
-                 (argRefKind == RefKind.None && argument.HasDynamicType())))
+            if (argRefKind != parRefKind)
             {
                 return Conversion.NoConversion;
             }
 
             // TODO (tomat): the spec wording isn't final yet
-
-            // Spec 7.5.4: Compile-time checking of dynamic overload resolution:
-            // - Then, any parameter whose type is open (i.e. contains a type parameter; see §4.4.2) is elided, along with its corresponding parameter(s).
-            // and
-            // - The modified parameter list for F is applicable to the modified argument list in terms of section §7.5.3.1
-            if (ignoreOpenTypes && parameterType.ContainsTypeParameter(parameterContainer: (MethodSymbol)candidate))
-            {
-                // defer applicability check to runtime:
-                return Conversion.ImplicitDynamic;
-            }
 
             var argType = argument.Type;
             if (argument.Kind == BoundKind.OutVariablePendingInference ||

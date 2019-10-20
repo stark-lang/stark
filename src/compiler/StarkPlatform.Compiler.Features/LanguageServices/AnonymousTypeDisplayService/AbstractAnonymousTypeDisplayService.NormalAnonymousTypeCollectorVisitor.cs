@@ -37,10 +37,6 @@ namespace StarkPlatform.Compiler.LanguageServices
             {
             }
 
-            public override void VisitDynamicType(IDynamicTypeSymbol symbol)
-            {
-            }
-
             public override void VisitField(IFieldSymbol symbol)
             {
                 symbol.Type.Accept(this);

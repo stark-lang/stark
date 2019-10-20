@@ -1171,7 +1171,6 @@ tryAgain:
         /// </summary>
         internal void AddLocalToScope(LocalDefinition local)
         {
-            HasDynamicLocal |= !local.DynamicTransformFlags.IsEmpty;
             _scopeManager.AddLocal(local);
         }
 
@@ -1180,11 +1179,8 @@ tryAgain:
         /// </summary>
         internal void AddLocalConstantToScope(LocalConstantDefinition localConstant)
         {
-            HasDynamicLocal |= !localConstant.DynamicTransformFlags.IsEmpty;
             _scopeManager.AddLocalConstant(localConstant);
         }
-
-        internal bool HasDynamicLocal { get; private set; }
 
         // We have no mechanism for tracking the remapping of tokens when metadata is written.
         // In order to visualize the realized IL for testing, we need to be able to capture

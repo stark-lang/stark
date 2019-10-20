@@ -149,9 +149,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 case SymbolKind.PointerType:
                     result = SubstitutePointerType((PointerTypeSymbol)previous);
                     break;
-                case SymbolKind.DynamicType:
-                    result = SubstituteDynamicType();
-                    break;
                 case SymbolKind.ErrorType:
                     return ((ErrorTypeSymbol)previous).Substitute(this);
                 default:
@@ -223,11 +220,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
 
             return customModifiers;
-        }
-
-        protected virtual TypeSymbol SubstituteDynamicType()
-        {
-            return DynamicTypeSymbol.Instance;
         }
 
         protected virtual TypeSymbolWithAnnotations SubstituteTypeParameter(TypeParameterSymbol typeParameter)

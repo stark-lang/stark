@@ -362,11 +362,6 @@ namespace StarkPlatform.Compiler.Stark
                 case TypeKind.Interface:
                     break;
 
-                case TypeKind.Dynamic:
-                    // "Constraint cannot be the dynamic type"
-                    Error(diagnostics, ErrorCode.ERR_DynamicTypeAsBound, syntax);
-                    return false;
-
                 case TypeKind.Class:
                     if (type.IsSealed)
                     {
@@ -400,13 +395,6 @@ namespace StarkPlatform.Compiler.Stark
 
                 default:
                     throw ExceptionUtilities.UnexpectedValue(type.TypeKind);
-            }
-
-            if (type.ContainsDynamic())
-            {
-                // "Constraint cannot be a dynamic type '{0}'"
-                Error(diagnostics, ErrorCode.ERR_ConstructedDynamicTypeAsBound, syntax, type);
-                return false;
             }
 
             return true;

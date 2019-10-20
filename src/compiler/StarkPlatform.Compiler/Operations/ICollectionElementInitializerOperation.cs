@@ -17,7 +17,7 @@ namespace StarkPlatform.Compiler.Operations
     /// This interface is reserved for implementation by its associated APIs. We reserve the right to
     /// change it in the future.
     /// </remarks>
-    [Obsolete(nameof(ICollectionElementInitializerOperation) + " has been replaced with " + nameof(IInvocationOperation) + " and " + nameof(IDynamicInvocationOperation), error: true)]
+    [Obsolete(nameof(ICollectionElementInitializerOperation) + " has been replaced with " + nameof(IInvocationOperation), error: true)]
     public interface ICollectionElementInitializerOperation : IOperation
     {
         IMethodSymbol AddMethod { get; }

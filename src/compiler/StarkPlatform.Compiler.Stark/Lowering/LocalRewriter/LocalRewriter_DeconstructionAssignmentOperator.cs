@@ -339,7 +339,7 @@ namespace StarkPlatform.Compiler.Stark
                         throw ExceptionUtilities.UnexpectedValue(variable.Kind);
 
                     default:
-                        var temp = this.TransformCompoundAssignmentLHS(variable, effects, temps, isDynamicAssignment: variable.Type.IsDynamic());
+                        var temp = this.TransformCompoundAssignmentLHS(variable, effects, temps);
                         assignmentTargets.Add(new Binder.DeconstructionVariable(temp, variable.Syntax));
                         break;
                 }

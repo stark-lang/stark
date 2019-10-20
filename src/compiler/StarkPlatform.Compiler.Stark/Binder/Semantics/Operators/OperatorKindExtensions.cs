@@ -55,11 +55,6 @@ namespace StarkPlatform.Compiler.Stark
                 // regardless of whether it is +x -x !x ~x ++x --x x++ or x--. Let the lowering 
                 // pass sort out what to do with it.
 
-                if (kind.IsDynamic())
-                {
-                    return kind | UnaryOperatorKind.Checked;
-                }
-
                 if (kind.IsIntegral())
                 {
                     switch (kind.Operator())
@@ -83,11 +78,6 @@ namespace StarkPlatform.Compiler.Stark
         public static UnaryOperatorKind OperandTypes(this UnaryOperatorKind kind)
         {
             return kind & UnaryOperatorKind.TypeMask;
-        }
-
-        public static bool IsDynamic(this UnaryOperatorKind kind)
-        {
-            return kind.OperandTypes() == UnaryOperatorKind.Dynamic;
         }
 
         public static bool IsIntegral(this UnaryOperatorKind kind)
@@ -186,11 +176,6 @@ namespace StarkPlatform.Compiler.Stark
             return 0 != (kind & BinaryOperatorKind.Lifted);
         }
 
-        public static bool IsDynamic(this BinaryOperatorKind kind)
-        {
-            return kind.OperandTypes() == BinaryOperatorKind.Dynamic;
-        }
-
         public static bool IsComparison(this BinaryOperatorKind kind)
         {
             switch (kind.Operator())
@@ -233,13 +218,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             if (enabled)
             {
-                // If it's a dynamic binop then make it checked. Let the lowering
-                // pass sort out what to do with it.
-                if (kind.IsDynamic())
-                {
-                    return kind | BinaryOperatorKind.Checked;
-                }
-
                 if (kind.IsIntegral())
                 {
                     switch (kind.Operator())

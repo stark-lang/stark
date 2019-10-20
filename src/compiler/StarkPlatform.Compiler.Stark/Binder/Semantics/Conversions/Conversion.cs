@@ -150,21 +150,6 @@ namespace StarkPlatform.Compiler.Stark
             return new Conversion(this.Kind, conversionMethod, isExtensionMethod: IsExtensionMethod);
         }
 
-        internal Conversion SetArrayIndexConversionForDynamic()
-        {
-            Debug.Assert(_kind.IsDynamic());
-            Debug.Assert(_uncommonData == null);
-
-            return new Conversion(
-                _kind,
-                new UncommonData(
-                    isExtensionMethod: false,
-                    isArrayIndex: true,
-                    conversionResult: default(UserDefinedConversionResult),
-                    conversionMethod: null,
-                    nestedConversions: default(ImmutableArray<Conversion>)));
-        }
-
         [Conditional("DEBUG")]
         private static void AssertTrivialConversion(ConversionKind kind)
         {
@@ -190,8 +175,6 @@ namespace StarkPlatform.Compiler.Stark
                 case ConversionKind.IntPtr:
                 case ConversionKind.ExplicitEnumeration:
                 case ConversionKind.ExplicitNumeric:
-                case ConversionKind.ImplicitDynamic:
-                case ConversionKind.ExplicitDynamic:
                 case ConversionKind.InterpolatedString:
                     isTrivial = true;
                     break;
@@ -228,8 +211,6 @@ namespace StarkPlatform.Compiler.Stark
         internal static Conversion IntPtr => new Conversion(ConversionKind.IntPtr);
         internal static Conversion ExplicitEnumeration => new Conversion(ConversionKind.ExplicitEnumeration);
         internal static Conversion ExplicitNumeric => new Conversion(ConversionKind.ExplicitNumeric);
-        internal static Conversion ImplicitDynamic => new Conversion(ConversionKind.ImplicitDynamic);
-        internal static Conversion ExplicitDynamic => new Conversion(ConversionKind.ExplicitDynamic);
         internal static Conversion InterpolatedString => new Conversion(ConversionKind.InterpolatedString);
         internal static Conversion Deconstruction => new Conversion(ConversionKind.Deconstruction);
         internal static Conversion PinnedObjectToPointer => new Conversion(ConversionKind.PinnedObjectToPointer);
@@ -627,20 +608,6 @@ namespace StarkPlatform.Compiler.Stark
             get
             {
                 return Kind == ConversionKind.DefaultOrNullLiteral;
-            }
-        }
-
-        /// <summary>
-        /// Returns true if the conversion is an implicit dynamic conversion. 
-        /// </summary>
-        /// <remarks>
-        /// Implicit dynamic conversions are described in section 6.1.8 of the C# language specification.
-        /// </remarks>
-        public bool IsDynamic
-        {
-            get
-            {
-                return Kind.IsDynamic();
             }
         }
 

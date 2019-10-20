@@ -233,7 +233,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             switch (symbol.Kind)
             {
                 case SymbolKind.ArrayType:
-                case SymbolKind.DynamicType:
                 case SymbolKind.ErrorType:
                 case SymbolKind.NamedType:
                 case SymbolKind.PointerType:

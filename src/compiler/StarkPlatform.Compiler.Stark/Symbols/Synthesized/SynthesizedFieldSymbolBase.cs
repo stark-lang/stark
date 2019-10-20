@@ -51,14 +51,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 AddSynthesizedAttribute(ref attributes, compilation.TrySynthesizeAttribute(WellKnownMember.System_Runtime_CompilerServices_CompilerGeneratedAttribute__ctor));
             }
 
-            if (!this.SuppressDynamicAttribute &&
-                this.Type.TypeSymbol.ContainsDynamic() &&
-                compilation.HasDynamicEmitAttributes() &&
-                compilation.CanEmitBoolean())
-            {
-                AddSynthesizedAttribute(ref attributes, compilation.SynthesizeDynamicAttribute(this.Type.TypeSymbol, this.Type.CustomModifiers.Length));
-            }
-
             if (Type.TypeSymbol.ContainsTupleNames() &&
                 compilation.HasTupleNamesAttributes &&
                 compilation.CanEmitSpecialType(SpecialType.System_String))

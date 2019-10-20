@@ -167,15 +167,6 @@ namespace StarkPlatform.Compiler.Stark.CodeRefactorings.LambdaSimplifier
                 return false;
             }
 
-            // Check if any of the parameter is of Type Dynamic
-            foreach (var parameter in lambdaMethod.Parameters)
-            {
-                if (parameter.Type != null && parameter.Type.Kind == SymbolKind.DynamicType)
-                {
-                    return false;
-                }
-            }
-
             // Check if the parameter and return types match between the lambda and the
             // invocation.  Note: return types can be covariant and argument types can be
             // contravariant.

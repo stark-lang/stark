@@ -143,8 +143,6 @@ namespace StarkPlatform.Compiler.Stark
         SequencePointExpression,
         Sequence,
         SpillSequence,
-        DynamicMemberAccess,
-        DynamicInvocation,
         ConditionalAccess,
         LoweredConditionalAccess,
         ConditionalReceiver,
@@ -157,14 +155,11 @@ namespace StarkPlatform.Compiler.Stark
         ObjectCreationExpression,
         TupleLiteral,
         ConvertedTupleLiteral,
-        DynamicObjectCreationExpression,
         NoPiaObjectCreationExpression,
         ObjectInitializerExpression,
         ObjectInitializerMember,
-        DynamicObjectInitializerMember,
         CollectionInitializerExpression,
         CollectionElementInitializer,
-        DynamicCollectionElementInitializer,
         ImplicitReceiver,
         AnonymousObjectCreationExpression,
         AnonymousPropertyDeclaration,
@@ -179,7 +174,6 @@ namespace StarkPlatform.Compiler.Stark
         PropertyAccess,
         EventAccess,
         IndexerAccess,
-        DynamicIndexerAccess,
         Lambda,
         UnboundLambda,
         QueryClause,
@@ -5551,124 +5545,6 @@ namespace StarkPlatform.Compiler.Stark
         }
     }
 
-    internal sealed partial class BoundDynamicMemberAccess : BoundExpression
-    {
-        public BoundDynamicMemberAccess(SyntaxNode syntax, BoundExpression receiver, ImmutableArray<TypeSymbolWithAnnotations> typeArgumentsOpt, string name, bool invoked, bool indexed, TypeSymbol type, bool hasErrors = false)
-            : base(BoundKind.DynamicMemberAccess, syntax, type, hasErrors || receiver.HasErrors())
-        {
-
-            Debug.Assert((object)receiver != null, "Field 'receiver' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)name != null, "Field 'name' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)type != null, "Field 'type' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-
-            this.Receiver = receiver;
-            this.TypeArgumentsOpt = typeArgumentsOpt;
-            this.Name = name;
-            this.Invoked = invoked;
-            this.Indexed = indexed;
-        }
-
-
-        public BoundExpression Receiver { get; }
-
-        public ImmutableArray<TypeSymbolWithAnnotations> TypeArgumentsOpt { get; }
-
-        public string Name { get; }
-
-        public bool Invoked { get; }
-
-        public bool Indexed { get; }
-
-        public override BoundNode Accept(BoundTreeVisitor visitor)
-        {
-            return visitor.VisitDynamicMemberAccess(this);
-        }
-
-        public BoundDynamicMemberAccess Update(BoundExpression receiver, ImmutableArray<TypeSymbolWithAnnotations> typeArgumentsOpt, string name, bool invoked, bool indexed, TypeSymbol type)
-        {
-            if (receiver != this.Receiver || typeArgumentsOpt != this.TypeArgumentsOpt || name != this.Name || invoked != this.Invoked || indexed != this.Indexed || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
-            {
-                var result = new BoundDynamicMemberAccess(this.Syntax, receiver, typeArgumentsOpt, name, invoked, indexed, type, this.HasErrors);
-                result.CopyAttributes(this);
-                return result;
-            }
-            return this;
-        }
-
-        protected override BoundExpression ShallowClone()
-        {
-            var result = new BoundDynamicMemberAccess(this.Syntax, this.Receiver, this.TypeArgumentsOpt, this.Name, this.Invoked, this.Indexed, this.Type, this.HasErrors);
-            result.CopyAttributes(this);
-            return result;
-        }
-    }
-
-    internal abstract partial class BoundDynamicInvocableBase : BoundExpression
-    {
-        protected BoundDynamicInvocableBase(BoundKind kind, SyntaxNode syntax, BoundExpression expression, ImmutableArray<BoundExpression> arguments, TypeSymbol type, bool hasErrors = false)
-            : base(kind, syntax, type, hasErrors)
-        {
-
-            Debug.Assert((object)expression != null, "Field 'expression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(!arguments.IsDefault, "Field 'arguments' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-
-            this.Expression = expression;
-            this.Arguments = arguments;
-        }
-
-
-        public BoundExpression Expression { get; }
-
-        public ImmutableArray<BoundExpression> Arguments { get; }
-    }
-
-    internal sealed partial class BoundDynamicInvocation : BoundDynamicInvocableBase
-    {
-        public BoundDynamicInvocation(SyntaxNode syntax, ImmutableArray<string> argumentNamesOpt, ImmutableArray<RefKind> argumentRefKindsOpt, ImmutableArray<MethodSymbol> applicableMethods, BoundExpression expression, ImmutableArray<BoundExpression> arguments, TypeSymbol type, bool hasErrors = false)
-            : base(BoundKind.DynamicInvocation, syntax, expression, arguments, type, hasErrors || expression.HasErrors() || arguments.HasErrors())
-        {
-
-            Debug.Assert(!applicableMethods.IsDefault, "Field 'applicableMethods' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)expression != null, "Field 'expression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(!arguments.IsDefault, "Field 'arguments' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)type != null, "Field 'type' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-
-            this.ArgumentNamesOpt = argumentNamesOpt;
-            this.ArgumentRefKindsOpt = argumentRefKindsOpt;
-            this.ApplicableMethods = applicableMethods;
-        }
-
-
-        public ImmutableArray<string> ArgumentNamesOpt { get; }
-
-        public ImmutableArray<RefKind> ArgumentRefKindsOpt { get; }
-
-        public ImmutableArray<MethodSymbol> ApplicableMethods { get; }
-
-        public override BoundNode Accept(BoundTreeVisitor visitor)
-        {
-            return visitor.VisitDynamicInvocation(this);
-        }
-
-        public BoundDynamicInvocation Update(ImmutableArray<string> argumentNamesOpt, ImmutableArray<RefKind> argumentRefKindsOpt, ImmutableArray<MethodSymbol> applicableMethods, BoundExpression expression, ImmutableArray<BoundExpression> arguments, TypeSymbol type)
-        {
-            if (argumentNamesOpt != this.ArgumentNamesOpt || argumentRefKindsOpt != this.ArgumentRefKindsOpt || applicableMethods != this.ApplicableMethods || expression != this.Expression || arguments != this.Arguments || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
-            {
-                var result = new BoundDynamicInvocation(this.Syntax, argumentNamesOpt, argumentRefKindsOpt, applicableMethods, expression, arguments, type, this.HasErrors);
-                result.CopyAttributes(this);
-                return result;
-            }
-            return this;
-        }
-
-        protected override BoundExpression ShallowClone()
-        {
-            var result = new BoundDynamicInvocation(this.Syntax, this.ArgumentNamesOpt, this.ArgumentRefKindsOpt, this.ApplicableMethods, this.Expression, this.Arguments, this.Type, this.HasErrors);
-            result.CopyAttributes(this);
-            return result;
-        }
-    }
-
     internal sealed partial class BoundConditionalAccess : BoundExpression
     {
         public BoundConditionalAccess(SyntaxNode syntax, BoundExpression receiver, BoundExpression accessExpression, TypeSymbol type, bool hasErrors = false)
@@ -6019,7 +5895,7 @@ namespace StarkPlatform.Compiler.Stark
 
     internal sealed partial class BoundEventAssignmentOperator : BoundExpression
     {
-        public BoundEventAssignmentOperator(SyntaxNode syntax, EventSymbol @event, bool isAddition, bool isDynamic, BoundExpression receiverOpt, BoundExpression argument, TypeSymbol type, bool hasErrors = false)
+        public BoundEventAssignmentOperator(SyntaxNode syntax, EventSymbol @event, bool isAddition, BoundExpression receiverOpt, BoundExpression argument, TypeSymbol type, bool hasErrors = false)
             : base(BoundKind.EventAssignmentOperator, syntax, type, hasErrors || receiverOpt.HasErrors() || argument.HasErrors())
         {
 
@@ -6029,7 +5905,6 @@ namespace StarkPlatform.Compiler.Stark
 
             this.Event = @event;
             this.IsAddition = isAddition;
-            this.IsDynamic = isDynamic;
             this.ReceiverOpt = receiverOpt;
             this.Argument = argument;
         }
@@ -6038,8 +5913,6 @@ namespace StarkPlatform.Compiler.Stark
         public EventSymbol Event { get; }
 
         public bool IsAddition { get; }
-
-        public bool IsDynamic { get; }
 
         public BoundExpression ReceiverOpt { get; }
 
@@ -6050,11 +5923,11 @@ namespace StarkPlatform.Compiler.Stark
             return visitor.VisitEventAssignmentOperator(this);
         }
 
-        public BoundEventAssignmentOperator Update(EventSymbol @event, bool isAddition, bool isDynamic, BoundExpression receiverOpt, BoundExpression argument, TypeSymbol type)
+        public BoundEventAssignmentOperator Update(EventSymbol @event, bool isAddition, BoundExpression receiverOpt, BoundExpression argument, TypeSymbol type)
         {
-            if (@event != this.Event || isAddition != this.IsAddition || isDynamic != this.IsDynamic || receiverOpt != this.ReceiverOpt || argument != this.Argument || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
+            if (@event != this.Event || isAddition != this.IsAddition || receiverOpt != this.ReceiverOpt || argument != this.Argument || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
             {
-                var result = new BoundEventAssignmentOperator(this.Syntax, @event, isAddition, isDynamic, receiverOpt, argument, type, this.HasErrors);
+                var result = new BoundEventAssignmentOperator(this.Syntax, @event, isAddition, receiverOpt, argument, type, this.HasErrors);
                 result.CopyAttributes(this);
                 return result;
             }
@@ -6063,7 +5936,7 @@ namespace StarkPlatform.Compiler.Stark
 
         protected override BoundExpression ShallowClone()
         {
-            var result = new BoundEventAssignmentOperator(this.Syntax, this.Event, this.IsAddition, this.IsDynamic, this.ReceiverOpt, this.Argument, this.Type, this.HasErrors);
+            var result = new BoundEventAssignmentOperator(this.Syntax, this.Event, this.IsAddition, this.ReceiverOpt, this.Argument, this.Type, this.HasErrors);
             result.CopyAttributes(this);
             return result;
         }
@@ -6285,62 +6158,6 @@ namespace StarkPlatform.Compiler.Stark
         }
     }
 
-    internal sealed partial class BoundDynamicObjectCreationExpression : BoundExpression
-    {
-        public BoundDynamicObjectCreationExpression(SyntaxNode syntax, string name, ImmutableArray<BoundExpression> arguments, ImmutableArray<string> argumentNamesOpt, ImmutableArray<RefKind> argumentRefKindsOpt, BoundObjectInitializerExpressionBase initializerExpressionOpt, ImmutableArray<MethodSymbol> applicableMethods, TypeSymbol type, bool hasErrors = false)
-            : base(BoundKind.DynamicObjectCreationExpression, syntax, type, hasErrors || arguments.HasErrors() || initializerExpressionOpt.HasErrors())
-        {
-
-            Debug.Assert((object)name != null, "Field 'name' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(!arguments.IsDefault, "Field 'arguments' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(!applicableMethods.IsDefault, "Field 'applicableMethods' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)type != null, "Field 'type' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-
-            this.Name = name;
-            this.Arguments = arguments;
-            this.ArgumentNamesOpt = argumentNamesOpt;
-            this.ArgumentRefKindsOpt = argumentRefKindsOpt;
-            this.InitializerExpressionOpt = initializerExpressionOpt;
-            this.ApplicableMethods = applicableMethods;
-        }
-
-
-        public string Name { get; }
-
-        public ImmutableArray<BoundExpression> Arguments { get; }
-
-        public ImmutableArray<string> ArgumentNamesOpt { get; }
-
-        public ImmutableArray<RefKind> ArgumentRefKindsOpt { get; }
-
-        public BoundObjectInitializerExpressionBase InitializerExpressionOpt { get; }
-
-        public ImmutableArray<MethodSymbol> ApplicableMethods { get; }
-
-        public override BoundNode Accept(BoundTreeVisitor visitor)
-        {
-            return visitor.VisitDynamicObjectCreationExpression(this);
-        }
-
-        public BoundDynamicObjectCreationExpression Update(string name, ImmutableArray<BoundExpression> arguments, ImmutableArray<string> argumentNamesOpt, ImmutableArray<RefKind> argumentRefKindsOpt, BoundObjectInitializerExpressionBase initializerExpressionOpt, ImmutableArray<MethodSymbol> applicableMethods, TypeSymbol type)
-        {
-            if (name != this.Name || arguments != this.Arguments || argumentNamesOpt != this.ArgumentNamesOpt || argumentRefKindsOpt != this.ArgumentRefKindsOpt || initializerExpressionOpt != this.InitializerExpressionOpt || applicableMethods != this.ApplicableMethods || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
-            {
-                var result = new BoundDynamicObjectCreationExpression(this.Syntax, name, arguments, argumentNamesOpt, argumentRefKindsOpt, initializerExpressionOpt, applicableMethods, type, this.HasErrors);
-                result.CopyAttributes(this);
-                return result;
-            }
-            return this;
-        }
-
-        protected override BoundExpression ShallowClone()
-        {
-            var result = new BoundDynamicObjectCreationExpression(this.Syntax, this.Name, this.Arguments, this.ArgumentNamesOpt, this.ArgumentRefKindsOpt, this.InitializerExpressionOpt, this.ApplicableMethods, this.Type, this.HasErrors);
-            result.CopyAttributes(this);
-            return result;
-        }
-    }
-
     internal sealed partial class BoundNoPiaObjectCreationExpression : BoundExpression
     {
         public BoundNoPiaObjectCreationExpression(SyntaxNode syntax, string guidString, BoundObjectInitializerExpressionBase initializerExpressionOpt, TypeSymbol type, bool hasErrors = false)
@@ -6499,61 +6316,6 @@ namespace StarkPlatform.Compiler.Stark
         }
     }
 
-    internal sealed partial class BoundDynamicObjectInitializerMember : BoundExpression
-    {
-        public BoundDynamicObjectInitializerMember(SyntaxNode syntax, string memberName, TypeSymbol receiverType, TypeSymbol type, bool hasErrors)
-            : base(BoundKind.DynamicObjectInitializerMember, syntax, type, hasErrors)
-        {
-
-            Debug.Assert((object)memberName != null, "Field 'memberName' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)receiverType != null, "Field 'receiverType' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)type != null, "Field 'type' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-
-            this.MemberName = memberName;
-            this.ReceiverType = receiverType;
-        }
-
-        public BoundDynamicObjectInitializerMember(SyntaxNode syntax, string memberName, TypeSymbol receiverType, TypeSymbol type)
-            : base(BoundKind.DynamicObjectInitializerMember, syntax, type)
-        {
-
-            Debug.Assert((object)memberName != null, "Field 'memberName' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)receiverType != null, "Field 'receiverType' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)type != null, "Field 'type' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-
-            this.MemberName = memberName;
-            this.ReceiverType = receiverType;
-        }
-
-
-        public string MemberName { get; }
-
-        public TypeSymbol ReceiverType { get; }
-
-        public override BoundNode Accept(BoundTreeVisitor visitor)
-        {
-            return visitor.VisitDynamicObjectInitializerMember(this);
-        }
-
-        public BoundDynamicObjectInitializerMember Update(string memberName, TypeSymbol receiverType, TypeSymbol type)
-        {
-            if (memberName != this.MemberName || !TypeSymbol.Equals(receiverType, this.ReceiverType, TypeCompareKind.ConsiderEverything) || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
-            {
-                var result = new BoundDynamicObjectInitializerMember(this.Syntax, memberName, receiverType, type, this.HasErrors);
-                result.CopyAttributes(this);
-                return result;
-            }
-            return this;
-        }
-
-        protected override BoundExpression ShallowClone()
-        {
-            var result = new BoundDynamicObjectInitializerMember(this.Syntax, this.MemberName, this.ReceiverType, this.Type, this.HasErrors);
-            result.CopyAttributes(this);
-            return result;
-        }
-    }
-
     internal sealed partial class BoundCollectionInitializerExpression : BoundObjectInitializerExpressionBase
     {
         public BoundCollectionInitializerExpression(SyntaxNode syntax, ImmutableArray<BoundExpression> initializers, TypeSymbol type, bool hasErrors = false)
@@ -6647,47 +6409,6 @@ namespace StarkPlatform.Compiler.Stark
         protected override BoundExpression ShallowClone()
         {
             var result = new BoundCollectionElementInitializer(this.Syntax, this.AddMethod, this.Arguments, this.ImplicitReceiverOpt, this.Expanded, this.ArgsToParamsOpt, this.InvokedAsExtensionMethod, this.ResultKind, this.BinderOpt, this.Type, this.HasErrors);
-            result.CopyAttributes(this);
-            return result;
-        }
-    }
-
-    internal sealed partial class BoundDynamicCollectionElementInitializer : BoundDynamicInvocableBase
-    {
-        public BoundDynamicCollectionElementInitializer(SyntaxNode syntax, ImmutableArray<MethodSymbol> applicableMethods, BoundExpression expression, ImmutableArray<BoundExpression> arguments, TypeSymbol type, bool hasErrors = false)
-            : base(BoundKind.DynamicCollectionElementInitializer, syntax, expression, arguments, type, hasErrors || expression.HasErrors() || arguments.HasErrors())
-        {
-
-            Debug.Assert(!applicableMethods.IsDefault, "Field 'applicableMethods' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)expression != null, "Field 'expression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(!arguments.IsDefault, "Field 'arguments' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)type != null, "Field 'type' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-
-            this.ApplicableMethods = applicableMethods;
-        }
-
-
-        public ImmutableArray<MethodSymbol> ApplicableMethods { get; }
-
-        public override BoundNode Accept(BoundTreeVisitor visitor)
-        {
-            return visitor.VisitDynamicCollectionElementInitializer(this);
-        }
-
-        public BoundDynamicCollectionElementInitializer Update(ImmutableArray<MethodSymbol> applicableMethods, BoundExpression expression, ImmutableArray<BoundExpression> arguments, TypeSymbol type)
-        {
-            if (applicableMethods != this.ApplicableMethods || expression != this.Expression || arguments != this.Arguments || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
-            {
-                var result = new BoundDynamicCollectionElementInitializer(this.Syntax, applicableMethods, expression, arguments, type, this.HasErrors);
-                result.CopyAttributes(this);
-                return result;
-            }
-            return this;
-        }
-
-        protected override BoundExpression ShallowClone()
-        {
-            var result = new BoundDynamicCollectionElementInitializer(this.Syntax, this.ApplicableMethods, this.Expression, this.Arguments, this.Type, this.HasErrors);
             result.CopyAttributes(this);
             return result;
         }
@@ -7347,58 +7068,6 @@ namespace StarkPlatform.Compiler.Stark
         protected override BoundExpression ShallowClone()
         {
             var result = new BoundIndexerAccess(this.Syntax, this.ReceiverOpt, this.Indexer, this.Arguments, this.ArgumentNamesOpt, this.ArgumentRefKindsOpt, this.Expanded, this.ArgsToParamsOpt, this.BinderOpt, this.UseSetterForDefaultArgumentGeneration, this.Type, this.HasErrors);
-            result.CopyAttributes(this);
-            return result;
-        }
-    }
-
-    internal sealed partial class BoundDynamicIndexerAccess : BoundExpression
-    {
-        public BoundDynamicIndexerAccess(SyntaxNode syntax, BoundExpression receiverOpt, ImmutableArray<BoundExpression> arguments, ImmutableArray<string> argumentNamesOpt, ImmutableArray<RefKind> argumentRefKindsOpt, ImmutableArray<PropertySymbol> applicableIndexers, TypeSymbol type, bool hasErrors = false)
-            : base(BoundKind.DynamicIndexerAccess, syntax, type, hasErrors || receiverOpt.HasErrors() || arguments.HasErrors())
-        {
-
-            Debug.Assert(!arguments.IsDefault, "Field 'arguments' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert(!applicableIndexers.IsDefault, "Field 'applicableIndexers' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-            Debug.Assert((object)type != null, "Field 'type' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
-
-            this.ReceiverOpt = receiverOpt;
-            this.Arguments = arguments;
-            this.ArgumentNamesOpt = argumentNamesOpt;
-            this.ArgumentRefKindsOpt = argumentRefKindsOpt;
-            this.ApplicableIndexers = applicableIndexers;
-        }
-
-
-        public BoundExpression ReceiverOpt { get; }
-
-        public ImmutableArray<BoundExpression> Arguments { get; }
-
-        public ImmutableArray<string> ArgumentNamesOpt { get; }
-
-        public ImmutableArray<RefKind> ArgumentRefKindsOpt { get; }
-
-        public ImmutableArray<PropertySymbol> ApplicableIndexers { get; }
-
-        public override BoundNode Accept(BoundTreeVisitor visitor)
-        {
-            return visitor.VisitDynamicIndexerAccess(this);
-        }
-
-        public BoundDynamicIndexerAccess Update(BoundExpression receiverOpt, ImmutableArray<BoundExpression> arguments, ImmutableArray<string> argumentNamesOpt, ImmutableArray<RefKind> argumentRefKindsOpt, ImmutableArray<PropertySymbol> applicableIndexers, TypeSymbol type)
-        {
-            if (receiverOpt != this.ReceiverOpt || arguments != this.Arguments || argumentNamesOpt != this.ArgumentNamesOpt || argumentRefKindsOpt != this.ArgumentRefKindsOpt || applicableIndexers != this.ApplicableIndexers || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
-            {
-                var result = new BoundDynamicIndexerAccess(this.Syntax, receiverOpt, arguments, argumentNamesOpt, argumentRefKindsOpt, applicableIndexers, type, this.HasErrors);
-                result.CopyAttributes(this);
-                return result;
-            }
-            return this;
-        }
-
-        protected override BoundExpression ShallowClone()
-        {
-            var result = new BoundDynamicIndexerAccess(this.Syntax, this.ReceiverOpt, this.Arguments, this.ArgumentNamesOpt, this.ArgumentRefKindsOpt, this.ApplicableIndexers, this.Type, this.HasErrors);
             result.CopyAttributes(this);
             return result;
         }
@@ -8590,10 +8259,6 @@ namespace StarkPlatform.Compiler.Stark
                     return VisitSequence(node as BoundSequence, arg);
                 case BoundKind.SpillSequence: 
                     return VisitSpillSequence(node as BoundSpillSequence, arg);
-                case BoundKind.DynamicMemberAccess: 
-                    return VisitDynamicMemberAccess(node as BoundDynamicMemberAccess, arg);
-                case BoundKind.DynamicInvocation: 
-                    return VisitDynamicInvocation(node as BoundDynamicInvocation, arg);
                 case BoundKind.ConditionalAccess: 
                     return VisitConditionalAccess(node as BoundConditionalAccess, arg);
                 case BoundKind.LoweredConditionalAccess: 
@@ -8618,22 +8283,16 @@ namespace StarkPlatform.Compiler.Stark
                     return VisitTupleLiteral(node as BoundTupleLiteral, arg);
                 case BoundKind.ConvertedTupleLiteral: 
                     return VisitConvertedTupleLiteral(node as BoundConvertedTupleLiteral, arg);
-                case BoundKind.DynamicObjectCreationExpression: 
-                    return VisitDynamicObjectCreationExpression(node as BoundDynamicObjectCreationExpression, arg);
                 case BoundKind.NoPiaObjectCreationExpression: 
                     return VisitNoPiaObjectCreationExpression(node as BoundNoPiaObjectCreationExpression, arg);
                 case BoundKind.ObjectInitializerExpression: 
                     return VisitObjectInitializerExpression(node as BoundObjectInitializerExpression, arg);
                 case BoundKind.ObjectInitializerMember: 
                     return VisitObjectInitializerMember(node as BoundObjectInitializerMember, arg);
-                case BoundKind.DynamicObjectInitializerMember: 
-                    return VisitDynamicObjectInitializerMember(node as BoundDynamicObjectInitializerMember, arg);
                 case BoundKind.CollectionInitializerExpression: 
                     return VisitCollectionInitializerExpression(node as BoundCollectionInitializerExpression, arg);
                 case BoundKind.CollectionElementInitializer: 
                     return VisitCollectionElementInitializer(node as BoundCollectionElementInitializer, arg);
-                case BoundKind.DynamicCollectionElementInitializer: 
-                    return VisitDynamicCollectionElementInitializer(node as BoundDynamicCollectionElementInitializer, arg);
                 case BoundKind.ImplicitReceiver: 
                     return VisitImplicitReceiver(node as BoundImplicitReceiver, arg);
                 case BoundKind.AnonymousObjectCreationExpression: 
@@ -8662,8 +8321,6 @@ namespace StarkPlatform.Compiler.Stark
                     return VisitEventAccess(node as BoundEventAccess, arg);
                 case BoundKind.IndexerAccess: 
                     return VisitIndexerAccess(node as BoundIndexerAccess, arg);
-                case BoundKind.DynamicIndexerAccess: 
-                    return VisitDynamicIndexerAccess(node as BoundDynamicIndexerAccess, arg);
                 case BoundKind.Lambda: 
                     return VisitLambda(node as BoundLambda, arg);
                 case BoundKind.UnboundLambda: 
@@ -9210,14 +8867,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             return this.DefaultVisit(node, arg);
         }
-        public virtual R VisitDynamicMemberAccess(BoundDynamicMemberAccess node, A arg)
-        {
-            return this.DefaultVisit(node, arg);
-        }
-        public virtual R VisitDynamicInvocation(BoundDynamicInvocation node, A arg)
-        {
-            return this.DefaultVisit(node, arg);
-        }
         public virtual R VisitConditionalAccess(BoundConditionalAccess node, A arg)
         {
             return this.DefaultVisit(node, arg);
@@ -9266,10 +8915,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             return this.DefaultVisit(node, arg);
         }
-        public virtual R VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node, A arg)
-        {
-            return this.DefaultVisit(node, arg);
-        }
         public virtual R VisitNoPiaObjectCreationExpression(BoundNoPiaObjectCreationExpression node, A arg)
         {
             return this.DefaultVisit(node, arg);
@@ -9282,19 +8927,11 @@ namespace StarkPlatform.Compiler.Stark
         {
             return this.DefaultVisit(node, arg);
         }
-        public virtual R VisitDynamicObjectInitializerMember(BoundDynamicObjectInitializerMember node, A arg)
-        {
-            return this.DefaultVisit(node, arg);
-        }
         public virtual R VisitCollectionInitializerExpression(BoundCollectionInitializerExpression node, A arg)
         {
             return this.DefaultVisit(node, arg);
         }
         public virtual R VisitCollectionElementInitializer(BoundCollectionElementInitializer node, A arg)
-        {
-            return this.DefaultVisit(node, arg);
-        }
-        public virtual R VisitDynamicCollectionElementInitializer(BoundDynamicCollectionElementInitializer node, A arg)
         {
             return this.DefaultVisit(node, arg);
         }
@@ -9351,10 +8988,6 @@ namespace StarkPlatform.Compiler.Stark
             return this.DefaultVisit(node, arg);
         }
         public virtual R VisitIndexerAccess(BoundIndexerAccess node, A arg)
-        {
-            return this.DefaultVisit(node, arg);
-        }
-        public virtual R VisitDynamicIndexerAccess(BoundDynamicIndexerAccess node, A arg)
         {
             return this.DefaultVisit(node, arg);
         }
@@ -9946,14 +9579,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             return this.DefaultVisit(node);
         }
-        public virtual BoundNode VisitDynamicMemberAccess(BoundDynamicMemberAccess node)
-        {
-            return this.DefaultVisit(node);
-        }
-        public virtual BoundNode VisitDynamicInvocation(BoundDynamicInvocation node)
-        {
-            return this.DefaultVisit(node);
-        }
         public virtual BoundNode VisitConditionalAccess(BoundConditionalAccess node)
         {
             return this.DefaultVisit(node);
@@ -10002,10 +9627,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             return this.DefaultVisit(node);
         }
-        public virtual BoundNode VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node)
-        {
-            return this.DefaultVisit(node);
-        }
         public virtual BoundNode VisitNoPiaObjectCreationExpression(BoundNoPiaObjectCreationExpression node)
         {
             return this.DefaultVisit(node);
@@ -10018,19 +9639,11 @@ namespace StarkPlatform.Compiler.Stark
         {
             return this.DefaultVisit(node);
         }
-        public virtual BoundNode VisitDynamicObjectInitializerMember(BoundDynamicObjectInitializerMember node)
-        {
-            return this.DefaultVisit(node);
-        }
         public virtual BoundNode VisitCollectionInitializerExpression(BoundCollectionInitializerExpression node)
         {
             return this.DefaultVisit(node);
         }
         public virtual BoundNode VisitCollectionElementInitializer(BoundCollectionElementInitializer node)
-        {
-            return this.DefaultVisit(node);
-        }
-        public virtual BoundNode VisitDynamicCollectionElementInitializer(BoundDynamicCollectionElementInitializer node)
         {
             return this.DefaultVisit(node);
         }
@@ -10087,10 +9700,6 @@ namespace StarkPlatform.Compiler.Stark
             return this.DefaultVisit(node);
         }
         public virtual BoundNode VisitIndexerAccess(BoundIndexerAccess node)
-        {
-            return this.DefaultVisit(node);
-        }
-        public virtual BoundNode VisitDynamicIndexerAccess(BoundDynamicIndexerAccess node)
         {
             return this.DefaultVisit(node);
         }
@@ -10823,17 +10432,6 @@ namespace StarkPlatform.Compiler.Stark
             this.Visit(node.Value);
             return null;
         }
-        public override BoundNode VisitDynamicMemberAccess(BoundDynamicMemberAccess node)
-        {
-            this.Visit(node.Receiver);
-            return null;
-        }
-        public override BoundNode VisitDynamicInvocation(BoundDynamicInvocation node)
-        {
-            this.Visit(node.Expression);
-            this.VisitList(node.Arguments);
-            return null;
-        }
         public override BoundNode VisitConditionalAccess(BoundConditionalAccess node)
         {
             this.Visit(node.Receiver);
@@ -10901,12 +10499,6 @@ namespace StarkPlatform.Compiler.Stark
             this.VisitList(node.Arguments);
             return null;
         }
-        public override BoundNode VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node)
-        {
-            this.VisitList(node.Arguments);
-            this.Visit(node.InitializerExpressionOpt);
-            return null;
-        }
         public override BoundNode VisitNoPiaObjectCreationExpression(BoundNoPiaObjectCreationExpression node)
         {
             this.Visit(node.InitializerExpressionOpt);
@@ -10922,10 +10514,6 @@ namespace StarkPlatform.Compiler.Stark
             this.VisitList(node.Arguments);
             return null;
         }
-        public override BoundNode VisitDynamicObjectInitializerMember(BoundDynamicObjectInitializerMember node)
-        {
-            return null;
-        }
         public override BoundNode VisitCollectionInitializerExpression(BoundCollectionInitializerExpression node)
         {
             this.VisitList(node.Initializers);
@@ -10935,12 +10523,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             this.VisitList(node.Arguments);
             this.Visit(node.ImplicitReceiverOpt);
-            return null;
-        }
-        public override BoundNode VisitDynamicCollectionElementInitializer(BoundDynamicCollectionElementInitializer node)
-        {
-            this.Visit(node.Expression);
-            this.VisitList(node.Arguments);
             return null;
         }
         public override BoundNode VisitImplicitReceiver(BoundImplicitReceiver node)
@@ -11010,12 +10592,6 @@ namespace StarkPlatform.Compiler.Stark
             return null;
         }
         public override BoundNode VisitIndexerAccess(BoundIndexerAccess node)
-        {
-            this.Visit(node.ReceiverOpt);
-            this.VisitList(node.Arguments);
-            return null;
-        }
-        public override BoundNode VisitDynamicIndexerAccess(BoundDynamicIndexerAccess node)
         {
             this.Visit(node.ReceiverOpt);
             this.VisitList(node.Arguments);
@@ -11854,19 +11430,6 @@ namespace StarkPlatform.Compiler.Stark
             TypeSymbol type = this.VisitType(node.Type);
             return node.Update(node.Locals, sideEffects, value, type);
         }
-        public override BoundNode VisitDynamicMemberAccess(BoundDynamicMemberAccess node)
-        {
-            BoundExpression receiver = (BoundExpression)this.Visit(node.Receiver);
-            TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(receiver, node.TypeArgumentsOpt, node.Name, node.Invoked, node.Indexed, type);
-        }
-        public override BoundNode VisitDynamicInvocation(BoundDynamicInvocation node)
-        {
-            BoundExpression expression = (BoundExpression)this.Visit(node.Expression);
-            ImmutableArray<BoundExpression> arguments = (ImmutableArray<BoundExpression>)this.VisitList(node.Arguments);
-            TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(node.ArgumentNamesOpt, node.ArgumentRefKindsOpt, node.ApplicableMethods, expression, arguments, type);
-        }
         public override BoundNode VisitConditionalAccess(BoundConditionalAccess node)
         {
             BoundExpression receiver = (BoundExpression)this.Visit(node.Receiver);
@@ -11918,7 +11481,7 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression receiverOpt = (BoundExpression)this.Visit(node.ReceiverOpt);
             BoundExpression argument = (BoundExpression)this.Visit(node.Argument);
             TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(node.Event, node.IsAddition, node.IsDynamic, receiverOpt, argument, type);
+            return node.Update(node.Event, node.IsAddition, receiverOpt, argument, type);
         }
         public override BoundNode VisitAttribute(BoundAttribute node)
         {
@@ -11947,13 +11510,6 @@ namespace StarkPlatform.Compiler.Stark
             TypeSymbol type = this.VisitType(node.Type);
             return node.Update(naturalTypeOpt, arguments, type);
         }
-        public override BoundNode VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node)
-        {
-            ImmutableArray<BoundExpression> arguments = (ImmutableArray<BoundExpression>)this.VisitList(node.Arguments);
-            BoundObjectInitializerExpressionBase initializerExpressionOpt = (BoundObjectInitializerExpressionBase)this.Visit(node.InitializerExpressionOpt);
-            TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(node.Name, arguments, node.ArgumentNamesOpt, node.ArgumentRefKindsOpt, initializerExpressionOpt, node.ApplicableMethods, type);
-        }
         public override BoundNode VisitNoPiaObjectCreationExpression(BoundNoPiaObjectCreationExpression node)
         {
             BoundObjectInitializerExpressionBase initializerExpressionOpt = (BoundObjectInitializerExpressionBase)this.Visit(node.InitializerExpressionOpt);
@@ -11973,12 +11529,6 @@ namespace StarkPlatform.Compiler.Stark
             TypeSymbol type = this.VisitType(node.Type);
             return node.Update(node.MemberSymbol, arguments, node.ArgumentNamesOpt, node.ArgumentRefKindsOpt, node.Expanded, node.ArgsToParamsOpt, node.ResultKind, receiverType, node.BinderOpt, type);
         }
-        public override BoundNode VisitDynamicObjectInitializerMember(BoundDynamicObjectInitializerMember node)
-        {
-            TypeSymbol receiverType = this.VisitType(node.ReceiverType);
-            TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(node.MemberName, receiverType, type);
-        }
         public override BoundNode VisitCollectionInitializerExpression(BoundCollectionInitializerExpression node)
         {
             ImmutableArray<BoundExpression> initializers = (ImmutableArray<BoundExpression>)this.VisitList(node.Initializers);
@@ -11991,13 +11541,6 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression implicitReceiverOpt = (BoundExpression)this.Visit(node.ImplicitReceiverOpt);
             TypeSymbol type = this.VisitType(node.Type);
             return node.Update(node.AddMethod, arguments, implicitReceiverOpt, node.Expanded, node.ArgsToParamsOpt, node.InvokedAsExtensionMethod, node.ResultKind, node.BinderOpt, type);
-        }
-        public override BoundNode VisitDynamicCollectionElementInitializer(BoundDynamicCollectionElementInitializer node)
-        {
-            BoundExpression expression = (BoundExpression)this.Visit(node.Expression);
-            ImmutableArray<BoundExpression> arguments = (ImmutableArray<BoundExpression>)this.VisitList(node.Arguments);
-            TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(node.ApplicableMethods, expression, arguments, type);
         }
         public override BoundNode VisitImplicitReceiver(BoundImplicitReceiver node)
         {
@@ -12086,13 +11629,6 @@ namespace StarkPlatform.Compiler.Stark
             ImmutableArray<BoundExpression> arguments = (ImmutableArray<BoundExpression>)this.VisitList(node.Arguments);
             TypeSymbol type = this.VisitType(node.Type);
             return node.Update(receiverOpt, node.Indexer, arguments, node.ArgumentNamesOpt, node.ArgumentRefKindsOpt, node.Expanded, node.ArgsToParamsOpt, node.BinderOpt, node.UseSetterForDefaultArgumentGeneration, type);
-        }
-        public override BoundNode VisitDynamicIndexerAccess(BoundDynamicIndexerAccess node)
-        {
-            BoundExpression receiverOpt = (BoundExpression)this.Visit(node.ReceiverOpt);
-            ImmutableArray<BoundExpression> arguments = (ImmutableArray<BoundExpression>)this.VisitList(node.Arguments);
-            TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(receiverOpt, arguments, node.ArgumentNamesOpt, node.ArgumentRefKindsOpt, node.ApplicableIndexers, type);
         }
         public override BoundNode VisitLambda(BoundLambda node)
         {
@@ -13539,34 +13075,6 @@ namespace StarkPlatform.Compiler.Stark
             }
             );
         }
-        public override TreeDumperNode VisitDynamicMemberAccess(BoundDynamicMemberAccess node, object arg)
-        {
-            return new TreeDumperNode("dynamicMemberAccess", null, new TreeDumperNode[]
-            {
-                new TreeDumperNode("receiver", null, new TreeDumperNode[] { Visit(node.Receiver, null) }),
-                new TreeDumperNode("typeArgumentsOpt", node.TypeArgumentsOpt, null),
-                new TreeDumperNode("name", node.Name, null),
-                new TreeDumperNode("invoked", node.Invoked, null),
-                new TreeDumperNode("indexed", node.Indexed, null),
-                new TreeDumperNode("type", node.Type, null),
-                new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
-            }
-            );
-        }
-        public override TreeDumperNode VisitDynamicInvocation(BoundDynamicInvocation node, object arg)
-        {
-            return new TreeDumperNode("dynamicInvocation", null, new TreeDumperNode[]
-            {
-                new TreeDumperNode("argumentNamesOpt", node.ArgumentNamesOpt, null),
-                new TreeDumperNode("argumentRefKindsOpt", node.ArgumentRefKindsOpt, null),
-                new TreeDumperNode("applicableMethods", node.ApplicableMethods, null),
-                new TreeDumperNode("expression", null, new TreeDumperNode[] { Visit(node.Expression, null) }),
-                new TreeDumperNode("arguments", null, from x in node.Arguments select Visit(x, null)),
-                new TreeDumperNode("type", node.Type, null),
-                new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
-            }
-            );
-        }
         public override TreeDumperNode VisitConditionalAccess(BoundConditionalAccess node, object arg)
         {
             return new TreeDumperNode("conditionalAccess", null, new TreeDumperNode[]
@@ -13668,7 +13176,6 @@ namespace StarkPlatform.Compiler.Stark
             {
                 new TreeDumperNode("@event", node.Event, null),
                 new TreeDumperNode("isAddition", node.IsAddition, null),
-                new TreeDumperNode("isDynamic", node.IsDynamic, null),
                 new TreeDumperNode("receiverOpt", null, new TreeDumperNode[] { Visit(node.ReceiverOpt, null) }),
                 new TreeDumperNode("argument", null, new TreeDumperNode[] { Visit(node.Argument, null) }),
                 new TreeDumperNode("type", node.Type, null),
@@ -13732,21 +13239,6 @@ namespace StarkPlatform.Compiler.Stark
             }
             );
         }
-        public override TreeDumperNode VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node, object arg)
-        {
-            return new TreeDumperNode("dynamicObjectCreationExpression", null, new TreeDumperNode[]
-            {
-                new TreeDumperNode("name", node.Name, null),
-                new TreeDumperNode("arguments", null, from x in node.Arguments select Visit(x, null)),
-                new TreeDumperNode("argumentNamesOpt", node.ArgumentNamesOpt, null),
-                new TreeDumperNode("argumentRefKindsOpt", node.ArgumentRefKindsOpt, null),
-                new TreeDumperNode("initializerExpressionOpt", null, new TreeDumperNode[] { Visit(node.InitializerExpressionOpt, null) }),
-                new TreeDumperNode("applicableMethods", node.ApplicableMethods, null),
-                new TreeDumperNode("type", node.Type, null),
-                new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
-            }
-            );
-        }
         public override TreeDumperNode VisitNoPiaObjectCreationExpression(BoundNoPiaObjectCreationExpression node, object arg)
         {
             return new TreeDumperNode("noPiaObjectCreationExpression", null, new TreeDumperNode[]
@@ -13786,17 +13278,6 @@ namespace StarkPlatform.Compiler.Stark
             }
             );
         }
-        public override TreeDumperNode VisitDynamicObjectInitializerMember(BoundDynamicObjectInitializerMember node, object arg)
-        {
-            return new TreeDumperNode("dynamicObjectInitializerMember", null, new TreeDumperNode[]
-            {
-                new TreeDumperNode("memberName", node.MemberName, null),
-                new TreeDumperNode("receiverType", node.ReceiverType, null),
-                new TreeDumperNode("type", node.Type, null),
-                new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
-            }
-            );
-        }
         public override TreeDumperNode VisitCollectionInitializerExpression(BoundCollectionInitializerExpression node, object arg)
         {
             return new TreeDumperNode("collectionInitializerExpression", null, new TreeDumperNode[]
@@ -13819,18 +13300,6 @@ namespace StarkPlatform.Compiler.Stark
                 new TreeDumperNode("invokedAsExtensionMethod", node.InvokedAsExtensionMethod, null),
                 new TreeDumperNode("resultKind", node.ResultKind, null),
                 new TreeDumperNode("binderOpt", node.BinderOpt, null),
-                new TreeDumperNode("type", node.Type, null),
-                new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
-            }
-            );
-        }
-        public override TreeDumperNode VisitDynamicCollectionElementInitializer(BoundDynamicCollectionElementInitializer node, object arg)
-        {
-            return new TreeDumperNode("dynamicCollectionElementInitializer", null, new TreeDumperNode[]
-            {
-                new TreeDumperNode("applicableMethods", node.ApplicableMethods, null),
-                new TreeDumperNode("expression", null, new TreeDumperNode[] { Visit(node.Expression, null) }),
-                new TreeDumperNode("arguments", null, from x in node.Arguments select Visit(x, null)),
                 new TreeDumperNode("type", node.Type, null),
                 new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
             }
@@ -13997,20 +13466,6 @@ namespace StarkPlatform.Compiler.Stark
                 new TreeDumperNode("argsToParamsOpt", node.ArgsToParamsOpt, null),
                 new TreeDumperNode("binderOpt", node.BinderOpt, null),
                 new TreeDumperNode("useSetterForDefaultArgumentGeneration", node.UseSetterForDefaultArgumentGeneration, null),
-                new TreeDumperNode("type", node.Type, null),
-                new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
-            }
-            );
-        }
-        public override TreeDumperNode VisitDynamicIndexerAccess(BoundDynamicIndexerAccess node, object arg)
-        {
-            return new TreeDumperNode("dynamicIndexerAccess", null, new TreeDumperNode[]
-            {
-                new TreeDumperNode("receiverOpt", null, new TreeDumperNode[] { Visit(node.ReceiverOpt, null) }),
-                new TreeDumperNode("arguments", null, from x in node.Arguments select Visit(x, null)),
-                new TreeDumperNode("argumentNamesOpt", node.ArgumentNamesOpt, null),
-                new TreeDumperNode("argumentRefKindsOpt", node.ArgumentRefKindsOpt, null),
-                new TreeDumperNode("applicableIndexers", node.ApplicableIndexers, null),
                 new TreeDumperNode("type", node.Type, null),
                 new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
             }

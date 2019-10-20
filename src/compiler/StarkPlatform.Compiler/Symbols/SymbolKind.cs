@@ -25,7 +25,7 @@ namespace StarkPlatform.Compiler
         /// <summary>
         /// Symbol is a dynamic type.
         /// </summary>
-        DynamicType = 3,
+        // DynamicType = 3,
 
         /// <summary>
         /// Symbol that represents an error 

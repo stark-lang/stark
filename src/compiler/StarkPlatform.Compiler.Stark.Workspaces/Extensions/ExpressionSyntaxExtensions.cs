@@ -107,11 +107,6 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                 return expression;
             }
 
-            if (targetType.Kind == SymbolKind.DynamicType)
-            {
-                targetType = semanticModel.Compilation.GetSpecialType(SpecialType.System_Object);
-            }
-
             var typeSyntax = targetType.GenerateTypeSyntax();
             var type = semanticModel.GetSpeculativeTypeInfo(
                 position,
@@ -1959,11 +1954,6 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                 case SyntaxKind.SimpleMemberAccessExpression:
                     {
                         var memberAccess = (MemberAccessExpressionSyntax)expression;
-                        if (IsMemberAccessADynamicInvocation(memberAccess, semanticModel))
-                        {
-                            return false;
-                        }
-
                         if (TrySimplifyMemberAccessOrQualifiedName(memberAccess.Expression, memberAccess.Name, semanticModel, optionSet, out var newLeft, out issueSpan))
                         {
                             // replacement node might not be in it's simplest form, so add simplify annotation to it.
@@ -2129,11 +2119,6 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                 return false;
             }
 
-            if (IsMemberAccessADynamicInvocation(memberAccess, semanticModel))
-            {
-                return false;
-            }
-
             if (memberAccess.AccessMethodWithDynamicArgumentInsideStructConstructor(semanticModel))
             {
                 return false;
@@ -2203,29 +2188,6 @@ namespace StarkPlatform.Compiler.Stark.Extensions
             }
 
             return node.IsKind(SyntaxKind.IdentifierName);
-        }
-
-        /// <summary>
-        /// Tells if the Member access is the starting part of a Dynamic Invocation
-        /// </summary>
-        /// <param name="memberAccess"></param>
-        /// <param name="semanticModel"></param>
-        /// <returns>Return true, if the member access is the starting point of a Dynamic Invocation</returns>
-        private static bool IsMemberAccessADynamicInvocation(MemberAccessExpressionSyntax memberAccess, SemanticModel semanticModel)
-        {
-            var ancestorInvocation = memberAccess.FirstAncestorOrSelf<InvocationExpressionSyntax>();
-
-            if (ancestorInvocation != null && ancestorInvocation.SpanStart == memberAccess.SpanStart)
-            {
-                var typeInfo = semanticModel.GetTypeInfo(ancestorInvocation);
-                if (typeInfo.Type != null &&
-                    typeInfo.Type.Kind == SymbolKind.DynamicType)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         /*

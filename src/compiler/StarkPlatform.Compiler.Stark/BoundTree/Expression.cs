@@ -59,11 +59,6 @@ namespace StarkPlatform.Compiler.Stark
         ImmutableArray<BoundNode> IBoundInvalidNode.InvalidNodeChildren => CSharpOperationFactory.CreateInvalidChildrenFromArgumentsExpression(ReceiverOpt, Arguments);
     }
 
-    internal partial class BoundDynamicIndexerAccess
-    {
-        protected override ImmutableArray<BoundNode> Children => StaticCast<BoundNode>.From(this.Arguments.Insert(0, this.ReceiverOpt));
-    }
-
     internal partial class BoundAnonymousObjectCreationExpression
     {
         protected override ImmutableArray<BoundNode> Children => StaticCast<BoundNode>.From(this.Arguments);
@@ -99,11 +94,6 @@ namespace StarkPlatform.Compiler.Stark
         protected override ImmutableArray<BoundNode> Children => ImmutableArray.Create<BoundNode>(this.Operand);
     }
 
-    internal partial class BoundDynamicMemberAccess
-    {
-        protected override ImmutableArray<BoundNode> Children => ImmutableArray.Create<BoundNode>(this.Receiver);
-    }
-
     internal partial class BoundMakeRefOperator
     {
         protected override ImmutableArray<BoundNode> Children => ImmutableArray.Create<BoundNode>(this.Operand);
@@ -112,11 +102,6 @@ namespace StarkPlatform.Compiler.Stark
     internal partial class BoundRefValueOperator
     {
         protected override ImmutableArray<BoundNode> Children => ImmutableArray.Create<BoundNode>(this.Operand);
-    }
-
-    internal partial class BoundDynamicInvocation
-    {
-        protected override ImmutableArray<BoundNode> Children => StaticCast<BoundNode>.From(this.Arguments.Insert(0, this.Expression));
     }
 
     internal partial class BoundFixedLocalCollectionInitializer
@@ -137,11 +122,6 @@ namespace StarkPlatform.Compiler.Stark
     internal partial class BoundConvertedStackAllocExpression
     {
         protected override ImmutableArray<BoundNode> Children => StaticCast<BoundNode>.From(GetChildInitializers(this.InitializerOpt).Insert(0, this.Count));
-    }
-
-    internal partial class BoundDynamicObjectCreationExpression
-    {
-        protected override ImmutableArray<BoundNode> Children => StaticCast<BoundNode>.From(this.Arguments.AddRange(BoundObjectCreationExpression.GetChildInitializers(this.InitializerExpressionOpt)));
     }
 
     partial class BoundThrowExpression

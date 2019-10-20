@@ -1484,7 +1484,6 @@ namespace StarkPlatform.Compiler.Stark
                     debugDocumentProvider,
                     builder.RealizedExceptionHandlers,
                     builder.GetAllScopes(),
-                    builder.HasDynamicLocal,
                     importScopeOpt,
                     lambdaDebugInfo,
                     closureDebugInfo,

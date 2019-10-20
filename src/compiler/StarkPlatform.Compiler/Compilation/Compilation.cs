@@ -834,12 +834,6 @@ namespace StarkPlatform.Compiler
         protected abstract INamedTypeSymbol CommonObjectType { get; }
 
         /// <summary>
-        /// The TypeSymbol for the type 'dynamic' in this Compilation.
-        /// </summary>
-        public ITypeSymbol DynamicType { get { return CommonDynamicType; } }
-        protected abstract ITypeSymbol CommonDynamicType { get; }
-
-        /// <summary>
         /// A symbol representing the implicit Script class. This is null if the class is not
         /// defined in the compilation.
         /// </summary>
@@ -1263,7 +1257,6 @@ namespace StarkPlatform.Compiler
                         case SymbolKind.Discard:
                             s = ((IDiscardSymbol)s).Type;
                             continue;
-                        case SymbolKind.DynamicType:
                         case SymbolKind.ErrorType:
                         case SymbolKind.Preprocessing:
                         case SymbolKind.Namespace:

@@ -559,7 +559,6 @@ namespace StarkPlatform.Compiler.Stark
                 // consequences for the overload betterness rules.
                 case ConversionKind.MethodGroup:
                 case ConversionKind.AnonymousFunction:
-                case ConversionKind.ImplicitDynamic:
                 case ConversionKind.InterpolatedString:
 
                 // DELIBERATE SPEC VIOLATION: 
@@ -577,7 +576,6 @@ namespace StarkPlatform.Compiler.Stark
                 case ConversionKind.ExplicitEnumeration:
                 case ConversionKind.ExplicitNullable:
                 case ConversionKind.ExplicitReference:
-                case ConversionKind.ExplicitDynamic:
                 case ConversionKind.PointerToPointer:
                 case ConversionKind.PointerToInteger:
                 case ConversionKind.IntegerToPointer:

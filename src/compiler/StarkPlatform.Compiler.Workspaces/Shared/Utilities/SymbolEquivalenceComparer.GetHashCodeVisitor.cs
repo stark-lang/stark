@@ -44,10 +44,9 @@ namespace StarkPlatform.Compiler.Shared.Utilities
                 // and 'dynamic' as the same.  However, since they're different types, we don't
                 // want to bail out using the above check.
 
-                if (x.Kind == SymbolKind.DynamicType ||
-                    (_objectAndDynamicCompareEqually && IsObjectType(x)))
+                if (_objectAndDynamicCompareEqually && IsObjectType(x))
                 {
-                    return Hash.Combine(typeof(IDynamicTypeSymbol), currentHash);
+                    return currentHash;
                 }
 
                 return GetHashCodeWorker(x, currentHash);

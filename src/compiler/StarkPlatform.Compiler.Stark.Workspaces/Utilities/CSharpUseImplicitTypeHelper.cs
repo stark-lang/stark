@@ -232,10 +232,6 @@ namespace StarkPlatform.Compiler.Stark.Utilities
 
             // cannot use implicit typing on method group or on dynamic
             var declaredType = semanticModel.GetTypeInfo(typeName.StripRefIfNeeded(), cancellationToken).Type;
-            if (declaredType != null && declaredType.TypeKind == TypeKind.Dynamic)
-            {
-                return false;
-            }
 
             // variables declared using var cannot be used further in the same initialization expression.
             if (initializer.DescendantNodesAndSelf()

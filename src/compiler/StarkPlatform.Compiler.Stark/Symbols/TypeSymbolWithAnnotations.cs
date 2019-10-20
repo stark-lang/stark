@@ -597,7 +597,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         public bool IsManagedType => TypeSymbol.IsManagedType;
         public Cci.PrimitiveTypeCode PrimitiveTypeCode => TypeSymbol.PrimitiveTypeCode;
         public bool IsEnumType() => TypeSymbol.IsEnumType();
-        public bool IsDynamic() => TypeSymbol.IsDynamic();
         public bool IsObjectType() => TypeSymbol.IsObjectType();
         public bool IsArray() => TypeSymbol.IsArray();
         public bool IsRestrictedType(bool ignoreSpanLikeTypes = false) =>

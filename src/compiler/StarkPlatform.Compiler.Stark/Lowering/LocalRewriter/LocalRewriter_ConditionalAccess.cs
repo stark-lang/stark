@@ -34,8 +34,6 @@ namespace StarkPlatform.Compiler.Stark
         // by utilizing stack dup/pop instructions 
         internal BoundExpression RewriteConditionalAccess(BoundConditionalAccess node, bool used)
         {
-            Debug.Assert(!_inExpressionLambda);
-
             var loweredReceiver = this.VisitExpression(node.Receiver);
             var receiverType = loweredReceiver.Type;
 
@@ -46,28 +44,9 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             ConditionalAccessLoweringKind loweringKind;
-            // dynamic receivers are not directly supported in codegen and need to be lowered to a ternary
-            var lowerToTernary = node.AccessExpression.Type.IsDynamic();
 
-            if (!lowerToTernary)
-            {
-                // trivial cases are directly supported in IL gen
-                loweringKind = ConditionalAccessLoweringKind.LoweredConditionalAccess;
-            }
-            else if (CanChangeValueBetweenReads(loweredReceiver))
-            {
-                // NOTE: dynamic operations historically do not propagate mutations
-                // to the receiver if that happens to be a value type
-                // so we can capture receiver by value in dynamic case regardless of 
-                // the type of receiver
-                // Nullable receivers are immutable so should be captured by value as well.
-                loweringKind = ConditionalAccessLoweringKind.TernaryCaptureReceiverByVal;
-            }
-            else
-            {
-                loweringKind = ConditionalAccessLoweringKind.Ternary;
-            }
-
+            // trivial cases are directly supported in IL gen
+            loweringKind = ConditionalAccessLoweringKind.LoweredConditionalAccess;
 
             var previousConditionalAccessTarget = _currentConditionalAccessTarget;
             var currentConditionalAccessID = ++_currentConditionalAccessID;

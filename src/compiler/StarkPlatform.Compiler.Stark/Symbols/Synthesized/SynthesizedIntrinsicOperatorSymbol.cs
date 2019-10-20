@@ -36,9 +36,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             _name = name;
             _returnType = returnType;
 
-            Debug.Assert((leftType.IsDynamic() || rightType.IsDynamic()) == returnType.IsDynamic());
-            Debug.Assert(_containingType.IsDynamic() == returnType.IsDynamic());
-
             _parameters = (new ParameterSymbol[] {new SynthesizedOperatorParameterSymbol(this, leftType, 0, "left"),
                                                       new SynthesizedOperatorParameterSymbol(this, rightType, 1, "right")}).AsImmutableOrNull();
             _isCheckedBuiltin = isCheckedBuiltin;

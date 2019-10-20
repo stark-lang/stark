@@ -121,20 +121,12 @@ namespace StarkPlatform.Compiler
         /// <summary>Indicates an <see cref="IMemberInitializerOperation"/>.</summary>
         MemberInitializer = 0x33,
         /// <summary>Indicates an <see cref="ICollectionElementInitializerOperation"/>.</summary>
-        [Obsolete("ICollectionElementInitializerOperation has been replaced with " + nameof(IInvocationOperation) + " and " + nameof(IDynamicInvocationOperation), error: true)]
+        [Obsolete("ICollectionElementInitializerOperation has been replaced with " + nameof(IInvocationOperation), error: true)]
         CollectionElementInitializer = 0x34,
         /// <summary>Indicates an <see cref="INameOfOperation"/>.</summary>
         NameOf = 0x35,
         /// <summary>Indicates an <see cref="ITupleOperation"/>.</summary>
         Tuple = 0x36,
-        /// <summary>Indicates an <see cref="IDynamicObjectCreationOperation"/>.</summary>
-        DynamicObjectCreation = 0x37,
-        /// <summary>Indicates an <see cref="IDynamicMemberReferenceOperation"/>.</summary>
-        DynamicMemberReference = 0x38,
-        /// <summary>Indicates an <see cref="IDynamicInvocationOperation"/>.</summary>
-        DynamicInvocation = 0x39,
-        /// <summary>Indicates an <see cref="IDynamicIndexerAccessOperation"/>.</summary>
-        DynamicIndexerAccess = 0x3a,
         /// <summary>Indicates an <see cref="ITranslatedQueryOperation"/>.</summary>
         TranslatedQuery = 0x3b,
         /// <summary>Indicates a <see cref="IDelegateCreationOperation"/>.</summary>

@@ -284,12 +284,6 @@ namespace StarkPlatform.Compiler.Stark
             }
             else
             {
-                if (patternType.IsDynamic())
-                {
-                    Error(diagnostics, ErrorCode.ERR_PatternDynamicType, typeSyntax);
-                    return true;
-                }
-
                 HashSet<DiagnosticInfo> useSiteDiagnostics = null;
                 bool? matchPossible = ExpressionOfTypeMatchesPatternType(
                     Conversions, inputType, patternType, ref useSiteDiagnostics, out Conversion conversion, operandConstantValue: null, operandCouldBeNull: true);
@@ -336,11 +330,6 @@ namespace StarkPlatform.Compiler.Stark
             bool operandCouldBeNull = false)
         {
             Debug.Assert((object)expressionType != null);
-            if (expressionType.IsDynamic())
-            {
-                // if operand is the dynamic type, we do the same thing as though it were object
-                expressionType = conversions.CorLibrary.GetSpecialType(SpecialType.System_Object);
-            }
 
             conversion = conversions.ClassifyBuiltInConversion(expressionType, patternType, ref useSiteDiagnostics);
             ConstantValue result = Binder.GetIsOperatorConstantResult(expressionType, patternType, conversion.Kind, operandConstantValue, operandCouldBeNull);
@@ -752,7 +741,6 @@ namespace StarkPlatform.Compiler.Stark
             // Resolution 2017-11-20 LDM: permit matching via ITuple only for `object`, `ITuple`, and types that are
             // declared to implement `ITuple`.
             if (declType != (object)Compilation.GetSpecialType(SpecialType.System_Object) &&
-                declType != (object)Compilation.DynamicType &&
                 declType != (object)iTupleType &&
                 !hasBaseInterface(declType, iTupleType))
             {
@@ -1017,7 +1005,6 @@ namespace StarkPlatform.Compiler.Stark
                     break;
 
                 case BoundKind.IndexerAccess:
-                case BoundKind.DynamicIndexerAccess:
                 case BoundKind.EventAccess:
                 default:
                     if (!hasErrors)

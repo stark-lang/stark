@@ -178,7 +178,7 @@ namespace StarkPlatform.Compiler.Stark
                     case BoundDagTypeEvaluation t:
                         {
                             TypeSymbol inputType = input.Type;
-                            if (inputType.IsDynamic() || inputType.ContainsTypeParameter())
+                            if (inputType.ContainsTypeParameter())
                             {
                                 inputType = _factory.SpecialType(SpecialType.System_Object);
                             }

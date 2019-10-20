@@ -157,7 +157,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             switch (type.Kind)
             {
                 case SymbolKind.ErrorType:
-                case SymbolKind.DynamicType:
                 case SymbolKind.TypeParameter:
                 case SymbolKind.PointerType:
                     return type;

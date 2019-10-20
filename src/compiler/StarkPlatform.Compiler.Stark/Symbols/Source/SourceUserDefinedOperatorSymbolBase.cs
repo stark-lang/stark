@@ -364,13 +364,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             // illegal only if T is a class, and either T is a base class of S, or S is a 
             // base class of T.
 
-            if (source.IsDynamic() || target.IsDynamic())
-            {
-                // '{0}': user-defined conversions to or from the dynamic type are not allowed
-                diagnostics.Add(ErrorCode.ERR_BadDynamicConversion, this.Locations[0], this);
-                return;
-            }
-
             TypeSymbol same;
             TypeSymbol different;
 

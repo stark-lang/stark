@@ -818,67 +818,11 @@ namespace StarkPlatform.Compiler.Stark
             diagnostics.Add(node, useSiteDiagnostics);
 
             Symbol bindingResult;
-            // If we were looking up the identifier "dynamic" at the topmost level and didn't find anything good,
-            // we actually have the type dynamic (assuming /langversion is at least 4).
-            if ((object)qualifierOpt == null &&
-                (node.Parent == null ||
-                 node.Parent.Kind() != SyntaxKind.Attribute && // dynamic not allowed as an attribute type
-                 SyntaxFacts.IsInTypeOnlyContext(node)) &&
-                node.Identifier.ValueText == "dynamic" &&
-                !IsViableType(result) &&
-                ((CSharpParseOptions)node.SyntaxTree.Options).LanguageVersion >= MessageID.IDS_FeatureDynamic.RequiredVersion())
-            {
-                bindingResult = Compilation.DynamicType;
-                ReportUseSiteDiagnosticForDynamic(diagnostics, node);
-            }
-            else
-            {
-                bool wasError;
-
-                bindingResult = ResultSymbol(result, identifierValueText, 0, node, diagnostics, suppressUseSiteDiagnostics, out wasError, qualifierOpt, options);
-                if (bindingResult.Kind == SymbolKind.Alias)
-                {
-                    var aliasTarget = ((AliasSymbol)bindingResult).GetAliasTarget(basesBeingResolved);
-                    if (aliasTarget.Kind == SymbolKind.NamedType && ((NamedTypeSymbol)aliasTarget).ContainsDynamic())
-                    {
-                        ReportUseSiteDiagnosticForDynamic(diagnostics, node);
-                    }
-                }
-            }
+            bool wasError;
+            bindingResult = ResultSymbol(result, identifierValueText, 0, node, diagnostics, suppressUseSiteDiagnostics, out wasError, qualifierOpt, options);
 
             result.Free();
             return NamespaceOrTypeOrAliasSymbolWithAnnotations.CreateUnannotated(IsNullableEnabled(node.Identifier), bindingResult);
-        }
-
-        private void ReportUseSiteDiagnosticForDynamic(DiagnosticBag diagnostics, IdentifierNameSyntax node)
-        {
-            // Dynamic type might be bound in a declaration context where we need to synthesize the DynamicAttribute.
-            // Here we report the use site error (ERR_DynamicAttributeMissing) for missing DynamicAttribute type or it's constructors.
-            //                  
-            // BREAKING CHANGE: Native compiler reports ERR_DynamicAttributeMissing at emit time when synthesizing DynamicAttribute.
-            //                  Currently, in Roslyn we don't support reporting diagnostics while synthesizing attributes, these diagnostics are reported at bind time.
-            //                  Hence, we report this diagnostic here. Note that DynamicAttribute has two constructors, and either of them may be used while
-            //                  synthesizing the DynamicAttribute (see DynamicAttributeEncoder.Encode method for details).
-            //                  However, unlike the native compiler which reports use site diagnostic only for the specific DynamicAttribute constructor which is going to be used,
-            //                  we report it for both the constructors and also for boolean type (used by the second constructor).
-            //                  This is a breaking change for the case where only one of the two constructor of DynamicAttribute is missing, but we never use it for any of the synthesized DynamicAttributes.
-            //                  However, this seems like a very unlikely scenario and an acceptable break.
-
-            if (node.IsTypeInContextWhichNeedsDynamicAttribute())
-            {
-                if (!Compilation.HasDynamicEmitAttributes())
-                {
-                    // CONSIDER:    Native compiler reports error CS1980 for each syntax node which binds to dynamic type, we do the same by reporting a diagnostic here.
-                    //              However, this means we generate multiple duplicate diagnostics, when a single one would suffice.
-                    //              We may want to consider adding an "Unreported" flag to the DynamicTypeSymbol to suppress duplicate CS1980.
-
-                    // CS1980: Cannot define a class or member that utilizes 'dynamic' because the compiler required type '{0}' cannot be found. Are you missing a reference?
-                    var info = new CSDiagnosticInfo(ErrorCode.ERR_DynamicAttributeMissing, AttributeDescription.DynamicAttribute.FullName);
-                    Symbol.ReportUseSiteDiagnostic(info, diagnostics, node.Location);
-                }
-
-                this.GetSpecialType(SpecialType.System_Boolean, diagnostics, node);
-            }
         }
 
         // Gets the name lookup options for simple generic or non-generic name.

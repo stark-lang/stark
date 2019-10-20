@@ -1020,9 +1020,6 @@ namespace StarkPlatform.Compiler.Stark.Emit
 
             switch (typeSymbol.Kind)
             {
-                case SymbolKind.DynamicType:
-                    return Translate((DynamicTypeSymbol)typeSymbol, syntaxNodeOpt, diagnostics);
-
                 case SymbolKind.ArrayType:
                     return Translate((ArrayTypeSymbol)typeSymbol);
 
@@ -1384,17 +1381,6 @@ namespace StarkPlatform.Compiler.Stark.Emit
         {
             return container.Kind == SymbolKind.Method && ((MethodSymbol)container).IsGenericMethod ||
                 IsGenericType(container.ContainingType);
-        }
-
-        internal Cci.ITypeReference Translate(
-            DynamicTypeSymbol symbol,
-            SyntaxNode syntaxNodeOpt,
-            DiagnosticBag diagnostics)
-        {
-            // Translate the dynamic type to System.Object special type to avoid duplicate entries in TypeRef table. 
-            // We don't need to recursively replace the dynamic type with Object since the DynamicTypeSymbol adapter 
-            // masquerades the TypeRef as System.Object when used to encode signatures.
-            return GetSpecialType(SpecialType.System_Object, syntaxNodeOpt, diagnostics);
         }
 
         internal static Cci.IArrayTypeReference Translate(ArrayTypeSymbol symbol)

@@ -2431,7 +2431,7 @@ OuterBreak:
 
         internal static TypeSymbolWithAnnotations Merge(TypeSymbolWithAnnotations first, TypeSymbolWithAnnotations second, VarianceKind variance, ConversionsBase conversions, out bool hadNullabilityMismatch)
         {
-            var merged = MergeTupleNames(MergeDynamic(first, second, conversions.CorLibrary), second);
+            var merged = MergeTupleNames(first, second);
             if (!conversions.IncludeNullability)
             {
                 hadNullabilityMismatch = false;
@@ -2440,28 +2440,6 @@ OuterBreak:
                 return merged.SetUnknownNullabilityForReferenceTypes();
             }
             return merged.MergeNullability(second, variance, out hadNullabilityMismatch);
-        }
-
-        /// <summary>
-        /// Returns first or a modified version of first with merged dynamic flags from both types.
-        /// </summary>
-        internal static TypeSymbolWithAnnotations MergeDynamic(TypeSymbolWithAnnotations firstWithAnnotations, TypeSymbolWithAnnotations secondWithAnnotations, AssemblySymbol corLibrary)
-        {
-            var first = firstWithAnnotations.TypeSymbol;
-            var second = secondWithAnnotations.TypeSymbol;
-
-            // SPEC: 4.7 The Dynamic Type
-            //       Type inference (7.5.2) will prefer dynamic over object if both are candidates.
-            if (first.Equals(second, TypeCompareKind.AllIgnoreOptions & ~TypeCompareKind.IgnoreDynamic))
-            {
-                return firstWithAnnotations;
-            }
-            ImmutableArray<bool> flags1 = CSharpCompilation.DynamicTransformsEncoder.EncodeWithoutCustomModifierFlags(first, RefKind.None);
-            ImmutableArray<bool> flags2 = CSharpCompilation.DynamicTransformsEncoder.EncodeWithoutCustomModifierFlags(second, RefKind.None);
-            ImmutableArray<bool> mergedFlags = flags1.ZipAsArray(flags2, (f1, f2) => f1 | f2);
-
-            var result = DynamicTypeDecoder.TransformTypeWithoutCustomModifierFlags(first, corLibrary, RefKind.None, mergedFlags);
-            return TypeSymbolWithAnnotations.Create(result); // https://github.com/dotnet/roslyn/issues/27961 Handle nullability.
         }
 
         /// <summary>
@@ -2507,12 +2485,6 @@ OuterBreak:
         {
             var source = sourceWithAnnotations.TypeSymbol;
             var destination = destinationWithAnnotations.TypeSymbol;
-
-            // SPEC VIOLATION: For the purpose of algorithm in Fix method, dynamic type is not considered convertible to any other type, including object.
-            if (source.IsDynamic() && !destination.IsDynamic())
-            {
-                return false;
-            }
 
             if (!conversions.HasTopLevelNullabilityImplicitConversion(sourceWithAnnotations, destinationWithAnnotations))
             {
@@ -2677,8 +2649,6 @@ OuterBreak:
             {
                 return default(ImmutableArray<TypeSymbolWithAnnotations>);
             }
-
-            Debug.Assert(!method.ParameterTypes[0].IsDynamic());
 
             var constructedFromMethod = method.ConstructedFrom;
 
@@ -2863,12 +2833,6 @@ OuterBreak:
         {
             hadNullabilityMismatch = false;
 
-            // We make an exception when new candidate is dynamic, for backwards compatibility 
-            if (newCandidate.IsDynamic())
-            {
-                return;
-            }
-
             if (candidates.TryGetValue(oldCandidate, out TypeSymbolWithAnnotations latest))
             {
                 // Note: we're ignoring the variance used merging previous candidates into `latest`.
@@ -2900,10 +2864,6 @@ OuterBreak:
 
             public override bool Equals(TypeSymbolWithAnnotations x, TypeSymbolWithAnnotations y)
             {
-                // We do a equality test ignoring dynamic and tuple names differences,
-                // but dynamic and object are not considered equal for backwards compatibility.
-                if (x.IsDynamic() ^ y.IsDynamic()) { return false; }
-
                 return x.Equals(y, TypeCompareKind.IgnoreDynamicAndTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes);
             }
         }

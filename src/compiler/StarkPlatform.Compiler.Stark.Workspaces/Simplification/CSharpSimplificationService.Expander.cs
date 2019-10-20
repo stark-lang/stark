@@ -585,11 +585,6 @@ namespace StarkPlatform.Compiler.Stark.Simplification
                     }
                 }
 
-                if (IsInvocationWithDynamicArguments(originalSimpleName, _semanticModel))
-                {
-                    return newNode;
-                }
-
                 ////
                 //// 2. If it's an attribute, make sure the identifier matches the attribute's class name.
                 ////
@@ -792,32 +787,6 @@ namespace StarkPlatform.Compiler.Stark.Simplification
                 }
 
                 return typeArgumentSymbols;
-            }
-
-            private bool IsInvocationWithDynamicArguments(SimpleNameSyntax originalSimpleName, SemanticModel semanticModel)
-            {
-                var invocationExpression = originalSimpleName.Ancestors().OfType<InvocationExpressionSyntax>().FirstOrDefault();
-
-                // Check to see if this is the invocation Expression we wanted to work with
-                if (invocationExpression != null && invocationExpression.Expression.GetLastToken() == originalSimpleName.GetLastToken())
-                {
-                    if (invocationExpression.ArgumentList != null)
-                    {
-                        foreach (var argument in invocationExpression.ArgumentList.Arguments)
-                        {
-                            if (argument != null)
-                            {
-                                var typeinfo = semanticModel.GetTypeInfo(argument.Expression);
-                                if (typeinfo.Type != null && typeinfo.Type.TypeKind == TypeKind.Dynamic)
-                                {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                return false;
             }
 
             private bool IsTypeArgumentDefinedRecursive(ISymbol symbol, IList<ISymbol> typeArgumentSymbols, bool enterContainingSymbol)

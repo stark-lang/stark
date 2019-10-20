@@ -79,17 +79,6 @@ namespace StarkPlatform.Compiler.Stark
             return (object)node.Type != null;
         }
 
-        public static bool HasDynamicType(this BoundExpression node)
-        {
-            var type = node.Type;
-            return (object)type != null && type.IsDynamic();
-        }
-
-        public static bool MethodGroupReceiverIsDynamic(this BoundMethodGroup node)
-        {
-            return node.InstanceOpt != null && node.InstanceOpt.HasDynamicType();
-        }
-
         public static bool HasExpressionSymbols(this BoundExpression node)
         {
             switch (node.Kind)

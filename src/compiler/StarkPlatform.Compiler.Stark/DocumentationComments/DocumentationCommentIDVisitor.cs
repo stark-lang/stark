@@ -70,15 +70,6 @@ namespace StarkPlatform.Compiler.Stark
             return null;
         }
 
-        public override object VisitDynamicType(DynamicTypeSymbol symbol, StringBuilder builder)
-        {
-            // NOTE: Unlike dev11, roslyn allows "dynamic" in parameter types.  However, it still
-            // does not allow direct references to "dynamic" (because "dynamic" is only a candidate
-            // in type-only contexts).  Therefore, if you ask the dynamic type for its doc comment
-            // ID, it should return null.
-            return DefaultVisit(symbol, builder);
-        }
-
         public override object VisitErrorType(ErrorTypeSymbol symbol, StringBuilder builder)
         {
             builder.Append("!:");

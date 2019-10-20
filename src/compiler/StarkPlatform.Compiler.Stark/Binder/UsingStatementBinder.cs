@@ -103,14 +103,7 @@ namespace StarkPlatform.Compiler.Stark
                 Debug.Assert(declarationOpt != null);
                 declarationTypeOpt = declarationOpt.DeclaredType.Type;
 
-                if (declarationTypeOpt.IsDynamic())
-                {
-                    iDisposableConversion = Conversion.ImplicitDynamic;
-                }
-                else
-                {
-                    hasErrors |= !populateDisposableConversionOrDisposeMethod(fromExpression: false);
-                }
+                hasErrors |= !populateDisposableConversionOrDisposeMethod(fromExpression: false);
             }
 
             if (hasAwait)

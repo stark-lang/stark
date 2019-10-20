@@ -18,7 +18,6 @@ namespace StarkPlatform.Compiler.CodeGen
             LocalDebugId id,
             LocalVariableAttributes pdbAttributes,
             LocalSlotConstraints constraints,
-            ImmutableArray<bool> dynamicTransformFlags,
             ImmutableArray<string> tupleElementNames);
 
         public abstract string PreviousStateMachineTypeName { get; }

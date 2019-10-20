@@ -11,16 +11,6 @@ namespace StarkPlatform.Compiler.Stark
     {
         public override BoundNode VisitDelegateCreationExpression(BoundDelegateCreationExpression node)
         {
-            if (node.Argument.HasDynamicType())
-            {
-                var loweredArgument = VisitExpression(node.Argument);
-
-                // Creates a delegate whose instance is the delegate that is returned by the call-site and the method is Invoke.
-                var loweredReceiver = _dynamicFactory.MakeDynamicConversion(loweredArgument, isExplicit: false, isArrayIndex: false, isChecked: false, resultType: node.Type).ToExpression();
-
-                return new BoundDelegateCreationExpression(node.Syntax, loweredReceiver, methodOpt: null, isExtensionMethod: false, type: node.Type);
-            }
-
             if (node.Argument.Kind == BoundKind.MethodGroup)
             {
                 var mg = (BoundMethodGroup)node.Argument;

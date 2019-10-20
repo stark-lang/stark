@@ -321,7 +321,6 @@ namespace StarkPlatform.Compiler
         private static readonly byte[][] s_signaturesOfSTAThreadAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfOptionCompareAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfObsoleteAttribute = { s_signature_HasThis_Void, s_signature_HasThis_Void_String, s_signature_HasThis_Void_String_Boolean };
-        private static readonly byte[][] s_signaturesOfDynamicAttribute = { s_signature_HasThis_Void, s_signature_HasThis_Void_SzArray_Boolean };
         private static readonly byte[][] s_signaturesOfTupleElementNamesAttribute = { s_signature_HasThis_Void, s_signature_HasThis_Void_SzArray_String };
         private static readonly byte[][] s_signaturesOfIsByRefLikeAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfDebuggerHiddenAttribute = { s_signature_HasThis_Void };
@@ -435,7 +434,6 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription STAThreadAttribute = new AttributeDescription("System", "STAThreadAttribute", s_signaturesOfSTAThreadAttribute);
         internal static readonly AttributeDescription ObsoleteAttribute = new AttributeDescription("System", "ObsoleteAttribute", s_signaturesOfObsoleteAttribute);
         internal static readonly AttributeDescription TypeLibTypeAttribute = new AttributeDescription("core.runtime", "TypeLibTypeAttribute", s_signaturesOfTypeLibTypeAttribute);
-        internal static readonly AttributeDescription DynamicAttribute = new AttributeDescription("core.runtime", "DynamicAttribute", s_signaturesOfDynamicAttribute);
         internal static readonly AttributeDescription TupleElementNamesAttribute = new AttributeDescription("core.runtime", "TupleElementNamesAttribute", s_signaturesOfTupleElementNamesAttribute);
         internal static readonly AttributeDescription IsByRefLikeAttribute = new AttributeDescription("core.runtime", "ByRefLikeAttribute", s_signaturesOfIsByRefLikeAttribute);
         internal static readonly AttributeDescription DebuggerHiddenAttribute = new AttributeDescription("System.Diagnostics", "DebuggerHiddenAttribute", s_signaturesOfDebuggerHiddenAttribute);

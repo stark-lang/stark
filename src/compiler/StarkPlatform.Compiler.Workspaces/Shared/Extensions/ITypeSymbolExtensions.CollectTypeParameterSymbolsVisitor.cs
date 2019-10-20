@@ -26,10 +26,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 throw new NotImplementedException();
             }
 
-            public override void VisitDynamicType(IDynamicTypeSymbol symbol)
-            {
-            }
-
             public override void VisitArrayType(IArrayTypeSymbol symbol)
             {
                 if (!_visited.Add(symbol))

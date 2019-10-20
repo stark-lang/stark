@@ -19,8 +19,6 @@ namespace StarkPlatform.Compiler.Stark
 
         public IMethodSymbol GetResultMethod => _awaitableInfo?.GetResult;
 
-        public bool IsDynamic => _awaitableInfo?.IsDynamic == true;
-
         internal AwaitExpressionInfo(AwaitableInfo awaitableInfo)
         {
             Debug.Assert(awaitableInfo != null);

@@ -38,14 +38,7 @@ namespace StarkPlatform.Compiler.Stark
 
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
 
-            if (instanceArgument.Type.IsDynamic())
-            {
-                // CS1979: Query expressions over source type 'dynamic' or with a join sequence of type 'dynamic' are not allowed
-                diagnostics.Add(
-                    new DiagnosticInfoWithSymbols(ErrorCode.ERR_BadDynamicQuery, Array.Empty<object>(), symbols),
-                    new SourceLocation(queryClause));
-            }
-            else if (ImplementsStandardQueryInterface(instanceArgument.Type, name, ref useSiteDiagnostics))
+            if (ImplementsStandardQueryInterface(instanceArgument.Type, name, ref useSiteDiagnostics))
             {
                 // Could not find an implementation of the query pattern for source type '{0}'.  '{1}' not found.  Are you missing a reference to 'System.Core.dll' or a using directive for 'System.Linq'?
                 diagnostics.Add(new DiagnosticInfoWithSymbols(

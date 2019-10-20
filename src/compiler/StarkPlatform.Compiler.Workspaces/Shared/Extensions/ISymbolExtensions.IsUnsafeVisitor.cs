@@ -31,12 +31,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 return symbol.ElementType.Accept(this);
             }
 
-            public override bool VisitDynamicType(IDynamicTypeSymbol symbol)
-            {
-                // The dynamic type is never unsafe (well....you know what I mean
-                return false;
-            }
-
             public override bool VisitField(IFieldSymbol symbol)
             {
                 if (!_visited.Add(symbol))

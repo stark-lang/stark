@@ -257,11 +257,7 @@ namespace StarkPlatform.Compiler.LanguageServices
                     AddDeprecatedPrefix();
                 }
 
-                if (symbol is IDynamicTypeSymbol)
-                {
-                    AddDescriptionForDynamicType();
-                }
-                else if (symbol is IFieldSymbol field)
+                if (symbol is IFieldSymbol field)
                 {
                     await AddDescriptionForFieldAsync(field).ConfigureAwait(false);
                 }

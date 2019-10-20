@@ -11,20 +11,9 @@ namespace StarkPlatform.Compiler.Stark
 {
     internal static class SymbolInfoFactory
     {
-        internal static SymbolInfo Create(ImmutableArray<Symbol> symbols, LookupResultKind resultKind, bool isDynamic)
+        internal static SymbolInfo Create(ImmutableArray<Symbol> symbols, LookupResultKind resultKind)
         {
-            if (isDynamic)
-            {
-                if (symbols.Length == 1)
-                {
-                    return new SymbolInfo(symbols[0], CandidateReason.LateBound);
-                }
-                else
-                {
-                    return new SymbolInfo(StaticCast<ISymbol>.From(symbols), CandidateReason.LateBound);
-                }
-            }
-            else if (resultKind == LookupResultKind.Viable)
+            if (resultKind == LookupResultKind.Viable)
             {
                 if (symbols.Length > 0)
                 {

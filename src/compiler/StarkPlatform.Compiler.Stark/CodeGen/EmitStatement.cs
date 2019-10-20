@@ -1368,9 +1368,6 @@ oneMoreTime:
 
         private LocalDefinition DefineLocal(LocalSymbol local, SyntaxNode syntaxNode)
         {
-            var dynamicTransformFlags = !local.IsCompilerGenerated && local.Type.TypeSymbol.ContainsDynamic() ?
-                CSharpCompilation.DynamicTransformsEncoder.Encode(local.Type.TypeSymbol, RefKind.None, 0) :
-                ImmutableArray<bool>.Empty;
             var tupleElementNames = !local.IsCompilerGenerated && local.Type.TypeSymbol.ContainsTupleNames() ?
                 CSharpCompilation.TupleNamesEncoder.Encode(local.Type.TypeSymbol) :
                 ImmutableArray<string>.Empty;
@@ -1383,7 +1380,6 @@ oneMoreTime:
                     local.Name,
                     local.Locations.FirstOrDefault() ?? Location.None,
                     compileTimeValue,
-                    dynamicTransformFlags: dynamicTransformFlags,
                     tupleElementNames: tupleElementNames);
                 _builder.AddLocalConstantToScope(localConstantDef);
                 return null;
@@ -1434,7 +1430,6 @@ oneMoreTime:
                 id: localId,
                 pdbAttributes: local.SynthesizedKind.PdbAttributes(),
                 constraints: constraints,
-                dynamicTransformFlags: dynamicTransformFlags,
                 tupleElementNames: tupleElementNames,
                 isSlotReusable: local.SynthesizedKind.IsSlotReusable(_ilEmitStyle != ILEmitStyle.Release));
 

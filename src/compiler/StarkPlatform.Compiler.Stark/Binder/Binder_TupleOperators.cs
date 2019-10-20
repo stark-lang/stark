@@ -83,11 +83,6 @@ namespace StarkPlatform.Compiler.Stark
             TypeSymbol leftType = left.Type;
             TypeSymbol rightType = right.Type;
 
-            if ((object)leftType != null && leftType.IsDynamic() || (object)rightType != null && rightType.IsDynamic())
-            {
-                return BindTupleDynamicBinaryOperatorSingleInfo(node, kind, left, right, diagnostics);
-            }
-
             if (IsTupleBinaryOperation(left, right))
             {
                 return BindTupleBinaryOperatorNestedInfo(node, kind, left, right, diagnostics);
@@ -174,30 +169,6 @@ namespace StarkPlatform.Compiler.Stark
             conversionForBool = Conversion.NoConversion;
             boolOperator = default;
             return;
-        }
-
-        private TupleBinaryOperatorInfo BindTupleDynamicBinaryOperatorSingleInfo(BinaryExpressionSyntax node, BinaryOperatorKind kind,
-            BoundExpression left, BoundExpression right, DiagnosticBag diagnostics)
-        {
-            // This method binds binary == and != operators where one or both of the operands are dynamic.
-            Debug.Assert((object)left.Type != null && left.Type.IsDynamic() || (object)right.Type != null && right.Type.IsDynamic());
-
-            bool hasError = false;
-            if (!IsLegalDynamicOperand(left) || !IsLegalDynamicOperand(right))
-            {
-                // Operator '{0}' cannot be applied to operands of type '{1}' and '{2}'
-                Error(diagnostics, ErrorCode.ERR_BadBinaryOps, node, node.OperatorToken.Text, left.Display, right.Display);
-                hasError = true;
-            }
-
-            BinaryOperatorKind elementOperatorKind = hasError ? kind : kind.WithType(BinaryOperatorKind.Dynamic);
-            TypeSymbol dynamicType = Compilation.DynamicType;
-
-            // We'll want to dynamically invoke operators op_true (/op_false) for equality (/inequality) comparison, but we don't need
-            // to prepare either a conversion or a truth operator. Those can just be synthesized during lowering.
-            return new TupleBinaryOperatorInfo.Single(dynamicType, dynamicType, elementOperatorKind,
-                leftConversion: Conversion.NoConversion, rightConversion: Conversion.NoConversion,
-                methodSymbolOpt: null, conversionForBool: Conversion.Identity, boolOperator: default);
         }
 
         private TupleBinaryOperatorInfo.Multiple BindTupleBinaryOperatorNestedInfo(BinaryExpressionSyntax node, BinaryOperatorKind kind,

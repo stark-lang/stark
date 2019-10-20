@@ -1040,8 +1040,6 @@ haveLambdaBodyAndBinders:
             }
         }
 
-        private bool IsExpressionLambda { get { return Body.Kind() != SyntaxKind.Block; } }
-
         public override string ParameterName(int index)
         {
             Debug.Assert(!_parameterNames.IsDefault && 0 <= index && index < _parameterNames.Length);
@@ -1063,14 +1061,7 @@ haveLambdaBodyAndBinders:
 
         protected override BoundBlock BindLambdaBody(LambdaSymbol lambdaSymbol, Binder lambdaBodyBinder, DiagnosticBag diagnostics)
         {
-            if (this.IsExpressionLambda)
-            {
-                return lambdaBodyBinder.BindLambdaExpressionAsBlock((ExpressionSyntax)this.Body, diagnostics);
-            }
-            else
-            {
-                return lambdaBodyBinder.BindEmbeddedBlock((BlockSyntax)this.Body, diagnostics);
-            }
+            return lambdaBodyBinder.BindEmbeddedBlock((BlockSyntax)this.Body, diagnostics);
         }
     }
 }

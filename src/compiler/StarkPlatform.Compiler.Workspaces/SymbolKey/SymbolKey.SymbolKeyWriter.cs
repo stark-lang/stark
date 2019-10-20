@@ -23,7 +23,6 @@ namespace StarkPlatform.Compiler
             NamedType = 'D',
             ErrorType = 'E',
             Field = 'F',
-            DynamicType = 'I',
             Method = 'M',
             Namespace = 'N',
             PointerType = 'O',
@@ -340,13 +339,6 @@ namespace StarkPlatform.Compiler
             {
                 WriteType(SymbolKeyType.Assembly);
                 AssemblySymbolKey.Create(assemblySymbol, this);
-                return null;
-            }
-
-            public override object VisitDynamicType(IDynamicTypeSymbol dynamicTypeSymbol)
-            {
-                WriteType(SymbolKeyType.DynamicType);
-                DynamicTypeSymbolKey.Create(this);
                 return null;
             }
 

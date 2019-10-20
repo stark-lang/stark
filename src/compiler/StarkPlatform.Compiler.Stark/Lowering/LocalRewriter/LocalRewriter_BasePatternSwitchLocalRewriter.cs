@@ -189,17 +189,6 @@ namespace StarkPlatform.Compiler.Stark
                     return null;
                 }
 
-                public override BoundNode VisitDynamicInvocation(BoundDynamicInvocation node)
-                {
-                    // perhaps we are passing a variable by ref and mutating it that way
-                    if (!node.ArgumentRefKindsOpt.IsDefault)
-                        _mightAssignSomething = true;
-                    else
-                        base.VisitDynamicInvocation(node);
-
-                    return null;
-                }
-
                 public override BoundNode VisitObjectCreationExpression(BoundObjectCreationExpression node)
                 {
                     // perhaps we are passing a variable by ref and mutating it that way
@@ -207,16 +196,6 @@ namespace StarkPlatform.Compiler.Stark
                         _mightAssignSomething = true;
                     else
                         base.VisitObjectCreationExpression(node);
-
-                    return null;
-                }
-
-                public override BoundNode VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node)
-                {
-                    if (!node.ArgumentRefKindsOpt.IsDefault)
-                        _mightAssignSomething = true;
-                    else
-                        base.VisitDynamicObjectCreationExpression(node);
 
                     return null;
                 }
@@ -239,16 +218,6 @@ namespace StarkPlatform.Compiler.Stark
                         _mightAssignSomething = true;
                     else
                         base.VisitIndexerAccess(node);
-
-                    return null;
-                }
-
-                public override BoundNode VisitDynamicIndexerAccess(BoundDynamicIndexerAccess node)
-                {
-                    if (!node.ArgumentRefKindsOpt.IsDefault)
-                        _mightAssignSomething = true;
-                    else
-                        base.VisitDynamicIndexerAccess(node);
 
                     return null;
                 }

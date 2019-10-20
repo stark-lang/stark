@@ -650,18 +650,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             if ((object)t2 == this) return true;
             if ((object)t2 == null) return false;
 
-            if ((comparison & TypeCompareKind.IgnoreDynamic) != 0)
-            {
-                if (t2.TypeKind == TypeKind.Dynamic)
-                {
-                    // if ignoring dynamic, then treat dynamic the same as the type 'object'
-                    if (this.SpecialType == SpecialType.System_Object)
-                    {
-                        return true;
-                    }
-                }
-            }
-
             if ((comparison & TypeCompareKind.IgnoreTupleNames) != 0)
             {
                 // If ignoring tuple element names, compare underlying tuple types

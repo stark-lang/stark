@@ -35,23 +35,6 @@ namespace StarkPlatform.Compiler.Stark
                     return base.VisitUnaryOperator(node);
             }
 
-            // TODO(tomat): We need to pass a parent operator kind into binary operator visitor.
-            // We circumvent logic in VisitExpression. The extra logic doesn't apply under these conditions so we are ok. 
-            // This is a bit fragile however. Consider refactoring VisitExpression.
-
-            if (node.Operand.Kind == BoundKind.BinaryOperator)
-            {
-                // Optimization:
-                // Binary operator lowering combines the binary operator with IsTrue/IsFalse more efficiently than we can do here.
-
-                var binaryOperator = (BoundBinaryOperator)node.Operand;
-                if (node.OperatorKind == UnaryOperatorKind.DynamicTrue && binaryOperator.OperatorKind == BinaryOperatorKind.DynamicLogicalOr ||
-                    node.OperatorKind == UnaryOperatorKind.DynamicFalse && binaryOperator.OperatorKind == BinaryOperatorKind.DynamicLogicalAnd)
-                {
-                    return VisitBinaryOperator(binaryOperator, applyParentUnaryOperator: node);
-                }
-            }
-
             BoundExpression loweredOperand = VisitExpression(node.Operand);
             return MakeUnaryOperator(node, node.OperatorKind, node.Syntax, node.MethodOpt, loweredOperand, node.Type);
         }
@@ -74,42 +57,15 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression loweredOperand,
             TypeSymbol type)
         {
-            if (kind.IsDynamic())
+            if (kind.IsLifted())
             {
-                Debug.Assert((kind == UnaryOperatorKind.DynamicTrue || kind == UnaryOperatorKind.DynamicFalse) && type.SpecialType == SpecialType.System_Boolean
-                    || type.IsDynamic());
-                Debug.Assert((object)method == null);
-
-                // Logical operators on boxed Boolean constants:
-                var constant = UnboxConstant(loweredOperand);
-                if (constant == ConstantValue.True || constant == ConstantValue.False)
-                {
-                    switch (kind)
-                    {
-                        case UnaryOperatorKind.DynamicTrue:
-                            return _factory.Literal(constant.BooleanValue);
-                        case UnaryOperatorKind.DynamicLogicalNegation:
-                            return MakeConversionNode(_factory.Literal(!constant.BooleanValue), type, @checked: false);
-                    }
-                }
-
-                return _dynamicFactory.MakeDynamicUnaryOperator(kind, loweredOperand, type).ToExpression();
-            }
-            else if (kind.IsLifted())
-            {
-                if (!_inExpressionLambda)
-                {
-                    return LowerLiftedUnaryOperator(kind, syntax, method, loweredOperand, type);
-                }
+                return LowerLiftedUnaryOperator(kind, syntax, method, loweredOperand, type);
             }
             else if (kind.IsUserDefined())
             {
                 Debug.Assert((object)method != null);
                 Debug.Assert(TypeSymbol.Equals(type, method.ReturnType.TypeSymbol, TypeCompareKind.ConsiderEverything2));
-                if (!_inExpressionLambda || kind == UnaryOperatorKind.UserDefinedTrue || kind == UnaryOperatorKind.UserDefinedFalse)
-                {
-                    return BoundCall.Synthesized(syntax, null, method, loweredOperand);
-                }
+                return BoundCall.Synthesized(syntax, null, method, loweredOperand);
             }
             else if (kind.Operator() == UnaryOperatorKind.UnaryPlus)
             {
@@ -400,7 +356,6 @@ namespace StarkPlatform.Compiler.Stark
         public override BoundNode VisitIncrementOperator(BoundIncrementOperator node)
         {
             bool isPrefix = IsPrefix(node);
-            bool isDynamic = node.OperatorKind.IsDynamic();
             bool isChecked = node.OperatorKind.IsChecked();
 
             ArrayBuilder<LocalSymbol> tempSymbols = ArrayBuilder<LocalSymbol>.GetInstance();
@@ -410,7 +365,7 @@ namespace StarkPlatform.Compiler.Stark
 
             // This will be filled in with the LHS that uses temporaries to prevent
             // double-evaluation of side effects.
-            BoundExpression transformedLHS = TransformCompoundAssignmentLHS(node.Operand, tempInitializers, tempSymbols, isDynamic);
+            BoundExpression transformedLHS = TransformCompoundAssignmentLHS(node.Operand, tempInitializers, tempSymbols);
             TypeSymbol operandType = transformedLHS.Type; //type of the variable being incremented
             Debug.Assert(TypeSymbol.Equals(operandType, node.Type, TypeCompareKind.ConsiderEverything2));
 
@@ -539,11 +494,6 @@ namespace StarkPlatform.Compiler.Stark
 
         private BoundExpression MakeIncrementOperator(BoundIncrementOperator node, BoundExpression rewrittenValueToIncrement)
         {
-            if (node.OperatorKind.IsDynamic())
-            {
-                return _dynamicFactory.MakeDynamicUnaryOperator(node.OperatorKind, rewrittenValueToIncrement, node.Type).ToExpression();
-            }
-
             BoundExpression result;
             if (node.OperatorKind.OperandTypes() == UnaryOperatorKind.UserDefined)
             {
@@ -759,22 +709,9 @@ namespace StarkPlatform.Compiler.Stark
                     var propertyAccess = (BoundPropertyAccess)transformedExpression;
                     return MakePropertyGetAccess(transformedExpression.Syntax, propertyAccess.ReceiverOpt, propertyAccess.PropertySymbol, propertyAccess);
 
-                case BoundKind.DynamicMemberAccess:
-                    var dynamicMemberAccess = (BoundDynamicMemberAccess)transformedExpression;
-                    return _dynamicFactory.MakeDynamicGetMember(dynamicMemberAccess.Receiver, dynamicMemberAccess.Name, resultIndexed: false).ToExpression();
-
                 case BoundKind.IndexerAccess:
                     var indexerAccess = (BoundIndexerAccess)transformedExpression;
                     return MakePropertyGetAccess(transformedExpression.Syntax, indexerAccess.ReceiverOpt, indexerAccess.Indexer, indexerAccess.Arguments);
-
-                case BoundKind.DynamicIndexerAccess:
-                    var dynamicIndexerAccess = (BoundDynamicIndexerAccess)transformedExpression;
-                    return MakeDynamicGetIndex(
-                        dynamicIndexerAccess,
-                        dynamicIndexerAccess.ReceiverOpt,
-                        dynamicIndexerAccess.Arguments,
-                        dynamicIndexerAccess.ArgumentNamesOpt,
-                        dynamicIndexerAccess.ArgumentRefKindsOpt);
 
                 default:
                     return transformedExpression;

@@ -1153,14 +1153,6 @@ namespace StarkPlatform.Compiler.Stark
 
             bool hasError = false;
 
-            // NB: Dev10 has an error for typeof(dynamic), but allows typeof(dynamic[]),
-            // typeof(C<dynamic>), etc.
-            if (type.IsDynamic())
-            {
-                diagnostics.Add(ErrorCode.ERR_BadDynamicTypeof, node.Location);
-                hasError = true;
-            }
-
             BoundTypeExpression boundType = new BoundTypeExpression(typeSyntax, alias, type, type.IsErrorType());
             return new BoundTypeOfOperator(node, boundType, null, this.GetWellKnownType(WellKnownType.core_Type, diagnostics, node), hasError);
         }
@@ -3580,19 +3572,6 @@ namespace StarkPlatform.Compiler.Stark
                     Debug.Assert(initializerArgumentListOpt.Parent.Kind() == SyntaxKind.ThisConstructorInitializer);
                 }
 
-                if (initializerArgumentListOpt != null && analyzedArguments.HasDynamicArgument)
-                {
-                    diagnostics.Add(ErrorCode.ERR_NoDynamicPhantomOnBaseCtor,
-                                    ((ConstructorInitializerSyntax)initializerArgumentListOpt.Parent).ThisOrBaseKeyword.GetLocation());
-
-                    return new BoundBadExpression(
-                            syntax: initializerArgumentListOpt.Parent,
-                            resultKind: LookupResultKind.Empty,
-                            symbols: ImmutableArray<Symbol>.Empty, //CONSIDER: we could look for a matching constructor on System.ValueType
-                            childBoundNodes: BuildArgumentsForErrorRecovery(analyzedArguments),
-                            type: constructorReturnType);
-                }
-
                 CSharpSyntaxNode nonNullSyntax;
                 Location errorLocation;
                 if (initializerArgumentListOpt != null)
@@ -3742,8 +3721,6 @@ namespace StarkPlatform.Compiler.Stark
                         diagnostics.Add(ErrorCode.ERR_UnsafeTypeInObjectCreation, node.Location, type));
                     goto case TypeKind.Class;
 
-                case TypeKind.Dynamic:
-                // we didn't find any type called "dynamic" so we are using the builtin dynamic type, which has no constructors:
                 case TypeKind.Array:
                     // ex: new ref[]
                     type = new ExtendedErrorTypeSymbol(type, LookupResultKind.NotCreatable,
@@ -3856,12 +3833,6 @@ namespace StarkPlatform.Compiler.Stark
                 else if ((object)argument.Type == null)
                 {
                     diagnostics.Add(ErrorCode.ERR_MethodNameExpected, argument.Syntax.Location);
-                }
-
-                // 3. A value of the compile-time type dynamic (which is dynamically case 4), or
-                else if (argument.HasDynamicType())
-                {
-                    return new BoundDelegateCreationExpression(node, argument, methodOpt: null, isExtensionMethod: false, type: type);
                 }
 
                 // 4. A delegate type.
@@ -4080,27 +4051,16 @@ namespace StarkPlatform.Compiler.Stark
                 BoundExpression boundLeft = null;
                 var leftSyntax = initializer.Left;
 
-                if (initializerType.IsDynamic() && leftSyntax.Kind() == SyntaxKind.IdentifierName)
-                {
-                    {
-                        // D = { ..., <identifier> = <expr>, ... }, where D : dynamic
-                        var memberName = ((IdentifierNameSyntax)leftSyntax).Identifier.Text;
-                        boundLeft = new BoundDynamicObjectInitializerMember(leftSyntax, memberName, implicitReceiver.Type, initializerType, hasErrors: false);
-                    }
-                }
-                else
-                {
-                    // We use a location specific binder for binding object initializer field/property access to generate object initializer specific diagnostics:
-                    //  1) CS1914 (ERR_StaticMemberInObjectInitializer)
-                    //  2) CS1917 (ERR_ReadonlyValueTypeInObjectInitializer)
-                    //  3) CS1918 (ERR_ValueTypePropertyInObjectInitializer)
-                    // See comments in BindObjectInitializerExpression for more details.
+                // We use a location specific binder for binding object initializer field/property access to generate object initializer specific diagnostics:
+                //  1) CS1914 (ERR_StaticMemberInObjectInitializer)
+                //  2) CS1917 (ERR_ReadonlyValueTypeInObjectInitializer)
+                //  3) CS1918 (ERR_ValueTypePropertyInObjectInitializer)
+                // See comments in BindObjectInitializerExpression for more details.
 
-                    Debug.Assert(objectInitializerMemberBinder != null);
-                    Debug.Assert(objectInitializerMemberBinder.Flags.Includes(BinderFlags.ObjectInitializerMember));
+                Debug.Assert(objectInitializerMemberBinder != null);
+                Debug.Assert(objectInitializerMemberBinder.Flags.Includes(BinderFlags.ObjectInitializerMember));
 
-                    boundLeft = objectInitializerMemberBinder.BindObjectInitializerMember(initializer, implicitReceiver, diagnostics);
-                }
+                boundLeft = objectInitializerMemberBinder.BindObjectInitializerMember(initializer, implicitReceiver, diagnostics);
 
                 if (boundLeft != null)
                 {
@@ -4243,16 +4203,6 @@ namespace StarkPlatform.Compiler.Stark
 
                         break;
                     }
-
-                case BoundKind.DynamicIndexerAccess:
-                    {
-                        var indexer = (BoundDynamicIndexerAccess)boundMember;
-                        arguments = indexer.Arguments;
-                        argumentNamesOpt = indexer.ArgumentNamesOpt;
-                        argumentRefKindsOpt = indexer.ArgumentRefKindsOpt;
-                    }
-
-                    break;
 
                 case BoundKind.ArrayAccess:
                 case BoundKind.PointerElementAccess:
@@ -4442,12 +4392,7 @@ namespace StarkPlatform.Compiler.Stark
             // SPEC:    The collection object to which a collection initializer is applied must be of a type that implements System.Collections.IEnumerable or
             // SPEC:    a compile-time error occurs.
 
-            if (initializerType.IsDynamic())
-            {
-                // We cannot determine at compile time if initializerType implements System.Collections.IEnumerable, we must assume that it does.
-                return true;
-            }
-            else if (!initializerType.IsErrorType())
+            if (!initializerType.IsErrorType())
             {
                 TypeSymbol collectionsIEnumerableType = this.GetSpecialType(SpecialType.core_Iterable_T_TIterator, diagnostics, node);
 
@@ -4580,19 +4525,6 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert(implicitReceiver != null);
             Debug.Assert((object)implicitReceiver.Type != null);
 
-            if (implicitReceiver.Type.IsDynamic())
-            {
-                var hasErrors = ReportBadDynamicArguments(elementInitializer, boundElementInitializerExpressions, refKinds: default, diagnostics, queryClause: null);
-
-                return new BoundDynamicCollectionElementInitializer(
-                    elementInitializer,
-                    applicableMethods: ImmutableArray<MethodSymbol>.Empty,
-                    implicitReceiver,
-                    arguments: boundElementInitializerExpressions,
-                    type: GetSpecialType(SpecialType.System_Void, diagnostics, elementInitializer),
-                    hasErrors: hasErrors);
-            }
-
             // Receiver is early bound, find method Add and invoke it (may still be a dynamic invocation):
 
             var addMethodInvocation = collectionInitializerAddMethodBinder.MakeInvocationExpression(
@@ -4602,18 +4534,7 @@ namespace StarkPlatform.Compiler.Stark
                 args: boundElementInitializerExpressions,
                 diagnostics: diagnostics);
 
-            if (addMethodInvocation.Kind == BoundKind.DynamicInvocation)
-            {
-                var dynamicInvocation = (BoundDynamicInvocation)addMethodInvocation;
-                return new BoundDynamicCollectionElementInitializer(
-                    elementInitializer,
-                    dynamicInvocation.ApplicableMethods,
-                    implicitReceiver,
-                    dynamicInvocation.Arguments,
-                    dynamicInvocation.Type,
-                    hasErrors: dynamicInvocation.HasAnyErrors);
-            }
-            else if (addMethodInvocation.Kind == BoundKind.Call)
+            if (addMethodInvocation.Kind == BoundKind.Call)
             {
                 var boundCall = (BoundCall)addMethodInvocation;
 
@@ -4734,40 +4655,6 @@ namespace StarkPlatform.Compiler.Stark
             // applicable candidates. If there are, then this is a dynamic object creation; we'll work out
             // which ctor to call at runtime. If we have a dynamic argument but no applicable candidates
             // then we do the analysis again for error reporting purposes.
-
-            if (analyzedArguments.HasDynamicArgument)
-            {
-                OverloadResolutionResult<MethodSymbol> overloadResolutionResult = OverloadResolutionResult<MethodSymbol>.GetInstance();
-                this.OverloadResolution.ObjectCreationOverloadResolution(GetAccessibleConstructorsForOverloadResolution(type, ref useSiteDiagnostics), analyzedArguments, overloadResolutionResult, ref useSiteDiagnostics);
-                diagnostics.Add(node, useSiteDiagnostics);
-                useSiteDiagnostics = null;
-
-                if (overloadResolutionResult.HasAnyApplicableMember)
-                {
-                    var argArray = BuildArgumentsForDynamicInvocation(analyzedArguments, diagnostics);
-                    var refKindsArray = analyzedArguments.RefKinds.ToImmutableOrNull();
-
-                    hasErrors &= ReportBadDynamicArguments(node, argArray, refKindsArray, diagnostics, queryClause: null);
-
-                    boundInitializerOpt = makeBoundInitializerOpt();
-                    result = new BoundDynamicObjectCreationExpression(
-                        node,
-                        typeName,
-                        argArray,
-                        analyzedArguments.GetNames(),
-                        refKindsArray,
-                        boundInitializerOpt,
-                        overloadResolutionResult.GetAllApplicableMembers(),
-                        type,
-                        hasErrors);
-                }
-
-                overloadResolutionResult.Free();
-                if (result != null)
-                {
-                    return result;
-                }
-            }
 
             MemberResolutionResult<MethodSymbol> memberResolutionResult;
             ImmutableArray<MethodSymbol> candidateConstructors;
@@ -5323,58 +5210,6 @@ namespace StarkPlatform.Compiler.Stark
             return false;
         }
 
-        private BoundExpression BindDynamicMemberAccess(
-            ExpressionSyntax node,
-            BoundExpression boundLeft,
-            SimpleNameSyntax right,
-            bool invoked,
-            bool indexed,
-            DiagnosticBag diagnostics)
-        {
-            // We have an expression of the form "dynExpr.Name" or "dynExpr.Name<X>"
-
-            SeparatedSyntaxList<TypeSyntax> typeArgumentsSyntax = right.Kind() == SyntaxKind.GenericName ?
-                ((GenericNameSyntax)right).TypeArgumentList.Arguments :
-                default(SeparatedSyntaxList<TypeSyntax>);
-            bool rightHasTypeArguments = typeArgumentsSyntax.Count > 0;
-            ImmutableArray<TypeSymbolWithAnnotations> typeArguments = rightHasTypeArguments ?
-                BindTypeArguments(typeArgumentsSyntax, diagnostics) :
-                default(ImmutableArray<TypeSymbolWithAnnotations>);
-
-            bool hasErrors = false;
-
-            if (!invoked && rightHasTypeArguments)
-            {
-                // error CS0307: The property 'P' cannot be used with type arguments
-                Error(diagnostics, ErrorCode.ERR_TypeArgsNotAllowed, right, right.Identifier.Text, SymbolKind.Property.Localize());
-                hasErrors = true;
-            }
-
-            if (rightHasTypeArguments)
-            {
-                for (int i = 0; i < typeArguments.Length; ++i)
-                {
-                    var typeArgument = typeArguments[i];
-                    if (typeArgument.IsRestrictedType())
-                    {
-                        // "The type '{0}' may not be used as a type argument"
-                        Error(diagnostics, ErrorCode.ERR_BadTypeArgument, typeArgumentsSyntax[i], typeArgument.TypeSymbol);
-                        hasErrors = true;
-                    }
-                }
-            }
-
-            return new BoundDynamicMemberAccess(
-                syntax: node,
-                receiver: boundLeft,
-                typeArgumentsOpt: typeArguments,
-                name: right.Identifier.ValueText,
-                invoked: invoked,
-                indexed: indexed,
-                type: Compilation.DynamicType,
-                hasErrors: hasErrors);
-        }
-
         /// <summary>
         /// Bind the RHS of a member access expression, given the bound LHS.
         /// It is assumed that CheckValue has not been called on the LHS.
@@ -5394,17 +5229,6 @@ namespace StarkPlatform.Compiler.Stark
             boundLeft = MakeMemberAccessValue(boundLeft, diagnostics);
 
             TypeSymbol leftType = boundLeft.Type;
-
-            if ((object)leftType != null && leftType.IsDynamic())
-            {
-                // There are some sources of a `dynamic` typed value that can be known before runtime
-                // to be invalid. For example, accessing a set-only property whose type is dynamic:
-                //   dynamic Goo { set; }
-                // If Goo itself is a dynamic thing (e.g. in `x.Goo.Bar`, `x` is dynamic, and we're
-                // currently checking Bar), then CheckValue will do nothing.
-                boundLeft = CheckValue(boundLeft, BindValueKind.RValue, diagnostics);
-                return BindDynamicMemberAccess(node, boundLeft, right, invoked, indexed, diagnostics);
-            }
 
             // No member accesses on void
             if ((object)leftType != null && leftType.SpecialType == SpecialType.System_Void)
@@ -6626,9 +6450,6 @@ namespace StarkPlatform.Compiler.Stark
                 case TypeKind.Array:
                     return BindArrayAccess(node, expr, arguments, diagnostics);
 
-                case TypeKind.Dynamic:
-                    return BindDynamicIndexer(node, expr, arguments, ImmutableArray<PropertySymbol>.Empty, diagnostics);
-
                 case TypeKind.Pointer:
                     return BindPointerElementAccess(node, expr, arguments, diagnostics);
 
@@ -6795,11 +6616,6 @@ namespace StarkPlatform.Compiler.Stark
                 return null;
             }
 
-            if (conversion.IsDynamic)
-            {
-                conversion = conversion.SetArrayIndexConversionForDynamic();
-            }
-
             BoundExpression result = CreateConversion(expr.Syntax, expr, conversion, isCast: false, conversionGroupOpt: null, destination: targetType, diagnostics); // UNDONE: was cast?
             Debug.Assert(result != null); // If this ever fails (it shouldn't), then put a null-check around the diagnostics update.
 
@@ -6964,53 +6780,6 @@ namespace StarkPlatform.Compiler.Stark
             return result;
         }
 
-        private BoundExpression BindDynamicIndexer(
-             SyntaxNode syntax,
-             BoundExpression receiverOpt,
-             AnalyzedArguments arguments,
-             ImmutableArray<PropertySymbol> applicableProperties,
-             DiagnosticBag diagnostics)
-        {
-            bool hasErrors = false;
-
-            if (receiverOpt != null)
-            {
-                BoundKind receiverKind = receiverOpt.Kind;
-                if (receiverKind == BoundKind.BaseReference)
-                {
-                    Error(diagnostics, ErrorCode.ERR_NoDynamicPhantomOnBaseIndexer, syntax);
-                    hasErrors = true;
-                }
-                else if (receiverKind == BoundKind.TypeOrValueExpression)
-                {
-                    var typeOrValue = (BoundTypeOrValueExpression)receiverOpt;
-
-                    // Unfortunately, the runtime binder doesn't have APIs that would allow us to pass both "type or value".
-                    // Ideally the runtime binder would choose between type and value based on the result of the overload resolution.
-                    // We need to pick one or the other here. Dev11 compiler passes the type only if the value can't be accessed.
-                    bool inStaticContext;
-                    bool useType = IsInstance(typeOrValue.Data.ValueSymbol) && !HasThis(isExplicit: false, inStaticContext: out inStaticContext);
-
-                    receiverOpt = ReplaceTypeOrValueReceiver(typeOrValue, useType, diagnostics);
-                }
-            }
-
-            var argArray = BuildArgumentsForDynamicInvocation(arguments, diagnostics);
-            var refKindsArray = arguments.RefKinds.ToImmutableOrNull();
-
-            hasErrors &= ReportBadDynamicArguments(syntax, argArray, refKindsArray, diagnostics, queryClause: null);
-
-            return new BoundDynamicIndexerAccess(
-                syntax,
-                receiverOpt,
-                argArray,
-                arguments.GetNames(),
-                refKindsArray,
-                applicableProperties,
-                AssemblySymbol.DynamicType,
-                hasErrors);
-        }
-
         private BoundExpression BindIndexerOrIndexedPropertyAccess(
             SyntaxNode syntax,
             BoundExpression receiverOpt,
@@ -7026,17 +6795,6 @@ namespace StarkPlatform.Compiler.Stark
             this.OverloadResolution.PropertyOverloadResolution(propertyGroup, receiverOpt, analyzedArguments, overloadResolutionResult, allowRefOmittedArguments, ref useSiteDiagnostics, refKindContext);
             diagnostics.Add(syntax, useSiteDiagnostics);
             BoundExpression propertyAccess;
-
-            if (analyzedArguments.HasDynamicArgument && overloadResolutionResult.HasAnyApplicableMember)
-            {
-                // Note that the runtime binder may consider candidates that haven't passed compile-time final validation 
-                // and an ambiguity error may be reported. Also additional checks are performed in runtime final validation 
-                // that are not performed at compile-time.
-                // Only if the set of final applicable candidates is empty we know for sure the call will fail at runtime.
-                var finalApplicableCandidates = GetCandidatesPassingFinalValidation(syntax, overloadResolutionResult, receiverOpt, default(ImmutableArray<TypeSymbolWithAnnotations>), diagnostics);
-                overloadResolutionResult.Free();
-                return BindDynamicIndexer(syntax, receiverOpt, analyzedArguments, finalApplicableCandidates, diagnostics);
-            }
 
             ImmutableArray<string> argumentNames = analyzedArguments.GetNames();
             ImmutableArray<RefKind> argumentRefKinds = analyzedArguments.RefKinds.ToImmutableOrNull();
@@ -7260,7 +7018,7 @@ namespace StarkPlatform.Compiler.Stark
 
             // If the method group's receiver is dynamic then there is no point in looking for extension methods; 
             // it's going to be a dynamic invocation.
-            if (!methodGroup.SearchExtensionMethods || methodResolution.HasAnyApplicableMethod || methodGroup.MethodGroupReceiverIsDynamic())
+            if (!methodGroup.SearchExtensionMethods || methodResolution.HasAnyApplicableMethod)
             {
                 return methodResolution;
             }

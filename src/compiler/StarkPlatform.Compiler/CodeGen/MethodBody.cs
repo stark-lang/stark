@@ -26,7 +26,6 @@ namespace StarkPlatform.Compiler.CodeGen
         private readonly Cci.IImportScope _importScopeOpt;
         private readonly string _stateMachineTypeNameOpt;
         private readonly ImmutableArray<StateMachineHoistedLocalScope> _stateMachineHoistedLocalScopes;
-        private readonly bool _hasDynamicLocalVariables;
         private readonly StateMachineMoveNextBodyDebugInfo _stateMachineMoveNextDebugInfoOpt;
 
         // Debug information emitted to Debug PDBs supporting EnC:
@@ -51,7 +50,6 @@ namespace StarkPlatform.Compiler.CodeGen
             DebugDocumentProvider debugDocumentProvider,
             ImmutableArray<Cci.ExceptionHandlerRegion> exceptionHandlers,
             ImmutableArray<Cci.LocalScope> localScopes,
-            bool hasDynamicLocalVariables,
             Cci.IImportScope importScopeOpt,
             ImmutableArray<LambdaDebugInfo> lambdaDebugInfo,
             ImmutableArray<ClosureDebugInfo> closureDebugInfo,
@@ -73,7 +71,6 @@ namespace StarkPlatform.Compiler.CodeGen
             _locals = locals;
             _exceptionHandlers = exceptionHandlers;
             _localScopes = localScopes;
-            _hasDynamicLocalVariables = hasDynamicLocalVariables;
             _importScopeOpt = importScopeOpt;
             _lambdaDebugInfo = lambdaDebugInfo;
             _closureDebugInfo = closureDebugInfo;
@@ -133,8 +130,6 @@ namespace StarkPlatform.Compiler.CodeGen
 
         ImmutableArray<Cci.ITypeReference> Cci.IMethodBody.StateMachineAwaiterSlots
             => _stateMachineAwaiterSlots;
-
-        bool Cci.IMethodBody.HasDynamicLocalVariables => _hasDynamicLocalVariables;
 
         public DebugId MethodId => _methodId;
 

@@ -379,7 +379,7 @@ namespace StarkPlatform.Compiler.Stark
                         resultKind = LookupResultKind.OverloadResolutionFailure;
                     }
 
-                    return SymbolInfoFactory.Create(symbols, resultKind, isDynamic: false);
+                    return SymbolInfoFactory.Create(symbols, resultKind);
             }
         }
 
@@ -1788,32 +1788,28 @@ namespace StarkPlatform.Compiler.Stark
             // Get symbols and result kind from the lowest and highest nodes associated with the
             // syntax node.
             ImmutableArray<Symbol> symbols = GetSemanticSymbols(
-                boundExpr, boundNodeForSyntacticParent, binderOpt, options, out bool isDynamic, out LookupResultKind resultKind, out ImmutableArray<Symbol> unusedMemberGroup);
+                boundExpr, boundNodeForSyntacticParent, binderOpt, options, out LookupResultKind resultKind, out ImmutableArray<Symbol> unusedMemberGroup);
 
             if (highestBoundNode is BoundExpression highestBoundExpr)
             {
                 LookupResultKind highestResultKind;
-                bool highestIsDynamic;
                 ImmutableArray<Symbol> unusedHighestMemberGroup;
                 ImmutableArray<Symbol> highestSymbols = GetSemanticSymbols(
-                    highestBoundExpr, boundNodeForSyntacticParent, binderOpt, options, out highestIsDynamic, out highestResultKind, out unusedHighestMemberGroup);
+                    highestBoundExpr, boundNodeForSyntacticParent, binderOpt, options, out highestResultKind, out unusedHighestMemberGroup);
 
                 if ((symbols.Length != 1 || resultKind == LookupResultKind.OverloadResolutionFailure) && highestSymbols.Length > 0)
                 {
                     symbols = highestSymbols;
                     resultKind = highestResultKind;
-                    isDynamic = highestIsDynamic;
                 }
                 else if (highestResultKind != LookupResultKind.Empty && highestResultKind < resultKind)
                 {
                     resultKind = highestResultKind;
-                    isDynamic = highestIsDynamic;
                 }
                 else if (highestBoundExpr.Kind == BoundKind.TypeOrValueExpression)
                 {
                     symbols = highestSymbols;
                     resultKind = highestResultKind;
-                    isDynamic = highestIsDynamic;
                 }
                 else if (highestBoundExpr.Kind == BoundKind.UnaryOperator)
                 {
@@ -1821,7 +1817,6 @@ namespace StarkPlatform.Compiler.Stark
                     {
                         symbols = highestSymbols;
                         resultKind = highestResultKind;
-                        isDynamic = highestIsDynamic;
                     }
                     else
                     {
@@ -1834,7 +1829,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 // Empty typically indicates an error symbol that was created because no real
                 // symbol actually existed.
-                return SymbolInfoFactory.Create(ImmutableArray<Symbol>.Empty, LookupResultKind.Empty, isDynamic);
+                return SymbolInfoFactory.Create(ImmutableArray<Symbol>.Empty, LookupResultKind.Empty);
             }
             else
             {
@@ -1859,7 +1854,7 @@ namespace StarkPlatform.Compiler.Stark
                 resultKind = LookupResultKind.OverloadResolutionFailure;
             }
 
-            return SymbolInfoFactory.Create(symbols, resultKind, isDynamic);
+            return SymbolInfoFactory.Create(symbols, resultKind);
         }
 
         private SymbolInfo GetSymbolInfoForSubpattern(BoundSubpattern subpattern)
@@ -2081,8 +2076,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 LookupResultKind resultKind;
                 ImmutableArray<Symbol> memberGroup;
-                bool isDynamic;
-                GetSemanticSymbols(boundExpr, boundNodeForSyntacticParent, binderOpt, options, out isDynamic, out resultKind, out memberGroup);
+                GetSemanticSymbols(boundExpr, boundNodeForSyntacticParent, binderOpt, options, out resultKind, out memberGroup);
 
                 return memberGroup;
             }
@@ -2136,7 +2130,7 @@ namespace StarkPlatform.Compiler.Stark
                     symbols = UnwrapAliases(symbols);
                 }
 
-                return SymbolInfoFactory.Create(symbols, resultKind, isDynamic: false);
+                return SymbolInfoFactory.Create(symbols, resultKind);
             }
             else
             {
@@ -3024,19 +3018,17 @@ namespace StarkPlatform.Compiler.Stark
             BoundNode boundNodeForSyntacticParent,
             Binder binderOpt,
             SymbolInfoOptions options,
-            out bool isDynamic,
             out LookupResultKind resultKind,
             out ImmutableArray<Symbol> memberGroup)
         {
             memberGroup = ImmutableArray<Symbol>.Empty;
             ImmutableArray<Symbol> symbols = ImmutableArray<Symbol>.Empty;
             resultKind = LookupResultKind.Viable;
-            isDynamic = false;
 
             switch (boundNode.Kind)
             {
                 case BoundKind.MethodGroup:
-                    symbols = GetMethodGroupSemanticSymbols((BoundMethodGroup)boundNode, boundNodeForSyntacticParent, binderOpt, out resultKind, out isDynamic, out memberGroup);
+                    symbols = GetMethodGroupSemanticSymbols((BoundMethodGroup)boundNode, boundNodeForSyntacticParent, binderOpt, out resultKind, out memberGroup);
                     break;
 
                 case BoundKind.PropertyGroup:
@@ -3105,7 +3097,7 @@ namespace StarkPlatform.Compiler.Stark
                         // as either a type or a property/field/event/local/parameter.  In such cases,
                         // the second interpretation applies so just visit the node for that.
                         BoundExpression valueExpression = ((BoundTypeOrValueExpression)boundNode).Data.ValueExpression;
-                        return GetSemanticSymbols(valueExpression, boundNodeForSyntacticParent, binderOpt, options, out isDynamic, out resultKind, out memberGroup);
+                        return GetSemanticSymbols(valueExpression, boundNodeForSyntacticParent, binderOpt, options, out resultKind, out memberGroup);
                     }
 
                 case BoundKind.Call:
@@ -3149,7 +3141,6 @@ namespace StarkPlatform.Compiler.Stark
 
                 case BoundKind.EventAssignmentOperator:
                     var eventAssignment = (BoundEventAssignmentOperator)boundNode;
-                    isDynamic = eventAssignment.IsDynamic;
                     var eventSymbol = eventAssignment.Event;
                     var methodSymbol = eventAssignment.IsAddition ? eventSymbol.AddMethod : eventSymbol.RemoveMethod;
                     if ((object)methodSymbol == null)
@@ -3166,59 +3157,52 @@ namespace StarkPlatform.Compiler.Stark
 
                 case BoundKind.Conversion:
                     var conversion = (BoundConversion)boundNode;
-                    isDynamic = conversion.ConversionKind.IsDynamic();
-                    if (!isDynamic)
+                    if ((conversion.ConversionKind == ConversionKind.MethodGroup) && conversion.IsExtensionMethod)
                     {
-                        if ((conversion.ConversionKind == ConversionKind.MethodGroup) && conversion.IsExtensionMethod)
-                        {
-                            var symbol = conversion.SymbolOpt;
-                            Debug.Assert((object)symbol != null);
-                            symbols = ImmutableArray.Create<Symbol>(ReducedExtensionMethodSymbol.Create(symbol));
-                            resultKind = conversion.ResultKind;
-                        }
-                        else if (conversion.ConversionKind.IsUserDefinedConversion())
-                        {
-                            GetSymbolsAndResultKind(conversion, conversion.SymbolOpt, conversion.OriginalUserDefinedConversionsOpt, out symbols, out resultKind);
-                        }
-                        else
-                        {
-                            goto default;
-                        }
+                        var symbol = conversion.SymbolOpt;
+                        Debug.Assert((object)symbol != null);
+                        symbols = ImmutableArray.Create<Symbol>(ReducedExtensionMethodSymbol.Create(symbol));
+                        resultKind = conversion.ResultKind;
+                    }
+                    else if (conversion.ConversionKind.IsUserDefinedConversion())
+                    {
+                        GetSymbolsAndResultKind(conversion, conversion.SymbolOpt, conversion.OriginalUserDefinedConversionsOpt, out symbols, out resultKind);
+                    }
+                    else
+                    {
+                        goto default;
                     }
                     break;
 
                 case BoundKind.BinaryOperator:
-                    GetSymbolsAndResultKind((BoundBinaryOperator)boundNode, out isDynamic, ref resultKind, ref symbols);
+                    GetSymbolsAndResultKind((BoundBinaryOperator)boundNode, ref resultKind, ref symbols);
                     break;
 
                 case BoundKind.UnaryOperator:
-                    GetSymbolsAndResultKind((BoundUnaryOperator)boundNode, out isDynamic, ref resultKind, ref symbols);
+                    GetSymbolsAndResultKind((BoundUnaryOperator)boundNode, ref resultKind, ref symbols);
                     break;
 
                 case BoundKind.UserDefinedConditionalLogicalOperator:
                     var @operator = (BoundUserDefinedConditionalLogicalOperator)boundNode;
-                    isDynamic = false;
                     GetSymbolsAndResultKind(@operator, @operator.LogicalOperator, @operator.OriginalUserDefinedOperatorsOpt, out symbols, out resultKind);
                     break;
 
                 case BoundKind.CompoundAssignmentOperator:
-                    GetSymbolsAndResultKind((BoundCompoundAssignmentOperator)boundNode, out isDynamic, ref resultKind, ref symbols);
+                    GetSymbolsAndResultKind((BoundCompoundAssignmentOperator)boundNode, ref resultKind, ref symbols);
                     break;
 
                 case BoundKind.IncrementOperator:
-                    GetSymbolsAndResultKind((BoundIncrementOperator)boundNode, out isDynamic, ref resultKind, ref symbols);
+                    GetSymbolsAndResultKind((BoundIncrementOperator)boundNode, ref resultKind, ref symbols);
                     break;
 
                 case BoundKind.AwaitExpression:
                     var await = (BoundAwaitExpression)boundNode;
-                    isDynamic = await.AwaitableInfo.IsDynamic;
                     // TODO:
                     goto default;
 
                 case BoundKind.ConditionalOperator:
                     var conditional = (BoundConditionalOperator)boundNode;
                     Debug.Assert(conditional.ExpressionSymbol is null);
-                    isDynamic = conditional.IsDynamic;
                     goto default;
 
                 case BoundKind.Attribute:
@@ -3265,38 +3249,6 @@ namespace StarkPlatform.Compiler.Stark
                         if (query.Cast != null && (object)query.Cast.ExpressionSymbol != null) builder.Add(query.Cast.ExpressionSymbol);
                         symbols = builder.ToImmutableAndFree();
                     }
-                    break;
-
-                case BoundKind.DynamicInvocation:
-                    var dynamicInvocation = (BoundDynamicInvocation)boundNode;
-                    Debug.Assert(dynamicInvocation.ExpressionSymbol is null);
-                    symbols = memberGroup = dynamicInvocation.ApplicableMethods.Cast<MethodSymbol, Symbol>();
-                    isDynamic = true;
-                    break;
-
-                case BoundKind.DynamicCollectionElementInitializer:
-                    var collectionInit = (BoundDynamicCollectionElementInitializer)boundNode;
-                    Debug.Assert(collectionInit.ExpressionSymbol is null);
-                    symbols = memberGroup = collectionInit.ApplicableMethods.Cast<MethodSymbol, Symbol>();
-                    isDynamic = true;
-                    break;
-
-                case BoundKind.DynamicIndexerAccess:
-                    var dynamicIndexer = (BoundDynamicIndexerAccess)boundNode;
-                    Debug.Assert(dynamicIndexer.ExpressionSymbol is null);
-                    symbols = memberGroup = dynamicIndexer.ApplicableIndexers.Cast<PropertySymbol, Symbol>();
-                    isDynamic = true;
-                    break;
-
-                case BoundKind.DynamicMemberAccess:
-                    Debug.Assert((object)boundNode.ExpressionSymbol == null);
-                    isDynamic = true;
-                    break;
-
-                case BoundKind.DynamicObjectCreationExpression:
-                    var objectCreation = (BoundDynamicObjectCreationExpression)boundNode;
-                    symbols = memberGroup = objectCreation.ApplicableMethods.Cast<MethodSymbol, Symbol>();
-                    isDynamic = true;
                     break;
 
                 case BoundKind.ObjectCreationExpression:
@@ -3431,17 +3383,13 @@ namespace StarkPlatform.Compiler.Stark
             return thisParam;
         }
 
-        private static void GetSymbolsAndResultKind(BoundUnaryOperator unaryOperator, out bool isDynamic, ref LookupResultKind resultKind, ref ImmutableArray<Symbol> symbols)
+        private static void GetSymbolsAndResultKind(BoundUnaryOperator unaryOperator, ref LookupResultKind resultKind, ref ImmutableArray<Symbol> symbols)
         {
             UnaryOperatorKind operandType = unaryOperator.OperatorKind.OperandTypes();
-            isDynamic = unaryOperator.OperatorKind.IsDynamic();
 
             if (operandType == 0 || operandType == UnaryOperatorKind.UserDefined || unaryOperator.ResultKind != LookupResultKind.Viable)
             {
-                if (!isDynamic)
-                {
-                    GetSymbolsAndResultKind(unaryOperator, unaryOperator.MethodOpt, unaryOperator.OriginalUserDefinedOperatorsOpt, out symbols, out resultKind);
-                }
+                GetSymbolsAndResultKind(unaryOperator, unaryOperator.MethodOpt, unaryOperator.OriginalUserDefinedOperatorsOpt, out symbols, out resultKind);
             }
             else
             {
@@ -3455,17 +3403,13 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private static void GetSymbolsAndResultKind(BoundIncrementOperator increment, out bool isDynamic, ref LookupResultKind resultKind, ref ImmutableArray<Symbol> symbols)
+        private static void GetSymbolsAndResultKind(BoundIncrementOperator increment, ref LookupResultKind resultKind, ref ImmutableArray<Symbol> symbols)
         {
             UnaryOperatorKind operandType = increment.OperatorKind.OperandTypes();
-            isDynamic = increment.OperatorKind.IsDynamic();
 
             if (operandType == 0 || operandType == UnaryOperatorKind.UserDefined || increment.ResultKind != LookupResultKind.Viable)
             {
-                if (!isDynamic)
-                {
-                    GetSymbolsAndResultKind(increment, increment.MethodOpt, increment.OriginalUserDefinedOperatorsOpt, out symbols, out resultKind);
-                }
+                GetSymbolsAndResultKind(increment, increment.MethodOpt, increment.OriginalUserDefinedOperatorsOpt, out symbols, out resultKind);
             }
             else
             {
@@ -3479,25 +3423,20 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private static void GetSymbolsAndResultKind(BoundBinaryOperator binaryOperator, out bool isDynamic, ref LookupResultKind resultKind, ref ImmutableArray<Symbol> symbols)
+        private static void GetSymbolsAndResultKind(BoundBinaryOperator binaryOperator, ref LookupResultKind resultKind, ref ImmutableArray<Symbol> symbols)
         {
             BinaryOperatorKind operandType = binaryOperator.OperatorKind.OperandTypes();
             BinaryOperatorKind op = binaryOperator.OperatorKind.Operator();
-            isDynamic = binaryOperator.OperatorKind.IsDynamic();
 
             if (operandType == 0 || operandType == BinaryOperatorKind.UserDefined || binaryOperator.ResultKind != LookupResultKind.Viable || binaryOperator.OperatorKind.IsLogical())
             {
-                if (!isDynamic)
-                {
-                    GetSymbolsAndResultKind(binaryOperator, binaryOperator.MethodOpt, binaryOperator.OriginalUserDefinedOperatorsOpt, out symbols, out resultKind);
-                }
+                GetSymbolsAndResultKind(binaryOperator, binaryOperator.MethodOpt, binaryOperator.OriginalUserDefinedOperatorsOpt, out symbols, out resultKind);
             }
             else
             {
                 Debug.Assert((object)binaryOperator.MethodOpt == null && binaryOperator.OriginalUserDefinedOperatorsOpt.IsDefaultOrEmpty);
 
-                if (!isDynamic &&
-                    (op == BinaryOperatorKind.Equal || op == BinaryOperatorKind.NotEqual) &&
+                if ((op == BinaryOperatorKind.Equal || op == BinaryOperatorKind.NotEqual) &&
                     ((binaryOperator.Left.IsLiteralNull() && binaryOperator.Right.Type.IsNullableType()) ||
                      (binaryOperator.Right.IsLiteralNull() && binaryOperator.Left.Type.IsNullableType())) &&
                     binaryOperator.Type.SpecialType == SpecialType.System_Boolean)
@@ -3513,7 +3452,7 @@ namespace StarkPlatform.Compiler.Stark
                 }
                 else
                 {
-                    symbols = ImmutableArray.Create(GetIntrinsicOperatorSymbol(op, isDynamic,
+                    symbols = ImmutableArray.Create(GetIntrinsicOperatorSymbol(op,
                                                                              binaryOperator.Left.Type,
                                                                              binaryOperator.Right.Type,
                                                                              binaryOperator.Type,
@@ -3524,29 +3463,11 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private static Symbol GetIntrinsicOperatorSymbol(BinaryOperatorKind op, bool isDynamic, TypeSymbol leftType, TypeSymbol rightType, TypeSymbol returnType, bool isChecked)
+        private static Symbol GetIntrinsicOperatorSymbol(BinaryOperatorKind op, TypeSymbol leftType, TypeSymbol rightType, TypeSymbol returnType, bool isChecked)
         {
-            if (!isDynamic)
-            {
-                leftType = leftType.StrippedType();
-                rightType = rightType.StrippedType();
-                returnType = returnType.StrippedType();
-            }
-            else
-            {
-                Debug.Assert(returnType.IsDynamic());
-
-                if ((object)leftType == null)
-                {
-                    Debug.Assert(rightType.IsDynamic());
-                    leftType = rightType;
-                }
-                else if ((object)rightType == null)
-                {
-                    Debug.Assert(leftType.IsDynamic());
-                    rightType = leftType;
-                }
-            }
+            leftType = leftType.StrippedType();
+            rightType = rightType.StrippedType();
+            returnType = returnType.StrippedType();
             return new SynthesizedIntrinsicOperatorSymbol(leftType,
                                                           OperatorFacts.BinaryOperatorNameFromOperatorKind(op),
                                                           rightType,
@@ -3554,24 +3475,20 @@ namespace StarkPlatform.Compiler.Stark
                                                           isChecked);
         }
 
-        private static void GetSymbolsAndResultKind(BoundCompoundAssignmentOperator compoundAssignment, out bool isDynamic, ref LookupResultKind resultKind, ref ImmutableArray<Symbol> symbols)
+        private static void GetSymbolsAndResultKind(BoundCompoundAssignmentOperator compoundAssignment, ref LookupResultKind resultKind, ref ImmutableArray<Symbol> symbols)
         {
             BinaryOperatorKind operandType = compoundAssignment.Operator.Kind.OperandTypes();
             BinaryOperatorKind op = compoundAssignment.Operator.Kind.Operator();
-            isDynamic = compoundAssignment.Operator.Kind.IsDynamic();
 
             if (operandType == 0 || operandType == BinaryOperatorKind.UserDefined || compoundAssignment.ResultKind != LookupResultKind.Viable)
             {
-                if (!isDynamic)
-                {
-                    GetSymbolsAndResultKind(compoundAssignment, compoundAssignment.Operator.Method, compoundAssignment.OriginalUserDefinedOperatorsOpt, out symbols, out resultKind);
-                }
+                GetSymbolsAndResultKind(compoundAssignment, compoundAssignment.Operator.Method, compoundAssignment.OriginalUserDefinedOperatorsOpt, out symbols, out resultKind);
             }
             else
             {
                 Debug.Assert((object)compoundAssignment.Operator.Method == null && compoundAssignment.OriginalUserDefinedOperatorsOpt.IsDefaultOrEmpty);
 
-                symbols = ImmutableArray.Create(GetIntrinsicOperatorSymbol(op, isDynamic,
+                symbols = ImmutableArray.Create(GetIntrinsicOperatorSymbol(op,
                                                                              compoundAssignment.Operator.LeftType,
                                                                              compoundAssignment.Operator.RightType,
                                                                              compoundAssignment.Operator.ReturnType,
@@ -3872,7 +3789,6 @@ namespace StarkPlatform.Compiler.Stark
             BoundNode boundNodeForSyntacticParent,
             Binder binderOpt,
             out LookupResultKind resultKind,
-            out bool isDynamic,
             out ImmutableArray<Symbol> methodGroup)
         {
             Debug.Assert(binderOpt != null || IsInTree(boundNode.Syntax));
@@ -3884,8 +3800,6 @@ namespace StarkPlatform.Compiler.Stark
             {
                 resultKind = LookupResultKind.Viable;
             }
-
-            isDynamic = false;
 
             // The method group needs filtering.
             Binder binder = binderOpt ?? GetEnclosingBinder(GetAdjustedNodePosition(boundNode.Syntax));
@@ -3952,12 +3866,6 @@ namespace StarkPlatform.Compiler.Stark
 
                         break;
 
-                    case BoundKind.DynamicInvocation:
-                        var dynamicInvocation = (BoundDynamicInvocation)boundNodeForSyntacticParent;
-                        symbols = dynamicInvocation.ApplicableMethods.Cast<MethodSymbol, Symbol>();
-                        isDynamic = true;
-                        break;
-
                     case BoundKind.BadExpression:
                         // If the bad expression has symbol(s) from this method group, it better indicates any problems.
                         ImmutableArray<Symbol> myMethodGroup = methodGroup;
@@ -4003,7 +3911,7 @@ namespace StarkPlatform.Compiler.Stark
                 // get resolved. Return all members of the method group, with a resultKind of OverloadResolutionFailure
                 // (unless the method group already has a worse result kind).
                 symbols = methodGroup;
-                if (!isDynamic && resultKind > LookupResultKind.OverloadResolutionFailure)
+                if (resultKind > LookupResultKind.OverloadResolutionFailure)
                 {
                     resultKind = LookupResultKind.OverloadResolutionFailure;
                 }

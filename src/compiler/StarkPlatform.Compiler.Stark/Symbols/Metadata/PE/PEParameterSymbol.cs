@@ -256,7 +256,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 }
 
                 // CONSIDER: Can we make parameter type computation lazy?
-                var typeSymbol = DynamicTypeDecoder.TransformType(type.TypeSymbol, countOfCustomModifiers, handle, moduleSymbol, refKind);
+                var typeSymbol = type.TypeSymbol;
                 type = type.WithTypeAndModifiers(typeSymbol, type.CustomModifiers);
                 // Decode nullable before tuple types to avoid converting between
                 // NamedTypeSymbol and TupleTypeSymbol unnecessarily.

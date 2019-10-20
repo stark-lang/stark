@@ -86,14 +86,8 @@ namespace StarkPlatform.Compiler.Operations
                     return CreateBoundParameterOperation((BoundParameter)boundNode);
                 case BoundKind.Literal:
                     return CreateBoundLiteralOperation((BoundLiteral)boundNode);
-                case BoundKind.DynamicInvocation:
-                    return CreateBoundDynamicInvocationExpressionOperation((BoundDynamicInvocation)boundNode);
-                case BoundKind.DynamicIndexerAccess:
-                    return CreateBoundDynamicIndexerAccessExpressionOperation((BoundDynamicIndexerAccess)boundNode);
                 case BoundKind.ObjectCreationExpression:
                     return CreateBoundObjectCreationExpressionOperation((BoundObjectCreationExpression)boundNode);
-                case BoundKind.DynamicObjectCreationExpression:
-                    return CreateBoundDynamicObjectCreationExpressionOperation((BoundDynamicObjectCreationExpression)boundNode);
                 case BoundKind.ObjectInitializerExpression:
                     return CreateBoundObjectInitializerExpressionOperation((BoundObjectInitializerExpression)boundNode);
                 case BoundKind.CollectionInitializerExpression:
@@ -102,12 +96,6 @@ namespace StarkPlatform.Compiler.Operations
                     return CreateBoundObjectInitializerMemberOperation((BoundObjectInitializerMember)boundNode);
                 case BoundKind.CollectionElementInitializer:
                     return CreateBoundCollectionElementInitializerOperation((BoundCollectionElementInitializer)boundNode);
-                case BoundKind.DynamicObjectInitializerMember:
-                    return CreateBoundDynamicObjectInitializerMemberOperation((BoundDynamicObjectInitializerMember)boundNode);
-                case BoundKind.DynamicMemberAccess:
-                    return CreateBoundDynamicMemberAccessOperation((BoundDynamicMemberAccess)boundNode);
-                case BoundKind.DynamicCollectionElementInitializer:
-                    return CreateBoundDynamicCollectionElementInitializerOperation((BoundDynamicCollectionElementInitializer)boundNode);
                 case BoundKind.UnboundLambda:
                     return CreateUnboundLambdaOperation((UnboundLambda)boundNode);
                 case BoundKind.Lambda:
@@ -595,86 +583,6 @@ namespace StarkPlatform.Compiler.Operations
             return new CSharpLazyObjectCreationOperation(this, boundObjectCreationExpression, constructor, _semanticModel, syntax, type, constantValue, isImplicit);
         }
 
-        private IDynamicObjectCreationOperation CreateBoundDynamicObjectCreationExpressionOperation(BoundDynamicObjectCreationExpression boundDynamicObjectCreationExpression)
-        {
-            ImmutableArray<string> argumentNames = boundDynamicObjectCreationExpression.ArgumentNamesOpt.NullToEmpty();
-            ImmutableArray<RefKind> argumentRefKinds = boundDynamicObjectCreationExpression.ArgumentRefKindsOpt.NullToEmpty();
-            SyntaxNode syntax = boundDynamicObjectCreationExpression.Syntax;
-            ITypeSymbol type = boundDynamicObjectCreationExpression.Type;
-            Optional<object> constantValue = ConvertToOptional(boundDynamicObjectCreationExpression.ConstantValue);
-            bool isImplicit = boundDynamicObjectCreationExpression.WasCompilerGenerated;
-            return new CSharpLazyDynamicObjectCreationOperation(this, boundDynamicObjectCreationExpression, argumentNames, argumentRefKinds, _semanticModel, syntax, type, constantValue, isImplicit);
-        }
-
-        internal IOperation CreateBoundDynamicInvocationExpressionReceiver(BoundNode receiver)
-        {
-            switch (receiver)
-            {
-                case BoundImplicitReceiver implicitReceiver:
-                    return CreateBoundDynamicMemberAccessOperation(implicitReceiver, typeArgumentsOpt: ImmutableArray<TypeSymbol>.Empty, memberName: "Add",
-                                                                   implicitReceiver.Syntax, type: null, value: default, isImplicit: true);
-
-                case BoundMethodGroup methodGroup:
-                    return CreateBoundDynamicMemberAccessOperation(methodGroup.ReceiverOpt, TypeMap.AsTypeSymbols(methodGroup.TypeArgumentsOpt), methodGroup.Name,
-                                                                   methodGroup.Syntax, methodGroup.Type, methodGroup.ConstantValue, methodGroup.WasCompilerGenerated);
-
-                default:
-                    return Create(receiver);
-            }
-        }
-
-        private IDynamicInvocationOperation CreateBoundDynamicInvocationExpressionOperation(BoundDynamicInvocation boundDynamicInvocation)
-        {
-            ImmutableArray<string> argumentNames = boundDynamicInvocation.ArgumentNamesOpt.NullToEmpty();
-            ImmutableArray<RefKind> argumentRefKinds = boundDynamicInvocation.ArgumentRefKindsOpt.NullToEmpty();
-            SyntaxNode syntax = boundDynamicInvocation.Syntax;
-            ITypeSymbol type = boundDynamicInvocation.Type;
-            Optional<object> constantValue = ConvertToOptional(boundDynamicInvocation.ConstantValue);
-            bool isImplicit = boundDynamicInvocation.WasCompilerGenerated;
-            return new CSharpLazyDynamicInvocationOperation(this, boundDynamicInvocation, argumentNames, argumentRefKinds, _semanticModel, syntax, type, constantValue, isImplicit);
-        }
-
-        internal IOperation CreateBoundDynamicIndexerAccessExpressionReceiver(BoundExpression indexer)
-        {
-            switch (indexer)
-            {
-                case BoundDynamicIndexerAccess boundDynamicIndexerAccess:
-                    return Create(boundDynamicIndexerAccess.ReceiverOpt);
-
-                case BoundObjectInitializerMember boundObjectInitializerMember:
-                    return CreateImplicitReceiver(boundObjectInitializerMember.Syntax, boundObjectInitializerMember.ReceiverType);
-
-                default:
-                    throw ExceptionUtilities.UnexpectedValue(indexer.Kind);
-            }
-        }
-
-        internal ImmutableArray<IOperation> CreateBoundDynamicIndexerAccessArguments(BoundExpression indexer)
-        {
-            switch (indexer)
-            {
-                case BoundDynamicIndexerAccess boundDynamicAccess:
-                    return CreateFromArray<BoundExpression, IOperation>(boundDynamicAccess.Arguments);
-
-                case BoundObjectInitializerMember boundObjectInitializerMember:
-                    return CreateFromArray<BoundExpression, IOperation>(boundObjectInitializerMember.Arguments);
-
-                default:
-                    throw ExceptionUtilities.UnexpectedValue(indexer.Kind);
-            }
-        }
-
-        private IDynamicIndexerAccessOperation CreateBoundDynamicIndexerAccessExpressionOperation(BoundDynamicIndexerAccess boundDynamicIndexerAccess)
-        {
-            ImmutableArray<string> argumentNames = boundDynamicIndexerAccess.ArgumentNamesOpt.NullToEmpty();
-            ImmutableArray<RefKind> argumentRefKinds = boundDynamicIndexerAccess.ArgumentRefKindsOpt.NullToEmpty();
-            SyntaxNode syntax = boundDynamicIndexerAccess.Syntax;
-            ITypeSymbol type = boundDynamicIndexerAccess.Type;
-            Optional<object> constantValue = ConvertToOptional(boundDynamicIndexerAccess.ConstantValue);
-            bool isImplicit = boundDynamicIndexerAccess.WasCompilerGenerated;
-            return new CSharpLazyDynamicIndexerAccessOperation(this, boundDynamicIndexerAccess, argumentNames, argumentRefKinds, _semanticModel, syntax, type, constantValue, isImplicit);
-        }
-
         private IObjectOrCollectionInitializerOperation CreateBoundObjectInitializerExpressionOperation(BoundObjectInitializerExpression boundObjectInitializerExpression)
         {
             SyntaxNode syntax = boundObjectInitializerExpression.Syntax;
@@ -701,14 +609,7 @@ namespace StarkPlatform.Compiler.Operations
             Optional<object> constantValue = ConvertToOptional(boundObjectInitializerMember.ConstantValue);
             bool isImplicit = boundObjectInitializerMember.WasCompilerGenerated;
 
-            if ((object)memberSymbol == null)
-            {
-                Debug.Assert(boundObjectInitializerMember.Type.IsDynamic());
-
-                ImmutableArray<string> argumentNames = boundObjectInitializerMember.ArgumentNamesOpt.NullToEmpty();
-                ImmutableArray<RefKind> argumentRefKinds = boundObjectInitializerMember.ArgumentRefKindsOpt.NullToEmpty();
-                return new CSharpLazyDynamicIndexerAccessOperation(this, boundObjectInitializerMember, argumentNames, argumentRefKinds, _semanticModel, syntax, type, constantValue, isImplicit);
-            }
+            Debug.Assert((object) memberSymbol != null);
 
             switch (memberSymbol.Kind)
             {
@@ -742,20 +643,6 @@ namespace StarkPlatform.Compiler.Operations
                     CreateImplicitReceiver(boundObjectInitializerMember.Syntax, boundObjectInitializerMember.ReceiverType);
         }
 
-        private IOperation CreateBoundDynamicObjectInitializerMemberOperation(BoundDynamicObjectInitializerMember boundDynamicObjectInitializerMember)
-        {
-            IOperation instanceReceiver = CreateImplicitReceiver(boundDynamicObjectInitializerMember.Syntax, boundDynamicObjectInitializerMember.ReceiverType);
-            string memberName = boundDynamicObjectInitializerMember.MemberName;
-            ImmutableArray<ITypeSymbol> typeArguments = ImmutableArray<ITypeSymbol>.Empty;
-            ITypeSymbol containingType = boundDynamicObjectInitializerMember.ReceiverType;
-            SyntaxNode syntax = boundDynamicObjectInitializerMember.Syntax;
-            ITypeSymbol type = boundDynamicObjectInitializerMember.Type;
-            Optional<object> constantValue = ConvertToOptional(boundDynamicObjectInitializerMember.ConstantValue);
-            bool isImplicit = boundDynamicObjectInitializerMember.WasCompilerGenerated;
-
-            return new DynamicMemberReferenceOperation(instanceReceiver, memberName, typeArguments, containingType, _semanticModel, syntax, type, constantValue, isImplicit);
-        }
-
         private IOperation CreateBoundCollectionElementInitializerOperation(BoundCollectionElementInitializer boundCollectionElementInitializer)
         {
             MethodSymbol addMethod = boundCollectionElementInitializer.AddMethod;
@@ -771,46 +658,6 @@ namespace StarkPlatform.Compiler.Operations
 
             bool isVirtual = IsCallVirtual(addMethod, boundCollectionElementInitializer.ImplicitReceiverOpt);
             return new CSharpLazyInvocationOperation(this, boundCollectionElementInitializer, addMethod, isVirtual, _semanticModel, syntax, type, constantValue, isImplicit);
-        }
-
-        private IDynamicMemberReferenceOperation CreateBoundDynamicMemberAccessOperation(BoundDynamicMemberAccess boundDynamicMemberAccess)
-        {
-            return CreateBoundDynamicMemberAccessOperation(boundDynamicMemberAccess.Receiver, TypeMap.AsTypeSymbols(boundDynamicMemberAccess.TypeArgumentsOpt), boundDynamicMemberAccess.Name,
-                boundDynamicMemberAccess.Syntax, boundDynamicMemberAccess.Type, boundDynamicMemberAccess.ConstantValue, boundDynamicMemberAccess.WasCompilerGenerated);
-        }
-
-        private IDynamicMemberReferenceOperation CreateBoundDynamicMemberAccessOperation(
-            BoundExpression receiverOpt,
-            ImmutableArray<TypeSymbol> typeArgumentsOpt,
-            string memberName,
-            SyntaxNode syntaxNode,
-            ITypeSymbol type,
-            ConstantValue value,
-            bool isImplicit)
-        {
-            ITypeSymbol containingType = null;
-            if (receiverOpt?.Kind == BoundKind.TypeExpression)
-            {
-                containingType = receiverOpt.Type;
-                receiverOpt = null;
-            }
-
-            ImmutableArray<ITypeSymbol> typeArguments = ImmutableArray<ITypeSymbol>.Empty;
-            if (!typeArgumentsOpt.IsDefault)
-            {
-                typeArguments = ImmutableArray<ITypeSymbol>.CastUp(typeArgumentsOpt);
-            }
-            Optional<object> constantValue = ConvertToOptional(value);
-            return new CSharpLazyDynamicMemberReferenceOperation(this, receiverOpt, memberName, typeArguments, containingType, _semanticModel, syntaxNode, type, constantValue, isImplicit);
-        }
-
-        private IDynamicInvocationOperation CreateBoundDynamicCollectionElementInitializerOperation(BoundDynamicCollectionElementInitializer boundCollectionElementInitializer)
-        {
-            SyntaxNode syntax = boundCollectionElementInitializer.Syntax;
-            ITypeSymbol type = boundCollectionElementInitializer.Type;
-            Optional<object> constantValue = ConvertToOptional(boundCollectionElementInitializer.ConstantValue);
-            bool isImplicit = boundCollectionElementInitializer.WasCompilerGenerated;
-            return new CSharpLazyDynamicInvocationOperation(this, boundCollectionElementInitializer, argumentNames: ImmutableArray<string>.Empty, argumentRefKinds: ImmutableArray<RefKind>.Empty, _semanticModel, syntax, type, constantValue, isImplicit);
         }
 
         private IOperation CreateUnboundLambdaOperation(UnboundLambda unboundLambda)
@@ -1166,15 +1013,6 @@ namespace StarkPlatform.Compiler.Operations
             BinaryOperatorKind operatorKind = Helper.DeriveBinaryOperatorKind(boundBinaryOperator.OperatorKind);
             IMethodSymbol operatorMethod = boundBinaryOperator.MethodOpt;
             IMethodSymbol unaryOperatorMethod = null;
-
-            // For dynamic logical operator MethodOpt is actually the unary true/false operator
-            if (boundBinaryOperator.Type.IsDynamic() &&
-                (operatorKind == BinaryOperatorKind.ConditionalAnd || operatorKind == BinaryOperatorKind.ConditionalOr) &&
-                operatorMethod?.Parameters.Length == 1)
-            {
-                unaryOperatorMethod = operatorMethod;
-                operatorMethod = null;
-            }
 
             SyntaxNode syntax = boundBinaryOperator.Syntax;
             ITypeSymbol type = boundBinaryOperator.Type;

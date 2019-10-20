@@ -96,7 +96,6 @@ namespace StarkPlatform.Cci
 
             if (!suppressNewCustomDebugInfo)
             {
-                SerializeDynamicLocalInfo(ref encoder, methodBody);
                 SerializeTupleElementNames(ref encoder, methodBody);
 
                 if (emitEncInfo)
@@ -171,48 +170,6 @@ namespace StarkPlatform.Cci
             }
 
             return builder;
-        }
-
-        private static void SerializeDynamicLocalInfo(ref CustomDebugInfoEncoder encoder, IMethodBody methodBody)
-        {
-            if (!methodBody.HasDynamicLocalVariables)
-            {
-                return;
-            }
-
-            byte[] GetDynamicFlags(ILocalDefinition local)
-            {
-                var dynamicTransformFlags = local.DynamicTransformFlags;
-                var flags = new byte[CustomDebugInfoEncoder.DynamicAttributeSize];
-                for (int k = 0; k < dynamicTransformFlags.Length; k++)
-                {
-                    if (dynamicTransformFlags[k])
-                    {
-                        flags[k] = 1;
-                    }
-                }
-
-                return flags;
-            }
-
-            var dynamicLocals = GetLocalInfoToSerialize(
-                methodBody,
-                local =>
-                {
-                    var dynamicTransformFlags = local.DynamicTransformFlags;
-                    return !dynamicTransformFlags.IsEmpty &&
-                        dynamicTransformFlags.Length <= CustomDebugInfoEncoder.DynamicAttributeSize &&
-                        local.Name.Length < CustomDebugInfoEncoder.IdentifierSize;
-                },
-                (scope, local) => (local.Name, GetDynamicFlags(local), local.DynamicTransformFlags.Length, (local.SlotIndex < 0) ? 0 : local.SlotIndex));
-
-            if (dynamicLocals == null)
-            {
-                return;
-            }
-
-            encoder.AddDynamicLocals(dynamicLocals);
-            dynamicLocals.Free();
         }
 
         private static void SerializeTupleElementNames(ref CustomDebugInfoEncoder encoder, IMethodBody methodBody)

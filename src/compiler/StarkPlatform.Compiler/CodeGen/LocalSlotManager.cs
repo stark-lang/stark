@@ -126,7 +126,6 @@ namespace StarkPlatform.Compiler.CodeGen
             LocalDebugId id,
             LocalVariableAttributes pdbAttributes,
             LocalSlotConstraints constraints,
-            ImmutableArray<bool> dynamicTransformFlags,
             ImmutableArray<string> tupleElementNames,
             bool isSlotReusable)
         {
@@ -134,7 +133,7 @@ namespace StarkPlatform.Compiler.CodeGen
 
             if (!isSlotReusable || !FreeSlots.TryPop(new LocalSignature(type, constraints), out local))
             {
-                local = this.DeclareLocalImpl(type, symbol, name, kind, id, pdbAttributes, constraints, dynamicTransformFlags, tupleElementNames);
+                local = this.DeclareLocalImpl(type, symbol, name, kind, id, pdbAttributes, constraints, tupleElementNames);
             }
 
             LocalMap.Add(symbol, local);
@@ -180,7 +179,6 @@ namespace StarkPlatform.Compiler.CodeGen
                     id: LocalDebugId.None,
                     pdbAttributes: LocalVariableAttributes.DebuggerHidden,
                     constraints: constraints,
-                    dynamicTransformFlags: dynamicTransformFlags,
                     tupleElementNames: tupleElementNames);
             }
 
@@ -195,7 +193,6 @@ namespace StarkPlatform.Compiler.CodeGen
             LocalDebugId id,
             LocalVariableAttributes pdbAttributes,
             LocalSlotConstraints constraints,
-            ImmutableArray<bool> dynamicTransformFlags,
             ImmutableArray<string> tupleElementNames)
         {
             if (_lazyAllLocals == null)
@@ -215,7 +212,6 @@ namespace StarkPlatform.Compiler.CodeGen
                     id,
                     pdbAttributes,
                     constraints,
-                    dynamicTransformFlags: dynamicTransformFlags,
                     tupleElementNames: tupleElementNames);
                 if (local != null)
                 {
@@ -234,7 +230,6 @@ namespace StarkPlatform.Compiler.CodeGen
                 id: id,
                 pdbAttributes: pdbAttributes,
                 constraints: constraints,
-                dynamicTransformFlags: dynamicTransformFlags,
                 tupleElementNames: tupleElementNames);
 
             _lazyAllLocals.Add(local);

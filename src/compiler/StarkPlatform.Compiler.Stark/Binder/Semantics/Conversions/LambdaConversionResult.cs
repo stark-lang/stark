@@ -15,8 +15,8 @@ namespace StarkPlatform.Compiler.Stark
         MismatchedParameterType,
         RefInImplicitlyTypedLambda,
         StaticTypeInImplicitlyTypedLambda,
-        ExpressionTreeMustHaveDelegateTypeArgument,
-        ExpressionTreeFromAnonymousMethod,
+        // ExpressionTreeMustHaveDelegateTypeArgument,
+        // ExpressionTreeFromAnonymousMethod,
         BindingFailed
     }
 }

@@ -203,9 +203,6 @@ namespace StarkPlatform.Compiler.Operations
                 case BoundKind.ObjectInitializerMember:
                     return _nodeMap.GetOrAdd(initializedMember, key =>
                         CreateBoundObjectInitializerMemberOperation((BoundObjectInitializerMember)key, isObjectOrCollectionInitializer: true));
-                case BoundKind.DynamicObjectInitializerMember:
-                    return _nodeMap.GetOrAdd(initializedMember, key =>
-                        CreateBoundDynamicObjectInitializerMemberOperation((BoundDynamicObjectInitializerMember)key));
                 default:
                     return Create(initializedMember);
             }

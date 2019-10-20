@@ -124,15 +124,6 @@ namespace StarkPlatform.Compiler.Stark
                 node, node, methodName, boundExpression, analyzedArguments, diagnostics, queryClause,
                 allowUnexpandedForm: allowUnexpandedForm);
 
-            // Query operator can't be called dynamically. 
-            if (queryClause != null && result.Kind == BoundKind.DynamicInvocation)
-            {
-                // the error has already been reported by BindInvocationExpression
-                Debug.Assert(diagnostics.HasAnyErrors());
-
-                result = CreateBadCall(node, boundExpression, LookupResultKind.Viable, analyzedArguments);
-            }
-
             result.WasCompilerGenerated = true;
             analyzedArguments.Free();
             return result;
@@ -234,15 +225,7 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression result;
             NamedTypeSymbol delegateType;
 
-            if ((object)boundExpression.Type != null && boundExpression.Type.IsDynamic())
-            {
-                // Either we have a dynamic method group invocation "dyn.M(...)" or 
-                // a dynamic delegate invocation "dyn(...)" -- either way, bind it as a dynamic
-                // invocation and let the lowering pass sort it out.
-                reportSuppressionIfPresent();
-                result = BindDynamicInvocation(node, boundExpression, analyzedArguments, ImmutableArray<MethodSymbol>.Empty, diagnostics, queryClause);
-            }
-            else if (boundExpression.Kind == BoundKind.MethodGroup)
+            if (boundExpression.Kind == BoundKind.MethodGroup)
             {
                 reportSuppressionIfPresent();
                 result = BindMethodGroupInvocation(
@@ -281,94 +264,6 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private BoundExpression BindDynamicInvocation(
-            SyntaxNode node,
-            BoundExpression expression,
-            AnalyzedArguments arguments,
-            ImmutableArray<MethodSymbol> applicableMethods,
-            DiagnosticBag diagnostics,
-            CSharpSyntaxNode queryClause)
-        {
-            CheckNamedArgumentsForDynamicInvocation(arguments, diagnostics);
-
-            bool hasErrors = false;
-            if (expression.Kind == BoundKind.MethodGroup)
-            {
-                BoundMethodGroup methodGroup = (BoundMethodGroup)expression;
-                BoundExpression receiver = methodGroup.ReceiverOpt;
-
-                // receiver is null if we are calling a static method declared on an outer class via its simple name:
-                if (receiver != null)
-                {
-                    switch (receiver.Kind)
-                    {
-                        case BoundKind.BaseReference:
-                            Error(diagnostics, ErrorCode.ERR_NoDynamicPhantomOnBase, node, methodGroup.Name);
-                            hasErrors = true;
-                            break;
-
-                        case BoundKind.ThisReference:
-                            // Can't call the HasThis method due to EE doing odd things with containing member and its containing type.
-                            if ((InConstructorInitializer || InFieldInitializer) && receiver.WasCompilerGenerated)
-                            {
-                                // Only a static method can be called in a constructor initializer. If we were not in a ctor initializer
-                                // the runtime binder would ignore the receiver, but in a ctor initializer we can't read "this" before 
-                                // the base constructor is called. We need to handle this as a type qualified static method call.
-                                // Also applicable to things like field initializers, which run before the ctor initializer.
-                                expression = methodGroup.Update(
-                                    methodGroup.TypeArgumentsOpt,
-                                    methodGroup.Name,
-                                    methodGroup.Methods,
-                                    methodGroup.LookupSymbolOpt,
-                                    methodGroup.LookupError,
-                                    methodGroup.Flags & ~BoundMethodGroupFlags.HasImplicitReceiver,
-                                    receiverOpt: new BoundTypeExpression(node, null, this.ContainingType).MakeCompilerGenerated(),
-                                    resultKind: methodGroup.ResultKind);
-                            }
-
-                            break;
-
-                        case BoundKind.TypeOrValueExpression:
-                            var typeOrValue = (BoundTypeOrValueExpression)receiver;
-
-                            // Unfortunately, the runtime binder doesn't have APIs that would allow us to pass both "type or value".
-                            // Ideally the runtime binder would choose between type and value based on the result of the overload resolution.
-                            // We need to pick one or the other here. Dev11 compiler passes the type only if the value can't be accessed.
-                            bool inStaticContext;
-                            bool useType = IsInstance(typeOrValue.Data.ValueSymbol) && !HasThis(isExplicit: false, inStaticContext: out inStaticContext);
-
-                            BoundExpression finalReceiver = ReplaceTypeOrValueReceiver(typeOrValue, useType, diagnostics);
-
-                            expression = methodGroup.Update(
-                                    methodGroup.TypeArgumentsOpt,
-                                    methodGroup.Name,
-                                    methodGroup.Methods,
-                                    methodGroup.LookupSymbolOpt,
-                                    methodGroup.LookupError,
-                                    methodGroup.Flags,
-                                    finalReceiver,
-                                    methodGroup.ResultKind);
-                            break;
-                    }
-                }
-            }
-
-            ImmutableArray<BoundExpression> argArray = BuildArgumentsForDynamicInvocation(arguments, diagnostics);
-            var refKindsArray = arguments.RefKinds.ToImmutableOrNull();
-
-            hasErrors &= ReportBadDynamicArguments(node, argArray, refKindsArray, diagnostics, queryClause);
-
-            return new BoundDynamicInvocation(
-                node,
-                arguments.GetNames(),
-                refKindsArray,
-                applicableMethods,
-                expression,
-                argArray,
-                type: Compilation.DynamicType,
-                hasErrors: hasErrors);
-        }
-
         private void CheckNamedArgumentsForDynamicInvocation(AnalyzedArguments arguments, DiagnosticBag diagnostics)
         {
             if (arguments.Names.Count == 0)
@@ -396,116 +291,6 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private ImmutableArray<BoundExpression> BuildArgumentsForDynamicInvocation(AnalyzedArguments arguments, DiagnosticBag diagnostics)
-        {
-            for (int i = 0; i < arguments.Arguments.Count; i++)
-            {
-                Debug.Assert(arguments.Arguments[i].Kind != BoundKind.OutDeconstructVarPendingInference);
-
-                if (arguments.Arguments[i].Kind == BoundKind.OutVariablePendingInference ||
-                    arguments.Arguments[i].Kind == BoundKind.DiscardExpression && !arguments.Arguments[i].HasExpressionType())
-                {
-                    var builder = ArrayBuilder<BoundExpression>.GetInstance(arguments.Arguments.Count);
-                    builder.AddRange(arguments.Arguments);
-
-                    do
-                    {
-                        BoundExpression argument = builder[i];
-
-                        if (argument.Kind == BoundKind.OutVariablePendingInference)
-                        {
-                            builder[i] = ((OutVariablePendingInference)argument).FailInference(this, diagnostics);
-                        }
-                        else if (argument.Kind == BoundKind.DiscardExpression && !argument.HasExpressionType())
-                        {
-                            builder[i] = ((BoundDiscardExpression)argument).FailInference(this, diagnostics);
-                        }
-
-                        i++;
-                    }
-                    while (i < builder.Count);
-
-                    return builder.ToImmutableAndFree();
-                }
-            }
-
-            return arguments.Arguments.ToImmutable();
-        }
-
-        // Returns true if there were errors.
-        private static bool ReportBadDynamicArguments(
-            SyntaxNode node,
-            ImmutableArray<BoundExpression> arguments,
-            ImmutableArray<RefKind> refKinds,
-            DiagnosticBag diagnostics,
-            CSharpSyntaxNode queryClause)
-        {
-            bool hasErrors = false;
-            bool reportedBadQuery = false;
-
-            if (!refKinds.IsDefault)
-            {
-                for (int argIndex = 0; argIndex < refKinds.Length; argIndex++)
-                {
-                    if (refKinds[argIndex] == RefKind.In)
-                    {
-                        Error(diagnostics, ErrorCode.ERR_InDynamicMethodArg, arguments[argIndex].Syntax);
-                        hasErrors = true;
-                    }
-                }
-            }
-
-            foreach (var arg in arguments)
-            {
-                if (!IsLegalDynamicOperand(arg))
-                {
-                    if (queryClause != null && !reportedBadQuery)
-                    {
-                        reportedBadQuery = true;
-                        Error(diagnostics, ErrorCode.ERR_BadDynamicQuery, node);
-                        hasErrors = true;
-                        continue;
-                    }
-
-                    if (arg.Kind == BoundKind.Lambda || arg.Kind == BoundKind.UnboundLambda)
-                    {
-                        // Cannot use a lambda expression as an argument to a dynamically dispatched operation without first casting it to a delegate or expression tree type.
-                        Error(diagnostics, ErrorCode.ERR_BadDynamicMethodArgLambda, arg.Syntax);
-                        hasErrors = true;
-                    }
-                    else if (arg.Kind == BoundKind.MethodGroup)
-                    {
-                        // Cannot use a method group as an argument to a dynamically dispatched operation. Did you intend to invoke the method?
-                        Error(diagnostics, ErrorCode.ERR_BadDynamicMethodArgMemgrp, arg.Syntax);
-                        hasErrors = true;
-                    }
-                    else if (arg.Kind == BoundKind.ArgListOperator)
-                    {
-                        // Not a great error message, since __arglist is not a type, but it'll do.
-
-                        // error CS1978: Cannot use an expression of type '__arglist' as an argument to a dynamically dispatched operation
-                        Error(diagnostics, ErrorCode.ERR_BadDynamicMethodArg, arg.Syntax, "__arglist");
-                    }
-                    else if (arg.IsLiteralDefault())
-                    {
-                        Error(diagnostics, ErrorCode.ERR_BadDynamicMethodArgDefaultLiteral, arg.Syntax);
-                        hasErrors = true;
-                    }
-                    else
-                    {
-                        // Lambdas,anonymous methods and method groups are the typeless expressions that
-                        // are not usable as dynamic arguments; if we get here then the expression must have a type.
-                        Debug.Assert((object)arg.Type != null);
-                        // error CS1978: Cannot use an expression of type 'int*' as an argument to a dynamically dispatched operation
-
-                        Error(diagnostics, ErrorCode.ERR_BadDynamicMethodArg, arg.Syntax, arg.Type);
-                        hasErrors = true;
-                    }
-                }
-            }
-            return hasErrors;
-        }
-
         private BoundExpression BindDelegateInvocation(
             SyntaxNode node,
             SyntaxNode expression,
@@ -530,16 +315,7 @@ namespace StarkPlatform.Compiler.Stark
                 useSiteDiagnostics: ref useSiteDiagnostics);
             diagnostics.Add(node, useSiteDiagnostics);
 
-            // If overload resolution on the "Invoke" method found an applicable candidate, and one of the arguments
-            // was dynamic then treat this as a dynamic call.
-            if (analyzedArguments.HasDynamicArgument && overloadResolutionResult.HasAnyApplicableMember)
-            {
-                result = BindDynamicInvocation(node, boundExpression, analyzedArguments, overloadResolutionResult.GetAllApplicableMembers(), diagnostics, queryClause);
-            }
-            else
-            {
-                result = BindInvocationExpressionContinued(node, expression, methodName, overloadResolutionResult, analyzedArguments, methodGroup, delegateType, diagnostics, queryClause);
-            }
+            result = BindInvocationExpressionContinued(node, expression, methodName, overloadResolutionResult, analyzedArguments, methodGroup, delegateType, diagnostics, queryClause);
 
             overloadResolutionResult.Free();
             methodGroup.Free();
@@ -634,64 +410,9 @@ namespace StarkPlatform.Compiler.Stark
                 }
                 else
                 {
-                    // If overload resolution found one or more applicable methods and at least one argument
-                    // was dynamic then treat this as a dynamic call.
-                    if (resolution.AnalyzedArguments.HasDynamicArgument &&
-                        resolution.OverloadResolutionResult.HasAnyApplicableMember)
-                    {
-                        if (resolution.IsLocalFunctionInvocation)
-                        {
-                            result = BindLocalFunctionInvocationWithDynamicArgument(
-                                syntax, expression, methodName, methodGroup,
-                                diagnostics, queryClause, resolution);
-                        }
-                        else if (resolution.IsExtensionMethodGroup)
-                        {
-                            // error CS1973: 'T' has no applicable method named 'M' but appears to have an
-                            // extension method by that name. Extension methods cannot be dynamically dispatched. Consider
-                            // casting the dynamic arguments or calling the extension method without the extension method
-                            // syntax.
-
-                            // We found an extension method, so the instance associated with the method group must have 
-                            // existed and had a type.
-                            Debug.Assert(methodGroup.InstanceOpt != null && (object)methodGroup.InstanceOpt.Type != null);
-
-                            Error(diagnostics, ErrorCode.ERR_BadArgTypeDynamicExtension, syntax, methodGroup.InstanceOpt.Type, methodGroup.Name);
-                            result = CreateBadCall(syntax, methodGroup, methodGroup.ResultKind, analyzedArguments);
-                        }
-                        else
-                        {
-                            if (HasApplicableConditionalMethod(resolution.OverloadResolutionResult))
-                            {
-                                // warning CS1974: The dynamically dispatched call to method 'Goo' may fail at runtime
-                                // because one or more applicable overloads are conditional methods
-                                Error(diagnostics, ErrorCode.WRN_DynamicDispatchToConditionalMethod, syntax, methodGroup.Name);
-                            }
-
-                            // Note that the runtime binder may consider candidates that haven't passed compile-time final validation 
-                            // and an ambiguity error may be reported. Also additional checks are performed in runtime final validation 
-                            // that are not performed at compile-time.
-                            // Only if the set of final applicable candidates is empty we know for sure the call will fail at runtime.
-                            var finalApplicableCandidates = GetCandidatesPassingFinalValidation(syntax, resolution.OverloadResolutionResult,
-                                                                                                methodGroup.ReceiverOpt,
-                                                                                                methodGroup.TypeArgumentsOpt,
-                                                                                                diagnostics);
-                            if (finalApplicableCandidates.Length > 0)
-                            {
-                                result = BindDynamicInvocation(syntax, methodGroup, resolution.AnalyzedArguments, finalApplicableCandidates, diagnostics, queryClause);
-                            }
-                            else
-                            {
-                                result = CreateBadCall(syntax, methodGroup, methodGroup.ResultKind, analyzedArguments);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        result = BindInvocationExpressionContinued(
-                            syntax, expression, methodName, resolution.OverloadResolutionResult, resolution.AnalyzedArguments,
-                            resolution.MethodGroup, delegateTypeOpt: null, diagnostics: diagnostics, queryClause: queryClause);
-                    }
+                    result = BindInvocationExpressionContinued(
+                        syntax, expression, methodName, resolution.OverloadResolutionResult, resolution.AnalyzedArguments,
+                        resolution.MethodGroup, delegateTypeOpt: null, diagnostics: diagnostics, queryClause: queryClause);
                 }
             }
             else
@@ -700,170 +421,6 @@ namespace StarkPlatform.Compiler.Stark
             }
             resolution.Free();
             return result;
-        }
-
-        private BoundExpression BindLocalFunctionInvocationWithDynamicArgument(
-            SyntaxNode syntax,
-            SyntaxNode expression,
-            string methodName,
-            BoundMethodGroup boundMethodGroup,
-            DiagnosticBag diagnostics,
-            CSharpSyntaxNode queryClause,
-            MethodGroupResolution resolution)
-        {
-            // Invocations of local functions with dynamic arguments don't need
-            // to be dispatched as dynamic invocations since they cannot be
-            // overloaded. Instead, we'll just emit a standard call with
-            // dynamic implicit conversions for any dynamic arguments. There
-            // are two exceptions: "params", and unconstructed generics. While
-            // implementing those cases with dynamic invocations is possible,
-            // we have decided the implementation complexity is not worth it.
-            // Refer to the comments below for the exact semantics.
-
-            Debug.Assert(resolution.IsLocalFunctionInvocation);
-            Debug.Assert(resolution.OverloadResolutionResult.Succeeded);
-            Debug.Assert(queryClause == null);
-
-            var validResult = resolution.OverloadResolutionResult.ValidResult;
-            var args = resolution.AnalyzedArguments.Arguments.ToImmutable();
-            var refKindsArray = resolution.AnalyzedArguments.RefKinds.ToImmutableOrNull();
-
-            ReportBadDynamicArguments(syntax, args, refKindsArray, diagnostics, queryClause);
-
-            var localFunction = validResult.Member;
-            var methodResult = validResult.Result;
-
-            // We're only in trouble if a dynamic argument is passed to the
-            // params parameter and is ambiguous at compile time between normal
-            // and expanded form i.e., there is exactly one dynamic argument to
-            // a params parameter
-            // See https://github.com/dotnet/roslyn/issues/10708
-            if (OverloadResolution.IsValidParams(localFunction) &&
-                methodResult.Kind == MemberResolutionKind.ApplicableInNormalForm)
-            {
-                var parameters = localFunction.Parameters;
-
-                Debug.Assert(parameters.Last().IsParams);
-
-                var lastParamIndex = parameters.Length - 1;
-
-                for (int i = 0; i < args.Length; ++i)
-                {
-                    var arg = args[i];
-                    if (arg.HasDynamicType() &&
-                        methodResult.ParameterFromArgument(i) == lastParamIndex)
-                    {
-                        Error(diagnostics,
-                            ErrorCode.ERR_DynamicLocalFunctionParamsParameter,
-                            syntax, parameters.Last().Name, localFunction.Name);
-                        return BindDynamicInvocation(
-                            syntax,
-                            boundMethodGroup,
-                            resolution.AnalyzedArguments,
-                            resolution.OverloadResolutionResult.GetAllApplicableMembers(),
-                            diagnostics,
-                            queryClause);
-                    }
-                }
-            }
-
-            // If we call an unconstructed generic local function with a
-            // dynamic argument in a place where it influences the type
-            // parameters, we need to dynamically dispatch the call (as the
-            // function must be constructed at runtime). We cannot do that, so
-            // disallow that. However, doing a specific analysis of each
-            // argument and its corresponding parameter to check if it's
-            // generic (and allow dynamic in non-generic parameters) may break
-            // overload resolution in the future, if we ever allow overloaded
-            // local functions. So, just disallow any mixing of dynamic and
-            // inferred generics. (Explicit generic arguments are fine)
-            // See https://github.com/dotnet/roslyn/issues/21317
-            if (boundMethodGroup.TypeArgumentsOpt.IsDefaultOrEmpty && localFunction.IsGenericMethod)
-            {
-                Error(diagnostics,
-                    ErrorCode.ERR_DynamicLocalFunctionTypeParameter,
-                    syntax, localFunction.Name);
-                return BindDynamicInvocation(
-                    syntax,
-                    boundMethodGroup,
-                    resolution.AnalyzedArguments,
-                    resolution.OverloadResolutionResult.GetAllApplicableMembers(),
-                    diagnostics,
-                    queryClause);
-            }
-
-            return BindInvocationExpressionContinued(
-                node: syntax,
-                expression: expression,
-                methodName: methodName,
-                result: resolution.OverloadResolutionResult,
-                analyzedArguments: resolution.AnalyzedArguments,
-                methodGroup: resolution.MethodGroup,
-                delegateTypeOpt: null,
-                diagnostics: diagnostics,
-                queryClause: queryClause);
-        }
-
-        private ImmutableArray<TMethodOrPropertySymbol> GetCandidatesPassingFinalValidation<TMethodOrPropertySymbol>(
-            SyntaxNode syntax,
-            OverloadResolutionResult<TMethodOrPropertySymbol> overloadResolutionResult,
-            BoundExpression receiverOpt,
-            ImmutableArray<TypeSymbolWithAnnotations> typeArgumentsOpt,
-            DiagnosticBag diagnostics) where TMethodOrPropertySymbol : Symbol
-        {
-            Debug.Assert(overloadResolutionResult.HasAnyApplicableMember);
-
-            var finalCandidates = ArrayBuilder<TMethodOrPropertySymbol>.GetInstance();
-            DiagnosticBag firstFailed = null;
-            DiagnosticBag candidateDiagnostics = DiagnosticBag.GetInstance();
-
-            for (int i = 0, n = overloadResolutionResult.ResultsBuilder.Count; i < n; i++)
-            {
-                var result = overloadResolutionResult.ResultsBuilder[i];
-                if (result.Result.IsApplicable)
-                {
-                    // For F to pass the check, all of the following must hold:
-                    //      ...
-                    // * If the type parameters of F were substituted in the step above, their constraints are satisfied.
-                    // * If F is a static method, the method group must have resulted from a simple-name, a member-access through a type, 
-                    //   or a member-access whose receiver can't be classified as a type or value until after overload resolution (see §7.6.4.1). 
-                    // * If F is an instance method, the method group must have resulted from a simple-name, a member-access through a variable or value, 
-                    //   or a member-access whose receiver can't be classified as a type or value until after overload resolution (see §7.6.4.1).
-
-                    if (!MemberGroupFinalValidationAccessibilityChecks(receiverOpt, result.Member, syntax, candidateDiagnostics, invokedAsExtensionMethod: false) &&
-                        (typeArgumentsOpt.IsDefault || ((MethodSymbol)(object)result.Member).CheckConstraints(this.Conversions, syntax, this.Compilation, candidateDiagnostics)))
-                    {
-                        finalCandidates.Add(result.Member);
-                        continue;
-                    }
-
-                    if (firstFailed == null)
-                    {
-                        firstFailed = candidateDiagnostics;
-                        candidateDiagnostics = DiagnosticBag.GetInstance();
-                    }
-                    else
-                    {
-                        candidateDiagnostics.Clear();
-                    }
-                }
-            }
-
-            if (firstFailed != null)
-            {
-                // Report diagnostics of the first candidate that failed the validation
-                // unless we have at least one candidate that passes.
-                if (finalCandidates.Count == 0)
-                {
-                    diagnostics.AddRange(firstFailed);
-                }
-
-                firstFailed.Free();
-            }
-
-            candidateDiagnostics.Free();
-
-            return finalCandidates.ToImmutableAndFree();
         }
 
         private void CheckRestrictedTypeReceiver(BoundExpression expression, Compilation compilation, DiagnosticBag diagnostics)
@@ -905,19 +462,6 @@ namespace StarkPlatform.Compiler.Stark
 
                             // Check type access
                             VerifyExtendedTypeAccess(call, diagnostics);
-                        }
-                    }
-                    break;
-                case BoundKind.DynamicInvocation:
-                    {
-                        var dynInvoke = (BoundDynamicInvocation)expression;
-                        if (!dynInvoke.HasAnyErrors &&
-                            (object)dynInvoke.Expression.Type != null &&
-                            dynInvoke.Expression.Type.IsRestrictedType())
-                        {
-                            // eg: b = typedReference.Equals(dyn);
-                            // error CS1978: Cannot use an expression of type 'TypedReference' as an argument to a dynamically dispatched operation
-                            Error(diagnostics, ErrorCode.ERR_BadDynamicMethodArg, dynInvoke.Expression.Syntax, dynInvoke.Expression.Type);
                         }
                     }
                     break;

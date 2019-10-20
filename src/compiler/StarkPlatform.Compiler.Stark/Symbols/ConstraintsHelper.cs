@@ -109,7 +109,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             //bool isConstOrValueTypeConstraint = typeParameter.HasValueTypeConstraint || typeParameter.HasConstTypeConstraint;
             NamedTypeSymbol effectiveBaseClass = corLibrary.GetSpecialType(SpecialType.System_Object);
             TypeSymbol deducedBaseType = effectiveBaseClass;
-            DynamicTypeEraser dynamicEraser = null;
 
             if (constraintTypes.Length == 0)
             {
@@ -131,10 +130,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
                     switch (constraintType.TypeKind)
                     {
-                        case TypeKind.Dynamic:
-                            Debug.Assert(inherited || currentCompilation == null);
-                            continue;
-
                         case TypeKind.TypeParameter:
                             {
                                 var constraintTypeParameter = (TypeParameterSymbol)constraintType.TypeSymbol;
@@ -191,23 +186,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                         case TypeKind.Delegate:
                             NamedTypeSymbol erasedConstraintType;
 
-                            if (inherited || currentCompilation == null)
-                            {
-                                // only inherited constraints may contain dynamic
-                                if (dynamicEraser == null)
-                                {
-                                    dynamicEraser = new DynamicTypeEraser(corLibrary.GetSpecialType(SpecialType.System_Object));
-                                }
-
-                                erasedConstraintType = (NamedTypeSymbol)dynamicEraser.EraseDynamic(constraintType.TypeSymbol);
-                            }
-                            else
-                            {
-                                Debug.Assert(!constraintType.TypeSymbol.ContainsDynamic());
-                                Debug.Assert(constraintType.TypeKind != TypeKind.Delegate);
-
-                                erasedConstraintType = (NamedTypeSymbol)constraintType.TypeSymbol;
-                            }
+                            erasedConstraintType = (NamedTypeSymbol)constraintType.TypeSymbol;
 
                             if (constraintType.TypeSymbol.IsInterfaceType())
                             {
@@ -1148,7 +1127,6 @@ hasRelatedInterfaces:
             {
                 case TypeKind.Struct:
                 case TypeKind.Enum:
-                case TypeKind.Dynamic:
                     return true;
 
                 case TypeKind.Class:

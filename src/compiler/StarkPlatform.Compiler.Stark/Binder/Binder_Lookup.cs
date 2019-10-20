@@ -183,7 +183,6 @@ namespace StarkPlatform.Compiler.Stark
                 case TypeKind.Enum:
                 case TypeKind.Delegate:
                 case TypeKind.Array:
-                case TypeKind.Dynamic:
                     this.LookupMembersInClass(result, type, name, arity, basesBeingResolved, options, originalBinder, diagnose, ref useSiteDiagnostics);
                     break;
 
@@ -1384,7 +1383,7 @@ symIsHidden:;
                     break;
             }
 
-            return (object)type != null && (type.IsDelegateType() || type.IsDynamic());
+            return (object)type != null && type.IsDelegateType();
         }
 
         private static bool IsInstance(Symbol symbol)
@@ -1513,7 +1512,6 @@ symIsHidden:;
                 case TypeKind.Enum:
                 case TypeKind.Delegate:
                 case TypeKind.Array:
-                case TypeKind.Dynamic:
                     this.AddMemberLookupSymbolsInfoInClass(result, type, options, originalBinder, type);
                     break;
 

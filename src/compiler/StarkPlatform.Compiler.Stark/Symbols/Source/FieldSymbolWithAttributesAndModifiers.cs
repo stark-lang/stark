@@ -189,11 +189,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     arguments.GetOrCreateData<CommonFieldWellKnownAttributeData>().SetFieldOffset(offset);
                 }
             }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.DynamicAttribute))
-            {
-                // DynamicAttribute should not be set explicitly.
-                arguments.Diagnostics.Add(ErrorCode.ERR_ExplicitDynamicAttr, arguments.AttributeSyntaxOpt.Location);
-            }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.IsReadOnlyAttribute))
             {
                 // IsReadOnlyAttribute should not be set explicitly.
@@ -336,12 +331,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             base.AddSynthesizedAttributes(moduleBuilder, ref attributes);
 
             var type = this.Type;
-
-            if (type.TypeSymbol.ContainsDynamic())
-            {
-                AddSynthesizedAttribute(ref attributes,
-                    DeclaringCompilation.SynthesizeDynamicAttribute(type.TypeSymbol, Type.CustomModifiers.Length));
-            }
 
             if (type.TypeSymbol.ContainsTupleNames())
             {

@@ -142,18 +142,6 @@ namespace StarkPlatform.Compiler.Stark
         }
 
         /// <summary>
-        /// Called when visiting a <see cref="DynamicTypeSymbol" />; Override this with specific
-        /// implementation; Calling <see cref="DefaultVisit" /> if it's not overridden 
-        /// </summary>
-        /// <param name="symbol">The visited symbol</param>
-        /// <param name="argument">Additional argument</param>
-        /// <returns></returns>
-        public virtual TResult VisitDynamicType(DynamicTypeSymbol symbol, TArgument argument)
-        {
-            return DefaultVisit(symbol, argument);
-        }
-
-        /// <summary>
         /// Called when visiting a <see cref="DiscardSymbol" />; Override this with specific
         /// implementation; Calling <see cref="DefaultVisit" /> if it's not overridden 
         /// </summary>

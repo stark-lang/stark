@@ -15,82 +15,6 @@ namespace StarkPlatform.Compiler.Stark
 {
     internal sealed partial class LocalRewriter
     {
-        public override BoundNode VisitDynamicInvocation(BoundDynamicInvocation node)
-        {
-            return VisitDynamicInvocation(node, resultDiscarded: false);
-        }
-
-        public BoundExpression VisitDynamicInvocation(BoundDynamicInvocation node, bool resultDiscarded)
-        {
-            var loweredArguments = VisitList(node.Arguments);
-
-            bool hasImplicitReceiver;
-            BoundExpression loweredReceiver;
-            ImmutableArray<TypeSymbolWithAnnotations> typeArguments;
-            string name;
-            switch (node.Expression.Kind)
-            {
-                case BoundKind.MethodGroup:
-                    // method invocation
-                    BoundMethodGroup methodGroup = (BoundMethodGroup)node.Expression;
-                    typeArguments = methodGroup.TypeArgumentsOpt;
-                    name = methodGroup.Name;
-                    hasImplicitReceiver = (methodGroup.Flags & BoundMethodGroupFlags.HasImplicitReceiver) != 0;
-
-                    // Should have been eliminated during binding of dynamic invocation:
-                    Debug.Assert(methodGroup.ReceiverOpt == null || methodGroup.ReceiverOpt.Kind != BoundKind.TypeOrValueExpression);
-
-                    if (methodGroup.ReceiverOpt == null)
-                    {
-                        // Calling a static method defined on an outer class via its simple name.
-                        NamedTypeSymbol firstContainer = node.ApplicableMethods.First().ContainingType;
-                        Debug.Assert(node.ApplicableMethods.All(m => m.IsStatic && TypeSymbol.Equals(m.ContainingType, firstContainer, TypeCompareKind.ConsiderEverything2)));
-
-                        loweredReceiver = new BoundTypeExpression(node.Syntax, null, firstContainer);
-                    }
-                    else if (hasImplicitReceiver && _factory.TopLevelMethod.IsStatic)
-                    {
-                        // Calling a static method defined on the current class via its simple name.
-                        loweredReceiver = new BoundTypeExpression(node.Syntax, null, _factory.CurrentType);
-                    }
-                    else
-                    {
-                        loweredReceiver = VisitExpression(methodGroup.ReceiverOpt);
-                    }
-
-                    // If we are calling a method on a NoPIA type, we need to embed all methods/properties
-                    // with the matching name of this dynamic invocation.
-                    EmbedIfNeedTo(loweredReceiver, methodGroup.Methods, node.Syntax);
-
-                    break;
-
-                case BoundKind.DynamicMemberAccess:
-                    // method invocation
-                    var memberAccess = (BoundDynamicMemberAccess)node.Expression;
-                    name = memberAccess.Name;
-                    typeArguments = memberAccess.TypeArgumentsOpt;
-                    loweredReceiver = VisitExpression(memberAccess.Receiver);
-                    hasImplicitReceiver = false;
-                    break;
-
-                default:
-                    // delegate invocation
-                    var loweredExpression = VisitExpression(node.Expression);
-                    return _dynamicFactory.MakeDynamicInvocation(loweredExpression, loweredArguments, node.ArgumentNamesOpt, node.ArgumentRefKindsOpt, resultDiscarded).ToExpression();
-            }
-
-            Debug.Assert(loweredReceiver != null);
-            return _dynamicFactory.MakeDynamicMemberInvocation(
-                name,
-                loweredReceiver,
-                typeArguments,
-                loweredArguments,
-                node.ArgumentNamesOpt,
-                node.ArgumentRefKindsOpt,
-                hasImplicitReceiver,
-                resultDiscarded).ToExpression();
-        }
-
         private void EmbedIfNeedTo(BoundExpression receiver, ImmutableArray<MethodSymbol> methods, SyntaxNode syntaxNode)
         {
             // If we are calling a method on a NoPIA type, we need to embed all methods/properties
@@ -201,7 +125,6 @@ namespace StarkPlatform.Compiler.Stark
 
             if (method.IsStatic &&
                 method.ContainingType.IsObjectType() &&
-                !_inExpressionLambda &&
                 (object)method == (object)_compilation.GetSpecialTypeMember(SpecialMember.System_Object__ReferenceEquals))
             {
                 Debug.Assert(rewrittenArguments.Length == 2);
@@ -318,8 +241,6 @@ namespace StarkPlatform.Compiler.Stark
                                 case ConversionKind.DefaultOrNullLiteral:
                                     return true;
 
-                                case ConversionKind.ImplicitDynamic:
-                                case ConversionKind.ExplicitDynamic:
                                 case ConversionKind.ExplicitEnumeration:
                                 case ConversionKind.ExplicitNullable:
                                 case ConversionKind.ExplicitNumeric:
@@ -887,7 +808,7 @@ namespace StarkPlatform.Compiler.Stark
             // if it's available.  However, we also disable the optimization if we're in an expression lambda, the 
             // point of which is just to represent the semantics of an operation, and we don't know that all consumers
             // of expression lambdas will appropriately understand Array.Empty<T>().
-            if (arrayArgs.Length == 0 && !_inExpressionLambda)
+            if (arrayArgs.Length == 0)
             {
                 if (paramArrayType.IsArray()) // could be null if there's a semantic error, e.g. the params parameter type isn't an array
                 {
@@ -1413,19 +1334,8 @@ namespace StarkPlatform.Compiler.Stark
             }
             else if (defaultConstantValue == ConstantValue.NotAvailable)
             {
-                // There is no constant value given for the parameter in source/metadata.
-                if (parameterType.IsDynamic() || parameterType.SpecialType == SpecialType.System_Object)
-                {
-                    // We have something like M([Optional] object x). We have special handling for such situations.
-                    defaultValue = isLowering
-                        ? localRewriter.GetDefaultParameterSpecial(syntax, parameter)
-                        : GetDefaultParameterSpecialForIOperation(syntax, parameter, compilation, diagnostics);
-                }
-                else
-                {
-                    // The argument to M([Optional] int x) becomes default(int)
-                    defaultValue = new BoundDefaultExpression(syntax, parameterType) { WasCompilerGenerated = true };
-                }
+                // The argument to M([Optional] int x) becomes default(int)
+                defaultValue = new BoundDefaultExpression(syntax, parameterType) { WasCompilerGenerated = true };
             }
             else if (defaultConstantValue.IsNull &&
                 (parameterType.IsValueType || (parameterType.IsNullableType() && parameterType.IsErrorType())))
@@ -1583,20 +1493,6 @@ namespace StarkPlatform.Compiler.Stark
 
                 temporariesBuilder.Add(boundTemp.LocalSymbol);
             }
-        }
-
-        public override BoundNode VisitDynamicMemberAccess(BoundDynamicMemberAccess node)
-        {
-            // InvokeMember operation:
-            if (node.Invoked)
-            {
-                return node;
-            }
-
-            // GetMember operation:
-            Debug.Assert(node.TypeArgumentsOpt.IsDefault);
-            var loweredReceiver = VisitExpression(node.Receiver);
-            return _dynamicFactory.MakeDynamicGetMember(loweredReceiver, node.Name, node.Indexed).ToExpression();
         }
     }
 }

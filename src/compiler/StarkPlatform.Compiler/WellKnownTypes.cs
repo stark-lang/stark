@@ -72,34 +72,6 @@ namespace StarkPlatform.Compiler
         core_Threading_Interlocked,
         core_Threading_Monitor,
         core_Threading_Thread,
-        Microsoft_CSharp_RuntimeBinder_Binder,
-        Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfo,
-        Microsoft_CSharp_RuntimeBinder_CSharpArgumentInfoFlags,
-        Microsoft_CSharp_RuntimeBinder_CSharpBinderFlags,
-        Microsoft_VisualBasic_CallType,
-        Microsoft_VisualBasic_Embedded,
-        Microsoft_VisualBasic_CompilerServices_Conversions,
-        Microsoft_VisualBasic_CompilerServices_Operators,
-        Microsoft_VisualBasic_CompilerServices_NewLateBinding,
-        Microsoft_VisualBasic_CompilerServices_EmbeddedOperators,
-        Microsoft_VisualBasic_CompilerServices_StandardModuleAttribute,
-        Microsoft_VisualBasic_CompilerServices_Utils,
-        Microsoft_VisualBasic_CompilerServices_LikeOperator,
-        Microsoft_VisualBasic_CompilerServices_ProjectData,
-        Microsoft_VisualBasic_CompilerServices_ObjectFlowControl,
-        Microsoft_VisualBasic_CompilerServices_ObjectFlowControl_ForLoopControl,
-        Microsoft_VisualBasic_CompilerServices_StaticLocalInitFlag,
-        Microsoft_VisualBasic_CompilerServices_StringType,
-        Microsoft_VisualBasic_CompilerServices_IncompleteInitialization,
-        Microsoft_VisualBasic_CompilerServices_Versioned,
-        Microsoft_VisualBasic_CompareMethod,
-        Microsoft_VisualBasic_Strings,
-        Microsoft_VisualBasic_ErrObject,
-        Microsoft_VisualBasic_FileSystem,
-        Microsoft_VisualBasic_ApplicationServices_ApplicationBase,
-        Microsoft_VisualBasic_ApplicationServices_WindowsFormsApplicationBase,
-        Microsoft_VisualBasic_Information,
-        Microsoft_VisualBasic_Interaction,
 
         // standard Func delegates - must be ordered by arity
         core_Func_T,
@@ -199,13 +171,6 @@ namespace StarkPlatform.Compiler
         core_ComponentModel_EditorBrowsableAttribute,
         core_ComponentModel_EditorBrowsableState,
 
-        core_Linq_Enumerable,
-        core_Linq_Expressions_Expression,
-        core_Linq_Expressions_Expression_T,
-        core_Linq_Expressions_ParameterExpression,
-        core_Linq_Expressions_ElementInit,
-        core_Linq_Expressions_MemberBinding,
-        core_Linq_Expressions_ExpressionType,
         core_Linq_IQueryable,
         core_Linq_IQueryable_T,
 
@@ -274,7 +239,6 @@ namespace StarkPlatform.Compiler
         core_runtime_UnmanagedType,
         core_runtime_UnmanagedAttribute,
 
-        Microsoft_VisualBasic_Conversion,
         core_runtime_compiler_NonNullTypesAttribute,
         core_AttributeTargets,
         Microsoft_CodeAnalysis_EmbeddedAttribute,
@@ -373,34 +337,6 @@ namespace StarkPlatform.Compiler
             "core.Threading.Interlocked",
             "core.Threading.Monitor",
             "core.Threading.Thread",
-            "Microsoft.CSharp.RuntimeBinder.Binder",
-            "Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo",
-            "Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags",
-            "Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags",
-            "Microsoft.VisualBasic.CallType",
-            "Microsoft.VisualBasic.Embedded",
-            "Microsoft.VisualBasic.CompilerServices.Conversions",
-            "Microsoft.VisualBasic.CompilerServices.Operators",
-            "Microsoft.VisualBasic.CompilerServices.NewLateBinding",
-            "Microsoft.VisualBasic.CompilerServices.EmbeddedOperators",
-            "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute",
-            "Microsoft.VisualBasic.CompilerServices.Utils",
-            "Microsoft.VisualBasic.CompilerServices.LikeOperator",
-            "Microsoft.VisualBasic.CompilerServices.ProjectData",
-            "Microsoft.VisualBasic.CompilerServices.ObjectFlowControl",
-            "Microsoft.VisualBasic.CompilerServices.ObjectFlowControl+ForLoopControl",
-            "Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag",
-            "Microsoft.VisualBasic.CompilerServices.StringType",
-            "Microsoft.VisualBasic.CompilerServices.IncompleteInitialization",
-            "Microsoft.VisualBasic.CompilerServices.Versioned",
-            "Microsoft.VisualBasic.CompareMethod",
-            "Microsoft.VisualBasic.Strings",
-            "Microsoft.VisualBasic.ErrObject",
-            "Microsoft.VisualBasic.FileSystem",
-            "Microsoft.VisualBasic.ApplicationServices.ApplicationBase",
-            "Microsoft.VisualBasic.ApplicationServices.WindowsFormsApplicationBase",
-            "Microsoft.VisualBasic.Information",
-            "Microsoft.VisualBasic.Interaction",
 
             "core.Func`1",
             "core.Func`2",
@@ -495,13 +431,6 @@ namespace StarkPlatform.Compiler
             "core.ComponentModel.EditorBrowsableAttribute",
             "core.ComponentModel.EditorBrowsableState",
 
-            "core.Linq.Enumerable",
-            "core.Linq.Expressions.Expression",
-            "core.Linq.Expressions.Expression`1",
-            "core.Linq.Expressions.ParameterExpression",
-            "core.Linq.Expressions.ElementInit",
-            "core.Linq.Expressions.MemberBinding",
-            "core.Linq.Expressions.ExpressionType",
             "core.Linq.IQueryable",
             "core.Linq.IQueryable`1",
 
@@ -570,7 +499,6 @@ namespace StarkPlatform.Compiler
             "core.runtime.UnmanagedType",
             "core.runtime.UnmanagedAttribute",
 
-            "Microsoft.VisualBasic.Conversion",
             "core.runtime.compiler.NonNullTypesAttribute",
             "core.AttributeTargets",
             "Microsoft.CodeAnalysis.EmbeddedAttribute",
@@ -625,9 +553,6 @@ namespace StarkPlatform.Compiler
                     case WellKnownType.First:
                         typeIdName = "core.Math";
                         break;
-                    case WellKnownType.Microsoft_VisualBasic_CompilerServices_ObjectFlowControl_ForLoopControl:
-                        typeIdName = "Microsoft.VisualBasic.CompilerServices.ObjectFlowControl+ForLoopControl";
-                        break;
                     case WellKnownType.CSharp7Sentinel:
                         typeIdName = "core.IFormatProvider";
                         break;
@@ -650,7 +575,7 @@ namespace StarkPlatform.Compiler
                 Debug.Assert(name == typeIdName, $"Enum name and type name must match {name} != {typeIdName}");
             }
 
-            Debug.Assert((int)WellKnownType.ExtSentinel == 249, $"Unexpected WellKnownType.ExtSentinel {(int)WellKnownType.ExtSentinel}");
+            Debug.Assert((int)WellKnownType.ExtSentinel == 214, $"Unexpected WellKnownType.ExtSentinel {(int)WellKnownType.ExtSentinel}");
             Debug.Assert((int)WellKnownType.NextAvailable <= 512, "Time for a new sentinel");
         }
 

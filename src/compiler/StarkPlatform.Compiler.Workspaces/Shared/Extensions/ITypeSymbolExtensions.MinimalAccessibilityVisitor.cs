@@ -25,11 +25,6 @@ namespace StarkPlatform.Compiler.Shared.Extensions
                 return symbol.ElementType.Accept(this);
             }
 
-            public override Accessibility VisitDynamicType(IDynamicTypeSymbol symbol)
-            {
-                return Accessibility.Public;
-            }
-
             public override Accessibility VisitNamedType(INamedTypeSymbol symbol)
             {
                 var accessibility = symbol.DeclaredAccessibility;

@@ -33,7 +33,7 @@ namespace StarkPlatform.Compiler
         /// <summary>
         /// Type is dynamic.
         /// </summary>
-        Dynamic = 4,
+        // Dynamic = 4,
 
         /// <summary>
         /// Type is an enumeration.

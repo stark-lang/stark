@@ -25,10 +25,6 @@ namespace StarkPlatform.Compiler.ExtractMethod
                 throw new NotImplementedException();
             }
 
-            public override void VisitDynamicType(IDynamicTypeSymbol dynamicTypeSymbol)
-            {
-            }
-
             public override void VisitArrayType(IArrayTypeSymbol arrayTypeSymbol)
             {
                 arrayTypeSymbol.ElementType.Accept(this);

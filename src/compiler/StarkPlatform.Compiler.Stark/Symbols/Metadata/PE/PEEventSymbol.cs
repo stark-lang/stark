@@ -93,8 +93,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 var metadataDecoder = new MetadataDecoder(moduleSymbol, containingType);
                 originalEventType = metadataDecoder.GetTypeOfToken(eventType);
 
-                const int targetSymbolCustomModifierCount = 0;
-                var typeSymbol = DynamicTypeDecoder.TransformType(originalEventType, targetSymbolCustomModifierCount, handle, moduleSymbol);
+                var typeSymbol = originalEventType;
 
                 // We start without annotation (they will be decoded below)
                 var type = TypeSymbolWithAnnotations.Create(typeSymbol);

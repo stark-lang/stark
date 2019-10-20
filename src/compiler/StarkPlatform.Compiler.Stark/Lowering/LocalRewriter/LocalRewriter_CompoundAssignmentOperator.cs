@@ -25,76 +25,15 @@ namespace StarkPlatform.Compiler.Stark
 
             var kind = node.Operator.Kind;
             bool isChecked = kind.IsChecked();
-            bool isDynamic = kind.IsDynamic();
             var binaryOperator = kind.Operator();
 
             // This will be filled in with the LHS that uses temporaries to prevent
             // double-evaluation of side effects.
-            BoundExpression transformedLHS = TransformCompoundAssignmentLHS(node.Left, stores, temps, isDynamic);
+            BoundExpression transformedLHS = TransformCompoundAssignmentLHS(node.Left, stores, temps);
             var lhsRead = MakeRValue(transformedLHS);
             BoundExpression rewrittenAssignment;
 
-            if (node.Left.Kind == BoundKind.DynamicMemberAccess &&
-                (binaryOperator == BinaryOperatorKind.Addition || binaryOperator == BinaryOperatorKind.Subtraction))
-            {
-                // If this could be an event assignment at runtime, we need to rewrite to the following form:
-                // Original:
-                //   receiver.EV += handler
-                // Rewritten:
-                //   dynamic memberAccessReceiver = receiver;
-                //   bool isEvent = Runtime.IsEvent(memberAccessReceiver, "EV");
-                //   dynamic storeNonEvent = !isEvent ? memberAccessReceiver.EV : null;
-                //   var loweredRight = handler; // Only necessary if handler can change values, or is something like a lambda
-                //   isEvent ? add_Event(memberAccessReceiver, "EV", loweredRight) : transformedLHS = storeNonEvent + loweredRight;
-                //
-                // This is to ensure that if handler is something like a lambda, we evaluate fully evaluate the left
-                // side before storing the lambda to a temp for use in both possible branches.
-                // The first store to memberAccessReceiver has already been taken care of above by TransformCompoundAssignmentLHS
-
-                var eventTemps = ArrayBuilder<LocalSymbol>.GetInstance();
-                var sequence = ArrayBuilder<BoundExpression>.GetInstance();
-
-                //   dynamic memberAccessReceiver = receiver;
-                var memberAccess = (BoundDynamicMemberAccess)transformedLHS;
-
-                //   bool isEvent = Runtime.IsEvent(memberAccessReceiver, "EV");
-                var isEvent = _factory.StoreToTemp(_dynamicFactory.MakeDynamicIsEventTest(memberAccess.Name, memberAccess.Receiver).ToExpression(), out BoundAssignmentOperator isEventAssignment);
-                eventTemps.Add(isEvent.LocalSymbol);
-                sequence.Add(isEventAssignment);
-
-                // dynamic storeNonEvent = !isEvent ? memberAccessReceiver.EV : null;
-                lhsRead = _factory.StoreToTemp(lhsRead, out BoundAssignmentOperator receiverAssignment);
-                eventTemps.Add(((BoundLocal)lhsRead).LocalSymbol);
-                var storeNonEvent = _factory.StoreToTemp(_factory.Conditional(_factory.Not(isEvent), receiverAssignment, _factory.Null(receiverAssignment.Type), receiverAssignment.Type), out BoundAssignmentOperator nonEventStore);
-                eventTemps.Add(storeNonEvent.LocalSymbol);
-                sequence.Add(nonEventStore);
-
-                // var loweredRight = handler;
-                if (CanChangeValueBetweenReads(loweredRight))
-                {
-                    loweredRight = _factory.StoreToTemp(loweredRight, out BoundAssignmentOperator possibleHandlerAssignment);
-                    eventTemps.Add(((BoundLocal)loweredRight).LocalSymbol);
-                    sequence.Add(possibleHandlerAssignment);
-                }
-
-                // add_Event(t1, "add_EV");
-                var invokeEventAccessor = _dynamicFactory.MakeDynamicEventAccessorInvocation(
-                    (binaryOperator == BinaryOperatorKind.Addition ? "add_" : "remove_") + memberAccess.Name,
-                    memberAccess.Receiver,
-                    loweredRight);
-
-                // transformedLHS = storeNonEvent + loweredRight
-                rewrittenAssignment = rewriteAssignment(lhsRead);
-
-                // Final conditional
-                var condition = _factory.Conditional(isEvent, invokeEventAccessor.ToExpression(), rewrittenAssignment, rewrittenAssignment.Type);
-
-                rewrittenAssignment = new BoundSequence(node.Syntax, eventTemps.ToImmutableAndFree(), sequence.ToImmutableAndFree(), condition, condition.Type);
-            }
-            else
-            {
-                rewrittenAssignment = rewriteAssignment(lhsRead);
-            }
+            rewrittenAssignment = rewriteAssignment(lhsRead);
 
             BoundExpression result = (temps.Count == 0 && stores.Count == 0) ?
                 rewrittenAssignment :
@@ -122,7 +61,7 @@ namespace StarkPlatform.Compiler.Stark
                 //
                 // (The right hand side has already been converted to the type expected by the operator.)
 
-                BoundExpression opLHS = isDynamic ? leftRead : MakeConversionNode(
+                BoundExpression opLHS = MakeConversionNode(
                     syntax: syntax,
                     rewrittenOperand: leftRead,
                     conversion: node.LeftConversion,
@@ -136,7 +75,7 @@ namespace StarkPlatform.Compiler.Stark
                     rewrittenOperand: operand,
                     conversion: node.FinalConversion,
                     rewrittenType: node.Left.Type,
-                    explicitCastInCode: isDynamic,
+                    explicitCastInCode: false,
                     @checked: isChecked);
 
                 return MakeAssignmentOperator(syntax, transformedLHS, opFinal, node.Left.Type, used: used, isChecked: isChecked, isCompoundAssignment: true);
@@ -191,23 +130,6 @@ namespace StarkPlatform.Compiler.Stark
             temps.Add(receiverTemp.LocalSymbol);
 
             return receiverTemp;
-        }
-
-        private BoundDynamicMemberAccess TransformDynamicMemberAccess(BoundDynamicMemberAccess memberAccess, ArrayBuilder<BoundExpression> stores, ArrayBuilder<LocalSymbol> temps)
-        {
-            if (!CanChangeValueBetweenReads(memberAccess.Receiver))
-            {
-                return memberAccess;
-            }
-
-            // store receiver to temp:
-            var rewrittenReceiver = VisitExpression(memberAccess.Receiver);
-            BoundAssignmentOperator assignmentToTemp;
-            var receiverTemp = _factory.StoreToTemp(rewrittenReceiver, out assignmentToTemp);
-            stores.Add(assignmentToTemp);
-            temps.Add(receiverTemp.LocalSymbol);
-
-            return new BoundDynamicMemberAccess(memberAccess.Syntax, receiverTemp, memberAccess.TypeArgumentsOpt, memberAccess.Name, memberAccess.Invoked, memberAccess.Indexed, memberAccess.Type);
         }
 
         private BoundIndexerAccess TransformIndexerAccess(BoundIndexerAccess indexerAccess, ArrayBuilder<BoundExpression> stores, ArrayBuilder<LocalSymbol> temps)
@@ -389,51 +311,6 @@ namespace StarkPlatform.Compiler.Stark
             return true;
         }
 
-        private BoundDynamicIndexerAccess TransformDynamicIndexerAccess(BoundDynamicIndexerAccess indexerAccess, ArrayBuilder<BoundExpression> stores, ArrayBuilder<LocalSymbol> temps)
-        {
-            BoundExpression loweredReceiver;
-            if (CanChangeValueBetweenReads(indexerAccess.ReceiverOpt))
-            {
-                BoundAssignmentOperator assignmentToTemp;
-                var temp = _factory.StoreToTemp(VisitExpression(indexerAccess.ReceiverOpt), out assignmentToTemp);
-                stores.Add(assignmentToTemp);
-                temps.Add(temp.LocalSymbol);
-                loweredReceiver = temp;
-            }
-            else
-            {
-                loweredReceiver = indexerAccess.ReceiverOpt;
-            }
-
-            var arguments = indexerAccess.Arguments;
-            var loweredArguments = new BoundExpression[arguments.Length];
-
-            for (int i = 0; i < arguments.Length; i++)
-            {
-                if (CanChangeValueBetweenReads(arguments[i]))
-                {
-                    BoundAssignmentOperator assignmentToTemp;
-                    var temp = _factory.StoreToTemp(VisitExpression(arguments[i]), out assignmentToTemp, indexerAccess.ArgumentRefKindsOpt.RefKinds(i) != RefKind.None ? RefKind.Ref : RefKind.None);
-                    stores.Add(assignmentToTemp);
-                    temps.Add(temp.LocalSymbol);
-                    loweredArguments[i] = temp;
-                }
-                else
-                {
-                    loweredArguments[i] = arguments[i];
-                }
-            }
-
-            return new BoundDynamicIndexerAccess(
-                indexerAccess.Syntax,
-                loweredReceiver,
-                loweredArguments.AsImmutableOrNull(),
-                indexerAccess.ArgumentNamesOpt,
-                indexerAccess.ArgumentRefKindsOpt,
-                indexerAccess.ApplicableIndexers,
-                indexerAccess.Type);
-        }
-
         /// <summary>
         /// In the expanded form of a compound assignment (or increment/decrement), the LHS appears multiple times.
         /// If we aren't careful, this can result in repeated side-effects.  This creates (ordered) temps for all of the
@@ -448,7 +325,7 @@ namespace StarkPlatform.Compiler.Stark
         /// A side-effect-free expression representing the LHS.
         /// The returned node needs to be lowered but its children are already lowered.
         /// </returns>
-        private BoundExpression TransformCompoundAssignmentLHS(BoundExpression originalLHS, ArrayBuilder<BoundExpression> stores, ArrayBuilder<LocalSymbol> temps, bool isDynamicAssignment)
+        private BoundExpression TransformCompoundAssignmentLHS(BoundExpression originalLHS, ArrayBuilder<BoundExpression> stores, ArrayBuilder<LocalSymbol> temps)
         {
             // There are five possible cases.
             //
@@ -525,7 +402,7 @@ namespace StarkPlatform.Compiler.Stark
                 case BoundKind.ArrayAccess:
                     {
                         var arrayAccess = (BoundArrayAccess)originalLHS;
-                        if (isDynamicAssignment || !IsInvariantArray(arrayAccess.Expression.Type))
+                        if (!IsInvariantArray(arrayAccess.Expression.Type))
                         {
                             // In non-dynamic, invariant array[index] op= R we emit:
                             //   T& tmp = &array[index];
@@ -549,12 +426,6 @@ namespace StarkPlatform.Compiler.Stark
                         }
                     }
                     break;
-
-                case BoundKind.DynamicMemberAccess:
-                    return TransformDynamicMemberAccess((BoundDynamicMemberAccess)originalLHS, stores, temps);
-
-                case BoundKind.DynamicIndexerAccess:
-                    return TransformDynamicIndexerAccess((BoundDynamicIndexerAccess)originalLHS, stores, temps);
 
                 case BoundKind.Local:
                 case BoundKind.Parameter:

@@ -251,16 +251,6 @@ namespace StarkPlatform.Compiler.Stark
 
             if (t1tot2 && t2tot1)
             {
-                if (type1.IsDynamic())
-                {
-                    return type1;
-                }
-
-                if (type2.IsDynamic())
-                {
-                    return type2;
-                }
-
                 if (type1.Equals(type2, TypeCompareKind.IgnoreDynamicAndTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes))
                 {
                     return MethodTypeInferrer.Merge(

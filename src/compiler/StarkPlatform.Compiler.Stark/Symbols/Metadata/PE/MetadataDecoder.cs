@@ -211,9 +211,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 case SymbolKind.PointerType:
                     return IsOrClosedOverATypeFromAssemblies(((PointerTypeSymbol)symbol).PointedAtType.TypeSymbol, assemblies);
 
-                case SymbolKind.DynamicType:
-                    return false;
-
                 case SymbolKind.ErrorType:
                     goto case SymbolKind.NamedType;
                 case SymbolKind.NamedType:

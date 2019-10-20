@@ -66,10 +66,6 @@ namespace StarkPlatform.Compiler.Stark
                     }
                     break;
 
-                case BoundKind.DynamicInvocation:
-                    // TODO (tomat): circumvents logic in VisitExpression...
-                    return VisitDynamicInvocation((BoundDynamicInvocation)expression, resultDiscarded: true);
-
                 case BoundKind.ConditionalAccess:
                     return RewriteConditionalAccess((BoundConditionalAccess)expression, used: false);
             }

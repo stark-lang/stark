@@ -160,12 +160,6 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert((object)source != null);
             Debug.Assert((object)destination != null);
 
-            // since we are converting from expression, we may have implicit dynamic conversion
-            if (HasImplicitDynamicConversionFromExpression(source, destination))
-            {
-                return Conversion.ImplicitDynamic;
-            }
-
             return ClassifyConversionFromType(source, destination, ref useSiteDiagnostics);
         }
 
@@ -644,7 +638,7 @@ namespace StarkPlatform.Compiler.Stark
 
             if (HasExplicitReferenceConversion(source, destination, ref useSiteDiagnostics))
             {
-                return (source.Kind == SymbolKind.DynamicType) ? Conversion.ExplicitDynamic : Conversion.ExplicitReference;
+                return Conversion.ExplicitReference;
             }
 
             var tupleConversion = ClassifyExplicitTupleConversion(source, destination, ref useSiteDiagnostics, forCast);
@@ -666,11 +660,6 @@ namespace StarkPlatform.Compiler.Stark
             if (HasIntegerToPointerConversion(source, destination))
             {
                 return Conversion.IntegerToPointer;
-            }
-
-            if (HasExplicitDynamicConversion(source, destination))
-            {
-                return Conversion.ExplicitDynamic;
             }
 
             return Conversion.NoConversion;
@@ -806,7 +795,6 @@ namespace StarkPlatform.Compiler.Stark
             switch (implicitConversion.Kind)
             {
                 case ConversionKind.ImplicitUserDefined:
-                case ConversionKind.ImplicitDynamic:
                 case ConversionKind.ImplicitTuple:
                 case ConversionKind.ImplicitTupleLiteral:
                 case ConversionKind.ImplicitNullable:
@@ -822,11 +810,6 @@ namespace StarkPlatform.Compiler.Stark
             Debug.Assert(sourceExpression != null || (object)source != null);
             Debug.Assert(sourceExpression == null || (object)sourceExpression.Type == (object)source);
             Debug.Assert((object)destination != null);
-
-            if (HasImplicitDynamicConversionFromExpression(source, destination))
-            {
-                return Conversion.ImplicitDynamic;
-            }
 
             // The following conversions only exist for certain form of expressions, 
             // if we have no expression none if them is applicable.
@@ -1268,37 +1251,6 @@ namespace StarkPlatform.Compiler.Stark
             return LambdaConversionResult.Success;
         }
 
-        private static LambdaConversionResult IsAnonymousFunctionCompatibleWithExpressionTree(UnboundLambda anonymousFunction, NamedTypeSymbol type)
-        {
-            Debug.Assert((object)anonymousFunction != null);
-            Debug.Assert((object)type != null);
-            Debug.Assert(type.IsExpressionTree());
-
-            // SPEC OMISSION:
-            // 
-            // The C# 3 spec said that anonymous methods and statement lambdas are *convertible* to expression tree
-            // types if the anonymous method/statement lambda is convertible to its delegate type; however, actually
-            // *using* such a conversion is an error. However, that is not what we implemented. In C# 3 we implemented
-            // that an anonymous method is *not convertible* to an expression tree type, period. (Statement lambdas
-            // used the rule described in the spec.)  
-            //
-            // This appears to be a spec omission; the intention is to make old-style anonymous methods not 
-            // convertible to expression trees.
-
-            var delegateType = type.TypeArgumentsNoUseSiteDiagnostics[0].TypeSymbol;
-            if (!delegateType.IsDelegateType())
-            {
-                return LambdaConversionResult.ExpressionTreeMustHaveDelegateTypeArgument;
-            }
-
-            if (anonymousFunction.Syntax.Kind() == SyntaxKind.AnonymousMethodExpression)
-            {
-                return LambdaConversionResult.ExpressionTreeFromAnonymousMethod;
-            }
-
-            return IsAnonymousFunctionCompatibleWithDelegate(anonymousFunction, delegateType);
-        }
-
         public static LambdaConversionResult IsAnonymousFunctionCompatibleWithType(UnboundLambda anonymousFunction, TypeSymbol type)
         {
             Debug.Assert((object)anonymousFunction != null);
@@ -1307,10 +1259,6 @@ namespace StarkPlatform.Compiler.Stark
             if (type.IsDelegateType())
             {
                 return IsAnonymousFunctionCompatibleWithDelegate(anonymousFunction, type);
-            }
-            else if (type.IsExpressionTree())
-            {
-                return IsAnonymousFunctionCompatibleWithExpressionTree(anonymousFunction, (NamedTypeSymbol)type);
             }
 
             return LambdaConversionResult.BadTargetType;
@@ -2122,25 +2070,6 @@ namespace StarkPlatform.Compiler.Stark
             return HasImplicitReferenceConversion(source, destination, ref useSiteDiagnostics);
         }
 
-        private static bool HasImplicitDynamicConversionFromExpression(TypeSymbol expressionType, TypeSymbol destination)
-        {
-            // Spec (§6.1.8)
-            // An implicit dynamic conversion exists from an expression of type dynamic to any type T.
-
-            Debug.Assert((object)destination != null);
-            return expressionType?.Kind == SymbolKind.DynamicType && !destination.IsPointerType();
-        }
-
-        private static bool HasExplicitDynamicConversion(TypeSymbol source, TypeSymbol destination)
-        {
-            // SPEC: An explicit dynamic conversion exists from an expression of [sic] type dynamic to any type T.
-            // ISSUE: The "an expression of" part of the spec is probably an error; see https://github.com/dotnet/csharplang/issues/132
-
-            Debug.Assert((object)source != null);
-            Debug.Assert((object)destination != null);
-            return source.Kind == SymbolKind.DynamicType && !destination.IsPointerType();
-        }
-
         private bool HasArrayConversionToInterface(TypeSymbol source, TypeSymbol destination, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             Debug.Assert((object)source != null);
@@ -2209,7 +2138,7 @@ namespace StarkPlatform.Compiler.Stark
             // UNDONE: Is the right thing to do here to strip dynamic off and check for convertibility?
 
             // SPEC: From any reference type to object and dynamic.
-            if (destination.SpecialType == SpecialType.System_Object || destination.Kind == SymbolKind.DynamicType)
+            if (destination.SpecialType == SpecialType.System_Object)
             {
                 return true;
             }
@@ -2680,14 +2609,6 @@ namespace StarkPlatform.Compiler.Stark
             // SPEC: type S0 and S0 has an identity conversion to S. At run-time the conversion 
             // SPEC: is executed the same way as the conversion to S0.
 
-            // REVIEW: If T is not known to be a reference type then the only way this clause can
-            // REVIEW: come into effect is if the target type is dynamic. Is that correct?
-
-            if (destination.Kind == SymbolKind.DynamicType)
-            {
-                return true;
-            }
-
             return false;
         }
 
@@ -2768,10 +2689,6 @@ namespace StarkPlatform.Compiler.Stark
                 {
                     return true;
                 }
-            }
-            else if (source.Kind == SymbolKind.DynamicType && destination.IsReferenceType)
-            {
-                return true;
             }
 
             // SPEC: From any class-type S to any class-type T, provided S is a base class of T.

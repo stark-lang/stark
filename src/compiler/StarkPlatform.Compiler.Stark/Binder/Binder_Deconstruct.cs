@@ -586,13 +586,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             anyApplicableCandidates = false;
             var receiverSyntax = (CSharpSyntaxNode)receiver.Syntax;
-            if (receiver.Type.IsDynamic())
-            {
-                Error(diagnostics, ErrorCode.ERR_CannotDeconstructDynamic, rightSyntax);
-                outPlaceholders = default(ImmutableArray<BoundDeconstructValuePlaceholder>);
-
-                return BadExpression(receiverSyntax, receiver);
-            }
 
             var analyzedArguments = AnalyzedArguments.GetInstance();
             var outVars = ArrayBuilder<OutDeconstructVarPendingInference>.GetInstance(numCheckedVariables);

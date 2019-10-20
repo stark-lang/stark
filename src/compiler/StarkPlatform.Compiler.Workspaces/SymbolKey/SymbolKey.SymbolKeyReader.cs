@@ -441,7 +441,6 @@ namespace StarkPlatform.Compiler
                     case SymbolKeyType.NamedType: return NamedTypeSymbolKey.Resolve(this);
                     case SymbolKeyType.ErrorType: return ErrorTypeSymbolKey.Resolve(this);
                     case SymbolKeyType.Field: return FieldSymbolKey.Resolve(this);
-                    case SymbolKeyType.DynamicType: return DynamicTypeSymbolKey.Resolve(this);
                     case SymbolKeyType.Method: return MethodSymbolKey.Resolve(this);
                     case SymbolKeyType.Namespace: return NamespaceSymbolKey.Resolve(this);
                     case SymbolKeyType.PointerType: return PointerTypeSymbolKey.Resolve(this);

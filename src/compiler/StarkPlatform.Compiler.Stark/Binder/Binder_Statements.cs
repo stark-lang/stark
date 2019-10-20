@@ -1332,15 +1332,7 @@ namespace StarkPlatform.Compiler.Stark
                 // but diagnostics should be reported anyways.
                 var conversion = GenerateConversionForAssignment(op1.Type, op2, diagnostics, isRefAssignment: isRef);
 
-                // If the result is a dynamic assignment operation (SetMember or SetIndex), 
-                // don't generate the boxing conversion to the dynamic type.
-                // Leave the values as they are, and deal with the conversions at runtime.
-                if (op1.Kind != BoundKind.DynamicIndexerAccess &&
-                    op1.Kind != BoundKind.DynamicMemberAccess &&
-                    op1.Kind != BoundKind.DynamicObjectInitializerMember)
-                {
-                    op2 = conversion;
-                }
+                op2 = conversion;
 
                 if (isRef)
                 {
@@ -1687,20 +1679,6 @@ namespace StarkPlatform.Compiler.Stark
 
                 // Cannot convert {0} to type '{1}' because it is not a delegate type
                 Error(diagnostics, ErrorCode.ERR_AnonMethToNonDel, syntax, id, targetType);
-                return;
-            }
-
-            if (reason == LambdaConversionResult.ExpressionTreeMustHaveDelegateTypeArgument)
-            {
-                Debug.Assert(targetType.IsExpressionTree());
-                Error(diagnostics, ErrorCode.ERR_ExpressionTreeMustHaveDelegate, syntax, ((NamedTypeSymbol)targetType).TypeArgumentsNoUseSiteDiagnostics[0].TypeSymbol);
-                return;
-            }
-
-            if (reason == LambdaConversionResult.ExpressionTreeFromAnonymousMethod)
-            {
-                Debug.Assert(targetType.IsExpressionTree());
-                Error(diagnostics, ErrorCode.ERR_AnonymousMethodToExpressionTree, syntax);
                 return;
             }
 
@@ -2114,24 +2092,6 @@ namespace StarkPlatform.Compiler.Stark
                 // around it to bool and keep on going.
                 // NOTE: no user-defined conversion candidates.
                 return BoundConversion.Synthesized(node, expr, Conversion.NoConversion, false, explicitCastInCode: false, conversionGroupOpt: null, ConstantValue.NotAvailable, boolean, hasErrors: true);
-            }
-
-            // Oddly enough, "if(dyn)" is bound not as a dynamic conversion to bool, but as a dynamic
-            // invocation of operator true.
-
-            if (expr.HasDynamicType())
-            {
-                return new BoundUnaryOperator(
-                    node,
-                    UnaryOperatorKind.DynamicTrue,
-                    expr,
-                    ConstantValue.NotAvailable,
-                    null,
-                    LookupResultKind.Viable,
-                    boolean)
-                {
-                    WasCompilerGenerated = true
-                };
             }
 
             // Is the operand implicitly convertible to bool?
@@ -2939,23 +2899,6 @@ namespace StarkPlatform.Compiler.Stark
             expression = ValidateEscape(expression, Binder.ExternalScope, refKind != RefKind.None, diagnostics);
 
             return bodyBinder.CreateBlockFromExpression(expressionBody, bodyBinder.GetDeclaredLocalsForScope(expressionBody), refKind, expression, expressionSyntax, diagnostics);
-        }
-
-        /// <summary>
-        /// Binds a lambda with expression e as either { return e;} or { e; }.
-        /// </summary>
-        public BoundBlock BindLambdaExpressionAsBlock(ExpressionSyntax body, DiagnosticBag diagnostics)
-        {
-            Binder bodyBinder = this.GetBinder(body);
-            Debug.Assert(bodyBinder != null);
-
-            RefKind refKind;
-            var expressionSyntax = body.CheckAndUnwrapRefExpression(diagnostics, out refKind);
-            BindValueKind requiredValueKind = GetRequiredReturnValueKind(refKind);
-            BoundExpression expression = bodyBinder.BindValue(expressionSyntax, diagnostics, requiredValueKind);
-            expression = ValidateEscape(expression, Binder.ExternalScope, refKind != RefKind.None, diagnostics);
-
-            return bodyBinder.CreateBlockFromExpression(body, bodyBinder.GetDeclaredLocalsForScope(body), refKind, expression, expressionSyntax, diagnostics);
         }
 
         private BindValueKind GetRequiredReturnValueKind(RefKind refKind)

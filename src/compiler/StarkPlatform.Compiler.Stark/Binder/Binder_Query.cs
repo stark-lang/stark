@@ -24,14 +24,6 @@ namespace StarkPlatform.Compiler.Stark
             var fromClause = node.FromClause;
             var boundFromExpression = BindLeftOfPotentialColorColorMemberAccess(fromClause.Expression, diagnostics);
 
-            // If the from expression is of the type dynamic we can't infer the types for any lambdas that occur in the query.
-            // Only if there are none we could bind the query but we report an error regardless since such queries are not useful.
-            if (boundFromExpression.HasDynamicType())
-            {
-                diagnostics.Add(ErrorCode.ERR_BadDynamicQuery, fromClause.Expression.Location);
-                boundFromExpression = BadExpression(fromClause.Expression, boundFromExpression);
-            }
-
             QueryTranslationState state = new QueryTranslationState();
             state.fromExpression = MakeMemberAccessValue(boundFromExpression, diagnostics);
 
@@ -269,14 +261,6 @@ namespace StarkPlatform.Compiler.Stark
         private void ReduceJoin(JoinClauseSyntax join, QueryTranslationState state, DiagnosticBag diagnostics)
         {
             var inExpression = BindValue(join.InExpression, diagnostics, BindValueKind.RValue);
-
-            // If the from expression is of the type dynamic we can't infer the types for any lambdas that occur in the query.
-            // Only if there are none we could bind the query but we report an error regardless since such queries are not useful.
-            if (inExpression.HasDynamicType())
-            {
-                diagnostics.Add(ErrorCode.ERR_BadDynamicQuery, join.InExpression.Location);
-                inExpression = BadExpression(join.InExpression, inExpression);
-            }
 
             BoundExpression castInvocation = null;
             if (join.Type != null)

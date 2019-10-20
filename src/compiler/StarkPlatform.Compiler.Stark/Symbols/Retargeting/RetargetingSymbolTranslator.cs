@@ -626,9 +626,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Retargeting
                     case SymbolKind.PointerType:
                         return IsOrClosedOverAnExplicitLocalType(((PointerTypeSymbol)symbol).PointedAtType.TypeSymbol);
 
-                    case SymbolKind.DynamicType:
-                        return false;
-
                     case SymbolKind.ErrorType:
                     case SymbolKind.NamedType:
 
@@ -1292,12 +1289,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Retargeting
             public override Symbol VisitEvent(EventSymbol symbol, RetargetOptions options)
             {
                 return Retarget(symbol);
-            }
-
-            public override Symbol VisitDynamicType(DynamicTypeSymbol symbol, RetargetOptions argument)
-            {
-                // TODO(cyrusn): What's the right thing to do here?
-                return symbol;
             }
         }
     }

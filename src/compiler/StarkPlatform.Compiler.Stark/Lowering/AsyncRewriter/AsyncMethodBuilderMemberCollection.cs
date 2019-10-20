@@ -236,10 +236,6 @@ namespace StarkPlatform.Compiler.Stark
             {
                 var returnType = (NamedTypeSymbol)method.ReturnType.TypeSymbol;
                 var resultType = returnType.TypeArgumentsNoUseSiteDiagnostics.Single().TypeSymbol;
-                if (resultType.IsDynamic())
-                {
-                    resultType = F.SpecialType(SpecialType.System_Object);
-                }
                 if (typeMap != null)
                 {
                     resultType = typeMap.SubstituteType(resultType).TypeSymbol;

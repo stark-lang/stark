@@ -476,14 +476,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             return CorLibrary.GetDeclaredSpecialType(type);
         }
 
-        internal static TypeSymbol DynamicType
-        {
-            get
-            {
-                return DynamicTypeSymbol.Instance;
-            }
-        }
-
         /// <summary>
         /// The NamedTypeSymbol for the .NET System.Object type, which could have a TypeKind of
         /// Error if there was no COR Library in a compilation using the assembly.

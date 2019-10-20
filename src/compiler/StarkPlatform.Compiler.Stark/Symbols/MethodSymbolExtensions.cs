@@ -34,12 +34,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 return method;
             }
 
-            // We never resolve extension methods on a dynamic receiver.
-            if (thisType.IsDynamic())
-            {
-                return null;
-            }
-
             var containingAssembly = method.ContainingAssembly;
             var errorNamespace = containingAssembly.GlobalNamespace;
             var conversions = new TypeConversions(containingAssembly.CorLibrary);

@@ -128,8 +128,6 @@ namespace StarkPlatform.Compiler.Emit.NoPia
 
                 ImmutableArray<Cci.SequencePoint> Cci.IMethodBody.SequencePoints => ImmutableArray<Cci.SequencePoint>.Empty;
 
-                bool Cci.IMethodBody.HasDynamicLocalVariables => false;
-
                 StateMachineMoveNextBodyDebugInfo Cci.IMethodBody.MoveNextBodyInfo => null;
 
                 DynamicAnalysisMethodBodyData Cci.IMethodBody.DynamicAnalysisData => null;

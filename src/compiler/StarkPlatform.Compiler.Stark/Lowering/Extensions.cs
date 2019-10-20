@@ -33,11 +33,6 @@ namespace StarkPlatform.Compiler.Stark
                 return false;
             }
 
-            if (expr.Type.IsDynamic())
-            {
-                return false;
-            }
-
             if (!expr.Type.IsNullableType())
             {
                 return true;

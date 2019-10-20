@@ -464,17 +464,6 @@ namespace StarkPlatform.Cci
 
         private void SerializeLocalInfo(ILocalDefinition local, EntityHandle parent)
         {
-            var dynamicFlags = local.DynamicTransformFlags;
-            if (!dynamicFlags.IsEmpty)
-            {
-                var value = SerializeBitVector(dynamicFlags);
-
-                _debugMetadataOpt.AddCustomDebugInformation(
-                    parent: parent,
-                    kind: _debugMetadataOpt.GetOrAddGuid(PortableCustomDebugInfoKinds.DynamicLocalVariables),
-                    value: _debugMetadataOpt.GetOrAddBlob(value));
-            }
-
             var tupleElementNames = local.TupleElementNames;
             if (!tupleElementNames.IsEmpty)
             {

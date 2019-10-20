@@ -22,8 +22,6 @@ namespace StarkPlatform.Compiler.Classification
                     return ClassificationTypeNames.DelegateName;
                 case TypeKind.TypeParameter:
                     return ClassificationTypeNames.TypeParameterName;
-                case TypeKind.Dynamic:
-                    return ClassificationTypeNames.Keyword;
                 default:
                     return null;
             }

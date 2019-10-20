@@ -545,11 +545,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                             diagnostics.Add(ErrorCode.ERR_RefStructInterfaceImpl, location, this, baseType);
                         }
 
-                        if (baseType.ContainsDynamic())
-                        {
-                            diagnostics.Add(ErrorCode.ERR_DeriveFromConstructedDynamic, location, this, baseType);
-                        }
-
                         localInterfaces.Add((NamedTypeSymbol) baseType);
                         break;
 
@@ -584,10 +579,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     case TypeKind.Error:
                         // put the error type in the interface list so we don't lose track of it
                         localInterfaces.Add((NamedTypeSymbol) baseType);
-                        break;
-
-                    case TypeKind.Dynamic:
-                        diagnostics.Add(ErrorCode.ERR_DeriveFromDynamic, location, this);
                         break;
 
                     case TypeKind.Submission:

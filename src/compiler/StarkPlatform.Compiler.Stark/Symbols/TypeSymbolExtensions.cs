@@ -260,7 +260,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             switch (type.TypeKind)
             {
                 case TypeKind.Pointer:
-                case TypeKind.Dynamic:
                     return false;
                 default:
                     return true;
@@ -294,11 +293,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         public static bool IsMethodTypeParameter(this TypeParameterSymbol p)
         {
             return p.ContainingSymbol.Kind == SymbolKind.Method;
-        }
-
-        public static bool IsDynamic(this TypeSymbol type)
-        {
-            return type.TypeKind == TypeKind.Dynamic;
         }
 
         public static NamedTypeSymbol GetNamedTypeSymbol(this TypeSymbol type)
@@ -346,26 +340,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         public static NamedTypeSymbol GetDelegateType(this TypeSymbol type)
         {
             if ((object)type == null) return null;
-            if (type.IsExpressionTree())
-            {
-                type = ((NamedTypeSymbol)type).TypeArgumentsNoUseSiteDiagnostics[0].TypeSymbol;
-            }
-
             return type.IsDelegateType() ? (NamedTypeSymbol)type : null;
         }
-
-        /// <summary>
-        /// return true if the type is constructed from System.Linq.Expressions.Expression`1
-        /// </summary>
-        public static bool IsExpressionTree(this TypeSymbol _type)
-        {
-            return _type.OriginalDefinition is NamedTypeSymbol type &&
-                type.Arity == 1 &&
-                type.MangleName &&
-                type.Name == "Expression" &&
-                CheckFullName(type.ContainingSymbol, s_expressionsNamespaceName);
-        }
-
 
         /// <summary>
         /// return true if the type is constructed from a generic interface that 
@@ -477,7 +453,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         public static MethodSymbol DelegateInvokeMethod(this TypeSymbol type)
         {
             Debug.Assert((object)type != null);
-            Debug.Assert(type.IsDelegateType() || type.IsExpressionTree());
+            Debug.Assert(type.IsDelegateType());
             return type.GetDelegateType().DelegateInvokeMethod;
         }
 
@@ -663,7 +639,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 switch (current.TypeKind)
                 {
                     case TypeKind.Error:
-                    case TypeKind.Dynamic:
                     case TypeKind.TypeParameter:
                     case TypeKind.Submission:
                     case TypeKind.Enum:
@@ -942,17 +917,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             (type, parameters, unused) => type.TypeKind == TypeKind.TypeParameter && parameters.Contains((TypeParameterSymbol)type);
 
         /// <summary>
-        /// Return true if the type contains any dynamic type reference.
-        /// </summary>
-        public static bool ContainsDynamic(this TypeSymbol type)
-        {
-            var result = type.VisitType(s_containsDynamicPredicate, null, canDigThroughNullable: true);
-            return (object)result != null;
-        }
-
-        private static readonly Func<TypeSymbol, object, bool, bool> s_containsDynamicPredicate = (type, unused1, unused2) => type.TypeKind == TypeKind.Dynamic;
-
-        /// <summary>
         /// Return true if the type contains any tuples.
         /// </summary>
         internal static bool ContainsTuple(this TypeSymbol type) =>
@@ -1102,7 +1066,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 case TypeKind.Array:
                 case TypeKind.Class:
                 case TypeKind.Delegate:
-                case TypeKind.Dynamic:
                 case TypeKind.Error:
                 case TypeKind.Interface:
                 case TypeKind.Pointer:

@@ -37,9 +37,6 @@ namespace StarkPlatform.Compiler.CodeGen
         /// <see cref="Cci.ILocalDefinition.PdbAttributes"/>.
         private readonly LocalVariableAttributes _pdbAttributes;
 
-        //Gives the synthesized dynamic attributes of the local definition
-        private readonly ImmutableArray<bool> _dynamicTransformFlags;
-
         private readonly ImmutableArray<string> _tupleElementNames;
 
         /// <summary>
@@ -64,7 +61,6 @@ namespace StarkPlatform.Compiler.CodeGen
             LocalDebugId id,
             LocalVariableAttributes pdbAttributes,
             LocalSlotConstraints constraints,
-            ImmutableArray<bool> dynamicTransformFlags,
             ImmutableArray<string> tupleElementNames)
         {
             _symbolOpt = symbolOpt;
@@ -73,7 +69,6 @@ namespace StarkPlatform.Compiler.CodeGen
             _slot = slot;
             _slotInfo = new LocalSlotDebugInfo(synthesizedKind, id);
             _pdbAttributes = pdbAttributes;
-            _dynamicTransformFlags = dynamicTransformFlags.NullToEmpty();
             _tupleElementNames = tupleElementNames.NullToEmpty();
             _constraints = constraints;
         }
@@ -126,8 +121,6 @@ namespace StarkPlatform.Compiler.CodeGen
             => (_constraints & LocalSlotConstraints.ByRef) != 0;
 
         public LocalVariableAttributes PdbAttributes => _pdbAttributes;
-
-        public ImmutableArray<bool> DynamicTransformFlags => _dynamicTransformFlags;
 
         public ImmutableArray<string> TupleElementNames => _tupleElementNames;
 

@@ -16,7 +16,6 @@ namespace StarkPlatform.Compiler.Stark
     {
         private readonly DiagnosticBag _diagnostics;
         private readonly CSharpCompilation _compilation;
-        private bool _inExpressionLambda;
         private LocalFunctionSymbol _staticLocalFunction;
         private bool _reportedUnsafe;
         private readonly MethodSymbol _containingSymbol;
@@ -52,30 +51,6 @@ namespace StarkPlatform.Compiler.Stark
             _diagnostics.Add(code, node.Syntax.Location, args);
         }
 
-        private void CheckUnsafeType(BoundExpression e)
-        {
-            if (e != null && (object)e.Type != null && e.Type.TypeKind == TypeKind.Pointer) NoteUnsafe(e);
-        }
-
-        private void NoteUnsafe(BoundNode node)
-        {
-            if (_inExpressionLambda && !_reportedUnsafe)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsPointerOp, node);
-                _reportedUnsafe = true;
-            }
-        }
-
-        public override BoundNode VisitSizeOfOperator(BoundSizeOfOperator node)
-        {
-            if (_inExpressionLambda && node.ConstantValue == null)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsPointerOp, node);
-            }
-
-            return base.VisitSizeOfOperator(node);
-        }
-
         public override BoundNode VisitLocalFunctionStatement(BoundLocalFunctionStatement node)
         {
             var outerLocalFunction = _staticLocalFunction;
@@ -96,10 +71,6 @@ namespace StarkPlatform.Compiler.Stark
 
         public override BoundNode VisitBaseReference(BoundBaseReference node)
         {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsBaseAccess, node);
-            }
             CheckReferenceToThisOrBase(node);
             return base.VisitBaseReference(node);
         }
@@ -153,16 +124,6 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        public override BoundNode VisitSwitchExpression(BoundSwitchExpression node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsSwitchExpression, node);
-            }
-
-            return base.VisitSwitchExpression(node);
-        }
-
         public override BoundNode VisitDeconstructionAssignmentOperator(BoundDeconstructionAssignmentOperator node)
         {
             if (!node.HasAnyErrors)
@@ -176,23 +137,7 @@ namespace StarkPlatform.Compiler.Stark
         public override BoundNode VisitAssignmentOperator(BoundAssignmentOperator node)
         {
             CheckForAssignmentToSelf(node);
-
-            if (_inExpressionLambda && node.Left.Kind != BoundKind.ObjectInitializerMember && node.Left.Kind != BoundKind.DynamicObjectInitializerMember)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsAssignment, node);
-            }
-
             return base.VisitAssignmentOperator(node);
-        }
-
-        public override BoundNode VisitDynamicObjectInitializerMember(BoundDynamicObjectInitializerMember node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsDynamicOperation, node);
-            }
-
-            return base.VisitDynamicObjectInitializerMember(node);
         }
 
         public override BoundNode VisitEventAccess(BoundEventAccess node)
@@ -210,11 +155,6 @@ namespace StarkPlatform.Compiler.Stark
 
         public override BoundNode VisitEventAssignmentOperator(BoundEventAssignmentOperator node)
         {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsAssignment, node);
-            }
-
             bool hasBaseReceiver = node.ReceiverOpt != null && node.ReceiverOpt.Kind == BoundKind.BaseReference;
             Binder.ReportDiagnosticsIfObsolete(_diagnostics, node.Event, ((AssignmentExpressionSyntax)node.Syntax).Left, hasBaseReceiver, _containingSymbol, _containingSymbol.ContainingType, BinderFlags.None);
             CheckReceiverIfField(node.ReceiverOpt);
@@ -244,108 +184,6 @@ namespace StarkPlatform.Compiler.Stark
                 propertyAccess.MustCallMethodsDirectly);
 
             CheckArguments(argumentRefKindsOpt, arguments, method);
-
-            if (_inExpressionLambda)
-            {
-                if (method.CallsAreOmitted(node.SyntaxTree))
-                {
-                    Error(ErrorCode.ERR_PartialMethodInExpressionTree, node);
-                }
-                else if ((object)propertyAccess != null && propertyAccess.IsIndexedProperty() && !propertyAccess.IsIndexer)
-                {
-                    Error(ErrorCode.ERR_ExpressionTreeContainsIndexedProperty, node);
-                }
-                else if (arguments.Length < (((object)propertyAccess != null) ? propertyAccess.ParameterCount : method.ParameterCount) + (expanded ? -1 : 0))
-                {
-                    Error(ErrorCode.ERR_ExpressionTreeContainsOptionalArgument, node);
-                }
-                else if (!argumentNamesOpt.IsDefaultOrEmpty)
-                {
-                    Error(ErrorCode.ERR_ExpressionTreeContainsNamedArgument, node);
-                }
-                else if (method.MethodKind == MethodKind.LocalFunction)
-                {
-                    Error(ErrorCode.ERR_ExpressionTreeContainsLocalFunction, node);
-                }
-                else if (method.RefKind != RefKind.None)
-                {
-                    Error(ErrorCode.ERR_RefReturningCallInExpressionTree, node);
-                }
-            }
-        }
-
-        public override BoundNode Visit(BoundNode node)
-        {
-            if (_inExpressionLambda &&
-                // Ignoring BoundConversion nodes prevents redundant diagnostics
-                !(node is BoundConversion) &&
-                node is BoundExpression expr &&
-                expr.Type is TypeSymbol type &&
-                type.IsRestrictedType())
-            {
-                Error(ErrorCode.ERR_ExpressionTreeCantContainRefStruct, node, type.Name);
-            }
-            return base.Visit(node);
-        }
-
-        public override BoundNode VisitRefTypeOperator(BoundRefTypeOperator node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_FeatureNotValidInExpressionTree, node, "__reftype");
-            }
-
-            return base.VisitRefTypeOperator(node);
-        }
-
-        public override BoundNode VisitRefValueOperator(BoundRefValueOperator node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_FeatureNotValidInExpressionTree, node, "__refvalue");
-            }
-
-            return base.VisitRefValueOperator(node);
-        }
-
-        public override BoundNode VisitMakeRefOperator(BoundMakeRefOperator node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_FeatureNotValidInExpressionTree, node, "__makeref");
-            }
-
-            return base.VisitMakeRefOperator(node);
-        }
-
-        public override BoundNode VisitArgListOperator(BoundArgListOperator node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_VarArgsInExpressionTree, node);
-            }
-
-            return base.VisitArgListOperator(node);
-        }
-
-        public override BoundNode VisitConditionalAccess(BoundConditionalAccess node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_NullPropagatingOpInExpressionTree, node);
-            }
-
-            return base.VisitConditionalAccess(node);
-        }
-
-        public override BoundNode VisitObjectInitializerMember(BoundObjectInitializerMember node)
-        {
-            if (_inExpressionLambda && !node.Arguments.IsDefaultOrEmpty)
-            {
-                Error(ErrorCode.ERR_DictionaryInitializerInExpressionTree, node);
-            }
-
-            return base.VisitObjectInitializerMember(node);
         }
 
         public override BoundNode VisitCall(BoundCall node)
@@ -355,32 +193,8 @@ namespace StarkPlatform.Compiler.Stark
             return base.VisitCall(node);
         }
 
-        /// <summary>
-        /// Called when a local represents an out variable declaration. Its syntax is of type DeclarationExpressionSyntax.
-        /// </summary>
-        private void CheckOutDeclaration(BoundLocal local)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsOutVariable, local);
-            }
-        }
-
-        private void CheckDiscard(BoundDiscardExpression argument)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsDiscard, argument);
-            }
-        }
-
         public override BoundNode VisitCollectionElementInitializer(BoundCollectionElementInitializer node)
         {
-            if (_inExpressionLambda && node.AddMethod.IsStatic)
-            {
-                Error(ErrorCode.ERR_ExtensionCollectionElementInitializerInExpressionTree, node);
-            }
-
             VisitCall(node.AddMethod, null, node.Arguments, default(ImmutableArray<RefKind>), default(ImmutableArray<string>), node.Expanded, node);
             return base.VisitCollectionElementInitializer(node);
         }
@@ -406,81 +220,8 @@ namespace StarkPlatform.Compiler.Stark
         public override BoundNode VisitPropertyAccess(BoundPropertyAccess node)
         {
             var property = node.PropertySymbol;
-            var method = property.GetMethod; // This is only checking for ref returns, so we don't fall back to the set method.
-            if ((object)method != null && _inExpressionLambda && method.RefKind != RefKind.None)
-            {
-                Error(ErrorCode.ERR_RefReturningCallInExpressionTree, node);
-            }
             CheckReceiverIfField(node.ReceiverOpt);
             return base.VisitPropertyAccess(node);
-        }
-
-        public override BoundNode VisitLambda(BoundLambda node)
-        {
-            if (_inExpressionLambda)
-            {
-                var lambda = node.Symbol;
-                foreach (var p in lambda.Parameters)
-                {
-                    if (p.RefKind != RefKind.None && p.Locations.Length != 0)
-                    {
-                        _diagnostics.Add(ErrorCode.ERR_ByRefParameterInExpressionTree, p.Locations[0]);
-                    }
-                    if (p.Type.IsRestrictedType())
-                    {
-                        _diagnostics.Add(ErrorCode.ERR_ExpressionTreeCantContainRefStruct, p.Locations[0], p.Type.Name);
-                    }
-                }
-
-                switch (node.Syntax.Kind())
-                {
-                    case SyntaxKind.ParenthesizedLambdaExpression:
-                        {
-                            var lambdaSyntax = (ParenthesizedLambdaExpressionSyntax)node.Syntax;
-                            if (lambdaSyntax.AsyncKeyword.Kind() == SyntaxKind.AsyncKeyword)
-                            {
-                                Error(ErrorCode.ERR_BadAsyncExpressionTree, node);
-                            }
-                            else if (lambdaSyntax.Body.Kind() == SyntaxKind.Block)
-                            {
-                                Error(ErrorCode.ERR_StatementLambdaToExpressionTree, node);
-                            }
-                            else if (lambdaSyntax.Body.Kind() == SyntaxKind.RefExpression)
-                            {
-                                Error(ErrorCode.ERR_BadRefReturnExpressionTree, node);
-                            }
-                        }
-                        break;
-
-                    case SyntaxKind.SimpleLambdaExpression:
-                        {
-                            var lambdaSyntax = (SimpleLambdaExpressionSyntax)node.Syntax;
-                            if (lambdaSyntax.AsyncKeyword.Kind() == SyntaxKind.AsyncKeyword)
-                            {
-                                Error(ErrorCode.ERR_BadAsyncExpressionTree, node);
-                            }
-                            else if (lambdaSyntax.Body.Kind() == SyntaxKind.Block)
-                            {
-                                Error(ErrorCode.ERR_StatementLambdaToExpressionTree, node);
-                            }
-                            else if (lambdaSyntax.Body.Kind() == SyntaxKind.RefExpression)
-                            {
-                                Error(ErrorCode.ERR_BadRefReturnExpressionTree, node);
-                            }
-                        }
-                        break;
-
-                    case SyntaxKind.AnonymousMethodExpression:
-                        Error(ErrorCode.ERR_ExpressionTreeContainsAnonymousMethod, node);
-                        break;
-
-                    default:
-                        // other syntax forms arise from query expressions, and always result from implied expression-lambda-like forms
-                        break;
-                }
-            }
-
-            return base.VisitLambda(node);
         }
 
         public override BoundNode VisitBinaryOperator(BoundBinaryOperator node)
@@ -519,33 +260,14 @@ namespace StarkPlatform.Compiler.Stark
             return base.VisitUserDefinedConditionalLogicalOperator(node);
         }
 
-        private void CheckDynamic(BoundUnaryOperator node)
-        {
-            if (_inExpressionLambda && node.OperatorKind.IsDynamic())
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsDynamicOperation, node);
-            }
-        }
-
-        private void CheckDynamic(BoundBinaryOperator node)
-        {
-            if (_inExpressionLambda && node.OperatorKind.IsDynamic())
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsDynamicOperation, node);
-            }
-        }
-
         public override BoundNode VisitUnaryOperator(BoundUnaryOperator node)
         {
-            CheckUnsafeType(node);
             CheckLiftedUnaryOp(node);
-            CheckDynamic(node);
             return base.VisitUnaryOperator(node);
         }
 
         public override BoundNode VisitAddressOfOperator(BoundAddressOfOperator node)
         {
-            CheckUnsafeType(node);
             BoundExpression operand = node.Operand;
             if (operand.Kind == BoundKind.FieldAccess)
             {
@@ -553,34 +275,9 @@ namespace StarkPlatform.Compiler.Stark
             }
             return base.VisitAddressOfOperator(node);
         }
-
-        public override BoundNode VisitIncrementOperator(BoundIncrementOperator node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsAssignment, node);
-            }
-
-            return base.VisitIncrementOperator(node);
-        }
-
-        public override BoundNode VisitPointerElementAccess(BoundPointerElementAccess node)
-        {
-            NoteUnsafe(node);
-            return base.VisitPointerElementAccess(node);
-        }
-
-        public override BoundNode VisitPointerIndirectionOperator(BoundPointerIndirectionOperator node)
-        {
-            NoteUnsafe(node);
-            return base.VisitPointerIndirectionOperator(node);
-        }
-
+        
         public override BoundNode VisitConversion(BoundConversion node)
         {
-            CheckUnsafeType(node.Operand);
-            CheckUnsafeType(node);
-            bool wasInExpressionLambda = _inExpressionLambda;
             bool oldReportedUnsafe = _reportedUnsafe;
             switch (node.ConversionKind)
             {
@@ -589,30 +286,12 @@ namespace StarkPlatform.Compiler.Stark
                     return node;
 
                 case ConversionKind.AnonymousFunction:
-                    if (!wasInExpressionLambda && node.Type.IsExpressionTree())
-                    {
-                        _inExpressionLambda = true;
-                        // we report "unsafe in expression tree" at most once for each expression tree
-                        _reportedUnsafe = false;
-                    }
-                    break;
-
-                case ConversionKind.ImplicitDynamic:
-                case ConversionKind.ExplicitDynamic:
-                    if (_inExpressionLambda)
-                    {
-                        Error(ErrorCode.ERR_ExpressionTreeContainsDynamicOperation, node);
-                    }
                     break;
 
                 case ConversionKind.ExplicitTuple:
                 case ConversionKind.ExplicitTupleLiteral:
                 case ConversionKind.ImplicitTuple:
                 case ConversionKind.ImplicitTupleLiteral:
-                    if (_inExpressionLambda)
-                    {
-                        Error(ErrorCode.ERR_ExpressionTreeContainsTupleConversion, node);
-                    }
                     break;
 
                 default:
@@ -620,7 +299,6 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             var result = base.VisitConversion(node);
-            _inExpressionLambda = wasInExpressionLambda;
             _reportedUnsafe = oldReportedUnsafe;
             return result;
         }
@@ -630,10 +308,6 @@ namespace StarkPlatform.Compiler.Stark
             if (node.Argument.Kind != BoundKind.MethodGroup)
             {
                 this.Visit(node.Argument);
-            }
-            else if (_inExpressionLambda && node.MethodOpt?.MethodKind == MethodKind.LocalFunction)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsLocalFunction, node);
             }
 
             return null;
@@ -646,16 +320,6 @@ namespace StarkPlatform.Compiler.Stark
 
         private BoundNode VisitMethodGroup(BoundMethodGroup node, bool parentIsConversion)
         {
-            // Formerly reported ERR_MemGroupInExpressionTree when this occurred, but the expanded 
-            // ERR_LambdaInIsAs makes this impossible (since the node will always be wrapped in
-            // a failed conversion).
-            Debug.Assert(!(!parentIsConversion && _inExpressionLambda));
-
-            if (_inExpressionLambda && (node.LookupSymbolOpt as MethodSymbol)?.MethodKind == MethodKind.LocalFunction)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsLocalFunction, node);
-            }
-
             CheckReceiverIfField(node.ReceiverOpt);
             return base.VisitMethodGroup(node);
         }
@@ -665,133 +329,6 @@ namespace StarkPlatform.Compiler.Stark
             // The nameof(...) operator collapses to a constant in an expression tree,
             // so it does not matter what is recursively within it.
             return node;
-        }
-
-        public override BoundNode VisitNullCoalescingOperator(BoundNullCoalescingOperator node)
-        {
-            if (_inExpressionLambda && (node.LeftOperand.IsLiteralNull() || node.LeftOperand.IsLiteralDefault()))
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsBadCoalesce, node.LeftOperand);
-            }
-
-            return base.VisitNullCoalescingOperator(node);
-        }
-
-        public override BoundNode VisitNullCoalescingAssignmentOperator(BoundNullCoalescingAssignmentOperator node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeCantContainNullCoalescingAssignment, node);
-            }
-
-            return base.VisitNullCoalescingAssignmentOperator(node);
-        }
-
-        public override BoundNode VisitDynamicInvocation(BoundDynamicInvocation node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsDynamicOperation, node);
-
-                // avoid reporting errors for the method group:
-                if (node.Expression.Kind == BoundKind.MethodGroup)
-                {
-                    return base.VisitMethodGroup((BoundMethodGroup)node.Expression);
-                }
-            }
-
-            return base.VisitDynamicInvocation(node);
-        }
-
-        public override BoundNode VisitDynamicIndexerAccess(BoundDynamicIndexerAccess node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsDynamicOperation, node);
-            }
-
-            CheckReceiverIfField(node.ReceiverOpt);
-            return base.VisitDynamicIndexerAccess(node);
-        }
-
-        public override BoundNode VisitDynamicMemberAccess(BoundDynamicMemberAccess node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsDynamicOperation, node);
-            }
-
-            return base.VisitDynamicMemberAccess(node);
-        }
-
-        public override BoundNode VisitDynamicCollectionElementInitializer(BoundDynamicCollectionElementInitializer node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsDynamicOperation, node);
-            }
-
-            return base.VisitDynamicCollectionElementInitializer(node);
-        }
-
-        public override BoundNode VisitDynamicObjectCreationExpression(BoundDynamicObjectCreationExpression node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsDynamicOperation, node);
-            }
-
-            return base.VisitDynamicObjectCreationExpression(node);
-        }
-
-        public override BoundNode VisitIsPatternExpression(BoundIsPatternExpression node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsIsMatch, node);
-            }
-
-            return base.VisitIsPatternExpression(node);
-        }
-
-        public override BoundNode VisitConvertedTupleLiteral(BoundConvertedTupleLiteral node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsTupleLiteral, node);
-            }
-
-            return base.VisitConvertedTupleLiteral(node);
-        }
-
-        public override BoundNode VisitTupleLiteral(BoundTupleLiteral node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsTupleLiteral, node);
-            }
-
-            return base.VisitTupleLiteral(node);
-        }
-
-        public override BoundNode VisitTupleBinaryOperator(BoundTupleBinaryOperator node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsTupleBinOp, node);
-            }
-
-            return base.VisitTupleBinaryOperator(node);
-        }
-
-        public override BoundNode VisitThrowExpression(BoundThrowExpression node)
-        {
-            if (_inExpressionLambda)
-            {
-                Error(ErrorCode.ERR_ExpressionTreeContainsThrowExpression, node);
-            }
-
-            return base.VisitThrowExpression(node);
         }
     }
 }

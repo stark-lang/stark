@@ -161,8 +161,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             // CONSIDER: Can we make parameter type computation lazy?
             TypeSymbol originalPropertyType = returnInfo.Type;
 
-            originalPropertyType = DynamicTypeDecoder.TransformType(originalPropertyType, typeCustomModifiers.Length, handle, moduleSymbol, _refKind);
-
             // We start without annotation (they will be decoded below)
             var propertyType = TypeSymbolWithAnnotations.Create(originalPropertyType, customModifiers: typeCustomModifiers);
 
