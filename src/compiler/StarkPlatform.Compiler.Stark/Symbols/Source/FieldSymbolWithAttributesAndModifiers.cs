@@ -51,9 +51,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         public sealed override bool IsConst
             => (Modifiers & DeclarationModifiers.Const) != 0;
 
-        public sealed override bool IsVolatile
-            => (Modifiers & DeclarationModifiers.Volatile) != 0;
-
         public sealed override bool IsFixedSizeBuffer
             => (Modifiers & DeclarationModifiers.Fixed) != 0;
 

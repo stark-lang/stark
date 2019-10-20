@@ -73,8 +73,6 @@ namespace StarkPlatform.Compiler.CodeGeneration
             }
         }
 
-        public bool IsVolatile => false;
-
         public bool IsFixedSizeBuffer => false;
 
         public ImmutableArray<CustomModifier> CustomModifiers

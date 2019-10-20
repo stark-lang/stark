@@ -53,12 +53,6 @@ namespace StarkPlatform.Compiler.Stark
         {
             FieldSymbol fieldSymbol = fieldAccess.FieldSymbol;
 
-            // We can safely suppress this warning when calling an Interlocked API
-            if (fieldSymbol.IsVolatile && ((object)consumerOpt == null || !IsInterlockedAPI(consumerOpt)))
-            {
-                Error(ErrorCode.WRN_VolatileByRef, fieldAccess, fieldSymbol);
-            }
-
             if (IsNonAgileFieldAccess(fieldAccess, _compilation))
             {
                 Error(ErrorCode.WRN_ByRefNonAgileField, fieldAccess, fieldSymbol);

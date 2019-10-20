@@ -24,7 +24,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
         private readonly string _name;
         private readonly FieldAttributes _flags;
         private readonly PENamedTypeSymbol _containingType;
-        private bool _lazyIsVolatile;
         private ImmutableArray<CSharpAttributeData> _lazyCustomAttributes;
         private ConstantValue _lazyConstantValue = StarkPlatform.Compiler.ConstantValue.Unset; // Indicates an uninitialized ConstantValue
         private Tuple<CultureInfo, string> _lazyDocComment;
@@ -205,9 +204,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             if (_lazyType.IsNull)
             {
                 var moduleSymbol = _containingType.ContainingPEModule;
-                bool isVolatile;
                 ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers;
-                TypeSymbol typeSymbol = (new MetadataDecoder(moduleSymbol, _containingType)).DecodeFieldSignature(_handle, out isVolatile, out customModifiers);
+                TypeSymbol typeSymbol = (new MetadataDecoder(moduleSymbol, _containingType)).DecodeFieldSignature(_handle, out customModifiers);
                 ImmutableArray<CustomModifier> customModifiersArray = CSharpCustomModifier.Convert(customModifiers);
 
                 typeSymbol = DynamicTypeDecoder.TransformType(typeSymbol, customModifiersArray.Length, _handle, moduleSymbol);
@@ -219,8 +217,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
                 // NamedTypeSymbol and TupleTypeSymbol unnecessarily.
                 type = NullableTypeDecoder.TransformType(type, _handle, moduleSymbol);
                 type = TupleTypeDecoder.DecodeTupleTypesIfApplicable(type, _handle, moduleSymbol);
-
-                _lazyIsVolatile = isVolatile;
 
                 TypeSymbol fixedElementType;
                 int fixedSize;
@@ -309,15 +305,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             get
             {
                 return (_flags & FieldAttributes.InitOnly) != 0;
-            }
-        }
-
-        public override bool IsVolatile
-        {
-            get
-            {
-                EnsureSignatureIsLoaded();
-                return _lazyIsVolatile;
             }
         }
 

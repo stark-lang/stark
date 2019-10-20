@@ -40,7 +40,6 @@ namespace StarkPlatform.Compiler
         internal abstract TypeSymbol GetEnumUnderlyingType(ModuleSymbol moduleSymbol, TypeSymbol type);
         internal abstract TypeSymbol MakeExtendedTypeSymbol(ModuleSymbol moduleSymbol, TypeSymbol type, TypeAccessModifiers typeAccessModifiers);
 
-        internal abstract bool IsAcceptedVolatileModifierType(ModuleSymbol moduleSymbol, TypeSymbol type);
         internal abstract bool IsAcceptedInAttributeModifierType(TypeSymbol type);
         internal abstract bool IsAcceptedUnmanagedTypeModifierType(TypeSymbol type);
 

@@ -170,8 +170,8 @@ namespace StarkPlatform.Compiler.UseAutoProperty
                 return;
             }
 
-            // Don't want to remove constants and volatile fields.
-            if (getterField.IsConst || getterField.IsVolatile)
+            // Don't want to remove constants fields.
+            if (getterField.IsConst)
             {
                 return;
             }

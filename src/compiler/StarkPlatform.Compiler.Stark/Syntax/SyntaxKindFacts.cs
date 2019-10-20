@@ -911,8 +911,6 @@ namespace StarkPlatform.Compiler.Stark
                     return SyntaxKind.FixedKeyword;
                 case "stackalloc":
                     return SyntaxKind.StackAllocKeyword;
-                case "volatile":
-                    return SyntaxKind.VolatileKeyword;
                 case "new":
                     return SyntaxKind.NewKeyword;
                 case "override":
@@ -1489,8 +1487,6 @@ namespace StarkPlatform.Compiler.Stark
                     return "fixed";
                 case SyntaxKind.StackAllocKeyword:
                     return "stackalloc";
-                case SyntaxKind.VolatileKeyword:
-                    return "volatile";
                 case SyntaxKind.NewKeyword:
                     return "new";
                 case SyntaxKind.OverrideKeyword:

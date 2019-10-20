@@ -615,12 +615,6 @@ namespace StarkPlatform.Compiler.Stark
                     AddSpace();
                 }
 
-                if (symbol.IsVolatile)
-                {
-                    AddKeyword(SyntaxKind.VolatileKeyword);
-                    AddSpace();
-                }
-
                 //TODO: event
             }
         }

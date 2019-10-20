@@ -35,7 +35,6 @@ namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
                 SyntaxKind.SealedKeyword,
                 SyntaxKind.StaticKeyword,
                 SyntaxKind.VirtualKeyword,
-                SyntaxKind.VolatileKeyword,
             };
 
         private static readonly ISet<SyntaxKind> s_validGlobalMemberModifiers = new HashSet<SyntaxKind>(SyntaxFacts.EqualityComparer)
@@ -47,7 +46,6 @@ namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
                 SyntaxKind.PrivateKeyword,
                 SyntaxKind.ReadOnlyKeyword,
                 SyntaxKind.StaticKeyword,
-                SyntaxKind.VolatileKeyword,
             };
 
         public UnsafeKeywordRecommender()

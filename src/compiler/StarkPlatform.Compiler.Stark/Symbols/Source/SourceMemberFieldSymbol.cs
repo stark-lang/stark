@@ -74,11 +74,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
                 diagnostics.Add(ErrorCode.ERR_BadConstType, constToken.GetLocation(), type);
             }
-            else if (IsVolatile && !type.IsValidVolatileFieldType())
-            {
-                // '{0}': a volatile field cannot be of the type '{1}'
-                diagnostics.Add(ErrorCode.ERR_VolatileStruct, this.ErrorLocation, this, type);
-            }
 
             HashSet<DiagnosticInfo> useSiteDiagnostics = null;
             if (!this.IsNoMoreVisibleThan(type, ref useSiteDiagnostics))
@@ -128,7 +123,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 DeclarationModifiers.Const |
                 DeclarationModifiers.New |
                 DeclarationModifiers.Static |
-                DeclarationModifiers.Volatile |
                 DeclarationModifiers.Fixed |
                 DeclarationModifiers.Unsafe |
                 DeclarationModifiers.Abstract; // filtered out later
@@ -162,13 +156,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ConstKeyword));
                 }
 
-                if ((result & DeclarationModifiers.Volatile) != 0)
-                {
-                    // The modifier 'volatile' is not valid for this item
-                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.VolatileKeyword));
-                }
-
-                result &= ~(DeclarationModifiers.Static | DeclarationModifiers.Let | DeclarationModifiers.Const | DeclarationModifiers.Volatile);
+                result &= ~(DeclarationModifiers.Static | DeclarationModifiers.Let | DeclarationModifiers.Const);
                 Debug.Assert((result & ~(DeclarationModifiers.AccessibilityMask | DeclarationModifiers.Fixed | DeclarationModifiers.Unsafe | DeclarationModifiers.New)) == 0);
             }
 
@@ -185,12 +173,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 {
                     // The modifier 'readonly' is not valid for this item
                     diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ReadOnlyKeyword));
-                }
-
-                if ((result & DeclarationModifiers.Volatile) != 0)
-                {
-                    // The modifier 'volatile' is not valid for this item
-                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.VolatileKeyword));
                 }
 
                 if ((result & DeclarationModifiers.Unsafe) != 0)

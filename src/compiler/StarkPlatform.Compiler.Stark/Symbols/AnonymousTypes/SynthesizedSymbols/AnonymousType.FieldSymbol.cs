@@ -71,11 +71,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 get { return true; }
             }
 
-            public override bool IsVolatile
-            {
-                get { return false; }
-            }
-
             public override bool IsConst
             {
                 get { return false; }

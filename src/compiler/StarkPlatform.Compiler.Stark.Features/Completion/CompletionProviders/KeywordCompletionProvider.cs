@@ -148,7 +148,6 @@ namespace StarkPlatform.Compiler.Stark.Completion.Providers
                 new VarKeywordRecommender(),
                 new VirtualKeywordRecommender(),
                 new VoidKeywordRecommender(),
-                new VolatileKeywordRecommender(),
                 new WarningKeywordRecommender(),
                 new WhenKeywordRecommender(),
                 new WhereKeywordRecommender(),

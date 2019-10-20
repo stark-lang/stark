@@ -629,9 +629,6 @@ namespace StarkPlatform.Compiler
                         case AllowedRequiredModifierType.System_Runtime_InteropServices_InAttribute:
                             isAllowed = IsAcceptedInAttributeModifierType(type);
                             break;
-                        case AllowedRequiredModifierType.System_Runtime_CompilerServices_Volatile:
-                            isAllowed = IsAcceptedVolatileModifierType(type);
-                            break;
                         case AllowedRequiredModifierType.System_Runtime_InteropServices_UnmanagedType:
                             isAllowed = IsAcceptedUnmanagedTypeModifierType(type);
                             break;
@@ -1793,7 +1790,7 @@ tryAgain:
             parameterCount = signatureReader.ReadCompressedInteger();
         }
 
-        internal TypeSymbol DecodeFieldSignature(FieldDefinitionHandle fieldHandle, out bool isVolatile, out ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers)
+        internal TypeSymbol DecodeFieldSignature(FieldDefinitionHandle fieldHandle, out ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers)
         {
             try
             {
@@ -1804,25 +1801,22 @@ tryAgain:
 
                 if (signatureHeader.Kind != SignatureKind.Field)
                 {
-                    isVolatile = false;
                     customModifiers = default(ImmutableArray<ModifierInfo<TypeSymbol>>);
                     return GetUnsupportedMetadataTypeSymbol(); // unsupported signature content
                 }
 
-                return DecodeFieldSignature(ref signatureReader, out isVolatile, out customModifiers);
+                return DecodeFieldSignature(ref signatureReader, out customModifiers);
             }
             catch (BadImageFormatException mrEx)
             {
-                isVolatile = false;
                 customModifiers = default(ImmutableArray<ModifierInfo<TypeSymbol>>);
                 return GetUnsupportedMetadataTypeSymbol(mrEx);
             }
         }
 
         // MetaImport::DecodeFieldSignature
-        protected TypeSymbol DecodeFieldSignature(ref BlobReader signatureReader, out bool isVolatile, out ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers)
+        protected TypeSymbol DecodeFieldSignature(ref BlobReader signatureReader, out ImmutableArray<ModifierInfo<TypeSymbol>> customModifiers)
         {
-            isVolatile = false;
             customModifiers = default(ImmutableArray<ModifierInfo<TypeSymbol>>);
 
             try
@@ -1830,9 +1824,9 @@ tryAgain:
                 SignatureTypeCode typeCode;
                 customModifiers = DecodeModifiersOrThrow(
                     ref signatureReader,
-                    AllowedRequiredModifierType.System_Runtime_CompilerServices_Volatile,
+                    AllowedRequiredModifierType.None,
                     out typeCode,
-                    out isVolatile);
+                    out _);
 
                 return DecodeTypeOrThrow(ref signatureReader, typeCode, out _);
             }
@@ -2353,7 +2347,6 @@ tryAgain:
         private enum AllowedRequiredModifierType
         {
             None,
-            System_Runtime_CompilerServices_Volatile,
             System_Runtime_InteropServices_InAttribute,
             System_Runtime_InteropServices_UnmanagedType,
         }

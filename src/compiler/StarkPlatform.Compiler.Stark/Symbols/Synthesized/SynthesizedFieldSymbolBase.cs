@@ -93,11 +93,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             get { return (_modifiers & DeclarationModifiers.Let) != 0; }
         }
 
-        public override bool IsVolatile
-        {
-            get { return false; }
-        }
-
         public override bool IsConst
         {
             get { return false; }

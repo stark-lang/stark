@@ -984,7 +984,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
 
                 // Accessing a volatile field is sideeffecting because it establishes an acquire fence.
                 // Otherwise, accessing an unused instance field on a struct is a noop. Just emit an unused receiver.
-                if (!field.IsVolatile && !field.IsStatic && fieldAccess.ReceiverOpt.Type.IsVerifierValue())
+                if (!field.IsStatic && fieldAccess.ReceiverOpt.Type.IsVerifierValue())
                 {
                     EmitExpression(fieldAccess.ReceiverOpt, used: false);
                     return;
@@ -997,10 +997,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             // we emit static accesses even if unused.
             if (field.IsStatic)
             {
-                if (field.IsVolatile)
-                {
-                    _builder.EmitOpCode(ILOpCode.Volatile);
-                }
                 _builder.EmitOpCode(ILOpCode.Ldsfld);
                 EmitSymbolToken(field, fieldAccess.Syntax);
             }
@@ -1021,11 +1017,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
                     {
                         Debug.Assert(FieldLoadMustUseRef(receiver), "only clr-ambiguous structs use temps here");
                         FreeTemp(temp);
-                    }
-
-                    if (field.IsVolatile)
-                    {
-                        _builder.EmitOpCode(ILOpCode.Volatile);
                     }
 
                     _builder.EmitOpCode(ILOpCode.Ldfld);
@@ -1087,8 +1078,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
 
                 if (!field.IsStatic && EmitFieldLoadReceiverAddress(fieldAccess.ReceiverOpt))
                 {
-                    Debug.Assert(!field.IsVolatile, "volatile valuetype fields are unexpected");
-
                     _builder.EmitOpCode(ILOpCode.Ldflda);
                     EmitSymbolToken(field, fieldAccess.Syntax);
                     return true;
@@ -2131,8 +2120,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
             if (left.Kind == BoundKind.FieldAccess)
             {
                 var fieldAccess = (BoundFieldAccess)left;
-                if (fieldAccess.FieldSymbol.IsVolatile ||
-                    DiagnosticsPass.IsNonAgileFieldAccess(fieldAccess, _module.Compilation))
+                if (DiagnosticsPass.IsNonAgileFieldAccess(fieldAccess, _module.Compilation))
                 {
                     return false;
                 }
@@ -2710,11 +2698,6 @@ namespace StarkPlatform.Compiler.Stark.CodeGen
         private void EmitFieldStore(BoundFieldAccess fieldAccess)
         {
             var field = fieldAccess.FieldSymbol;
-
-            if (field.IsVolatile)
-            {
-                _builder.EmitOpCode(ILOpCode.Volatile);
-            }
 
             _builder.EmitOpCode(field.IsStatic ? ILOpCode.Stsfld : ILOpCode.Stfld);
             EmitSymbolToken(field, fieldAccess.Syntax);

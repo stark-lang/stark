@@ -68,11 +68,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             return type.PrimitiveTypeCode;
         }
 
-        internal override bool IsAcceptedVolatileModifierType(PEModuleSymbol moduleSymbol, TypeSymbol type)
-        {
-            return type.SpecialType == SpecialType.System_Runtime_CompilerServices_IsVolatile;
-        }
-
         internal override bool IsAcceptedInAttributeModifierType(TypeSymbol type)
         {
             return true;

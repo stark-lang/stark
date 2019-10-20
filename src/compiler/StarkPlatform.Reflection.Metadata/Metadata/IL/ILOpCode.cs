@@ -215,7 +215,7 @@ namespace StarkPlatform.Reflection.Metadata
         Localloc = 0xfe0f,
         Endfilter = 0xfe11,
         Unaligned = 0xfe12,
-        Volatile = 0xfe13,
+        Volatile = 0xfe13,  // TODO: TO REMOVE
         Tail = 0xfe14,
         Initobj = 0xfe15,
         Constrained = 0xfe16,

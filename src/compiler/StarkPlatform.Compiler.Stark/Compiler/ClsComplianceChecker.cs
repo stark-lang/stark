@@ -396,14 +396,6 @@ namespace StarkPlatform.Compiler.Stark
             Compliance compliance = GetDeclaredOrInheritedCompliance(symbol);
 
             if (!VisitTypeOrMember(symbol, compliance)) return;
-
-            if (IsTrue(compliance))
-            {
-                if (symbol.IsVolatile)
-                {
-                    this.AddDiagnostic(ErrorCode.WRN_CLS_VolatileField, symbol.Locations[0], symbol);
-                }
-            }
         }
 
         /// <returns>False if no further checks are required (because they would be cascading).</returns>

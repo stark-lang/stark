@@ -1058,8 +1058,6 @@ tryAgain:
                     return DeclarationModifiers.Override;
                 case SyntaxKind.ReadOnlyKeyword:
                     return DeclarationModifiers.Let;
-                case SyntaxKind.VolatileKeyword:
-                    return DeclarationModifiers.Volatile;
                 case SyntaxKind.TransientKeyword:
                     return DeclarationModifiers.Transient;
                 case SyntaxKind.UnsafeKeyword:
@@ -6266,7 +6264,6 @@ tryAgain:
                 case SyntaxKind.WhileKeyword:
                 case SyntaxKind.OpenBraceToken:
                 case SyntaxKind.StaticKeyword:
-                case SyntaxKind.VolatileKeyword: // TODO: remove
                 case SyntaxKind.ConstKeyword:
                 case SyntaxKind.VarKeyword:
                 case SyntaxKind.RefKeyword:
@@ -7396,7 +7393,7 @@ tryAgain:
                     mod = this.EatToken();
                 }
 
-                if (k == SyntaxKind.ReadOnlyKeyword || k == SyntaxKind.VolatileKeyword)
+                if (k == SyntaxKind.ReadOnlyKeyword)
                 {
                     mod = this.AddError(mod, ErrorCode.ERR_BadMemberFlag, mod.Text);
                 }
@@ -7417,7 +7414,6 @@ tryAgain:
                 case SyntaxKind.ConstKeyword:
                 case SyntaxKind.StaticKeyword:
                 case SyntaxKind.ReadOnlyKeyword:
-                case SyntaxKind.VolatileKeyword:
                     return true;
                 default:
                     return false;

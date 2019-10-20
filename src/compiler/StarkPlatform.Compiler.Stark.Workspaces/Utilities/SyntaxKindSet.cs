@@ -37,7 +37,6 @@ namespace StarkPlatform.Compiler.Stark.Utilities
                 SyntaxKind.StaticKeyword,
                 SyntaxKind.UnsafeKeyword,
                 SyntaxKind.VirtualKeyword,
-                SyntaxKind.VolatileKeyword,
             };
 
         public static readonly ISet<SyntaxKind> AllGlobalMemberModifiers = new HashSet<SyntaxKind>(SyntaxFacts.EqualityComparer)
@@ -51,7 +50,6 @@ namespace StarkPlatform.Compiler.Stark.Utilities
                 SyntaxKind.ReadOnlyKeyword,
                 SyntaxKind.StaticKeyword,
                 SyntaxKind.UnsafeKeyword,
-                SyntaxKind.VolatileKeyword,
             };
 
         public static readonly ISet<SyntaxKind> LocalFunctionModifiers = new HashSet<SyntaxKind>(SyntaxFacts.EqualityComparer)

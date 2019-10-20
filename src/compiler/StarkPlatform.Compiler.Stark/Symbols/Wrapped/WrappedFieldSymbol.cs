@@ -127,14 +127,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             }
         }
 
-        public override bool IsVolatile
-        {
-            get
-            {
-                return _underlyingField.IsVolatile;
-            }
-        }
-
         public override bool IsConst
         {
             get

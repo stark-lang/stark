@@ -124,8 +124,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     return SyntaxFacts.GetText(SyntaxKind.ReadOnlyKeyword);
                 case DeclarationModifiers.Const:
                     return SyntaxFacts.GetText(SyntaxKind.ConstKeyword);
-                case DeclarationModifiers.Volatile:
-                    return SyntaxFacts.GetText(SyntaxKind.VolatileKeyword);
                 case DeclarationModifiers.Extern:
                     return SyntaxFacts.GetText(SyntaxKind.ExternKeyword);
                 case DeclarationModifiers.Partial:
@@ -187,8 +185,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     return DeclarationModifiers.Const;
                 case SyntaxKind.FixedKeyword:
                     return DeclarationModifiers.Fixed;
-                case SyntaxKind.VolatileKeyword:
-                    return DeclarationModifiers.Volatile;
                 case SyntaxKind.RefKeyword:
                     return DeclarationModifiers.Ref;
                 default:

@@ -89,11 +89,6 @@ namespace StarkPlatform.Compiler
             return _factory.GetEnumUnderlyingType(this.moduleSymbol, type);
         }
 
-        protected bool IsAcceptedVolatileModifierType(TypeSymbol type)
-        {
-            return _factory.IsAcceptedVolatileModifierType(this.moduleSymbol, type);
-        }
-
         protected bool IsAcceptedInAttributeModifierType(TypeSymbol type)
         {
             return _factory.IsAcceptedInAttributeModifierType(type);

@@ -21,7 +21,7 @@ namespace StarkPlatform.Compiler.Stark
         Let = 1 << 10,
         Transient = 1 << 11,
         Const = 1 << 12,
-        Volatile = 1 << 13,
+        // Volatile = 1 << 13,
 
         Extern = 1 << 14,
         Partial = 1 << 15,

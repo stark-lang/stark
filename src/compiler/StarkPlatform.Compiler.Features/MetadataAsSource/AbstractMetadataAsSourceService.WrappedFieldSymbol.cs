@@ -33,8 +33,6 @@ namespace StarkPlatform.Compiler.MetadataAsSource
 
             public bool IsLet => _symbol.IsLet;
 
-            public bool IsVolatile => _symbol.IsVolatile;
-
             public bool IsFixedSizeBuffer => _symbol.IsFixedSizeBuffer;
 
             public ITypeSymbol Type => _symbol.Type;

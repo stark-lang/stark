@@ -56,10 +56,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 diagnostics.Add(AccessCheck.GetProtectedMemberInSealedTypeError(containingType), ErrorLocation, this);
             }
-            else if (IsVolatile && IsLet)
-            {
-                diagnostics.Add(ErrorCode.ERR_VolatileAndReadonly, ErrorLocation, this);
-            }
             else if (containingType.IsStatic && !IsStatic)
             {
                 diagnostics.Add(ErrorCode.ERR_InstanceMemberInStaticClass, ErrorLocation, this);
@@ -78,15 +74,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         {
             get
             {
-                if (!IsVolatile)
-                {
-                    return ImmutableArray<CustomModifier>.Empty;
-                }
-                else
-                {
-                    return ImmutableArray.Create<CustomModifier>(
-                            CSharpCustomModifier.CreateRequired(this.ContainingAssembly.GetSpecialType(SpecialType.System_Runtime_CompilerServices_IsVolatile)));
-                }
+                return ImmutableArray<CustomModifier>.Empty;
             }
         }
 

@@ -27,7 +27,6 @@ namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
                 SyntaxKind.StaticKeyword,
                 SyntaxKind.UnsafeKeyword,
                 SyntaxKind.VirtualKeyword,
-                SyntaxKind.VolatileKeyword,
             };
 
         protected static readonly ISet<SyntaxKind> ValidTypeModifiers = new HashSet<SyntaxKind>(SyntaxFacts.EqualityComparer)
