@@ -130,8 +130,6 @@ namespace StarkPlatform.Compiler
                 ,new TypeHandleTargetInfo("System.EnterpriseServices","TransactionOption", SerializationTypeCode.Int32)
                 ,new TypeHandleTargetInfo("System.Security.Permissions","SecurityAction", SerializationTypeCode.Int32)
                 ,new TypeHandleTargetInfo(system,"Type", SerializationTypeCode.Type)
-                ,new TypeHandleTargetInfo("Windows.Foundation.Metadata","DeprecationType", SerializationTypeCode.Int32)
-                ,new TypeHandleTargetInfo("Windows.Foundation.Metadata","Platform", SerializationTypeCode.Int32)
             }).AsImmutable();
         }
 
@@ -223,21 +221,16 @@ namespace StarkPlatform.Compiler
         private static readonly byte[][] s_signaturesOfAccessedThroughPropertyAttribute = { s_signature_HasThis_Void_String };
         private static readonly byte[][] s_signaturesOfIndexerNameAttribute = { s_signature_HasThis_Void_String };
         private static readonly byte[][] s_signaturesOfInternalsVisibleToAttribute = { s_signature_HasThis_Void_String };
-        private static readonly byte[][] s_signaturesOfOptionalAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfDefaultParameterValueAttribute = { s_signature_HasThis_Void_Object };
-        private static readonly byte[][] s_signaturesOfDateTimeConstantAttribute = { s_signature_HasThis_Void_Int64 };
-        private static readonly byte[][] s_signaturesOfIUnknownConstantAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfCallerArgumentExpressionAttribute = { s_signature_HasThis_Void_String };
         private static readonly byte[][] s_signaturesOfCallerFilePathAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfCallerLineNumberAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfCallerMemberNameAttribute = { s_signature_HasThis_Void };
-        private static readonly byte[][] s_signaturesOfIDispatchConstantAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfParamArrayAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfDllImportAttribute = { s_signature_HasThis_Void_String };
         private static readonly byte[][] s_signaturesOfUnverifiableCodeAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfSecurityPermissionAttribute = { s_signature_HasThis_Void_SecurityAction };
         private static readonly byte[][] s_signaturesOfCoClassAttribute = { s_signature_HasThis_Void_Type };
-        private static readonly byte[][] s_signaturesOfComImportAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfGuidAttribute = { s_signature_HasThis_Void_String };
         private static readonly byte[][] s_signaturesOfCLSCompliantAttribute = { s_signature_HasThis_Void_Boolean };
 
@@ -255,8 +248,6 @@ namespace StarkPlatform.Compiler
         private static readonly byte[][] s_signaturesOfNonSerializedAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfFieldOffsetAttribute = { s_signature_HasThis_Void_Int32 };
         private static readonly byte[][] s_signaturesOfSerializableAttribute = { s_signature_HasThis_Void };
-        private static readonly byte[][] s_signaturesOfInAttribute = { s_signature_HasThis_Void };
-        private static readonly byte[][] s_signaturesOfOutAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfIsReadOnlyAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfIsUnmanagedAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfNotNullWhenTrueAttribute = { s_signature_HasThis_Void };
@@ -275,25 +266,10 @@ namespace StarkPlatform.Compiler
             s_signature_HasThis_Void_LayoutKind,
         };
 
-        private static readonly byte[][] s_signaturesOfMarshalAsAttribute =
-        {
-            s_signature_HasThis_Void_Int16,
-            s_signature_HasThis_Void_UnmanagedType,
-        };
-
         private static readonly byte[][] s_signaturesOfTypeLibTypeAttribute =
         {
             s_signature_HasThis_Void_Int16,
             s_signature_HasThis_Void_TypeLibTypeFlags,
-        };
-
-        private static readonly byte[][] s_signaturesOfWebMethodAttribute =
-        {
-            s_signature_HasThis_Void,
-            s_signature_HasThis_Void_Boolean,
-            s_signature_HasThis_Void_Boolean_TransactionOption,
-            s_signature_HasThis_Void_Boolean_TransactionOption_Int32,
-            s_signature_HasThis_Void_Boolean_TransactionOption_Int32_Boolean
         };
 
         private static readonly byte[][] s_signaturesOfHostProtectionAttribute =
@@ -305,14 +281,6 @@ namespace StarkPlatform.Compiler
         private static readonly byte[][] s_signaturesOfVisualBasicEmbedded = { s_signature_HasThis_Void };
 
         private static readonly byte[][] s_signaturesOfCodeAnalysisEmbedded = { s_signature_HasThis_Void };
-
-        private static readonly byte[][] s_signaturesOfVisualBasicComClassAttribute =
-        {
-            s_signature_HasThis_Void,
-            s_signature_HasThis_Void_String,
-            s_signature_HasThis_Void_String_String,
-            s_signature_HasThis_Void_String_String_String
-        };
 
         private static readonly byte[][] s_signaturesOfClassInterfaceAttribute =
         {
@@ -340,20 +308,9 @@ namespace StarkPlatform.Compiler
             s_signature_HasThis_Void_DebuggingModes
         };
 
-        private static readonly byte[][] s_signaturesOfComSourceInterfacesAttribute =
-        {
-            s_signature_HasThis_Void_String,
-            s_signature_HasThis_Void_Type,
-            s_signature_HasThis_Void_Type_Type,
-            s_signature_HasThis_Void_Type_Type_Type,
-            s_signature_HasThis_Void_Type_Type_Type_Type
-        };
-
-        private static readonly byte[][] s_signaturesOfComVisibleAttribute = { s_signature_HasThis_Void_Boolean };
         private static readonly byte[][] s_signaturesOfConditionalAttribute = { s_signature_HasThis_Void_String };
         private static readonly byte[][] s_signaturesOfTypeLibVersionAttribute = { s_signature_HasThis_Void_Int32_Int32 };
         private static readonly byte[][] s_signaturesOfComCompatibleVersionAttribute = { s_signature_HasThis_Void_Int32_Int32_Int32_Int32 };
-        private static readonly byte[][] s_signaturesOfWindowsRuntimeImportAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfDynamicSecurityMethodAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfRequiredAttributeAttribute = { s_signature_HasThis_Void_Type };
         private static readonly byte[][] s_signaturesOfAsyncMethodBuilderAttribute = { s_signature_HasThis_Void_Type };
@@ -362,7 +319,6 @@ namespace StarkPlatform.Compiler
         private static readonly byte[][] s_signaturesOfRuntimeCompatibilityAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfTypeForwardedToAttribute = { s_signature_HasThis_Void_Type };
         private static readonly byte[][] s_signaturesOfSTAThreadAttribute = { s_signature_HasThis_Void };
-        private static readonly byte[][] s_signaturesOfMTAThreadAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfOptionCompareAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfObsoleteAttribute = { s_signature_HasThis_Void, s_signature_HasThis_Void_String, s_signature_HasThis_Void_String_Boolean };
         private static readonly byte[][] s_signaturesOfDynamicAttribute = { s_signature_HasThis_Void, s_signature_HasThis_Void_SzArray_Boolean };
@@ -380,9 +336,6 @@ namespace StarkPlatform.Compiler
         };
 
         private static readonly byte[][] s_signaturesOfSecuritySafeCriticalAttribute = { s_signature_HasThis_Void };
-        private static readonly byte[][] s_signaturesOfDesignerGeneratedAttribute = { s_signature_HasThis_Void };
-        private static readonly byte[][] s_signaturesOfMyGroupCollectionAttribute = { s_signature_HasThis_Void_String_String_String_String };
-        private static readonly byte[][] s_signaturesOfComEventInterfaceAttribute = { s_signature_HasThis_Void_Type_Type };
         private static readonly byte[][] s_signaturesOfBestFitMappingAttribute = { s_signature_HasThis_Void_Boolean };
         private static readonly byte[][] s_signaturesOfFlagsAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfLCIDConversionAttribute = { s_signature_HasThis_Void_Int32 };
@@ -398,21 +351,9 @@ namespace StarkPlatform.Compiler
             s_signature_HasThis_Void_UInt32
         };
 
-        private static readonly byte[][] s_signaturesOfDeprecatedAttribute =
-        {
-            s_signature_HasThis_Void_String_DeprecationType_UInt32,
-            s_signature_HasThis_Void_String_DeprecationType_UInt32_Platform,
-            s_signature_HasThis_Void_String_DeprecationType_UInt32_Type,
-            s_signature_HasThis_Void_String_DeprecationType_UInt32_String,
-        };
-
-        private static readonly byte[][] s_signaturesOfNullableAttribute = { s_signature_HasThis_Void_Byte, s_signature_HasThis_Void_SzArray_Byte };
-
-        private static readonly byte[][] s_signaturesOfExperimentalAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfExcludeFromCodeCoverageAttribute = { s_signature_HasThis_Void };
 
         // early decoded attributes:
-        internal static readonly AttributeDescription OptionalAttribute = new AttributeDescription("core.runtime", "OptionalAttribute", s_signaturesOfOptionalAttribute);
         internal static readonly AttributeDescription AttributeUsageAttribute = new AttributeDescription("core", "AttributeUsageAttribute", s_signaturesOfAttributeUsage);
         internal static readonly AttributeDescription ConditionalAttribute = new AttributeDescription("core.diagnostics", "ConditionalAttribute", s_signaturesOfConditionalAttribute);
 
@@ -461,9 +402,6 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription EnsuresNotNullAttribute = new AttributeDescription("core.runtime", "EnsuresNotNullAttribute", s_signaturesOfEnsuresNotNullAttribute);
         internal static readonly AttributeDescription AssertsTrueAttribute = new AttributeDescription("core.runtime", "AssertsTrueAttribute", s_signaturesOfAssertsTrueAttribute);
         internal static readonly AttributeDescription AssertsFalseAttribute = new AttributeDescription("core.runtime", "AssertsFalseAttribute", s_signaturesOfAssertsFalseAttribute);
-        internal static readonly AttributeDescription MarshalAsAttribute = new AttributeDescription("core.runtime", "MarshalAsAttribute", s_signaturesOfMarshalAsAttribute);
-        internal static readonly AttributeDescription InAttribute = new AttributeDescription("core.runtime", "InAttribute", s_signaturesOfInAttribute);
-        internal static readonly AttributeDescription OutAttribute = new AttributeDescription("core.runtime", "OutAttribute", s_signaturesOfOutAttribute);
         internal static readonly AttributeDescription IsReadOnlyAttribute = new AttributeDescription("core.runtime", "ReadOnlyAttribute", s_signaturesOfIsReadOnlyAttribute);
         internal static readonly AttributeDescription IsUnmanagedAttribute = new AttributeDescription("core.runtime", "UnmanagedAttribute", s_signaturesOfIsUnmanagedAttribute);
         internal static readonly AttributeDescription CoClassAttribute = new AttributeDescription("core.runtime", "CoClassAttribute", s_signaturesOfCoClassAttribute);
@@ -484,7 +422,6 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription TypeLibVersionAttribute = new AttributeDescription("core.runtime", "TypeLibVersionAttribute", s_signaturesOfTypeLibVersionAttribute);
         internal static readonly AttributeDescription ComCompatibleVersionAttribute = new AttributeDescription("core.runtime", "ComCompatibleVersionAttribute", s_signaturesOfComCompatibleVersionAttribute);
         internal static readonly AttributeDescription InterfaceTypeAttribute = new AttributeDescription("core.runtime", "InterfaceTypeAttribute", s_signaturesOfInterfaceTypeAttribute);
-        internal static readonly AttributeDescription WindowsRuntimeImportAttribute = new AttributeDescription("core.runtime.interop.WindowsRuntime", "WindowsRuntimeImportAttribute", s_signaturesOfWindowsRuntimeImportAttribute);
         internal static readonly AttributeDescription DynamicSecurityMethodAttribute = new AttributeDescription("System.Security", "DynamicSecurityMethodAttribute", s_signaturesOfDynamicSecurityMethodAttribute);
         internal static readonly AttributeDescription RequiredAttributeAttribute = new AttributeDescription("core.runtime", "RequiredAttributeAttribute", s_signaturesOfRequiredAttributeAttribute);
         internal static readonly AttributeDescription AsyncMethodBuilderAttribute = new AttributeDescription("core.runtime", "AsyncMethodBuilderAttribute", s_signaturesOfAsyncMethodBuilderAttribute);
@@ -516,8 +453,6 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription DefaultEventAttribute = new AttributeDescription("System.ComponentModel", "DefaultEventAttribute", s_signaturesOfDefaultEventAttribute);
         internal static readonly AttributeDescription AssemblyConfigurationAttribute = new AttributeDescription("System.Reflection", "AssemblyConfigurationAttribute", s_signaturesOfAssemblyConfigurationAttribute);
         internal static readonly AttributeDescription AssemblyAlgorithmIdAttribute = new AttributeDescription("System.Reflection", "AssemblyAlgorithmIdAttribute", s_signaturesOfAssemblyAlgorithmIdAttribute);
-        internal static readonly AttributeDescription DeprecatedAttribute = new AttributeDescription("Windows.Foundation.Metadata", "DeprecatedAttribute", s_signaturesOfDeprecatedAttribute);
-        internal static readonly AttributeDescription ExperimentalAttribute = new AttributeDescription("Windows.Foundation.Metadata", "ExperimentalAttribute", s_signaturesOfExperimentalAttribute);
         internal static readonly AttributeDescription ExcludeFromCodeCoverageAttribute = new AttributeDescription("System.Diagnostics.CodeAnalysis", "ExcludeFromCodeCoverageAttribute", s_signaturesOfExcludeFromCodeCoverageAttribute);
     }
 }

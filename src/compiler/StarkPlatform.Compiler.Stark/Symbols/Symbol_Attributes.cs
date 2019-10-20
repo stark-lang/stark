@@ -151,14 +151,6 @@ namespace StarkPlatform.Compiler.Stark
             {
                 kind = ObsoleteAttributeKind.Obsolete;
             }
-            else if (CSharpAttributeData.IsTargetEarlyAttribute(type, syntax, AttributeDescription.DeprecatedAttribute))
-            {
-                kind = ObsoleteAttributeKind.Deprecated;
-            }
-            else if (CSharpAttributeData.IsTargetEarlyAttribute(type, syntax, AttributeDescription.ExperimentalAttribute))
-            {
-                kind = ObsoleteAttributeKind.Experimental;
-            }
             else
             {
                 obsoleteData = null;

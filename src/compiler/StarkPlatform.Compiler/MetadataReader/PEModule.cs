@@ -1056,12 +1056,6 @@ namespace StarkPlatform.Compiler
         {
             AttributeInfo info;
 
-            info = FindTargetAttribute(token, AttributeDescription.DeprecatedAttribute);
-            if (info.HasValue)
-            {
-                return TryExtractDeprecatedDataFromAttribute(info);
-            }
-
             info = FindTargetAttribute(token, AttributeDescription.ObsoleteAttribute);
             if (info.HasValue)
             {
@@ -1072,14 +1066,6 @@ namespace StarkPlatform.Compiler
                         return null;
                 }
                 return obsoleteData;
-            }
-
-            // [Experimental] is always a warning, not an
-            // error, so search for [Experimental] last.
-            info = FindTargetAttribute(token, AttributeDescription.ExperimentalAttribute);
-            if (info.HasValue)
-            {
-                return TryExtractExperimentalDataFromAttribute(info);
             }
 
             return null;

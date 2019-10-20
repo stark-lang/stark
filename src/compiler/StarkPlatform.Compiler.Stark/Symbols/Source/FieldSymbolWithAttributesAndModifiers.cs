@@ -192,10 +192,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     arguments.GetOrCreateData<CommonFieldWellKnownAttributeData>().SetFieldOffset(offset);
                 }
             }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.MarshalAsAttribute))
-            {
-                MarshalAsAttributeDecoder<CommonFieldWellKnownAttributeData, AttributeSyntax, CSharpAttributeData, AttributeLocation>.Decode(ref arguments, AttributeTargets.Field, MessageProvider.Instance);
-            }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.DynamicAttribute))
             {
                 // DynamicAttribute should not be set explicitly.

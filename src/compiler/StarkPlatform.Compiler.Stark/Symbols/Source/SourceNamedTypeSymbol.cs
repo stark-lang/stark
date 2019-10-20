@@ -683,10 +683,6 @@ next:;
             {
                 attribute.DecodeInterfaceTypeAttribute(arguments.AttributeSyntaxOpt, arguments.Diagnostics);
             }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.WindowsRuntimeImportAttribute))
-            {
-                arguments.GetOrCreateData<TypeWellKnownAttributeData>().HasWindowsRuntimeImportAttribute = true;
-            }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.RequiredAttributeAttribute))
             {
                 // CS1608: The Required attribute is not permitted on C# types

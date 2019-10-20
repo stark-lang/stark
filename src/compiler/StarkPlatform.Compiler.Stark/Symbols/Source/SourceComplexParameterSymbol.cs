@@ -461,13 +461,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         internal override void EarlyDecodeWellKnownAttributeType(NamedTypeSymbol attributeType, AttributeSyntax attributeSyntax)
         {
             Debug.Assert(!attributeType.IsErrorType());
-
-            // NOTE: OptionalAttribute is decoded specially before any of the other attributes and stored in the parameter
-            // symbol (rather than in the EarlyWellKnownAttributeData) because it is needed during overload resolution.
-            if (CSharpAttributeData.IsTargetEarlyAttribute(attributeType, attributeSyntax, AttributeDescription.OptionalAttribute))
-            {
-                _lazyHasOptionalAttribute = ThreeState.True;
-            }
         }
 
         internal override void PostEarlyDecodeWellKnownAttributeTypes()
@@ -579,32 +572,10 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 // Attribute decoded and constant value stored during EarlyDecodeWellKnownAttribute.
                 DecodeDefaultParameterValueAttribute(AttributeDescription.DefaultParameterValueAttribute, ref arguments);
             }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.OptionalAttribute))
-            {
-                Debug.Assert(_lazyHasOptionalAttribute == ThreeState.True);
-
-                if (HasDefaultArgumentSyntax)
-                {
-                    // error CS1745: Cannot specify default parameter value in conjunction with DefaultParameterAttribute or OptionalAttribute
-                    arguments.Diagnostics.Add(ErrorCode.ERR_DefaultValueUsedWithAttributes, arguments.AttributeSyntaxOpt.Name.Location);
-                }
-            }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.ParamArrayAttribute))
             {
                 // error CS0674: Do not use 'System.ParamArrayAttribute'. Use the 'params' keyword instead.
                 arguments.Diagnostics.Add(ErrorCode.ERR_ExplicitParamArray, arguments.AttributeSyntaxOpt.Name.Location);
-            }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.InAttribute))
-            {
-                arguments.GetOrCreateData<ParameterWellKnownAttributeData>().HasInAttribute = true;
-            }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.OutAttribute))
-            {
-                arguments.GetOrCreateData<ParameterWellKnownAttributeData>().HasOutAttribute = true;
-            }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.MarshalAsAttribute))
-            {
-                MarshalAsAttributeDecoder<ParameterWellKnownAttributeData, AttributeSyntax, CSharpAttributeData, AttributeLocation>.Decode(ref arguments, AttributeTargets.Parameter, MessageProvider.Instance);
             }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.CallerLineNumberAttribute))
             {

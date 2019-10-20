@@ -1183,9 +1183,6 @@ done:
             else if (VerifyObsoleteAttributeAppliedToMethod(ref arguments, AttributeDescription.ObsoleteAttribute))
             {
             }
-            else if (VerifyObsoleteAttributeAppliedToMethod(ref arguments, AttributeDescription.DeprecatedAttribute))
-            {
-            }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.IsReadOnlyAttribute))
             {
                 // IsReadOnlyAttribute should not be set explicitly.
@@ -1311,12 +1308,7 @@ done:
             var attribute = arguments.Attribute;
             Debug.Assert(!attribute.HasErrors);
 
-            if (attribute.IsTargetAttribute(this, AttributeDescription.MarshalAsAttribute))
-            {
-                // MarshalAs applied to the return value:
-                MarshalAsAttributeDecoder<CommonReturnTypeWellKnownAttributeData, AttributeSyntax, CSharpAttributeData, AttributeLocation>.Decode(ref arguments, AttributeTargets.ReturnValue, MessageProvider.Instance);
-            }
-            else if (attribute.IsTargetAttribute(this, AttributeDescription.DynamicAttribute))
+            if (attribute.IsTargetAttribute(this, AttributeDescription.DynamicAttribute))
             {
                 // DynamicAttribute should not be set explicitly.
                 arguments.Diagnostics.Add(ErrorCode.ERR_ExplicitDynamicAttr, arguments.AttributeSyntaxOpt.Location);

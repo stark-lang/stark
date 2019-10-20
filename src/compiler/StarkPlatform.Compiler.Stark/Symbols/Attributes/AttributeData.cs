@@ -589,8 +589,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 case SymbolKind.Field:
                     if (IsTargetAttribute(target, AttributeDescription.SpecialNameAttribute) ||
                         IsTargetAttribute(target, AttributeDescription.NonSerializedAttribute) ||
-                        IsTargetAttribute(target, AttributeDescription.FieldOffsetAttribute) ||
-                        IsTargetAttribute(target, AttributeDescription.MarshalAsAttribute))
+                        IsTargetAttribute(target, AttributeDescription.FieldOffsetAttribute))
                     {
                         return false;
                     }
@@ -600,10 +599,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 case SymbolKind.Method:
                     if (isReturnType)
                     {
-                        if (IsTargetAttribute(target, AttributeDescription.MarshalAsAttribute))
-                        {
-                            return false;
-                        }
                     }
                     else
                     {
@@ -628,7 +623,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     if (IsTargetAttribute(target, AttributeDescription.SpecialNameAttribute) ||
                         IsTargetAttribute(target, AttributeDescription.SerializableAttribute) ||
                         IsTargetAttribute(target, AttributeDescription.StructLayoutAttribute) ||
-                        IsTargetAttribute(target, AttributeDescription.WindowsRuntimeImportAttribute) ||
                         IsSecurityAttribute(target.DeclaringCompilation))
                     {
                         return false;
@@ -637,11 +631,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     break;
 
                 case SymbolKind.Parameter:
-                    if (IsTargetAttribute(target, AttributeDescription.OptionalAttribute) ||
-                        IsTargetAttribute(target, AttributeDescription.DefaultParameterValueAttribute) ||
-                        IsTargetAttribute(target, AttributeDescription.InAttribute) ||
-                        IsTargetAttribute(target, AttributeDescription.OutAttribute) ||
-                        IsTargetAttribute(target, AttributeDescription.MarshalAsAttribute))
+                    if (IsTargetAttribute(target, AttributeDescription.DefaultParameterValueAttribute))
                     {
                         return false;
                     }
