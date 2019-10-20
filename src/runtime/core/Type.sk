@@ -1,0 +1,57 @@
+namespace core
+{
+    @Flags
+    public enum TypeAttributes
+    {
+        NONE = 0
+        PRIMITIVE = 1 << 0
+        CLASS = 1 << 1
+        STRUCT = 1 << 2
+        ENUM = 1 << 3
+        INTERFACE = 1 << 4
+        ARRAY = CLASS | (1 << 5)
+    }
+
+    public readonly struct Type {
+        private unsafe let _impl : *Impl
+
+        private constructor() {
+            unsafe {
+                _impl = null
+            }
+        }
+
+        public func is_nil -> bool {
+            get {
+                unsafe {
+                    return _impl == 0 as *Impl
+                }
+            }
+        }
+
+        public func attributes -> TypeAttributes {
+            get {
+                unsafe {
+                    return if is_nil then TypeAttributes.NONE else _impl->attributes
+                }
+            }
+        }
+
+        public func base_type -> Type {
+            get {
+                unsafe {
+                    return if is_nil then  default else _impl->base_type
+                }
+            }
+        }
+
+        private readonly struct Impl
+        {
+#pragma warning disable CS0169
+#pragma warning disable CS0649
+            public let base_type : Type
+            public let attributes : TypeAttributes
+#pragma warning restore
+        }
+    }
+}

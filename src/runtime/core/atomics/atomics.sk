@@ -1,0 +1,54 @@
+import core.runtime
+
+namespace core
+{
+    public module atomics
+    {
+        public enum MemoryOrder
+        {
+            SEQUENTIAL_CONSISTENT
+            RELAXED
+            CONSUME
+            ACQUIRE
+            RELEASE
+            ACQUIRE_RELEASE        
+        }
+
+        @Intrinsic
+        public extern static func load(data: ref int, 
+                                       order: MemoryOrder = MemoryOrder.SEQUENTIAL_CONSISTENT) -> int
+                                       // TODO: the following is not parsing correctly
+                                       // requires order != MemoryOrder.RELEASE && order != MemoryOrder.ACQUIRE_RELEASE
+
+        @Intrinsic
+        public extern static func store(data: ref int, 
+                                        value_to_store: int, 
+                                        order: MemoryOrder = MemoryOrder.SEQUENTIAL_CONSISTENT) 
+                                        // TODO: the following is not parsing correctly
+                                        // requires order != MemoryOrder.ACQUIRE && order != MemoryOrder.ACQUIRE_RELEASE
+
+        @Intrinsic
+        public extern static func swap(data: ref int, 
+                                           value_to_swap: int, 
+                                           order: MemoryOrder = MemoryOrder.SEQUENTIAL_CONSISTENT) -> int
+
+        @Intrinsic
+        public extern static func compare_and_swap(data: ref int, 
+                                                   value_to_swap: int, 
+                                                   value_to_compare: int, 
+                                                   order: MemoryOrder = MemoryOrder.SEQUENTIAL_CONSISTENT) -> bool
+
+        // TODO: add for all primitives:
+        // i8, i16, i32, i64
+        // u8, u16, u32, u64
+        // object
+    }
+
+    public module atomics_play
+    {
+        static func play_load(value: ref int) -> int
+        {
+            return atomics.load(ref value, atomics.MemoryOrder.SEQUENTIAL_CONSISTENT)
+        }
+    }
+}

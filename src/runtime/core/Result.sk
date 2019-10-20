@@ -17,14 +17,14 @@ namespace core
 
         protected constructor(value: T)
         {
-            _type = 0
+            _type = type
             _exception = null
             _value = value
         }
 
-        protected constructor(unused: bool, exception: Exception)
+        protected constructor(type: int, exception: Exception)
         {
-            _type = 1
+            _type = type
             _exception = exception
             _value = default
         }
@@ -42,7 +42,7 @@ namespace core
     @Union
     public readonly struct Failure<T> extends Result<T>
     {
-        public constructor(exception: Exception) : base(false, exception) {}
+        public constructor(exception: Exception) : base(exception) {}
 
         public func exception -> Exception => _exception
     }

@@ -10,6 +10,15 @@ namespace core {
         private protected constructor() {}
 
         // size is readonly
-        public func size -> int { readonly get => _size }
+        public func size -> int { 
+            get {
+                unsafe il
+                {
+                    ldarg.0
+                    ldlen
+                    ret
+                }
+            } 
+        }
     }
 }
