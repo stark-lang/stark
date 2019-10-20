@@ -166,26 +166,6 @@ namespace StarkPlatform.Compiler
         core_Slice_TArray_T,
 
         /// <summary>
-        /// Indicates that the type is <see cref="IList{T}"/>.
-        /// </summary>
-        System_Collections_Generic_IList_T,
-
-        /// <summary>
-        /// Indicates that the type is <see cref="ICollection{T}"/>.
-        /// </summary>
-        System_Collections_Generic_ICollection_T,
-
-        /// <summary>
-        /// Indicates that the type is <see cref="IReadOnlyList{T}"/>.
-        /// </summary>
-        System_Collections_Generic_IReadOnlyList_T,
-
-        /// <summary>
-        /// Indicates that the type is <see cref="IReadOnlyCollection{T}"/>.
-        /// </summary>
-        System_Collections_Generic_IReadOnlyCollection_T,
-
-        /// <summary>
         /// Indicates that the type is <see cref="Nullable{T}"/>.
         /// </summary>
         core_Option_T,

@@ -383,11 +383,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
             SpecialType st = t.SpecialType;
 
-            if (st == SpecialType.System_Collections_Generic_IList_T ||
-                st == SpecialType.System_Collections_Generic_ICollection_T ||
-                st == SpecialType.core_Iterable_T_TIterator ||
-                st == SpecialType.System_Collections_Generic_IReadOnlyList_T ||
-                st == SpecialType.System_Collections_Generic_IReadOnlyCollection_T)
+            if (st == SpecialType.core_IArray_T || st == SpecialType.core_Iterable_T_TIterator)
             {
                 return true;
             }

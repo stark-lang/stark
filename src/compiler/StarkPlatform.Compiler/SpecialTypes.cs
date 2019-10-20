@@ -50,10 +50,6 @@ namespace StarkPlatform.Compiler
             "core.MutableIterable`2",  // core_MutableIterable_T_TIterator
             "core.Iterable`2",         // core_Iterable_T_TIterator
             "core.Slice`2",            // core_Slice_TArray_T
-            "core.Collections.Generic.IList`1",
-            "core.Collections.Generic.ICollection`1",
-            "core.Collections.Generic.IReadOnlyList`1",
-            "core.Collections.Generic.IReadOnlyCollection`1",
             "core.Option`1",
             "core.IDisposable",
             "core.TypedReference",
