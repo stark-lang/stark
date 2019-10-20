@@ -504,7 +504,7 @@ namespace StarkPlatform.Compiler
                 switch (this.Discriminator)
                 {
                     case ConstantValueTypeDiscriminator.Int:
-                        return SByteValue < 0;
+                        return Int32Value < 0;
                     case ConstantValueTypeDiscriminator.Int8:
                         return SByteValue < 0;
                     case ConstantValueTypeDiscriminator.Int16:
