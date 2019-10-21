@@ -175,7 +175,10 @@ namespace StarkPlatform.Compiler.Stark
         ImplementsKeyword = 8397,
         ModuleKeyword = 8398,
         HasKeyword = 8399,
-        ConstructorKeyword = 8400, // Must be always last
+        ImmutableKeyword = 8400,
+        IsolatedKeyword = 8401,
+        MutableKeyword = 8402,
+        ConstructorKeyword = 8403, // Must be always last
         // STARK (end new-keywords)
 
         // contextual keywords

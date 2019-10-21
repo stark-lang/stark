@@ -289,6 +289,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                         }
                         break;
 
+                    case SyntaxKind.ImmutableKeyword:
+                    case SyntaxKind.IsolatedKeyword:
+                    case SyntaxKind.MutableKeyword:
                     case SyntaxKind.TransientKeyword:
                     case SyntaxKind.ReadOnlyKeyword:
                     case SyntaxKind.ConstKeyword:

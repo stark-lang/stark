@@ -266,14 +266,14 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 case TypeKind.Class:
                 case TypeKind.Submission:
-                    allowedModifiers |= DeclarationModifiers.Partial | DeclarationModifiers.Unsafe;
+                    allowedModifiers |= DeclarationModifiers.Partial | DeclarationModifiers.Unsafe | DeclarationModifiers.Immutable;
                     if (!isModule)
                     {
                         allowedModifiers |= DeclarationModifiers.Virtual | DeclarationModifiers.Abstract;
                     }
                     break;
                 case TypeKind.Struct:
-                    allowedModifiers |= DeclarationModifiers.Partial | DeclarationModifiers.Ref | DeclarationModifiers.Abstract | DeclarationModifiers.Let | DeclarationModifiers.Unsafe;
+                    allowedModifiers |= DeclarationModifiers.Partial | DeclarationModifiers.Ref | DeclarationModifiers.Abstract | DeclarationModifiers.Let | DeclarationModifiers.Unsafe | DeclarationModifiers.Immutable;
                     break;
                 case TypeKind.Interface:
                     allowedModifiers |= DeclarationModifiers.Partial | DeclarationModifiers.Unsafe;

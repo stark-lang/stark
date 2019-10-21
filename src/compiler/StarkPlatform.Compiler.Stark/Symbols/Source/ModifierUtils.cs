@@ -128,6 +128,10 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     return SyntaxFacts.GetText(SyntaxKind.ExternKeyword);
                 case DeclarationModifiers.Partial:
                     return SyntaxFacts.GetText(SyntaxKind.PartialKeyword);
+                case DeclarationModifiers.Transient:
+                    return SyntaxFacts.GetText(SyntaxKind.TransientKeyword);
+                case DeclarationModifiers.Immutable:
+                    return SyntaxFacts.GetText(SyntaxKind.ImmutableKeyword);
                 case DeclarationModifiers.Unsafe:
                     return SyntaxFacts.GetText(SyntaxKind.UnsafeKeyword);
                 case DeclarationModifiers.Fixed:
@@ -173,6 +177,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     return DeclarationModifiers.Let;
                 case SyntaxKind.TransientKeyword:
                     return DeclarationModifiers.Transient;
+                case SyntaxKind.ImmutableKeyword:
+                    return DeclarationModifiers.Immutable;
                 case SyntaxKind.PartialKeyword:
                     return DeclarationModifiers.Partial;
                 case SyntaxKind.UnsafeKeyword:

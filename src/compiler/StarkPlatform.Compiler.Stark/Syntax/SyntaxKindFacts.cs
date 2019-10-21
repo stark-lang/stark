@@ -979,6 +979,12 @@ namespace StarkPlatform.Compiler.Stark
                     return SyntaxKind.FuncKeyword;
                 case "transient":
                     return SyntaxKind.TransientKeyword;
+                case "immutable":
+                    return SyntaxKind.ImmutableKeyword;
+                case "mutable":
+                    return SyntaxKind.MutableKeyword;
+                case "isolated":
+                    return SyntaxKind.IsolatedKeyword;
                 case "constructor":
                     return SyntaxKind.ConstructorKeyword;
                 case "has":
@@ -1677,6 +1683,12 @@ namespace StarkPlatform.Compiler.Stark
                     return "func";
                 case SyntaxKind.TransientKeyword:
                     return "transient";
+                case SyntaxKind.ImmutableKeyword:
+                    return "immutable";
+                case SyntaxKind.MutableKeyword:
+                    return "mutable";
+                case SyntaxKind.IsolatedKeyword:
+                    return "isolated";
                 case SyntaxKind.ConstructorKeyword:
                     return "constructor";
                 case SyntaxKind.HasKeyword:

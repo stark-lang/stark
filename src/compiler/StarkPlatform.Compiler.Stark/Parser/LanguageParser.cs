@@ -1060,6 +1060,8 @@ tryAgain:
                     return DeclarationModifiers.Let;
                 case SyntaxKind.TransientKeyword:
                     return DeclarationModifiers.Transient;
+                case SyntaxKind.ImmutableKeyword:
+                    return DeclarationModifiers.Immutable;
                 case SyntaxKind.UnsafeKeyword:
                     return DeclarationModifiers.Unsafe;
                 case SyntaxKind.PartialKeyword:
@@ -1695,6 +1697,8 @@ tryAgain:
             switch (this.CurrentToken.Kind)
             {
                 case SyntaxKind.IsKeyword:
+                case SyntaxKind.ImplementsKeyword:
+                case SyntaxKind.ExtendsKeyword:
                 case SyntaxKind.HasKeyword:
                     return true;
                 default:
@@ -5290,7 +5294,7 @@ tryAgain:
         {
             ScanTypeFlags result;
 
-            while (this.CurrentToken.Kind == SyntaxKind.AsteriskToken || CurrentToken.Kind == SyntaxKind.QuestionToken || CurrentToken.Kind == SyntaxKind.TildeToken)
+            while (this.CurrentToken.Kind == SyntaxKind.AsteriskToken || CurrentToken.Kind == SyntaxKind.QuestionToken || CurrentToken.Kind == SyntaxKind.TildeToken || IsExtendedTypeModifier(CurrentToken))
             {
                 lastTokenOfType = this.EatToken();
             }
@@ -5630,6 +5634,9 @@ tryAgain:
                 case SyntaxKind.ReadOnlyKeyword:
                 case SyntaxKind.ConstKeyword:
                 case SyntaxKind.UnsafeKeyword:
+                case SyntaxKind.ImmutableKeyword:
+                case SyntaxKind.IsolatedKeyword:
+                case SyntaxKind.MutableKeyword:
                     return true;
             }
             return false;

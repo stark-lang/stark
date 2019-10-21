@@ -511,6 +511,15 @@ namespace StarkPlatform.Compiler.Stark
                             case SyntaxKind.TransientKeyword:
                                 accessModifiers |= TypeAccessModifiers.Transient;
                                 break;
+                            case SyntaxKind.ImmutableKeyword:
+                                accessModifiers |= TypeAccessModifiers.Immutable;
+                                break;
+                            case SyntaxKind.IsolatedKeyword:
+                                accessModifiers |= TypeAccessModifiers.Isolated;
+                                break;
+                            case SyntaxKind.MutableKeyword:
+                                accessModifiers |= TypeAccessModifiers.Mutable;
+                                break;
                             case SyntaxKind.ConstKeyword:
                                 accessModifiers |= TypeAccessModifiers.Const;
                                 break;
