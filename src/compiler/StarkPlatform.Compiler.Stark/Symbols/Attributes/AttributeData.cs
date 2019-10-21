@@ -631,7 +631,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     break;
 
                 case SymbolKind.Parameter:
-                    if (IsTargetAttribute(target, AttributeDescription.DefaultParameterValueAttribute))
+                    if (IsTargetAttribute(target, AttributeDescription.InAttribute) ||
+                        IsTargetAttribute(target, AttributeDescription.DefaultParameterValueAttribute))
                     {
                         return false;
                     }

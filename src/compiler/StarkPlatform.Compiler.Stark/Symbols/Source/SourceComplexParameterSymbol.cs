@@ -577,6 +577,10 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 // error CS0674: Do not use 'System.ParamArrayAttribute'. Use the 'params' keyword instead.
                 arguments.Diagnostics.Add(ErrorCode.ERR_ExplicitParamArray, arguments.AttributeSyntaxOpt.Name.Location);
             }
+            else if (attribute.IsTargetAttribute(this, AttributeDescription.InAttribute))
+            {
+                arguments.GetOrCreateData<ParameterWellKnownAttributeData>().HasInAttribute = true;
+            }
             else if (attribute.IsTargetAttribute(this, AttributeDescription.CallerLineNumberAttribute))
             {
                 ValidateCallerLineNumberAttribute(arguments.AttributeSyntaxOpt, arguments.Diagnostics);

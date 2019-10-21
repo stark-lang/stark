@@ -248,6 +248,7 @@ namespace StarkPlatform.Compiler
         private static readonly byte[][] s_signaturesOfNonSerializedAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfFieldOffsetAttribute = { s_signature_HasThis_Void_Int32 };
         private static readonly byte[][] s_signaturesOfSerializableAttribute = { s_signature_HasThis_Void };
+        private static readonly byte[][] s_signaturesOfInAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfIsReadOnlyAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfIsUnmanagedAttribute = { s_signature_HasThis_Void };
         private static readonly byte[][] s_signaturesOfNotNullWhenTrueAttribute = { s_signature_HasThis_Void };
@@ -401,6 +402,7 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription EnsuresNotNullAttribute = new AttributeDescription("core.runtime", "EnsuresNotNullAttribute", s_signaturesOfEnsuresNotNullAttribute);
         internal static readonly AttributeDescription AssertsTrueAttribute = new AttributeDescription("core.runtime", "AssertsTrueAttribute", s_signaturesOfAssertsTrueAttribute);
         internal static readonly AttributeDescription AssertsFalseAttribute = new AttributeDescription("core.runtime", "AssertsFalseAttribute", s_signaturesOfAssertsFalseAttribute);
+        internal static readonly AttributeDescription InAttribute = new AttributeDescription("core.runtime", "InAttribute", s_signaturesOfInAttribute);
         internal static readonly AttributeDescription IsReadOnlyAttribute = new AttributeDescription("core.runtime", "ReadOnlyAttribute", s_signaturesOfIsReadOnlyAttribute);
         internal static readonly AttributeDescription IsUnmanagedAttribute = new AttributeDescription("core.runtime", "UnmanagedAttribute", s_signaturesOfIsUnmanagedAttribute);
         internal static readonly AttributeDescription CoClassAttribute = new AttributeDescription("core.runtime", "CoClassAttribute", s_signaturesOfCoClassAttribute);
