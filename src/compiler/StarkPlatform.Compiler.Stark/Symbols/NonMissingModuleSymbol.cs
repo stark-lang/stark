@@ -173,7 +173,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         /// compared case-sensitively.
         /// </summary>
         /// <param name="emittedName">
-        /// Full type name, possibly with generic name mangling.
+        ///     Full type name, possibly with generic name mangling.
         /// </param>
         /// <returns>
         /// Symbol for the type, or MissingMetadataSymbol if the type isn't found.
@@ -182,7 +182,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         internal sealed override NamedTypeSymbol LookupTopLevelMetadataType(ref MetadataTypeName emittedName)
         {
             NamedTypeSymbol result;
-            NamespaceSymbol scope = this.GlobalNamespace.LookupNestedNamespace(emittedName.NamespaceSegments);
+            NamespaceOrTypeSymbol scope = this.GlobalNamespace.LookupNestedNamespaceOrNestedType(emittedName.NamespaceSegments);
 
             if ((object)scope == null)
             {

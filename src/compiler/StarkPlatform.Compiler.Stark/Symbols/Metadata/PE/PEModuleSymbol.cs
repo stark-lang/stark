@@ -626,7 +626,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
         internal NamedTypeSymbol LookupTopLevelMetadataType(ref MetadataTypeName emittedName, out bool isNoPiaLocalType)
         {
             NamedTypeSymbol result;
-            PENamespaceSymbol scope = (PENamespaceSymbol)this.GlobalNamespace.LookupNestedNamespace(emittedName.NamespaceSegments);
+            var scope = this.GlobalNamespace.LookupNestedNamespaceOrNestedType(emittedName.NamespaceSegments);
 
             if ((object)scope == null)
             {
@@ -636,7 +636,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols.Metadata.PE
             }
             else
             {
-                result = scope.LookupMetadataType(ref emittedName, out isNoPiaLocalType);
+                isNoPiaLocalType = false;
+                result = scope.LookupMetadataType(ref emittedName);
                 Debug.Assert((object)result != null);
             }
 

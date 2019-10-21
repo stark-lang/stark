@@ -240,17 +240,17 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         /// Symbol for the most nested namespace, if found. Nothing 
         /// if namespace or any part of it can not be found.
         /// </returns>
-        internal NamespaceSymbol LookupNestedNamespace(ImmutableArray<string> names)
+        internal NamespaceOrTypeSymbol LookupNestedNamespaceOrNestedType(ImmutableArray<string> names)
         {
-            NamespaceSymbol scope = this;
+            NamespaceOrTypeSymbol scope = this;
 
             foreach (string name in names)
             {
-                NamespaceSymbol nextScope = null;
+                NamespaceOrTypeSymbol nextScope = null;
 
-                foreach (NamespaceOrTypeSymbol symbol in scope.GetMembers(name))
+                foreach (var symbol in scope.GetMembers(name))
                 {
-                    var ns = symbol as NamespaceSymbol;
+                    var ns = symbol as NamespaceOrTypeSymbol;
 
                     if ((object)ns != null)
                     {
