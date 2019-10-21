@@ -3975,10 +3975,10 @@ namespace StarkPlatform.Compiler.Stark
 
     public override SyntaxNode VisitConstructorConstraint(ConstructorConstraintSyntax node)
     {
-      var newKeyword = this.VisitToken(node.NewKeyword);
+      var constructorKeyword = this.VisitToken(node.ConstructorKeyword);
       var openParenToken = this.VisitToken(node.OpenParenToken);
       var closeParenToken = this.VisitToken(node.CloseParenToken);
-      return node.Update(newKeyword, openParenToken, closeParenToken);
+      return node.Update(constructorKeyword, openParenToken, closeParenToken);
     }
 
     public override SyntaxNode VisitClassOrStructConstraint(ClassOrStructConstraintSyntax node)
@@ -9488,14 +9488,14 @@ namespace StarkPlatform.Compiler.Stark
     }
 
     /// <summary>Creates a new ConstructorConstraintSyntax instance.</summary>
-    public static ConstructorConstraintSyntax ConstructorConstraint(SyntaxToken newKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
+    public static ConstructorConstraintSyntax ConstructorConstraint(SyntaxToken constructorKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
     {
-      switch (newKeyword.Kind())
+      switch (constructorKeyword.Kind())
       {
-        case SyntaxKind.NewKeyword:
+        case SyntaxKind.ConstructorKeyword:
           break;
         default:
-          throw new ArgumentException(nameof(newKeyword));
+          throw new ArgumentException(nameof(constructorKeyword));
       }
       switch (openParenToken.Kind())
       {
@@ -9511,14 +9511,14 @@ namespace StarkPlatform.Compiler.Stark
         default:
           throw new ArgumentException(nameof(closeParenToken));
       }
-      return (ConstructorConstraintSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.ConstructorConstraint((Syntax.InternalSyntax.SyntaxToken)newKeyword.Node, (Syntax.InternalSyntax.SyntaxToken)openParenToken.Node, (Syntax.InternalSyntax.SyntaxToken)closeParenToken.Node).CreateRed();
+      return (ConstructorConstraintSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.ConstructorConstraint((Syntax.InternalSyntax.SyntaxToken)constructorKeyword.Node, (Syntax.InternalSyntax.SyntaxToken)openParenToken.Node, (Syntax.InternalSyntax.SyntaxToken)closeParenToken.Node).CreateRed();
     }
 
 
     /// <summary>Creates a new ConstructorConstraintSyntax instance.</summary>
     public static ConstructorConstraintSyntax ConstructorConstraint()
     {
-      return SyntaxFactory.ConstructorConstraint(SyntaxFactory.Token(SyntaxKind.NewKeyword), SyntaxFactory.Token(SyntaxKind.OpenParenToken), SyntaxFactory.Token(SyntaxKind.CloseParenToken));
+      return SyntaxFactory.ConstructorConstraint(SyntaxFactory.Token(SyntaxKind.ConstructorKeyword), SyntaxFactory.Token(SyntaxKind.OpenParenToken), SyntaxFactory.Token(SyntaxKind.CloseParenToken));
     }
 
     /// <summary>Creates a new ClassOrStructConstraintSyntax instance.</summary>

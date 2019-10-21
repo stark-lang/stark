@@ -24990,16 +24990,16 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
   /// <summary>Constructor constraint syntax.</summary>
   internal sealed partial class ConstructorConstraintSyntax : TypeParameterConstraintSyntax
   {
-    internal readonly SyntaxToken newKeyword;
+    internal readonly SyntaxToken constructorKeyword;
     internal readonly SyntaxToken openParenToken;
     internal readonly SyntaxToken closeParenToken;
 
-    internal ConstructorConstraintSyntax(SyntaxKind kind, SyntaxToken newKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
+    internal ConstructorConstraintSyntax(SyntaxKind kind, SyntaxToken constructorKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
         : base(kind, diagnostics, annotations)
     {
         this.SlotCount = 3;
-        this.AdjustFlagsAndWidth(newKeyword);
-        this.newKeyword = newKeyword;
+        this.AdjustFlagsAndWidth(constructorKeyword);
+        this.constructorKeyword = constructorKeyword;
         this.AdjustFlagsAndWidth(openParenToken);
         this.openParenToken = openParenToken;
         this.AdjustFlagsAndWidth(closeParenToken);
@@ -25007,13 +25007,13 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     }
 
 
-    internal ConstructorConstraintSyntax(SyntaxKind kind, SyntaxToken newKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken, SyntaxFactoryContext context)
+    internal ConstructorConstraintSyntax(SyntaxKind kind, SyntaxToken constructorKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken, SyntaxFactoryContext context)
         : base(kind)
     {
         this.SetFactoryContext(context);
         this.SlotCount = 3;
-        this.AdjustFlagsAndWidth(newKeyword);
-        this.newKeyword = newKeyword;
+        this.AdjustFlagsAndWidth(constructorKeyword);
+        this.constructorKeyword = constructorKeyword;
         this.AdjustFlagsAndWidth(openParenToken);
         this.openParenToken = openParenToken;
         this.AdjustFlagsAndWidth(closeParenToken);
@@ -25021,20 +25021,20 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     }
 
 
-    internal ConstructorConstraintSyntax(SyntaxKind kind, SyntaxToken newKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
+    internal ConstructorConstraintSyntax(SyntaxKind kind, SyntaxToken constructorKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
         : base(kind)
     {
         this.SlotCount = 3;
-        this.AdjustFlagsAndWidth(newKeyword);
-        this.newKeyword = newKeyword;
+        this.AdjustFlagsAndWidth(constructorKeyword);
+        this.constructorKeyword = constructorKeyword;
         this.AdjustFlagsAndWidth(openParenToken);
         this.openParenToken = openParenToken;
         this.AdjustFlagsAndWidth(closeParenToken);
         this.closeParenToken = closeParenToken;
     }
 
-    /// <summary>Gets the "new" keyword.</summary>
-    public SyntaxToken NewKeyword { get { return this.newKeyword; } }
+    /// <summary>Gets the "constructor" keyword.</summary>
+    public SyntaxToken ConstructorKeyword { get { return this.constructorKeyword; } }
     /// <summary>Gets the open paren keyword.</summary>
     public SyntaxToken OpenParenToken { get { return this.openParenToken; } }
     /// <summary>Gets the close paren keyword.</summary>
@@ -25044,7 +25044,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     {
         switch (index)
         {
-            case 0: return this.newKeyword;
+            case 0: return this.constructorKeyword;
             case 1: return this.openParenToken;
             case 2: return this.closeParenToken;
             default: return null;
@@ -25066,11 +25066,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         visitor.VisitConstructorConstraint(this);
     }
 
-    public ConstructorConstraintSyntax Update(SyntaxToken newKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
+    public ConstructorConstraintSyntax Update(SyntaxToken constructorKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
     {
-        if (newKeyword != this.NewKeyword || openParenToken != this.OpenParenToken || closeParenToken != this.CloseParenToken)
+        if (constructorKeyword != this.ConstructorKeyword || openParenToken != this.OpenParenToken || closeParenToken != this.CloseParenToken)
         {
-            var newNode = SyntaxFactory.ConstructorConstraint(newKeyword, openParenToken, closeParenToken);
+            var newNode = SyntaxFactory.ConstructorConstraint(constructorKeyword, openParenToken, closeParenToken);
             var diags = this.GetDiagnostics();
             if (diags != null && diags.Length > 0)
                newNode = newNode.WithDiagnosticsGreen(diags);
@@ -25085,23 +25085,23 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 
     internal override GreenNode SetDiagnostics(DiagnosticInfo[] diagnostics)
     {
-         return new ConstructorConstraintSyntax(this.Kind, this.newKeyword, this.openParenToken, this.closeParenToken, diagnostics, GetAnnotations());
+         return new ConstructorConstraintSyntax(this.Kind, this.constructorKeyword, this.openParenToken, this.closeParenToken, diagnostics, GetAnnotations());
     }
 
     internal override GreenNode SetAnnotations(SyntaxAnnotation[] annotations)
     {
-         return new ConstructorConstraintSyntax(this.Kind, this.newKeyword, this.openParenToken, this.closeParenToken, GetDiagnostics(), annotations);
+         return new ConstructorConstraintSyntax(this.Kind, this.constructorKeyword, this.openParenToken, this.closeParenToken, GetDiagnostics(), annotations);
     }
 
     internal ConstructorConstraintSyntax(ObjectReader reader)
         : base(reader)
     {
       this.SlotCount = 3;
-      var newKeyword = (SyntaxToken)reader.ReadValue();
-      if (newKeyword != null)
+      var constructorKeyword = (SyntaxToken)reader.ReadValue();
+      if (constructorKeyword != null)
       {
-         AdjustFlagsAndWidth(newKeyword);
-         this.newKeyword = newKeyword;
+         AdjustFlagsAndWidth(constructorKeyword);
+         this.constructorKeyword = constructorKeyword;
       }
       var openParenToken = (SyntaxToken)reader.ReadValue();
       if (openParenToken != null)
@@ -25120,7 +25120,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     internal override void WriteTo(ObjectWriter writer)
     {
       base.WriteTo(writer);
-      writer.WriteValue(this.newKeyword);
+      writer.WriteValue(this.constructorKeyword);
       writer.WriteValue(this.openParenToken);
       writer.WriteValue(this.closeParenToken);
     }
@@ -40464,10 +40464,10 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 
     public override CSharpSyntaxNode VisitConstructorConstraint(ConstructorConstraintSyntax node)
     {
-      var newKeyword = (SyntaxToken)this.Visit(node.NewKeyword);
+      var constructorKeyword = (SyntaxToken)this.Visit(node.ConstructorKeyword);
       var openParenToken = (SyntaxToken)this.Visit(node.OpenParenToken);
       var closeParenToken = (SyntaxToken)this.Visit(node.CloseParenToken);
-      return node.Update(newKeyword, openParenToken, closeParenToken);
+      return node.Update(constructorKeyword, openParenToken, closeParenToken);
     }
 
     public override CSharpSyntaxNode VisitClassOrStructConstraint(ClassOrStructConstraintSyntax node)
@@ -46262,17 +46262,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return new TypeParameterConstraintClauseSyntax(SyntaxKind.TypeParameterConstraintClause, whereKeyword, name, colonToken, constraints.Node, this.context);
     }
 
-    public ConstructorConstraintSyntax ConstructorConstraint(SyntaxToken newKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
+    public ConstructorConstraintSyntax ConstructorConstraint(SyntaxToken constructorKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
     {
 #if DEBUG
-      if (newKeyword == null)
-        throw new ArgumentNullException(nameof(newKeyword));
-      switch (newKeyword.Kind)
+      if (constructorKeyword == null)
+        throw new ArgumentNullException(nameof(constructorKeyword));
+      switch (constructorKeyword.Kind)
       {
-        case SyntaxKind.NewKeyword:
+        case SyntaxKind.ConstructorKeyword:
           break;
         default:
-          throw new ArgumentException(nameof(newKeyword));
+          throw new ArgumentException(nameof(constructorKeyword));
       }
       if (openParenToken == null)
         throw new ArgumentNullException(nameof(openParenToken));
@@ -46295,10 +46295,10 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 #endif
 
       int hash;
-      var cached = CSharpSyntaxNodeCache.TryGetNode((int)SyntaxKind.ConstructorConstraint, newKeyword, openParenToken, closeParenToken, this.context, out hash);
+      var cached = CSharpSyntaxNodeCache.TryGetNode((int)SyntaxKind.ConstructorConstraint, constructorKeyword, openParenToken, closeParenToken, this.context, out hash);
       if (cached != null) return (ConstructorConstraintSyntax)cached;
 
-      var result = new ConstructorConstraintSyntax(SyntaxKind.ConstructorConstraint, newKeyword, openParenToken, closeParenToken, this.context);
+      var result = new ConstructorConstraintSyntax(SyntaxKind.ConstructorConstraint, constructorKeyword, openParenToken, closeParenToken, this.context);
       if (hash >= 0)
       {
           SyntaxNodeCache.AddNode(result, hash);
@@ -53868,17 +53868,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return new TypeParameterConstraintClauseSyntax(SyntaxKind.TypeParameterConstraintClause, whereKeyword, name, colonToken, constraints.Node);
     }
 
-    public static ConstructorConstraintSyntax ConstructorConstraint(SyntaxToken newKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
+    public static ConstructorConstraintSyntax ConstructorConstraint(SyntaxToken constructorKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
     {
 #if DEBUG
-      if (newKeyword == null)
-        throw new ArgumentNullException(nameof(newKeyword));
-      switch (newKeyword.Kind)
+      if (constructorKeyword == null)
+        throw new ArgumentNullException(nameof(constructorKeyword));
+      switch (constructorKeyword.Kind)
       {
-        case SyntaxKind.NewKeyword:
+        case SyntaxKind.ConstructorKeyword:
           break;
         default:
-          throw new ArgumentException(nameof(newKeyword));
+          throw new ArgumentException(nameof(constructorKeyword));
       }
       if (openParenToken == null)
         throw new ArgumentNullException(nameof(openParenToken));
@@ -53901,10 +53901,10 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 #endif
 
       int hash;
-      var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.ConstructorConstraint, newKeyword, openParenToken, closeParenToken, out hash);
+      var cached = SyntaxNodeCache.TryGetNode((int)SyntaxKind.ConstructorConstraint, constructorKeyword, openParenToken, closeParenToken, out hash);
       if (cached != null) return (ConstructorConstraintSyntax)cached;
 
-      var result = new ConstructorConstraintSyntax(SyntaxKind.ConstructorConstraint, newKeyword, openParenToken, closeParenToken);
+      var result = new ConstructorConstraintSyntax(SyntaxKind.ConstructorConstraint, constructorKeyword, openParenToken, closeParenToken);
       if (hash >= 0)
       {
           SyntaxNodeCache.AddNode(result, hash);

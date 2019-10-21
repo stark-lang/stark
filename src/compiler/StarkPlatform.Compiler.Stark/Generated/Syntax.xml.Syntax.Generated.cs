@@ -16006,10 +16006,10 @@ namespace StarkPlatform.Compiler.Stark.Syntax
     {
     }
 
-    /// <summary>Gets the "new" keyword.</summary>
-    public SyntaxToken NewKeyword 
+    /// <summary>Gets the "constructor" keyword.</summary>
+    public SyntaxToken ConstructorKeyword 
     {
-      get { return new SyntaxToken(this, ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ConstructorConstraintSyntax)this.Green).newKeyword, this.Position, 0); }
+      get { return new SyntaxToken(this, ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ConstructorConstraintSyntax)this.Green).constructorKeyword, this.Position, 0); }
     }
 
     /// <summary>Gets the open paren keyword.</summary>
@@ -16049,11 +16049,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         visitor.VisitConstructorConstraint(this);
     }
 
-    public ConstructorConstraintSyntax Update(SyntaxToken newKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
+    public ConstructorConstraintSyntax Update(SyntaxToken constructorKeyword, SyntaxToken openParenToken, SyntaxToken closeParenToken)
     {
-        if (newKeyword != this.NewKeyword || openParenToken != this.OpenParenToken || closeParenToken != this.CloseParenToken)
+        if (constructorKeyword != this.ConstructorKeyword || openParenToken != this.OpenParenToken || closeParenToken != this.CloseParenToken)
         {
-            var newNode = SyntaxFactory.ConstructorConstraint(newKeyword, openParenToken, closeParenToken);
+            var newNode = SyntaxFactory.ConstructorConstraint(constructorKeyword, openParenToken, closeParenToken);
             var annotations = this.GetAnnotations();
             if (annotations != null && annotations.Length > 0)
                return newNode.WithAnnotations(annotations);
@@ -16063,19 +16063,19 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         return this;
     }
 
-    public ConstructorConstraintSyntax WithNewKeyword(SyntaxToken newKeyword)
+    public ConstructorConstraintSyntax WithConstructorKeyword(SyntaxToken constructorKeyword)
     {
-        return this.Update(newKeyword, this.OpenParenToken, this.CloseParenToken);
+        return this.Update(constructorKeyword, this.OpenParenToken, this.CloseParenToken);
     }
 
     public ConstructorConstraintSyntax WithOpenParenToken(SyntaxToken openParenToken)
     {
-        return this.Update(this.NewKeyword, openParenToken, this.CloseParenToken);
+        return this.Update(this.ConstructorKeyword, openParenToken, this.CloseParenToken);
     }
 
     public ConstructorConstraintSyntax WithCloseParenToken(SyntaxToken closeParenToken)
     {
-        return this.Update(this.NewKeyword, this.OpenParenToken, closeParenToken);
+        return this.Update(this.ConstructorKeyword, this.OpenParenToken, closeParenToken);
     }
   }
 

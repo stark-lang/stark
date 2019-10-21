@@ -3330,11 +3330,11 @@
       <summary>Constructor constraint syntax.</summary>
     </TypeComment>
     <Kind Name="ConstructorConstraint"/>
-    <Field Name="NewKeyword" Type="SyntaxToken">
+    <Field Name="ConstructorKeyword" Type="SyntaxToken">
       <PropertyComment>
-        <summary>Gets the "new" keyword.</summary>
+        <summary>Gets the "constructor" keyword.</summary>
       </PropertyComment>
-      <Kind Name="NewKeyword"/>
+      <Kind Name="ConstructorKeyword"/>
     </Field>
     <Field Name="OpenParenToken" Type="SyntaxToken">
       <PropertyComment>

@@ -1646,7 +1646,7 @@ tryAgain:
                 if (this.CurrentToken.Kind == SyntaxKind.OpenBraceToken || this.IsCurrentTokenWhereOfConstraintClause())
                 {
                     // TODO
-                    //bounds.Add(_syntaxFactory.TypeConstraint(this.AddError(this.CreateMissingIdentifierName(), ErrorCode.ERR_TypeExpected)));
+                    // bounds.Add(_syntaxFactory.ClassOrStructConstraint(SyntaxKind.ClassConstraint, this.AddError(this.CreateMissingIdentifierName(), ErrorCode.ERR_TypeExpected)));
                     this.AddError(CurrentToken, ErrorCode.ERR_TypeExpected);
                 }
                 else
@@ -1713,11 +1713,11 @@ tryAgain:
 
             switch (this.CurrentToken.Kind)
             {
-                case SyntaxKind.NewKeyword:
-                    var newToken = this.EatToken();
+                case SyntaxKind.ConstructorConstraint:
+                    var constructorKeyword = this.EatToken();
                     var open = this.EatToken(SyntaxKind.OpenParenToken);
                     var close = this.EatToken(SyntaxKind.CloseParenToken);
-                    return _syntaxFactory.ConstructorConstraint(newToken, open, close);
+                    return _syntaxFactory.ConstructorConstraint(constructorKeyword, open, close);
 
                 case SyntaxKind.ExtendsKeyword:
                 case SyntaxKind.ImplementsKeyword:
