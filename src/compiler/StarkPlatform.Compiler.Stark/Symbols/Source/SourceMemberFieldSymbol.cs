@@ -144,10 +144,16 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.StaticKeyword));
                 }
 
-                if ((result & DeclarationModifiers.Let) != 0)
+                if ((result & DeclarationModifiers.Immutable) != 0)
                 {
                     // The modifier 'readonly' is not valid for this item
-                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ReadOnlyKeyword));
+                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ImmutableKeyword));
+                }
+
+                if ((result & DeclarationModifiers.Readable) != 0)
+                {
+                    // The modifier 'readonly' is not valid for this item
+                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ReadableKeyword));
                 }
 
                 if ((result & DeclarationModifiers.Const) != 0)
@@ -156,7 +162,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ConstKeyword));
                 }
 
-                result &= ~(DeclarationModifiers.Static | DeclarationModifiers.Let | DeclarationModifiers.Const);
+                result &= ~(DeclarationModifiers.Static | DeclarationModifiers.Immutable | DeclarationModifiers.Const);
                 Debug.Assert((result & ~(DeclarationModifiers.AccessibilityMask | DeclarationModifiers.Fixed | DeclarationModifiers.Unsafe | DeclarationModifiers.New)) == 0);
             }
 
@@ -169,10 +175,16 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     diagnostics.Add(ErrorCode.ERR_StaticConstant, errorLocation, firstIdentifier.ValueText);
                 }
 
-                if ((result & DeclarationModifiers.Let) != 0)
+                if ((result & DeclarationModifiers.Immutable) != 0)
                 {
                     // The modifier 'readonly' is not valid for this item
-                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ReadOnlyKeyword));
+                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ImmutableKeyword));
+                }
+
+                if ((result & DeclarationModifiers.Readable) != 0)
+                {
+                    // The modifier 'readonly' is not valid for this item
+                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ReadableKeyword));
                 }
 
                 if ((result & DeclarationModifiers.Unsafe) != 0)

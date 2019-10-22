@@ -120,7 +120,7 @@
         <key>name</key>
         <string>storage.modifier.sk</string>
         <key>match</key>
-        <string>(?&lt;!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readonly|transient|static|unsafe|virtual|sealed)\b</string>
+        <string>(?&lt;!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readable|transient|static|unsafe|virtual|sealed)\b</string>
       </dict>
       <key>module-declaration</key>
       <dict>

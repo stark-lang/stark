@@ -31,7 +31,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             _name = name;
 
             Modifiers = DeclarationModifiers.Private |
-                (isLet ? DeclarationModifiers.Let : DeclarationModifiers.None) |
+                (isLet ? DeclarationModifiers.Readable : DeclarationModifiers.None) |
                 (isStatic ? DeclarationModifiers.Static : DeclarationModifiers.None);
 
             _property = property;

@@ -36,7 +36,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
                 syntaxTree.IsDefaultExpressionContext(position, context.LeftToken, cancellationToken) ||
                 syntaxTree.IsAfterKeyword(position, SyntaxKind.ConstKeyword, cancellationToken) ||
                 syntaxTree.IsAfterKeyword(position, SyntaxKind.RefKeyword, cancellationToken) ||
-                syntaxTree.IsAfterKeyword(position, SyntaxKind.ReadOnlyKeyword, cancellationToken) ||
+                syntaxTree.IsAfterKeyword(position, SyntaxKind.ReadableKeyword, cancellationToken) ||
                 context.IsDelegateReturnTypeContext ||
                 syntaxTree.IsGlobalMemberDeclarationContext(position, SyntaxKindSet.AllGlobalMemberModifiers, cancellationToken) ||
                 context.IsPossibleTupleContext ||

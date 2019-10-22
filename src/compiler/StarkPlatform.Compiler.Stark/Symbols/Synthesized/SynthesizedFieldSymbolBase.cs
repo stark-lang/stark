@@ -30,7 +30,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             _containingType = containingType;
             _name = name;
             _modifiers = (isPublic ? DeclarationModifiers.Public : DeclarationModifiers.Private) |
-                (isReadOnly ? DeclarationModifiers.Let : DeclarationModifiers.None) |
+                (isReadOnly ? DeclarationModifiers.Readable : DeclarationModifiers.None) |
                 (isStatic ? DeclarationModifiers.Static : DeclarationModifiers.None);
         }
 
@@ -82,7 +82,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         public override bool IsLet
         {
-            get { return (_modifiers & DeclarationModifiers.Let) != 0; }
+            get { return (_modifiers & DeclarationModifiers.Readable) != 0; }
         }
 
         public override bool IsConst

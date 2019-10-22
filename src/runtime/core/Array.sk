@@ -9,7 +9,7 @@ namespace core {
 
         private protected constructor() {}
 
-        // size is readonly
+        // size is readable
         public func size -> int { 
             get {
                 unsafe il

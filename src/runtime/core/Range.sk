@@ -1,6 +1,6 @@
 namespace core
 {
-    public readonly struct Range implements Iterable<int, Range.Iterator>
+    public immutable struct Range implements Iterable<int, Range.Iterator>
     {
         public constructor(begin: Index, end: Index)
         {
@@ -12,17 +12,17 @@ namespace core
 
         public let end : Index
 
-        readonly func Iterable<int, Iterator>.iterate_begin() -> Iterator {
+        readable func Iterable<int, Iterator>.iterate_begin() -> Iterator {
             return new Iterator(begin.value, if begin.value > end.value then 1 else -1)
         }
 
-        readonly func Iterable<int, Iterator>.iterate_has_current(iterator: ref Iterator) -> bool => iterator.index <= end.value
+        readable func Iterable<int, Iterator>.iterate_has_current(iterator: ref Iterator) -> bool => iterator.index <= end.value
 
-        readonly func Iterable<int, Iterator>.iterate_current(iterator: ref Iterator) -> int => iterator.index
+        readable func Iterable<int, Iterator>.iterate_current(iterator: ref Iterator) -> int => iterator.index
 
-        readonly func Iterable<int, Iterator>.iterate_next(iterator: ref Iterator) => iterator.move()
+        readable func Iterable<int, Iterator>.iterate_next(iterator: ref Iterator) => iterator.move()
 
-        readonly func Iterable<int, Iterator>.iterate_end(iterator: ref Iterator) {}
+        readable func Iterable<int, Iterator>.iterate_end(iterator: ref Iterator) {}
 
         public struct Iterator
         {

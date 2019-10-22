@@ -255,7 +255,7 @@ namespace StarkPlatform.Compiler.Stark.SignatureHelp
             {
                 result.Add(Keyword(SyntaxKind.RefKeyword));
                 result.Add(Space());
-                result.Add(Keyword(SyntaxKind.ReadOnlyKeyword));
+                result.Add(Keyword(SyntaxKind.ReadableKeyword));
                 result.Add(Space());
             }
 

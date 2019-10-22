@@ -31,7 +31,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
                 SyntaxKind.PublicKeyword,
                 SyntaxKind.PrivateKeyword,
                 SyntaxKind.ProtectedKeyword,
-                SyntaxKind.ReadOnlyKeyword,
+                SyntaxKind.ReadableKeyword,
                 SyntaxKind.SealedKeyword,
                 SyntaxKind.StaticKeyword,
                 SyntaxKind.VirtualKeyword,
@@ -44,7 +44,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
                 SyntaxKind.NewKeyword,
                 SyntaxKind.PublicKeyword,
                 SyntaxKind.PrivateKeyword,
-                SyntaxKind.ReadOnlyKeyword,
+                SyntaxKind.ReadableKeyword,
                 SyntaxKind.StaticKeyword,
             };
 

@@ -17,7 +17,7 @@ namespace StarkPlatform.Compiler.Stark.Utilities
                 SyntaxKind.SealedKeyword,
                 SyntaxKind.StaticKeyword,
                 SyntaxKind.UnsafeKeyword,
-                SyntaxKind.ReadOnlyKeyword,
+                SyntaxKind.ReadableKeyword,
                 SyntaxKind.RefKeyword
             };
 
@@ -32,7 +32,7 @@ namespace StarkPlatform.Compiler.Stark.Utilities
                 SyntaxKind.PublicKeyword,
                 SyntaxKind.PrivateKeyword,
                 SyntaxKind.ProtectedKeyword,
-                SyntaxKind.ReadOnlyKeyword,
+                SyntaxKind.ReadableKeyword,
                 SyntaxKind.SealedKeyword,
                 SyntaxKind.StaticKeyword,
                 SyntaxKind.UnsafeKeyword,
@@ -47,7 +47,7 @@ namespace StarkPlatform.Compiler.Stark.Utilities
                 SyntaxKind.OverrideKeyword,
                 SyntaxKind.PublicKeyword,
                 SyntaxKind.PrivateKeyword,
-                SyntaxKind.ReadOnlyKeyword,
+                SyntaxKind.ReadableKeyword,
                 SyntaxKind.StaticKeyword,
                 SyntaxKind.UnsafeKeyword,
             };

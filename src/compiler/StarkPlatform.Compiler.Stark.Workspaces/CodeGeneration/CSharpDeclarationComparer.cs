@@ -391,7 +391,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
             => BothHaveModifier(x, y, SyntaxKind.ConstKeyword, out comparisonResult);
 
         private static bool EqualReadOnlyness(SyntaxTokenList x, SyntaxTokenList y, out int comparisonResult)
-            => BothHaveModifier(x, y, SyntaxKind.ReadOnlyKeyword, out comparisonResult);
+            => BothHaveModifier(x, y, SyntaxKind.ReadableKeyword, out comparisonResult);
 
         private static bool EqualAccessibility(SyntaxNode x, SyntaxTokenList xModifiers, SyntaxNode y, SyntaxTokenList yModifiers, out int comparisonResult)
         {

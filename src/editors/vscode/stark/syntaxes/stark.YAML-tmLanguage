@@ -35,7 +35,7 @@ repository:
       '1': {name: keyword.type.sk}
   visibility-modifiers:
     name: storage.modifier.sk
-    match: (?<!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readonly|transient|static|unsafe|virtual|sealed)\b
+    match: (?<!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readable|transient|static|unsafe|virtual|sealed)\b
   module-declaration:
     patterns:
     - match: \b(module)\b\s*([_[:alpha:]][_[:alnum:]]*)

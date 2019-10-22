@@ -901,8 +901,8 @@ namespace StarkPlatform.Compiler.Stark
                     return SyntaxKind.ProtectedKeyword;
                 case "static":
                     return SyntaxKind.StaticKeyword;
-                case "readonly":
-                    return SyntaxKind.ReadOnlyKeyword;
+                case "readable":
+                    return SyntaxKind.ReadableKeyword;
                 case "sealed":
                     return SyntaxKind.SealedKeyword;
                 case "const":
@@ -1483,8 +1483,8 @@ namespace StarkPlatform.Compiler.Stark
                     return "protected";
                 case SyntaxKind.StaticKeyword:
                     return "static";
-                case SyntaxKind.ReadOnlyKeyword:
-                    return "readonly";
+                case SyntaxKind.ReadableKeyword:
+                    return "readable";
                 case SyntaxKind.SealedKeyword:
                     return "sealed";
                 case SyntaxKind.ConstKeyword:

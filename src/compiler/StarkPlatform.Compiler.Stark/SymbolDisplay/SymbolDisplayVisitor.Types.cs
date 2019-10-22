@@ -258,7 +258,7 @@ namespace StarkPlatform.Compiler.Stark
                 AddSpace();
             }
 
-            if ((symbol.AccessModifiers & TypeAccessModifiers.ReadOnly) != 0)
+            if ((symbol.AccessModifiers & TypeAccessModifiers.Readable) != 0)
             {
                 builder.Add(CreatePart(SymbolDisplayPartKind.Keyword, symbol, "readonly"));
                 AddSpace();
@@ -651,7 +651,7 @@ namespace StarkPlatform.Compiler.Stark
                             {
                                 if (csharpType.IsReadOnly)
                                 {
-                                    AddKeyword(SyntaxKind.ReadOnlyKeyword);
+                                    AddKeyword(SyntaxKind.ReadableKeyword);
                                     AddSpace();
                                 }
 

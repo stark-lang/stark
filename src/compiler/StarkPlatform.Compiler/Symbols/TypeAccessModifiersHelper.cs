@@ -8,7 +8,7 @@ namespace StarkPlatform.Compiler
     {
         public static bool IsNone(this TypeAccessModifiers modifiers) => modifiers == TypeAccessModifiers.None;
 
-        public static bool IsReadOnly(this TypeAccessModifiers modifiers) => (modifiers & TypeAccessModifiers.ReadOnly) != 0;
+        public static bool IsReadOnly(this TypeAccessModifiers modifiers) => (modifiers & TypeAccessModifiers.Readable) != 0;
 
         public static bool IsRef(this TypeAccessModifiers modifiers) => (modifiers & TypeAccessModifiers.Ref) != 0;
 
@@ -28,7 +28,7 @@ namespace StarkPlatform.Compiler
                 return TypeAccessModifiers.None;
             }
 
-            if ((destModifiers & TypeAccessModifiers.ReadOnly) != 0 && sourceModifiers == 0) sourceModifiers = TypeAccessModifiers.ReadOnly;
+            if ((destModifiers & TypeAccessModifiers.Readable) != 0 && sourceModifiers == 0) sourceModifiers = TypeAccessModifiers.Readable;
 
 
             var requiredModifiers = sourceModifiers ^ destModifiers;

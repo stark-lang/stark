@@ -191,7 +191,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 if (symbol.RefKind == RefKind.RefReadOnly)
                 {
-                    AddKeyword(SyntaxKind.ReadOnlyKeyword);
+                    AddKeyword(SyntaxKind.ReadableKeyword);
                     AddSpace();
                 }
             }

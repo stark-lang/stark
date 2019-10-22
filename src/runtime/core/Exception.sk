@@ -1,24 +1,56 @@
+import core.runtime
+
 namespace core
 {
-    public virtual class Exception
+    public virtual immutable class Error
     {
-        public constructor()
+        private protected constructor()
+        {
+        }
+    }
+
+    public virtual abstract immutable class Abort extends Error
+    {
+        private let _token : immutable object
+
+
+        protected constructor(token: immutable object)
+        {
+            _token = token
+        }
+
+
+        public func reset(token: immutable object)
+        {
+            if _token == token then
+            {
+                reset()
+            }
+        }
+
+        @Intrinsic
+        private extern func reset()
+    }
+
+    public virtual abstract immutable class Exception extends Error
+    {
+        protected constructor()
         {
         }
 
-        public constructor(message: string)
-        {
-            this.message = message;
-        }
+        // public constructor(message: string)
+        // {
+        //     this.message = message;
+        // }
 
-        public constructor(message: string, inner_exception: Exception)
-        {
-            this.message = message;
-            this.inner_exception = inner_exception;
-        }
+        // public constructor(message: string, inner_exception: Exception)
+        // {
+        //     this.message = message;
+        //     this.inner_exception = inner_exception;
+        // }
 
-        public func message -> ?string { get }
+        // public func message -> ?string { get }
 
-        public func inner_exception -> ?Exception { get }
+        // public func inner_exception -> ?Exception { get }
     }
 }

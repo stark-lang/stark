@@ -23,7 +23,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax
             foreach (var modifier in this.Modifiers)
             {
                 var kind = modifier.Kind();
-                if (kind == SyntaxKind.ReadOnlyKeyword) modifiers |= TypeAccessModifiers.ReadOnly;
+                if (kind == SyntaxKind.ReadableKeyword) modifiers |= TypeAccessModifiers.Readable;
                 if (kind == SyntaxKind.TransientKeyword) modifiers |= TypeAccessModifiers.Transient;
             }
 

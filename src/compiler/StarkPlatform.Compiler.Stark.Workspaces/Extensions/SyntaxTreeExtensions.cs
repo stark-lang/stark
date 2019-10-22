@@ -49,7 +49,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                     case SyntaxKind.ExternKeyword:
                     case SyntaxKind.NewKeyword:
                     case SyntaxKind.OverrideKeyword:
-                    case SyntaxKind.ReadOnlyKeyword:
+                    case SyntaxKind.ReadableKeyword:
                     case SyntaxKind.UnsafeKeyword:
                     case SyntaxKind.AsyncKeyword:
                     case SyntaxKind.RefKeyword:

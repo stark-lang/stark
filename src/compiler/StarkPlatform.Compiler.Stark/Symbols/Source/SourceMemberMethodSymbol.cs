@@ -503,7 +503,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         {
             get
             {
-                return (this.DeclarationModifiers & DeclarationModifiers.Let) != 0;
+                return (this.DeclarationModifiers & DeclarationModifiers.Readable) != 0;
             }
         }
 

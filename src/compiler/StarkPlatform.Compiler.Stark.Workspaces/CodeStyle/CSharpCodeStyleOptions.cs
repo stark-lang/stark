@@ -193,7 +193,7 @@ namespace StarkPlatform.Compiler.Stark.CodeStyle
                 SyntaxKind.ExternKeyword,
                 SyntaxKind.NewKeyword,
                 SyntaxKind.VirtualKeyword, SyntaxKind.AbstractKeyword, SyntaxKind.SealedKeyword, SyntaxKind.OverrideKeyword,
-                SyntaxKind.ReadOnlyKeyword,
+                SyntaxKind.ReadableKeyword,
                 SyntaxKind.UnsafeKeyword,
                 SyntaxKind.AsyncKeyword
             };

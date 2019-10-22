@@ -9,7 +9,7 @@ namespace core
     // }
 
 /*    @Union
-    public readonly abstract struct Result<T>
+    public immutable abstract struct Result<T>
     {
         internal let _type : i32
         internal let _exception : Exception
@@ -32,7 +32,7 @@ namespace core
 
 
     @Union
-    public readonly struct Success<T> extends Result<T>
+    public immutable struct Success<T> extends Result<T>
     {
         public constructor(value: T) : base(value) {}
 
@@ -40,7 +40,7 @@ namespace core
     }
 
     @Union
-    public readonly struct Failure<T> extends Result<T>
+    public immutable struct Failure<T> extends Result<T>
     {
         public constructor(exception: Exception) : base(exception) {}
 

@@ -407,7 +407,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             const DeclarationModifiers defaultAccess = DeclarationModifiers.None;
 
             // Check that the set of modifiers is allowed
-            const DeclarationModifiers allowedModifiers = DeclarationModifiers.AccessibilityMask | DeclarationModifiers.Let;
+            const DeclarationModifiers allowedModifiers = DeclarationModifiers.AccessibilityMask | DeclarationModifiers.Readable;
             var mods = ModifierUtils.MakeAndCheckNontypeMemberModifiers(true, syntax.Modifiers, defaultAccess, allowedModifiers, location, diagnostics, out modifierErrors);
 
             // For interface, check there are no accessibility modifiers.

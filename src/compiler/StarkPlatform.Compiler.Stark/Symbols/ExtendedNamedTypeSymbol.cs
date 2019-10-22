@@ -42,7 +42,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         public override bool IsRefLikeType => IsTransient;
 
-        public override bool IsReadOnly => (_accessModifiers & TypeAccessModifiers.ReadOnly) != 0 || base.IsReadOnly;
+        public override bool IsReadOnly => (_accessModifiers & TypeAccessModifiers.Readable) != 0 || base.IsReadOnly;
 
         internal override bool Equals(TypeSymbol t2, TypeCompareKind comparison)
         {

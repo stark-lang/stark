@@ -65,7 +65,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     modifierErrors = true;
                 }
 
-                if ((result & DeclarationModifiers.Static) != 0 && (result & (DeclarationModifiers.Let | DeclarationModifiers.Transient)) != 0)
+                if ((result & DeclarationModifiers.Static) != 0 && (result & (DeclarationModifiers.Immutable | DeclarationModifiers.Transient)) != 0)
                 {
                     diagnostics.Add(ErrorCode.ERR_InvalidThisModifierForStatic, errorLocation);
                     modifierErrors = true;
@@ -120,8 +120,6 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     return SyntaxFacts.GetText(SyntaxKind.PrivateKeyword);
                 case DeclarationModifiers.PrivateProtected:
                     return SyntaxFacts.GetText(SyntaxKind.PrivateKeyword) + " " + SyntaxFacts.GetText(SyntaxKind.ProtectedKeyword);
-                case DeclarationModifiers.Let:
-                    return SyntaxFacts.GetText(SyntaxKind.ReadOnlyKeyword);
                 case DeclarationModifiers.Const:
                     return SyntaxFacts.GetText(SyntaxKind.ConstKeyword);
                 case DeclarationModifiers.Extern:
@@ -130,6 +128,8 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     return SyntaxFacts.GetText(SyntaxKind.PartialKeyword);
                 case DeclarationModifiers.Transient:
                     return SyntaxFacts.GetText(SyntaxKind.TransientKeyword);
+                case DeclarationModifiers.Readable:
+                    return SyntaxFacts.GetText(SyntaxKind.ReadableKeyword);
                 case DeclarationModifiers.Immutable:
                     return SyntaxFacts.GetText(SyntaxKind.ImmutableKeyword);
                 case DeclarationModifiers.Unsafe:
@@ -173,10 +173,10 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     return DeclarationModifiers.Private;
                 case SyntaxKind.ExternKeyword:
                     return DeclarationModifiers.Extern;
-                case SyntaxKind.ReadOnlyKeyword:
-                    return DeclarationModifiers.Let;
                 case SyntaxKind.TransientKeyword:
                     return DeclarationModifiers.Transient;
+                case SyntaxKind.ReadableKeyword:
+                    return DeclarationModifiers.Readable;
                 case SyntaxKind.ImmutableKeyword:
                     return DeclarationModifiers.Immutable;
                 case SyntaxKind.PartialKeyword:

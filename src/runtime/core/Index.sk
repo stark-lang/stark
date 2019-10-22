@@ -1,6 +1,6 @@
 namespace core
 {
-    public readonly struct Index 
+    public immutable struct Index 
     {
         public constructor(value: int) {
             this.value = value

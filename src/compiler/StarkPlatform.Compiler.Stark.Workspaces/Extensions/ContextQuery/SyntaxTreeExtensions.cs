@@ -652,7 +652,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions.ContextQuery
             return
                 syntaxTree.IsAfterKeyword(position, SyntaxKind.ConstKeyword, cancellationToken) ||
                 syntaxTree.IsAfterKeyword(position, SyntaxKind.RefKeyword, cancellationToken) ||
-                syntaxTree.IsAfterKeyword(position, SyntaxKind.ReadOnlyKeyword, cancellationToken) ||
+                syntaxTree.IsAfterKeyword(position, SyntaxKind.ReadableKeyword, cancellationToken) ||
                 syntaxTree.IsAfterKeyword(position, SyntaxKind.CaseKeyword, cancellationToken) ||
                 syntaxTree.IsAfterKeyword(position, SyntaxKind.EventKeyword, cancellationToken) ||
                 syntaxTree.IsAfterKeyword(position, SyntaxKind.StackAllocKeyword, cancellationToken) ||
@@ -1452,7 +1452,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions.ContextQuery
 
             // ref |
             // ref readonly |
-            if (token.IsKind(SyntaxKind.RefKeyword, SyntaxKind.ReadOnlyKeyword) &&
+            if (token.IsKind(SyntaxKind.RefKeyword, SyntaxKind.ReadableKeyword) &&
                 token.Parent.IsKind(SyntaxKind.RefType) &&
                 token.Parent.IsParentKind(SyntaxKind.VariableDeclaration) &&
                 token.Parent.Parent.IsParentKind(SyntaxKind.LocalDeclarationStatement))

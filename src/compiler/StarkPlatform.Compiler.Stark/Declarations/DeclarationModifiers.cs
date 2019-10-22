@@ -18,10 +18,10 @@ namespace StarkPlatform.Compiler.Stark
         ProtectedInternal = 1 << 7, // the two keywords together are treated as one modifier
         Private = 1 << 8,
         PrivateProtected = 1 << 9, // the two keywords together are treated as one modifier
-        Let = 1 << 10,
+        Immutable = 1 << 10,
         Transient = 1 << 11,
         Const = 1 << 12,
-        Immutable = 1 << 13,
+        Readable = 1 << 13,
 
         Extern = 1 << 14,
         Partial = 1 << 15,

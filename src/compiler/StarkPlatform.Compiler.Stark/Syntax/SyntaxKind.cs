@@ -126,7 +126,7 @@ namespace StarkPlatform.Compiler.Stark
         InternalKeyword = 8345,
         ProtectedKeyword = 8346,
         StaticKeyword = 8347,
-        ReadOnlyKeyword = 8348,
+        ReadableKeyword = 8348,
         SealedKeyword = 8349,
         ConstKeyword = 8350,
         FixedKeyword = 8351,

@@ -2,6 +2,6 @@ namespace core {
     /// base interface for an type with a size
     public interface ISizeable
     {
-        func size -> int { readonly get }
+        func size -> int { readable get }
     }
 }

@@ -7,7 +7,7 @@ namespace core {
         // The array cannot be initialized by using directly this class
         private constructor() {}
 
-        /// ref indexer #2, not readonly
+        /// ref indexer #2, not readable
         public func operator [index: int] -> ref T { 
             get
             {
@@ -21,7 +21,7 @@ namespace core {
             } 
         }
 
-        // // in indexer #3, readonly
+        // // in indexer #3, readable
         // public extern func operator [index: int] -> in T {
         //     @Intrinsic
         //     get 
@@ -29,23 +29,23 @@ namespace core {
 
         public func operator [range: Range] -> Slice<[]T,T> => new Slice<[]T, T>(this, range.begin.value, range.end.value - range.begin.value + 1)
 
-        readonly func Iterable<T, int>.iterate_begin() -> int => 0
+        readable func Iterable<T, int>.iterate_begin() -> int => 0
 
-        readonly func Iterable<T, int>.iterate_has_current(index: ref int) -> bool => index < size
+        readable func Iterable<T, int>.iterate_has_current(index: ref int) -> bool => index < size
 
-        readonly func Iterable<T, int>.iterate_current(index: ref int) -> T => this[index]
+        readable func Iterable<T, int>.iterate_current(index: ref int) -> T => this[index]
 
-        readonly func Iterable<T, int>.iterate_next(index: ref int) => index++
+        readable func Iterable<T, int>.iterate_next(index: ref int) => index++
 
-        readonly func Iterable<T, int>.iterate_end(state: ref int) {}
+        readable func Iterable<T, int>.iterate_end(state: ref int) {}
 
         func MutableIterable<T, int>.iterate_current(index: ref int) -> ref T => ref this[index]
 
 
-        // readonly func Iterable<T, int>.iterate_begin() -> int => -1
+        // readable func Iterable<T, int>.iterate_begin() -> int => -1
 
         // @FuncImpl(FuncImplOptions.AGGRESSIVE_INLINING)
-        // readonly func Iterable<T, int>.iterate_next(index: ref int) -> bool {
+        // readable func Iterable<T, int>.iterate_next(index: ref int) -> bool {
         //     var nextIndex = index + 1
         //     if nextIndex < size then {
         //         index = nextIndex
@@ -58,7 +58,7 @@ namespace core {
 
         // func MutableIterable<T, int>.iterate_item(index: ref int) -> ref T => ref this[index] 
 
-        // readonly func Iterable<T, int>.iterate_end(state: ref int) {}
+        // readable func Iterable<T, int>.iterate_end(state: ref int) {}
     }
 
     public module array_playground

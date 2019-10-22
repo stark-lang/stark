@@ -483,7 +483,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.Providers
                         case SyntaxKind.UnsafeKeyword:
                             declarationModifiers = declarationModifiers.WithIsUnsafe(true);
                             continue;
-                        case SyntaxKind.ReadOnlyKeyword:
+                        case SyntaxKind.ReadableKeyword:
                             declarationModifiers = declarationModifiers.WithIsReadOnly(true);
                             continue;
                         case SyntaxKind.VirtualKeyword:

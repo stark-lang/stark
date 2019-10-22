@@ -293,7 +293,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     case SyntaxKind.IsolatedKeyword:
                     case SyntaxKind.MutableKeyword:
                     case SyntaxKind.TransientKeyword:
-                    case SyntaxKind.ReadOnlyKeyword:
+                    case SyntaxKind.ReadableKeyword:
                     case SyntaxKind.ConstKeyword:
                     case SyntaxKind.UnsafeKeyword:
                         break;

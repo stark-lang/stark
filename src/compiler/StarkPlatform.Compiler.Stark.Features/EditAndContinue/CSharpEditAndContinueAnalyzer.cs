@@ -1957,7 +1957,7 @@ namespace StarkPlatform.Compiler.Stark.EditAndContinue
                             case SyntaxKind.RefKeyword:
                                 ReportError(RudeEditKind.RefStruct, type, type);
                                 return;
-                            case SyntaxKind.ReadOnlyKeyword:
+                            case SyntaxKind.ReadableKeyword:
                                 ReportError(RudeEditKind.ReadOnlyStruct, type, type);
                                 return;
                         }
@@ -1982,7 +1982,7 @@ namespace StarkPlatform.Compiler.Stark.EditAndContinue
 
             private void ClassifyPossibleReadOnlyRefAttributesForType(SyntaxNode owner, TypeSyntax type)
             {
-                if (type is RefTypeSyntax refType && refType.RefKindKeyword != default && refType.ElementType is ExtendedTypeSyntax extendedType && extendedType.Modifiers.Contains(token => token.Kind() == SyntaxKind.ReadOnlyKeyword))
+                if (type is RefTypeSyntax refType && refType.RefKindKeyword != default && refType.ElementType is ExtendedTypeSyntax extendedType && extendedType.Modifiers.Contains(token => token.Kind() == SyntaxKind.ReadableKeyword))
                 {
                     ReportError(RudeEditKind.ReadOnlyReferences, owner, owner);
                 }

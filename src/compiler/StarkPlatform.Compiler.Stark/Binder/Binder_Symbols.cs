@@ -505,8 +505,8 @@ namespace StarkPlatform.Compiler.Stark
                     {
                         switch (token.Kind())
                         {
-                            case SyntaxKind.ReadOnlyKeyword:
-                                accessModifiers |= TypeAccessModifiers.ReadOnly;
+                            case SyntaxKind.ReadableKeyword:
+                                accessModifiers |= TypeAccessModifiers.Readable;
                                 break;
                             case SyntaxKind.TransientKeyword:
                                 accessModifiers |= TypeAccessModifiers.Transient;

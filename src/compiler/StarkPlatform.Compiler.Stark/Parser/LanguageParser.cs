@@ -1056,8 +1056,8 @@ tryAgain:
                     return DeclarationModifiers.New;
                 case SyntaxKind.OverrideKeyword:
                     return DeclarationModifiers.Override;
-                case SyntaxKind.ReadOnlyKeyword:
-                    return DeclarationModifiers.Let;
+                case SyntaxKind.ReadableKeyword:
+                    return DeclarationModifiers.Readable;
                 case SyntaxKind.TransientKeyword:
                     return DeclarationModifiers.Transient;
                 case SyntaxKind.ImmutableKeyword:
@@ -1187,7 +1187,7 @@ tryAgain:
 
                 case SyntaxKind.StructKeyword:
                     // report use of "readonly struct" if feature is unsupported
-                    CheckForVersionSpecificModifiers(modifiers, SyntaxKind.ReadOnlyKeyword, MessageID.IDS_FeatureReadOnlyStructs);
+                    CheckForVersionSpecificModifiers(modifiers, SyntaxKind.ReadableKeyword, MessageID.IDS_FeatureReadOnlyStructs);
                     return this.ParseClassOrStructOrInterfaceDeclaration(attributes, modifiers);
 
                 case SyntaxKind.InterfaceKeyword:
@@ -1794,7 +1794,7 @@ tryAgain:
                 case SyntaxKind.PrivateKeyword:
                 case SyntaxKind.ProtectedKeyword:
                 case SyntaxKind.PublicKeyword:
-                case SyntaxKind.ReadOnlyKeyword:
+                case SyntaxKind.ReadableKeyword:
                 case SyntaxKind.SealedKeyword:
                 case SyntaxKind.StaticKeyword:
                 case SyntaxKind.StructKeyword:
@@ -2304,7 +2304,10 @@ tryAgain:
                 SyntaxToken eosToken = null;
                 if (body == null)
                 {
-                    eosToken = EatEos(ref initializer);
+                    if (initializer != null)
+                    {
+                        eosToken = EatEos(ref initializer);
+                    }
                 }
 
                 return _syntaxFactory.ConstructorDeclaration(attributes, modifiers.ToList(), constructor, paramList, initializer, contracts, body, expressionBody, eosToken);
@@ -5228,7 +5231,7 @@ tryAgain:
                 // in a ref local or ref return, we treat "ref" and "ref readonly" as part of the type
                 this.EatToken();
 
-                if (this.CurrentToken.Kind == SyntaxKind.ReadOnlyKeyword)
+                if (this.CurrentToken.Kind == SyntaxKind.ReadableKeyword)
                 {
                     this.EatToken();
                 }
@@ -5631,7 +5634,7 @@ tryAgain:
             switch (token.Kind)
             {
                 case SyntaxKind.TransientKeyword:
-                case SyntaxKind.ReadOnlyKeyword:
+                case SyntaxKind.ReadableKeyword:
                 case SyntaxKind.ConstKeyword:
                 case SyntaxKind.UnsafeKeyword:
                 case SyntaxKind.ImmutableKeyword:
@@ -7400,7 +7403,7 @@ tryAgain:
                     mod = this.EatToken();
                 }
 
-                if (k == SyntaxKind.ReadOnlyKeyword)
+                if (k == SyntaxKind.ReadableKeyword)
                 {
                     mod = this.AddError(mod, ErrorCode.ERR_BadMemberFlag, mod.Text);
                 }
@@ -7420,7 +7423,7 @@ tryAgain:
             {
                 case SyntaxKind.ConstKeyword:
                 case SyntaxKind.StaticKeyword:
-                case SyntaxKind.ReadOnlyKeyword:
+                case SyntaxKind.ReadableKeyword:
                     return true;
                 default:
                     return false;
@@ -8822,7 +8825,7 @@ tryAgain:
                         case SyntaxKind.RefKeyword:
                             this.EatToken();
                             foundParameterModifier = true;
-                            if (this.CurrentToken.Kind == SyntaxKind.ReadOnlyKeyword)
+                            if (this.CurrentToken.Kind == SyntaxKind.ReadableKeyword)
                             {
                                 this.EatToken();
                             }

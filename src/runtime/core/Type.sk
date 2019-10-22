@@ -12,7 +12,7 @@ namespace core
         ARRAY = CLASS | (1 << 5)
     }
 
-    public readonly struct Type {
+    public immutable struct Type {
         private unsafe let _impl : *Impl
 
         private constructor() {
@@ -45,7 +45,7 @@ namespace core
             }
         }
 
-        private readonly struct Impl
+        private immutable struct Impl
         {
 #pragma warning disable CS0169
 #pragma warning disable CS0649

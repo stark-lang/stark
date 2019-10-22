@@ -75,7 +75,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions
                 .WithPrependedLeadingTrivia(SyntaxFactory.ElasticMarker)
                 .WithAdditionalAnnotations(Simplifier.Annotation);
             var refKeyword = SyntaxFactory.Token(SyntaxKind.RefKeyword);
-            var readOnlyKeyword = SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword);
+            var readOnlyKeyword = SyntaxFactory.Token(SyntaxKind.ReadableKeyword);
             return SyntaxFactory.RefType(refKeyword, SyntaxFactory.SimpleExtendedType(SyntaxTokenList.Create(readOnlyKeyword), underlyingType));
         }
 

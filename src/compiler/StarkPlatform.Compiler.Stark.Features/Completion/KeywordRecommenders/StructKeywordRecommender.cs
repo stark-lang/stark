@@ -17,7 +17,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
                 SyntaxKind.ProtectedKeyword,
                 SyntaxKind.UnsafeKeyword,
                 SyntaxKind.RefKeyword,
-                SyntaxKind.ReadOnlyKeyword
+                SyntaxKind.ReadableKeyword
             };
 
         public StructKeywordRecommender()

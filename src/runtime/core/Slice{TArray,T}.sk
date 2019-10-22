@@ -40,15 +40,15 @@ namespace core {
 
         // Interface of Iterable<T, int>
 
-        readonly func Iterable<T, int>.iterate_begin() -> int => _offset
+        readable func Iterable<T, int>.iterate_begin() -> int => _offset
 
-        readonly func Iterable<T, int>.iterate_has_current(index: ref int) -> bool => index < _offset + _size
+        readable func Iterable<T, int>.iterate_has_current(index: ref int) -> bool => index < _offset + _size
 
-        readonly func Iterable<T, int>.iterate_current(index: ref int) -> T => _array[index]
+        readable func Iterable<T, int>.iterate_current(index: ref int) -> T => _array[index]
 
-        readonly func Iterable<T, int>.iterate_next(index: ref int) => index++
+        readable func Iterable<T, int>.iterate_next(index: ref int) => index++
 
-        readonly func Iterable<T, int>.iterate_end(state: ref int) {}
+        readable func Iterable<T, int>.iterate_end(state: ref int) {}
 
         func MutableIterable<T, int>.iterate_current(index: ref int) -> ref T => ref _array[index]
 

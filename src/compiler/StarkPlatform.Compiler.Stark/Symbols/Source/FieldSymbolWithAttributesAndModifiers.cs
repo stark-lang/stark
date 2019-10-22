@@ -43,7 +43,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             => (Modifiers & DeclarationModifiers.Static) != 0;
 
         public sealed override bool IsLet
-            => (Modifiers & DeclarationModifiers.Let) != 0;
+            => (Modifiers & DeclarationModifiers.Readable) != 0;
 
         public sealed override Accessibility DeclaredAccessibility
             => ModifierUtils.EffectiveAccessibility(Modifiers);

@@ -29,16 +29,16 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
             }
 
             var lastReadOnly = members.OfType<FieldDeclarationSyntax>()
-                                      .Where(f => f.Modifiers.Any(SyntaxKind.ReadOnlyKeyword))
+                                      .Where(f => f.Modifiers.Any(SyntaxKind.ReadableKeyword))
                                       .LastOrDefault();
 
             var lastNormal = members.OfType<FieldDeclarationSyntax>()
-                                    .Where(f => !f.Modifiers.Any(SyntaxKind.ReadOnlyKeyword) && !f.Modifiers.Any(SyntaxKind.ConstKeyword))
+                                    .Where(f => !f.Modifiers.Any(SyntaxKind.ReadableKeyword) && !f.Modifiers.Any(SyntaxKind.ConstKeyword))
                                     .LastOrDefault();
 
             // Place a readonly field after the last readonly field if we have one.  Otherwise
             // after the last field/const.
-            return fieldDeclaration.Modifiers.Any(SyntaxKind.ReadOnlyKeyword)
+            return fieldDeclaration.Modifiers.Any(SyntaxKind.ReadableKeyword)
                 ? lastReadOnly ?? lastConst ?? lastNormal
                 : lastNormal ?? lastReadOnly ?? lastConst;
         }
@@ -127,7 +127,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
 
                 if (field.IsLet)
                 {
-                    tokens.Add(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
+                    tokens.Add(SyntaxFactory.Token(SyntaxKind.ReadableKeyword));
                 }
             }
 

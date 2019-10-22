@@ -1752,7 +1752,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
 
             if (modifiers.IsReadOnly)
             {
-                list = list.Add(SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword));
+                list = list.Add(SyntaxFactory.Token(SyntaxKind.ReadableKeyword));
             }
 
             if (modifiers.IsUnsafe)
@@ -1854,7 +1854,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
                         modifiers = modifiers | DeclarationModifiers.Const;
                         break;
 
-                    case SyntaxKind.ReadOnlyKeyword:
+                    case SyntaxKind.ReadableKeyword:
                         modifiers = modifiers | DeclarationModifiers.ReadOnly;
                         break;
 

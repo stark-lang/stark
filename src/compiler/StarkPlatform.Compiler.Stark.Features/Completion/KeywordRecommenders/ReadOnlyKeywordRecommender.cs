@@ -21,7 +21,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.KeywordRecommenders
             };
 
         public ReadOnlyKeywordRecommender()
-            : base(SyntaxKind.ReadOnlyKeyword)
+            : base(SyntaxKind.ReadableKeyword)
         {
         }
 

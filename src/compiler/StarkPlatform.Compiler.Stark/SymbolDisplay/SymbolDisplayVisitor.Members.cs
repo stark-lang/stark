@@ -611,7 +611,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 if (symbol.IsLet)
                 {
-                    AddKeyword(SyntaxKind.ReadOnlyKeyword);
+                    AddKeyword(SyntaxKind.ReadableKeyword);
                     AddSpace();
                 }
 
@@ -788,7 +788,7 @@ namespace StarkPlatform.Compiler.Stark
             {
                 AddKeyword(SyntaxKind.RefKeyword);
                 AddSpace();
-                AddKeyword(SyntaxKind.ReadOnlyKeyword);
+                AddKeyword(SyntaxKind.ReadableKeyword);
                 AddSpace();
             }
         }
