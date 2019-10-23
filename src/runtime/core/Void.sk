@@ -1,6 +1,6 @@
 namespace core
 {
-    public struct Void
+    public immutable struct Void
     {
         private constructor() {}
     }

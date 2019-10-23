@@ -1,6 +1,6 @@
 namespace core
 {
-    public struct UInt
+    public immutable struct UInt
     {
 #pragma warning disable CS0169
         private var _value : uint

@@ -1,6 +1,6 @@
 namespace core
 {
-    public struct UInt8
+    public immutable struct UInt8
     {
 #pragma warning disable CS0169
         private var _value : u8
