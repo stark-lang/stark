@@ -7506,6 +7506,7 @@ tryAgain:
                 case SyntaxKind.ArgListKeyword:
                 case SyntaxKind.BaseKeyword:
                 case SyntaxKind.FalseKeyword:
+                case SyntaxKind.IfKeyword:
                 case SyntaxKind.ThisKeyword:
                 case SyntaxKind.TrueKeyword:
                 case SyntaxKind.NullKeyword:
