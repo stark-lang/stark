@@ -430,6 +430,7 @@ namespace StarkPlatform.Compiler.Stark
             var matchesForRefKindNone = _poolListInt.Allocate();
             try
             {
+                bool hasAtLeastOneNoneRefKind = false;
                 for (int f = 0; f < results.Count; ++f)
                 {
                     var result = results[f];
@@ -459,6 +460,7 @@ namespace StarkPlatform.Compiler.Stark
                                 isRefKindValid = methodReturnRefKind == RefKind.None || methodReturnRefKind == RefKind.Ref;
                                 if (isRefKindValid)
                                 {
+                                    if (methodReturnRefKind == RefKind.None) hasAtLeastOneNoneRefKind = true;
                                     matchesForRefKindNone.Add(f);
                                 }
                                 break;
@@ -479,7 +481,7 @@ namespace StarkPlatform.Compiler.Stark
                 }
 
                 // If we match none to ref or none, prefer none
-                if (matchesForRefKindNone.Count > 1)
+                if (matchesForRefKindNone.Count > 1 && hasAtLeastOneNoneRefKind)
                 {
                     // TODO: It might be a bit overkill to use a list if we are supposed to have only ref+none in the list...
                     foreach (var resultIndex in matchesForRefKindNone)
