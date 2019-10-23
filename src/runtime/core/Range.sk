@@ -36,9 +36,9 @@ namespace core
                 _direction = direction
             }
 
-            public readable func index -> int => _index
+            public func index -> int => _index
 
-            public readable func direction -> int => _direction
+            public func direction -> int => _direction
 
             public func move() => _index += direction
         }
