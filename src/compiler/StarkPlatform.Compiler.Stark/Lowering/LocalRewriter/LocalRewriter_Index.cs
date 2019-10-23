@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+using System;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.PooledObjects;
@@ -12,8 +14,8 @@ namespace StarkPlatform.Compiler.Stark
         {
             Debug.Assert(node.MethodOpt != null);
 
-            NamedTypeSymbol booleanType = _compilation.GetSpecialType(SpecialType.System_Boolean);
-            BoundExpression fromEnd = MakeLiteral(node.Syntax, ConstantValue.Create(true), booleanType);
+            //NamedTypeSymbol booleanType = _compilation.GetSpecialType(SpecialType.System_Boolean);
+            //BoundExpression fromEnd = MakeLiteral(node.Syntax, ConstantValue.Create(true), booleanType);
 
             BoundExpression operand = VisitExpression(node.Operand);
 
@@ -26,8 +28,11 @@ namespace StarkPlatform.Compiler.Stark
 
             if (!node.Type.IsNullableType())
             {
-                return new BoundObjectCreationExpression(node.Syntax, node.MethodOpt, binderOpt: null, operand, fromEnd);
+                var notOperand = new BoundUnaryOperator(node.Syntax, UnaryOperatorKind.IntBitwiseComplement, operand, null, null, LookupResultKind.Viable, ImmutableArray<MethodSymbol>.Empty, operand.Type);
+                return new BoundObjectCreationExpression(node.Syntax, node.MethodOpt, binderOpt: null, notOperand);
             }
+
+            throw new NotImplementedException("TODO: rewriter of BoundFromEndIndexExpression for ?int is not implemented");
 
             ArrayBuilder<BoundExpression> sideeffects = ArrayBuilder<BoundExpression>.GetInstance();
             ArrayBuilder<LocalSymbol> locals = ArrayBuilder<LocalSymbol>.GetInstance();
@@ -36,9 +41,10 @@ namespace StarkPlatform.Compiler.Stark
             operand = CaptureExpressionInTempIfNeeded(operand, sideeffects, locals);
             BoundExpression condition = MakeOptimizedHasValue(operand.Syntax, operand);
 
+
             // new Index(operand, fromEnd: true)
             BoundExpression boundOperandGetValueOrDefault = MakeOptimizedGetValueOrDefault(operand.Syntax, operand);
-            BoundExpression indexCreation = new BoundObjectCreationExpression(node.Syntax, node.MethodOpt, binderOpt: null, boundOperandGetValueOrDefault, fromEnd);
+            BoundExpression indexCreation = new BoundObjectCreationExpression(node.Syntax, node.MethodOpt, binderOpt: null, boundOperandGetValueOrDefault);
 
             if (!TryGetNullableMethod(node.Syntax, node.Type, SpecialMember.System_Nullable_T__ctor, out MethodSymbol nullableCtor))
             {

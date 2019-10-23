@@ -1733,11 +1733,10 @@ namespace StarkPlatform.Compiler
                  (byte)(MemberFlags.Constructor),                                                                                                               // Flags
                  (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
                  0,                                                                                                                                             // Arity
-                     2,                                                                                                                                         // Method Signature
+                     1,                                                                                                                                         // Method Signature
                      (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
                      (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
-                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean,
-
+                     
                  // core_Index__value
                  (byte)(MemberFlags.Property),                                                                                                                  // Flags
                  (byte)WellKnownType.ExtSentinel, (byte)(WellKnownType.core_Index - WellKnownType.ExtSentinel),                                               // DeclaringTypeId
