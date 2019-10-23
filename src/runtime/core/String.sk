@@ -22,6 +22,9 @@ namespace core
 
         public func operator [index: int] -> ref u8 => ref _buffer[index]
 
+        /// TODO: Make an extension method on IArray<T> for this
+        public func operator [index: Index] -> ref u8 => ref this[if index.value < 0 then index.value + size else index.value]
+
         public func operator [range: Range] -> ~string => new Slice<string, u8>(this, range.begin.value, range.end.value - range.begin.value + 1)
 
         // public func operator [index: int] -> in u8  => in _buffer[index]

@@ -14,4 +14,22 @@ namespace core
 
         public static func operator as(index: Index) -> int => index.value
     }
+
+    public module index_playground
+    {
+        static func get_string_element_from_last(text: string) -> u8
+        {
+            return text[^0]
+        }
+
+        static func get_array_element_from_last(array: ~[]u8) -> u8
+        {
+            return array[^0]
+        }
+
+        static func get_slice_element_from_last(text: ~string) -> u8
+        {
+            return text[^0]
+        }
+    }
 }

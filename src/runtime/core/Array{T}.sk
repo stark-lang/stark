@@ -27,6 +27,9 @@ namespace core {
         //     get 
         // }
 
+        // TODO: Make an extension method on IArray<T> for this
+        public func operator [index: Index] -> ref T => ref this[if index.value < 0 then index.value + size else index.value]
+
         public func operator [range: Range] -> Slice<[]T,T> => new Slice<[]T, T>(this, range.begin.value, range.end.value - range.begin.value + 1)
 
         readable func Iterable<T, int>.iterate_begin() -> int => 0

@@ -34,6 +34,9 @@ namespace core {
 
         public func operator [index: int] -> ref T => ref _array[_offset + index]
 
+        // TODO: Make an extension method on IArray<T> for this
+        public func operator [index: Index] -> ref T => ref this[if index.value < 0 then index.value + size else index.value]
+
         // Slice operator with Range
 
         public func operator [range: Range] -> Slice<TArray,T> => new Slice<TArray,T>(_array, range.begin.value + _offset, range.end.value - range.begin.value + 1)
