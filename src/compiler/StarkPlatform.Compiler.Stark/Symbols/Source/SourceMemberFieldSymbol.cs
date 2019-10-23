@@ -143,19 +143,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     // The modifier 'static' is not valid for this item
                     diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.StaticKeyword));
                 }
-
-                if ((result & DeclarationModifiers.Immutable) != 0)
-                {
-                    // The modifier 'readonly' is not valid for this item
-                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ImmutableKeyword));
-                }
-
-                if ((result & DeclarationModifiers.Readable) != 0)
-                {
-                    // The modifier 'readonly' is not valid for this item
-                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ReadableKeyword));
-                }
-
+                
                 if ((result & DeclarationModifiers.Const) != 0)
                 {
                     // The modifier 'const' is not valid for this item
@@ -174,19 +162,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                     // The constant '{0}' cannot be marked static
                     diagnostics.Add(ErrorCode.ERR_StaticConstant, errorLocation, firstIdentifier.ValueText);
                 }
-
-                if ((result & DeclarationModifiers.Immutable) != 0)
-                {
-                    // The modifier 'readonly' is not valid for this item
-                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ImmutableKeyword));
-                }
-
-                if ((result & DeclarationModifiers.Readable) != 0)
-                {
-                    // The modifier 'readonly' is not valid for this item
-                    diagnostics.Add(ErrorCode.ERR_BadMemberFlag, errorLocation, SyntaxFacts.GetText(SyntaxKind.ReadableKeyword));
-                }
-
+                
                 if ((result & DeclarationModifiers.Unsafe) != 0)
                 {
                     // The modifier 'unsafe' is not valid for this item
