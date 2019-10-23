@@ -254,7 +254,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
                 throw ExceptionUtilities.Unreachable;
             }
 
-            var arrayType = t.DeclaringCompilation.GetSpecialType(SpecialType.core_Array_T).Construct(element.TypeSymbol);
+            var arrayType = t.BaseTypeNoUseSiteDiagnostics.Construct(element.TypeSymbol);
 
             return ArrayTypeSymbol.CreateArray(
                 element,
