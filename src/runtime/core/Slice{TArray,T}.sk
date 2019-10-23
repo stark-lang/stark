@@ -35,14 +35,19 @@ namespace core {
         public func operator [index: int] -> ref T => ref _array[_offset + index]
 
         // TODO: Make an extension method on IArray<T> for this
-        public func operator [index: Index] -> ref T => ref this[if index.value < 0 then index.value + size else index.value]
+        public func operator [index: Index] -> ref T => ref this[index.offset(this.size)]
 
         // Slice operator with Range
 
-        public func operator [range: Range] -> Slice<TArray,T> => new Slice<TArray,T>(_array, range.begin.value + _offset, range.end.value - range.begin.value + 1)
+        public func operator [range: Range] -> Slice<TArray,T> {
+            get {
+                var begin = range.begin.offset(this.size)
+                var end = range.end.offset(this.size)
+                return new Slice<TArray,T>(_array, begin + _offset, end - begin + 1)
+            }
+        }
 
         // Interface of Iterable<T, int>
-
         readable func Iterable<T, int>.iterate_begin() -> int => _offset
 
         readable func Iterable<T, int>.iterate_has_current(index: ref int) -> bool => index < _offset + _size
