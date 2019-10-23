@@ -13,7 +13,7 @@ namespace core
             _buffer = new [size]u8
         }
 
-        public constructor(buffer: readable []u8)
+        public constructor(buffer: []u8)
         {
             _buffer = buffer
         }
