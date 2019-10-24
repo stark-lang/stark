@@ -2486,10 +2486,12 @@ namespace StarkPlatform.Compiler.Stark
             return SyntaxFactory.OperatorDeclaration(
                 attributeLists: attributeLists,
                 modifiers: modifiers,
-                returnType: returnType,
+                Token(SyntaxKind.FuncKeyword),
                 operatorKeyword: operatorKeyword,
                 operatorToken: operatorToken,
                 parameterList: parameterList,
+                Token(SyntaxKind.MinusGreaterThanToken),
+                returnType: returnType,
                 contractClauses: default,
                 body: body,
                 expressionBody: default(ArrowExpressionClauseSyntax),

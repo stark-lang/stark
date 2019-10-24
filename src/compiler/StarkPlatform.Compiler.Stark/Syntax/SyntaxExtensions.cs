@@ -300,10 +300,12 @@ namespace StarkPlatform.Compiler.Stark
             return syntax.Update(
                 attributeLists,
                 modifiers,
-                returnType,
+                SyntaxFactory.Token(SyntaxKind.FuncKeyword),
                 operatorKeyword,
                 operatorToken,
                 parameterList,
+                SyntaxFactory.Token(SyntaxKind.MinusGreaterThanToken),
+                returnType,
                 default,
                 block,
                 default(ArrowExpressionClauseSyntax),

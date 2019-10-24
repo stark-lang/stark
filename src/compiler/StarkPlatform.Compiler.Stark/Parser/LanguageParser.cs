@@ -2079,9 +2079,10 @@ tryAgain:
 
                 if (CurrentToken.Kind == SyntaxKind.ImplicitKeyword ||
                     CurrentToken.Kind == SyntaxKind.ExplicitKeyword || // we let it through to generate an error later
-                    CurrentToken.Kind == SyntaxKind.AsKeyword)
+                    CurrentToken.Kind == SyntaxKind.AsKeyword ||
+                    SyntaxFacts.IsAnyOverloadableOperator(this.CurrentToken.Kind))
                 {
-                    return this.ParseConversionOperatorDeclaration(funcToken, operatorToken, attributes, modifiers);
+                    return this.ParseOperatorDeclaration(funcToken, operatorToken, attributes, modifiers);
                 }
             }
 
@@ -2583,7 +2584,7 @@ tryAgain:
             }
         }
 
-        private ConversionOperatorDeclarationSyntax ParseConversionOperatorDeclaration(SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxListBuilder<AttributeSyntax> attributes, SyntaxListBuilder modifiers)
+        private BaseMethodDeclarationSyntax ParseOperatorDeclaration(SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxListBuilder<AttributeSyntax> attributes, SyntaxListBuilder modifiers)
         {
             SyntaxToken implicitKeyword = null;
             if (this.CurrentToken.Kind == SyntaxKind.ImplicitKeyword)
@@ -2593,6 +2594,12 @@ tryAgain:
 
             // func operator implicit as(...) -> ReturnType
             // func operator as(...) -> ReturnType
+
+
+            if (CurrentToken.Kind != SyntaxKind.AsKeyword)
+            {
+                return ParseOperatorDeclaration(funcKeyword, operatorKeyword, implicitKeyword, attributes, modifiers);
+            }
 
             var asKeyword = EatToken(SyntaxKind.AsKeyword);
 
@@ -2657,10 +2664,12 @@ tryAgain:
         }
 
         private OperatorDeclarationSyntax ParseOperatorDeclaration(
+            SyntaxToken funcKeyword, 
+            SyntaxToken opKeyword,
+            SyntaxToken implicitKeyword,
             SyntaxListBuilder<AttributeSyntax> attributes,
             SyntaxListBuilder modifiers)
         {
-            var opKeyword = this.EatToken(SyntaxKind.OperatorKeyword);
             SyntaxToken opToken;
             int opTokenErrorOffset;
             int opTokenErrorWidth;
@@ -2746,6 +2755,8 @@ tryAgain:
                     break;
             }
 
+            var minusGreaterThanForReturnType = ExpectMinusGreaterThanForReturnType();
+
             // An operator has always a return type
             TypeSyntax type = ParseReturnType();
             Debug.Assert(type != null); // How could it be?  The only caller got it from ParseReturnType.
@@ -2803,10 +2814,12 @@ tryAgain:
                 return _syntaxFactory.OperatorDeclaration(
                     attributes,
                     modifiers.ToList(),
-                    type,
+                    funcKeyword,
                     opKeyword,
                     opToken,
                     paramList,
+                    minusGreaterThanForReturnType,
+                    type,
                     contracts,
                     blockBody,
                     expressionBody,

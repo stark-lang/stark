@@ -17131,8 +17131,8 @@ namespace StarkPlatform.Compiler.Stark.Syntax
   public sealed partial class OperatorDeclarationSyntax : BaseMethodDeclarationSyntax
   {
     private SyntaxNode attributeLists;
-    private TypeSyntax returnType;
     private ParameterListSyntax parameterList;
+    private TypeSyntax returnType;
     private SyntaxNode contractClauses;
     private BlockSyntax body;
     private ArrowExpressionClauseSyntax expressionBody;
@@ -17162,13 +17162,10 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         }
     }
 
-    /// <summary>Gets the return type.</summary>
-    public TypeSyntax ReturnType 
+    /// <summary>Gets the func keyword.</summary>
+    public SyntaxToken FuncKeyword 
     {
-        get
-        {
-            return this.GetRed(ref this.returnType, 2);
-        }
+      get { return new SyntaxToken(this, ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.OperatorDeclarationSyntax)this.Green).funcKeyword, this.GetChildPosition(2), this.GetChildIndex(2)); }
     }
 
     /// <summary>Gets the "operator" keyword.</summary>
@@ -17191,11 +17188,26 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         }
     }
 
+    /// <summary>Gets the arrow token.</summary>
+    public SyntaxToken ReturnToken 
+    {
+      get { return new SyntaxToken(this, ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.OperatorDeclarationSyntax)this.Green).returnToken, this.GetChildPosition(6), this.GetChildIndex(6)); }
+    }
+
+    /// <summary>Gets the return type.</summary>
+    public TypeSyntax ReturnType 
+    {
+        get
+        {
+            return this.GetRed(ref this.returnType, 7);
+        }
+    }
+
     public override SyntaxList<ContractClauseSyntax> ContractClauses 
     {
         get
         {
-            return new SyntaxList<ContractClauseSyntax>(this.GetRed(ref this.contractClauses, 6));
+            return new SyntaxList<ContractClauseSyntax>(this.GetRed(ref this.contractClauses, 8));
         }
     }
 
@@ -17203,7 +17215,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax
     {
         get
         {
-            return this.GetRed(ref this.body, 7);
+            return this.GetRed(ref this.body, 9);
         }
     }
 
@@ -17211,7 +17223,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax
     {
         get
         {
-            return this.GetRed(ref this.expressionBody, 8);
+            return this.GetRed(ref this.expressionBody, 10);
         }
     }
 
@@ -17221,7 +17233,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         {
             var slot = ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.OperatorDeclarationSyntax)this.Green).eosToken;
             if (slot != null)
-                return new SyntaxToken(this, slot, this.GetChildPosition(9), this.GetChildIndex(9));
+                return new SyntaxToken(this, slot, this.GetChildPosition(11), this.GetChildIndex(11));
 
             return default(SyntaxToken);
         }
@@ -17232,11 +17244,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         switch (index)
         {
             case 0: return this.GetRedAtZero(ref this.attributeLists);
-            case 2: return this.GetRed(ref this.returnType, 2);
             case 5: return this.GetRed(ref this.parameterList, 5);
-            case 6: return this.GetRed(ref this.contractClauses, 6);
-            case 7: return this.GetRed(ref this.body, 7);
-            case 8: return this.GetRed(ref this.expressionBody, 8);
+            case 7: return this.GetRed(ref this.returnType, 7);
+            case 8: return this.GetRed(ref this.contractClauses, 8);
+            case 9: return this.GetRed(ref this.body, 9);
+            case 10: return this.GetRed(ref this.expressionBody, 10);
             default: return null;
         }
     }
@@ -17245,11 +17257,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         switch (index)
         {
             case 0: return this.attributeLists;
-            case 2: return this.returnType;
             case 5: return this.parameterList;
-            case 6: return this.contractClauses;
-            case 7: return this.body;
-            case 8: return this.expressionBody;
+            case 7: return this.returnType;
+            case 8: return this.contractClauses;
+            case 9: return this.body;
+            case 10: return this.expressionBody;
             default: return null;
         }
     }
@@ -17264,11 +17276,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         visitor.VisitOperatorDeclaration(this);
     }
 
-    public OperatorDeclarationSyntax Update(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, TypeSyntax returnType, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
+    public OperatorDeclarationSyntax Update(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax returnType, SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
     {
-        if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || returnType != this.ReturnType || operatorKeyword != this.OperatorKeyword || operatorToken != this.OperatorToken || parameterList != this.ParameterList || contractClauses != this.ContractClauses || body != this.Body || expressionBody != this.ExpressionBody || eosToken != this.EosToken)
+        if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || funcKeyword != this.FuncKeyword || operatorKeyword != this.OperatorKeyword || operatorToken != this.OperatorToken || parameterList != this.ParameterList || returnToken != this.ReturnToken || returnType != this.ReturnType || contractClauses != this.ContractClauses || body != this.Body || expressionBody != this.ExpressionBody || eosToken != this.EosToken)
         {
-            var newNode = SyntaxFactory.OperatorDeclaration(attributeLists, modifiers, returnType, operatorKeyword, operatorToken, parameterList, contractClauses, body, expressionBody, eosToken);
+            var newNode = SyntaxFactory.OperatorDeclaration(attributeLists, modifiers, funcKeyword, operatorKeyword, operatorToken, parameterList, returnToken, returnType, contractClauses, body, expressionBody, eosToken);
             var annotations = this.GetAnnotations();
             if (annotations != null && annotations.Length > 0)
                return newNode.WithAnnotations(annotations);
@@ -17281,58 +17293,68 @@ namespace StarkPlatform.Compiler.Stark.Syntax
     internal override BaseMethodDeclarationSyntax WithAttributeListsCore(SyntaxList<AttributeSyntax> attributeLists) => WithAttributeLists(attributeLists);
     public new OperatorDeclarationSyntax WithAttributeLists(SyntaxList<AttributeSyntax> attributeLists)
     {
-        return this.Update(attributeLists, this.Modifiers, this.ReturnType, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
+        return this.Update(attributeLists, this.Modifiers, this.FuncKeyword, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ReturnToken, this.ReturnType, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
     }
 
     internal override BaseMethodDeclarationSyntax WithModifiersCore(SyntaxTokenList modifiers) => WithModifiers(modifiers);
     public new OperatorDeclarationSyntax WithModifiers(SyntaxTokenList modifiers)
     {
-        return this.Update(this.AttributeLists, modifiers, this.ReturnType, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
+        return this.Update(this.AttributeLists, modifiers, this.FuncKeyword, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ReturnToken, this.ReturnType, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
     }
 
-    public OperatorDeclarationSyntax WithReturnType(TypeSyntax returnType)
+    public OperatorDeclarationSyntax WithFuncKeyword(SyntaxToken funcKeyword)
     {
-        return this.Update(this.AttributeLists, this.Modifiers, returnType, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
+        return this.Update(this.AttributeLists, this.Modifiers, funcKeyword, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ReturnToken, this.ReturnType, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
     }
 
     public OperatorDeclarationSyntax WithOperatorKeyword(SyntaxToken operatorKeyword)
     {
-        return this.Update(this.AttributeLists, this.Modifiers, this.ReturnType, operatorKeyword, this.OperatorToken, this.ParameterList, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
+        return this.Update(this.AttributeLists, this.Modifiers, this.FuncKeyword, operatorKeyword, this.OperatorToken, this.ParameterList, this.ReturnToken, this.ReturnType, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
     }
 
     public OperatorDeclarationSyntax WithOperatorToken(SyntaxToken operatorToken)
     {
-        return this.Update(this.AttributeLists, this.Modifiers, this.ReturnType, this.OperatorKeyword, operatorToken, this.ParameterList, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
+        return this.Update(this.AttributeLists, this.Modifiers, this.FuncKeyword, this.OperatorKeyword, operatorToken, this.ParameterList, this.ReturnToken, this.ReturnType, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
     }
 
     internal override BaseMethodDeclarationSyntax WithParameterListCore(ParameterListSyntax parameterList) => WithParameterList(parameterList);
     public new OperatorDeclarationSyntax WithParameterList(ParameterListSyntax parameterList)
     {
-        return this.Update(this.AttributeLists, this.Modifiers, this.ReturnType, this.OperatorKeyword, this.OperatorToken, parameterList, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
+        return this.Update(this.AttributeLists, this.Modifiers, this.FuncKeyword, this.OperatorKeyword, this.OperatorToken, parameterList, this.ReturnToken, this.ReturnType, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
+    }
+
+    public OperatorDeclarationSyntax WithReturnToken(SyntaxToken returnToken)
+    {
+        return this.Update(this.AttributeLists, this.Modifiers, this.FuncKeyword, this.OperatorKeyword, this.OperatorToken, this.ParameterList, returnToken, this.ReturnType, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
+    }
+
+    public OperatorDeclarationSyntax WithReturnType(TypeSyntax returnType)
+    {
+        return this.Update(this.AttributeLists, this.Modifiers, this.FuncKeyword, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ReturnToken, returnType, this.ContractClauses, this.Body, this.ExpressionBody, this.EosToken);
     }
 
     internal override BaseMethodDeclarationSyntax WithContractClausesCore(SyntaxList<ContractClauseSyntax> contractClauses) => WithContractClauses(contractClauses);
     public new OperatorDeclarationSyntax WithContractClauses(SyntaxList<ContractClauseSyntax> contractClauses)
     {
-        return this.Update(this.AttributeLists, this.Modifiers, this.ReturnType, this.OperatorKeyword, this.OperatorToken, this.ParameterList, contractClauses, this.Body, this.ExpressionBody, this.EosToken);
+        return this.Update(this.AttributeLists, this.Modifiers, this.FuncKeyword, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ReturnToken, this.ReturnType, contractClauses, this.Body, this.ExpressionBody, this.EosToken);
     }
 
     internal override BaseMethodDeclarationSyntax WithBodyCore(BlockSyntax body) => WithBody(body);
     public new OperatorDeclarationSyntax WithBody(BlockSyntax body)
     {
-        return this.Update(this.AttributeLists, this.Modifiers, this.ReturnType, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ContractClauses, body, this.ExpressionBody, this.EosToken);
+        return this.Update(this.AttributeLists, this.Modifiers, this.FuncKeyword, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ReturnToken, this.ReturnType, this.ContractClauses, body, this.ExpressionBody, this.EosToken);
     }
 
     internal override BaseMethodDeclarationSyntax WithExpressionBodyCore(ArrowExpressionClauseSyntax expressionBody) => WithExpressionBody(expressionBody);
     public new OperatorDeclarationSyntax WithExpressionBody(ArrowExpressionClauseSyntax expressionBody)
     {
-        return this.Update(this.AttributeLists, this.Modifiers, this.ReturnType, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ContractClauses, this.Body, expressionBody, this.EosToken);
+        return this.Update(this.AttributeLists, this.Modifiers, this.FuncKeyword, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ReturnToken, this.ReturnType, this.ContractClauses, this.Body, expressionBody, this.EosToken);
     }
 
     internal override BaseMethodDeclarationSyntax WithEosTokenCore(SyntaxToken eosToken) => WithEosToken(eosToken);
     public new OperatorDeclarationSyntax WithEosToken(SyntaxToken eosToken)
     {
-        return this.Update(this.AttributeLists, this.Modifiers, this.ReturnType, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ContractClauses, this.Body, this.ExpressionBody, eosToken);
+        return this.Update(this.AttributeLists, this.Modifiers, this.FuncKeyword, this.OperatorKeyword, this.OperatorToken, this.ParameterList, this.ReturnToken, this.ReturnType, this.ContractClauses, this.Body, this.ExpressionBody, eosToken);
     }
     internal override BaseMethodDeclarationSyntax AddAttributeListsCore(params AttributeSyntax[] items) => AddAttributeLists(items);
 

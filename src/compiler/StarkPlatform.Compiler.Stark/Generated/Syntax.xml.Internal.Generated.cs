@@ -26603,19 +26603,21 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
   {
     internal readonly GreenNode attributeLists;
     internal readonly GreenNode modifiers;
-    internal readonly TypeSyntax returnType;
+    internal readonly SyntaxToken funcKeyword;
     internal readonly SyntaxToken operatorKeyword;
     internal readonly SyntaxToken operatorToken;
     internal readonly ParameterListSyntax parameterList;
+    internal readonly SyntaxToken returnToken;
+    internal readonly TypeSyntax returnType;
     internal readonly GreenNode contractClauses;
     internal readonly BlockSyntax body;
     internal readonly ArrowExpressionClauseSyntax expressionBody;
     internal readonly SyntaxToken eosToken;
 
-    internal OperatorDeclarationSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, TypeSyntax returnType, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, GreenNode contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
+    internal OperatorDeclarationSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax returnType, GreenNode contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
         : base(kind, diagnostics, annotations)
     {
-        this.SlotCount = 10;
+        this.SlotCount = 12;
         if (attributeLists != null)
         {
             this.AdjustFlagsAndWidth(attributeLists);
@@ -26626,14 +26628,18 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             this.AdjustFlagsAndWidth(modifiers);
             this.modifiers = modifiers;
         }
-        this.AdjustFlagsAndWidth(returnType);
-        this.returnType = returnType;
+        this.AdjustFlagsAndWidth(funcKeyword);
+        this.funcKeyword = funcKeyword;
         this.AdjustFlagsAndWidth(operatorKeyword);
         this.operatorKeyword = operatorKeyword;
         this.AdjustFlagsAndWidth(operatorToken);
         this.operatorToken = operatorToken;
         this.AdjustFlagsAndWidth(parameterList);
         this.parameterList = parameterList;
+        this.AdjustFlagsAndWidth(returnToken);
+        this.returnToken = returnToken;
+        this.AdjustFlagsAndWidth(returnType);
+        this.returnType = returnType;
         if (contractClauses != null)
         {
             this.AdjustFlagsAndWidth(contractClauses);
@@ -26657,11 +26663,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     }
 
 
-    internal OperatorDeclarationSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, TypeSyntax returnType, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, GreenNode contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken, SyntaxFactoryContext context)
+    internal OperatorDeclarationSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax returnType, GreenNode contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken, SyntaxFactoryContext context)
         : base(kind)
     {
         this.SetFactoryContext(context);
-        this.SlotCount = 10;
+        this.SlotCount = 12;
         if (attributeLists != null)
         {
             this.AdjustFlagsAndWidth(attributeLists);
@@ -26672,14 +26678,18 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             this.AdjustFlagsAndWidth(modifiers);
             this.modifiers = modifiers;
         }
-        this.AdjustFlagsAndWidth(returnType);
-        this.returnType = returnType;
+        this.AdjustFlagsAndWidth(funcKeyword);
+        this.funcKeyword = funcKeyword;
         this.AdjustFlagsAndWidth(operatorKeyword);
         this.operatorKeyword = operatorKeyword;
         this.AdjustFlagsAndWidth(operatorToken);
         this.operatorToken = operatorToken;
         this.AdjustFlagsAndWidth(parameterList);
         this.parameterList = parameterList;
+        this.AdjustFlagsAndWidth(returnToken);
+        this.returnToken = returnToken;
+        this.AdjustFlagsAndWidth(returnType);
+        this.returnType = returnType;
         if (contractClauses != null)
         {
             this.AdjustFlagsAndWidth(contractClauses);
@@ -26703,10 +26713,10 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     }
 
 
-    internal OperatorDeclarationSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, TypeSyntax returnType, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, GreenNode contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
+    internal OperatorDeclarationSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax returnType, GreenNode contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
         : base(kind)
     {
-        this.SlotCount = 10;
+        this.SlotCount = 12;
         if (attributeLists != null)
         {
             this.AdjustFlagsAndWidth(attributeLists);
@@ -26717,14 +26727,18 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             this.AdjustFlagsAndWidth(modifiers);
             this.modifiers = modifiers;
         }
-        this.AdjustFlagsAndWidth(returnType);
-        this.returnType = returnType;
+        this.AdjustFlagsAndWidth(funcKeyword);
+        this.funcKeyword = funcKeyword;
         this.AdjustFlagsAndWidth(operatorKeyword);
         this.operatorKeyword = operatorKeyword;
         this.AdjustFlagsAndWidth(operatorToken);
         this.operatorToken = operatorToken;
         this.AdjustFlagsAndWidth(parameterList);
         this.parameterList = parameterList;
+        this.AdjustFlagsAndWidth(returnToken);
+        this.returnToken = returnToken;
+        this.AdjustFlagsAndWidth(returnType);
+        this.returnType = returnType;
         if (contractClauses != null)
         {
             this.AdjustFlagsAndWidth(contractClauses);
@@ -26749,13 +26763,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 
     public override StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> AttributeLists { get { return new StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax>(this.attributeLists); } }
     public override StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> Modifiers { get { return new StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken>(this.modifiers); } }
-    /// <summary>Gets the return type.</summary>
-    public TypeSyntax ReturnType { get { return this.returnType; } }
+    /// <summary>Gets the func keyword.</summary>
+    public SyntaxToken FuncKeyword { get { return this.funcKeyword; } }
     /// <summary>Gets the "operator" keyword.</summary>
     public SyntaxToken OperatorKeyword { get { return this.operatorKeyword; } }
     /// <summary>Gets the operator token.</summary>
     public SyntaxToken OperatorToken { get { return this.operatorToken; } }
     public override ParameterListSyntax ParameterList { get { return this.parameterList; } }
+    /// <summary>Gets the arrow token.</summary>
+    public SyntaxToken ReturnToken { get { return this.returnToken; } }
+    /// <summary>Gets the return type.</summary>
+    public TypeSyntax ReturnType { get { return this.returnType; } }
     public override StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax> ContractClauses { get { return new StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax>(this.contractClauses); } }
     public override BlockSyntax Body { get { return this.body; } }
     public override ArrowExpressionClauseSyntax ExpressionBody { get { return this.expressionBody; } }
@@ -26767,14 +26785,16 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         {
             case 0: return this.attributeLists;
             case 1: return this.modifiers;
-            case 2: return this.returnType;
+            case 2: return this.funcKeyword;
             case 3: return this.operatorKeyword;
             case 4: return this.operatorToken;
             case 5: return this.parameterList;
-            case 6: return this.contractClauses;
-            case 7: return this.body;
-            case 8: return this.expressionBody;
-            case 9: return this.eosToken;
+            case 6: return this.returnToken;
+            case 7: return this.returnType;
+            case 8: return this.contractClauses;
+            case 9: return this.body;
+            case 10: return this.expressionBody;
+            case 11: return this.eosToken;
             default: return null;
         }
     }
@@ -26794,11 +26814,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         visitor.VisitOperatorDeclaration(this);
     }
 
-    public OperatorDeclarationSyntax Update(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeSyntax returnType, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
+    public OperatorDeclarationSyntax Update(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax returnType, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
     {
-        if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || returnType != this.ReturnType || operatorKeyword != this.OperatorKeyword || operatorToken != this.OperatorToken || parameterList != this.ParameterList || contractClauses != this.ContractClauses || body != this.Body || expressionBody != this.ExpressionBody || eosToken != this.EosToken)
+        if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || funcKeyword != this.FuncKeyword || operatorKeyword != this.OperatorKeyword || operatorToken != this.OperatorToken || parameterList != this.ParameterList || returnToken != this.ReturnToken || returnType != this.ReturnType || contractClauses != this.ContractClauses || body != this.Body || expressionBody != this.ExpressionBody || eosToken != this.EosToken)
         {
-            var newNode = SyntaxFactory.OperatorDeclaration(attributeLists, modifiers, returnType, operatorKeyword, operatorToken, parameterList, contractClauses, body, expressionBody, eosToken);
+            var newNode = SyntaxFactory.OperatorDeclaration(attributeLists, modifiers, funcKeyword, operatorKeyword, operatorToken, parameterList, returnToken, returnType, contractClauses, body, expressionBody, eosToken);
             var diags = this.GetDiagnostics();
             if (diags != null && diags.Length > 0)
                newNode = newNode.WithDiagnosticsGreen(diags);
@@ -26813,18 +26833,18 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 
     internal override GreenNode SetDiagnostics(DiagnosticInfo[] diagnostics)
     {
-         return new OperatorDeclarationSyntax(this.Kind, this.attributeLists, this.modifiers, this.returnType, this.operatorKeyword, this.operatorToken, this.parameterList, this.contractClauses, this.body, this.expressionBody, this.eosToken, diagnostics, GetAnnotations());
+         return new OperatorDeclarationSyntax(this.Kind, this.attributeLists, this.modifiers, this.funcKeyword, this.operatorKeyword, this.operatorToken, this.parameterList, this.returnToken, this.returnType, this.contractClauses, this.body, this.expressionBody, this.eosToken, diagnostics, GetAnnotations());
     }
 
     internal override GreenNode SetAnnotations(SyntaxAnnotation[] annotations)
     {
-         return new OperatorDeclarationSyntax(this.Kind, this.attributeLists, this.modifiers, this.returnType, this.operatorKeyword, this.operatorToken, this.parameterList, this.contractClauses, this.body, this.expressionBody, this.eosToken, GetDiagnostics(), annotations);
+         return new OperatorDeclarationSyntax(this.Kind, this.attributeLists, this.modifiers, this.funcKeyword, this.operatorKeyword, this.operatorToken, this.parameterList, this.returnToken, this.returnType, this.contractClauses, this.body, this.expressionBody, this.eosToken, GetDiagnostics(), annotations);
     }
 
     internal OperatorDeclarationSyntax(ObjectReader reader)
         : base(reader)
     {
-      this.SlotCount = 10;
+      this.SlotCount = 12;
       var attributeLists = (GreenNode)reader.ReadValue();
       if (attributeLists != null)
       {
@@ -26837,11 +26857,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
          AdjustFlagsAndWidth(modifiers);
          this.modifiers = modifiers;
       }
-      var returnType = (TypeSyntax)reader.ReadValue();
-      if (returnType != null)
+      var funcKeyword = (SyntaxToken)reader.ReadValue();
+      if (funcKeyword != null)
       {
-         AdjustFlagsAndWidth(returnType);
-         this.returnType = returnType;
+         AdjustFlagsAndWidth(funcKeyword);
+         this.funcKeyword = funcKeyword;
       }
       var operatorKeyword = (SyntaxToken)reader.ReadValue();
       if (operatorKeyword != null)
@@ -26860,6 +26880,18 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       {
          AdjustFlagsAndWidth(parameterList);
          this.parameterList = parameterList;
+      }
+      var returnToken = (SyntaxToken)reader.ReadValue();
+      if (returnToken != null)
+      {
+         AdjustFlagsAndWidth(returnToken);
+         this.returnToken = returnToken;
+      }
+      var returnType = (TypeSyntax)reader.ReadValue();
+      if (returnType != null)
+      {
+         AdjustFlagsAndWidth(returnType);
+         this.returnType = returnType;
       }
       var contractClauses = (GreenNode)reader.ReadValue();
       if (contractClauses != null)
@@ -26892,10 +26924,12 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       base.WriteTo(writer);
       writer.WriteValue(this.attributeLists);
       writer.WriteValue(this.modifiers);
-      writer.WriteValue(this.returnType);
+      writer.WriteValue(this.funcKeyword);
       writer.WriteValue(this.operatorKeyword);
       writer.WriteValue(this.operatorToken);
       writer.WriteValue(this.parameterList);
+      writer.WriteValue(this.returnToken);
+      writer.WriteValue(this.returnType);
       writer.WriteValue(this.contractClauses);
       writer.WriteValue(this.body);
       writer.WriteValue(this.expressionBody);
@@ -40543,15 +40577,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     {
       var attributeLists = this.VisitList(node.AttributeLists);
       var modifiers = this.VisitList(node.Modifiers);
-      var returnType = (TypeSyntax)this.Visit(node.ReturnType);
+      var funcKeyword = (SyntaxToken)this.Visit(node.FuncKeyword);
       var operatorKeyword = (SyntaxToken)this.Visit(node.OperatorKeyword);
       var operatorToken = (SyntaxToken)this.Visit(node.OperatorToken);
       var parameterList = (ParameterListSyntax)this.Visit(node.ParameterList);
+      var returnToken = (SyntaxToken)this.Visit(node.ReturnToken);
+      var returnType = (TypeSyntax)this.Visit(node.ReturnType);
       var contractClauses = this.VisitList(node.ContractClauses);
       var body = (BlockSyntax)this.Visit(node.Body);
       var expressionBody = (ArrowExpressionClauseSyntax)this.Visit(node.ExpressionBody);
       var eosToken = (SyntaxToken)this.Visit(node.EosToken);
-      return node.Update(attributeLists, modifiers, returnType, operatorKeyword, operatorToken, parameterList, contractClauses, body, expressionBody, eosToken);
+      return node.Update(attributeLists, modifiers, funcKeyword, operatorKeyword, operatorToken, parameterList, returnToken, returnType, contractClauses, body, expressionBody, eosToken);
     }
 
     public override CSharpSyntaxNode VisitConversionOperatorDeclaration(ConversionOperatorDeclarationSyntax node)
@@ -46572,11 +46608,18 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return new MethodDeclarationSyntax(SyntaxKind.MethodDeclaration, attributeLists.Node, modifiers.Node, funcKeyword, explicitInterfaceSpecifier, identifier, typeParameterList, parameterList, returnToken, returnType, constraintClauses.Node, contractClauses.Node, throwsList, body, expressionBody, eosToken, this.context);
     }
 
-    public OperatorDeclarationSyntax OperatorDeclaration(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeSyntax returnType, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
+    public OperatorDeclarationSyntax OperatorDeclaration(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax returnType, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
     {
 #if DEBUG
-      if (returnType == null)
-        throw new ArgumentNullException(nameof(returnType));
+      if (funcKeyword == null)
+        throw new ArgumentNullException(nameof(funcKeyword));
+      switch (funcKeyword.Kind)
+      {
+        case SyntaxKind.FuncKeyword:
+          break;
+        default:
+          throw new ArgumentException(nameof(funcKeyword));
+      }
       if (operatorKeyword == null)
         throw new ArgumentNullException(nameof(operatorKeyword));
       switch (operatorKeyword.Kind)
@@ -46619,6 +46662,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       }
       if (parameterList == null)
         throw new ArgumentNullException(nameof(parameterList));
+      if (returnToken == null)
+        throw new ArgumentNullException(nameof(returnToken));
+      switch (returnToken.Kind)
+      {
+        case SyntaxKind.MinusGreaterThanToken:
+          break;
+        default:
+          throw new ArgumentException(nameof(returnToken));
+      }
+      if (returnType == null)
+        throw new ArgumentNullException(nameof(returnType));
       if (eosToken != null)
       {
       switch (eosToken.Kind)
@@ -46633,7 +46687,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       }
 #endif
 
-      return new OperatorDeclarationSyntax(SyntaxKind.OperatorDeclaration, attributeLists.Node, modifiers.Node, returnType, operatorKeyword, operatorToken, parameterList, contractClauses.Node, body, expressionBody, eosToken, this.context);
+      return new OperatorDeclarationSyntax(SyntaxKind.OperatorDeclaration, attributeLists.Node, modifiers.Node, funcKeyword, operatorKeyword, operatorToken, parameterList, returnToken, returnType, contractClauses.Node, body, expressionBody, eosToken, this.context);
     }
 
     public ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken implicitOrExplicitKeyword, SyntaxToken asKeyword, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax type, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
@@ -54178,11 +54232,18 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return new MethodDeclarationSyntax(SyntaxKind.MethodDeclaration, attributeLists.Node, modifiers.Node, funcKeyword, explicitInterfaceSpecifier, identifier, typeParameterList, parameterList, returnToken, returnType, constraintClauses.Node, contractClauses.Node, throwsList, body, expressionBody, eosToken);
     }
 
-    public static OperatorDeclarationSyntax OperatorDeclaration(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeSyntax returnType, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
+    public static OperatorDeclarationSyntax OperatorDeclaration(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken operatorToken, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax returnType, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
     {
 #if DEBUG
-      if (returnType == null)
-        throw new ArgumentNullException(nameof(returnType));
+      if (funcKeyword == null)
+        throw new ArgumentNullException(nameof(funcKeyword));
+      switch (funcKeyword.Kind)
+      {
+        case SyntaxKind.FuncKeyword:
+          break;
+        default:
+          throw new ArgumentException(nameof(funcKeyword));
+      }
       if (operatorKeyword == null)
         throw new ArgumentNullException(nameof(operatorKeyword));
       switch (operatorKeyword.Kind)
@@ -54225,6 +54286,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       }
       if (parameterList == null)
         throw new ArgumentNullException(nameof(parameterList));
+      if (returnToken == null)
+        throw new ArgumentNullException(nameof(returnToken));
+      switch (returnToken.Kind)
+      {
+        case SyntaxKind.MinusGreaterThanToken:
+          break;
+        default:
+          throw new ArgumentException(nameof(returnToken));
+      }
+      if (returnType == null)
+        throw new ArgumentNullException(nameof(returnType));
       if (eosToken != null)
       {
       switch (eosToken.Kind)
@@ -54239,7 +54311,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       }
 #endif
 
-      return new OperatorDeclarationSyntax(SyntaxKind.OperatorDeclaration, attributeLists.Node, modifiers.Node, returnType, operatorKeyword, operatorToken, parameterList, contractClauses.Node, body, expressionBody, eosToken);
+      return new OperatorDeclarationSyntax(SyntaxKind.OperatorDeclaration, attributeLists.Node, modifiers.Node, funcKeyword, operatorKeyword, operatorToken, parameterList, returnToken, returnType, contractClauses.Node, body, expressionBody, eosToken);
     }
 
     public static ConversionOperatorDeclarationSyntax ConversionOperatorDeclaration(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, SyntaxToken funcKeyword, SyntaxToken operatorKeyword, SyntaxToken implicitOrExplicitKeyword, SyntaxToken asKeyword, ParameterListSyntax parameterList, SyntaxToken returnToken, TypeSyntax type, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ContractClauseSyntax> contractClauses, BlockSyntax body, ArrowExpressionClauseSyntax expressionBody, SyntaxToken eosToken)
