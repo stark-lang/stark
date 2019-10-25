@@ -173,6 +173,7 @@ namespace StarkPlatform.Compiler.RuntimeMembers
         {
             while (true)
             {
+                continue_parsing:
                 var typeCode = (SignatureTypeCode)stream.ReadByte();
                 builder.Add((byte)typeCode);
 
@@ -184,6 +185,11 @@ namespace StarkPlatform.Compiler.RuntimeMembers
                     case SignatureTypeCode.TypeHandle:
                         ParseTypeHandle(builder, stream);
                         return;
+
+                    case SignatureTypeCode.TypeWithAccessModifiers:
+                        builder.Add((byte)stream.ReadByte());
+                        // We don't want allowByRef to be discarded
+                        goto continue_parsing;
 
                     case SignatureTypeCode.GenericTypeParameter:
                     case SignatureTypeCode.GenericMethodParameter:

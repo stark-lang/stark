@@ -199,19 +199,19 @@ namespace StarkPlatform.Compiler
 
                 case SignatureTypeCode.Array:
                     modifiers = DecodeModifiersOrThrow(ref ppSig, AllowedRequiredModifierType.None, out typeCode, out _);
-                    typeSymbol = DecodeTypeOrThrow(ref ppSig, typeCode, out refersToNoPiaLocalType);
+                    typeSymbol = DecodeTypeOrThrow(ref ppSig, out refersToNoPiaLocalType);
                     typeSymbol = GetSZArrayTypeSymbol(typeSymbol, modifiers);
                     break;
 
                 case SignatureTypeCode.Pointer:
                     modifiers = DecodeModifiersOrThrow(ref ppSig, AllowedRequiredModifierType.None, out typeCode, out _);
-                    typeSymbol = DecodeTypeOrThrow(ref ppSig, typeCode, out refersToNoPiaLocalType);
+                    typeSymbol = DecodeTypeOrThrow(ref ppSig, out refersToNoPiaLocalType);
                     typeSymbol = MakePointerTypeSymbol(typeSymbol, modifiers);
                     break;
 
                 case SignatureTypeCode.TypeWithAccessModifiers:
                     var typeAccessModifiers = (TypeAccessModifiers) ppSig.ReadCompressedInteger();
-                    typeSymbol = DecodeTypeOrThrow(ref ppSig, typeCode, out refersToNoPiaLocalType);
+                    typeSymbol = DecodeTypeOrThrow(ref ppSig, out refersToNoPiaLocalType);
                     typeSymbol = MakeExtendedTypeSymbol(typeSymbol, typeAccessModifiers);
                     break;
 

@@ -181,6 +181,10 @@ namespace StarkPlatform.Compiler.RuntimeMembers
                     short expectedType = ReadTypeId(signature, ref position);
                     return MatchTypeToTypeId(type, expectedType);
 
+                case SignatureTypeCode.TypeWithAccessModifiers:
+                    var accessModifiers = (TypeAccessModifiers) signature[position++];
+                    return GetTypeAccessModifiers(type) == accessModifiers;
+
                 case SignatureTypeCode.Array:
                     return MatchType(GetArrayElementType(type), signature, ref position);
 
@@ -259,6 +263,8 @@ namespace StarkPlatform.Compiler.RuntimeMembers
         /// Should return null in case of error.
         /// </summary>
         protected abstract TypeSymbol GetArrayElementType(TypeSymbol type);
+
+        protected abstract TypeAccessModifiers GetTypeAccessModifiers(TypeSymbol type);
 
         protected abstract bool MatchTypeToTypeId(TypeSymbol type, int typeId);
 
