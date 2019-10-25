@@ -92,7 +92,7 @@ start:
                                             F.Convert(hashCode.Type.TypeSymbol,
                                                 F.Call(
                                                     F.Parameter(text),
-                                                    F.SpecialMethod(SpecialMember.System_String__Chars),
+                                                    F.SpecialMethod(SpecialMember.core_String__item),
                                                     F.Local(i)),
                                                 Conversion.ImplicitNumeric),
                                             F.Local(hashCode)),
@@ -106,7 +106,7 @@ start:
                                 F.If(
                                     F.Binary(BinaryOperatorKind.LessThan, F.SpecialType(SpecialType.System_Boolean),
                                         F.Local(i),
-                                        F.Call(F.Parameter(text), F.SpecialMethod(SpecialMember.System_String__Length))),
+                                        F.Call(F.Parameter(text), F.SpecialMethod(SpecialMember.core_String__size))),
                                     F.Goto(again)))),
                         F.Return(F.Local(hashCode))
                     );

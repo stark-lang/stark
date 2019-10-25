@@ -49,30 +49,24 @@ namespace StarkPlatform.Compiler.Stark
         }
 
 
-        private bool CanRewriteForEachAsFor(SyntaxNode forEachSyntax, TypeSymbol nodeExpressionType, out MethodSymbol indexerGet, out MethodSymbol lengthGet)
+        private bool CanRewriteForEachAsFor(SyntaxNode forEachSyntax, TypeSymbol nodeExpressionType, out MethodSymbol indexerGet, out MethodSymbol sizeGet)
         {
-            lengthGet = indexerGet = null;
-            var origDefinition = nodeExpressionType.OriginalDefinition;
+            sizeGet = indexerGet = null;
 
-            if (origDefinition.SpecialType == SpecialType.System_String)
+            TypeSymbol elementType;
+            if (nodeExpressionType.TryGetArrayElementTypeFromIArrayOfT(out elementType))
             {
-                lengthGet = UnsafeGetSpecialTypeMethod(forEachSyntax, SpecialMember.System_String__Length);
-                indexerGet = UnsafeGetSpecialTypeMethod(forEachSyntax, SpecialMember.System_String__Chars);
-            }
-            else if ((object)origDefinition == this._compilation.GetWellKnownType(WellKnownType.core_Span_T))
-            {
-                var spanType = (NamedTypeSymbol)nodeExpressionType;
-                lengthGet = (MethodSymbol)_factory.WellKnownMember(WellKnownMember.System_Span_T__get_Length, isOptional: true)?.SymbolAsMember(spanType);
-                indexerGet = (MethodSymbol)_factory.WellKnownMember(WellKnownMember.System_Span_T__get_Item, isOptional: true)?.SymbolAsMember(spanType);
-            }
-            else if ((object)origDefinition == this._compilation.GetWellKnownType(WellKnownType.core_ReadOnlySpan_T))
-            {
-                var spanType = (NamedTypeSymbol)nodeExpressionType;
-                lengthGet = (MethodSymbol)_factory.WellKnownMember(WellKnownMember.System_ReadOnlySpan_T__get_Length, isOptional: true)?.SymbolAsMember(spanType);
-                indexerGet = (MethodSymbol)_factory.WellKnownMember(WellKnownMember.System_ReadOnlySpan_T__get_Item, isOptional: true)?.SymbolAsMember(spanType);
+                var lengthGetGeneric = UnsafeGetSpecialTypeMethod(forEachSyntax, SpecialMember.core_ISizeable__get_size);
+                var indexerGetGeneric = UnsafeGetSpecialTypeMethod(forEachSyntax, SpecialMember.core_IArray_T__get_item);
+
+                indexerGetGeneric = indexerGetGeneric.AsMember(indexerGetGeneric.ContainingType.Construct(elementType));
+
+                sizeGet = (MethodSymbol)nodeExpressionType.FindImplementationForInterfaceMember(lengthGetGeneric);
+                indexerGet = (MethodSymbol)nodeExpressionType.FindImplementationForInterfaceMember(indexerGetGeneric);
             }
 
-            return (object)lengthGet != null && (object)indexerGet != null;
+
+            return (object)sizeGet != null && (object)indexerGet != null;
         }
 
         /// <summary>

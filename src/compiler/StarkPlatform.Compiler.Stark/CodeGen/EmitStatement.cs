@@ -1258,7 +1258,7 @@ oneMoreTime:
             Cci.IReference stringEqualityMethodRef = _module.Translate(equalityMethod, syntaxNode, _diagnostics);
 
             Cci.IMethodReference stringLengthRef = null;
-            var stringLengthMethod = _module.Compilation.GetSpecialTypeMember(SpecialMember.System_String__Length) as MethodSymbol;
+            var stringLengthMethod = _module.Compilation.GetSpecialTypeMember(SpecialMember.core_String__size) as MethodSymbol;
             if (stringLengthMethod != null && !stringLengthMethod.HasUseSiteError)
             {
                 stringLengthRef = _module.Translate(stringLengthMethod, syntaxNode, _diagnostics);

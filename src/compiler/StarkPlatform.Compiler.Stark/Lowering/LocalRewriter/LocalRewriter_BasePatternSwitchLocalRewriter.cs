@@ -496,7 +496,7 @@ namespace StarkPlatform.Compiler.Stark
                 }
 
                 // cannot emit hash method if have no access to Chars.
-                var charsMember = _localRewriter._compilation.GetSpecialTypeMember(SpecialMember.System_String__Chars);
+                var charsMember = _localRewriter._compilation.GetSpecialTypeMember(SpecialMember.core_String__item);
                 if ((object)charsMember == null || charsMember.GetUseSiteDiagnostic() != null)
                 {
                     return;

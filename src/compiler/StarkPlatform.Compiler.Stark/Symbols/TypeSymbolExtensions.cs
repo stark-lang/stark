@@ -367,6 +367,26 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             return false;
         }
 
+        public static bool TryGetArrayElementTypeFromIArrayOfT(this TypeSymbol type, out TypeSymbol elementType)
+        {
+            elementType = null;
+            HashSet<DiagnosticInfo> useSiteDiagnostics = null;
+            foreach (var interf in type.AllInterfacesWithDefinitionUseSiteDiagnostics(ref useSiteDiagnostics))
+            {
+                var typeParameters = interf.TypeParameters;
+                if (typeParameters.Length != 1) continue;
+
+                var typeArguments = interf.GetAllTypeArguments(ref useSiteDiagnostics);
+                if (typeArguments.Length == 1 && interf.ConstructedFrom.SpecialType == SpecialType.core_IArray_T)
+                {
+                    elementType = typeArguments[0].TypeSymbol;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static readonly string[] s_expressionsNamespaceName = { "Expressions", "Linq", MetadataHelpers.SystemString, "" };
 
         private static bool CheckFullName(Symbol symbol, string[] names)

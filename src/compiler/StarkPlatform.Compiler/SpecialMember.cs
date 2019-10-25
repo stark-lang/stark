@@ -19,8 +19,8 @@ namespace StarkPlatform.Compiler
 
         System_String__op_Equality,
         System_String__op_Inequality,
-        System_String__Length,
-        System_String__Chars,
+        core_String__size,
+        core_String__item,
         System_String__Format,
 
         System_Double__IsNaN,
@@ -43,6 +43,9 @@ namespace StarkPlatform.Compiler
 
         core_Array__size,
         core_Array_T__item,
+        core_ISizeable__get_size,
+        core_IArray_T__get_item,
+
         core_Index__value,
 
         System_Object__GetHashCode,

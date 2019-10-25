@@ -113,20 +113,21 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_String,
 
-                // System_String__Length
+                // core_String__size
                 (byte)MemberFlags.PropertyGet,                                                                              // Flags
                 (byte)SpecialType.System_String,                                                                            // DeclaringTypeId
                 0,                                                                                                          // Arity
                     0,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
 
-                // System_String__Chars
+                // core_String__item
                 (byte)MemberFlags.PropertyGet,                                                                              // Flags
                 (byte)SpecialType.System_String,                                                                            // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Rune,
-                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int32,
+                    (byte)SignatureTypeCode.ByReference,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_UInt8,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
 
                 // System_String__Format
                 (byte)(MemberFlags.Method | MemberFlags.Static),                                                            // Flags
@@ -245,7 +246,8 @@ namespace StarkPlatform.Compiler
                 // System_IDisposable__Dispose
                 (byte)(MemberFlags.Method | MemberFlags.Virtual),                                                           // Flags
                 (byte)SpecialType.System_IDisposable,                                                                       // DeclaringTypeId
-                0,                                                                                                          // Arity
+                0,                                                                                            
+                // Arity
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void,
 
@@ -259,6 +261,22 @@ namespace StarkPlatform.Compiler
                 // core_Array_T__item
                 (byte)MemberFlags.Property,                                                                                 // Flags
                 (byte)SpecialType.core_Array_T,                                                                             // DeclaringTypeId
+                0,                                                                                                          // Arity
+                    1,                                                                                                      // Method Signature
+                    (byte)SignatureTypeCode.ByReference,
+                    (byte)SignatureTypeCode.GenericTypeParameter, 0,
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
+
+                // core_ISizeable__get_size
+                (byte)(MemberFlags.PropertyGet | MemberFlags.Virtual),                                                      // Flags
+                (byte)SpecialType.core_ISizeable,                                                                           // DeclaringTypeId
+                0,                                                                                                          // Arity
+                    0,                                                                                                      // Method Signature
+                    (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Int,
+
+                // core_IArray_T__get_item
+                (byte)(MemberFlags.PropertyGet | MemberFlags.Virtual),                                                         // Flags
+                (byte)SpecialType.core_IArray_T,                                                                            // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.ByReference,
@@ -457,8 +475,8 @@ namespace StarkPlatform.Compiler
                 "Concat",                                   // System_String__ConcatObjectArray
                 "op_Equality",                              // System_String__op_Equality
                 "op_Inequality",                            // System_String__op_Inequality
-                "get_Length",                               // System_String__Length
-                "get_Chars",                                // System_String__Chars
+                "get_size",                                 // core_String__size
+                "get_item",                                 // core_String__item
                 "Format",                                   // System_String__Format
                 "IsNaN",                                    // System_Double__IsNaN
                 "IsNaN",                                    // System_Single__IsNaN
@@ -475,6 +493,8 @@ namespace StarkPlatform.Compiler
                 "Dispose",                                  // System_IDisposable__Dispose
                 "size",                                     // core_Array__size
                 "this[]",                                   // core_Array_T__item
+                "get_size",                                 // core_ISizeable__get_size
+                "get_item",                                 // core_IArray_T__get_item
                 "value",                                    // core_Index__value
                 "GetHashCode",                              // System_Object__GetHashCode
                 "Equals",                                   // System_Object__Equals

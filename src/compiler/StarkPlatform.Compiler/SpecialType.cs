@@ -145,6 +145,8 @@ namespace StarkPlatform.Compiler
         /// </summary>
         core_IArray_T,
 
+        core_ISizeable,
+
         /// <summary>
         /// Indicates that the type is <see cref="Index"/>.
         /// </summary>

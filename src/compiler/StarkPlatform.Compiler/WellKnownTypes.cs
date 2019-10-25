@@ -575,7 +575,7 @@ namespace StarkPlatform.Compiler
                 Debug.Assert(name == typeIdName, $"Enum name and type name must match {name} != {typeIdName}");
             }
 
-            Debug.Assert((int)WellKnownType.ExtSentinel == 214, $"Unexpected WellKnownType.ExtSentinel {(int)WellKnownType.ExtSentinel}");
+            Debug.Assert((int)WellKnownType.ExtSentinel == 215, $"Unexpected WellKnownType.ExtSentinel {(int)WellKnownType.ExtSentinel}");
             Debug.Assert((int)WellKnownType.NextAvailable <= 512, "Time for a new sentinel");
         }
 
