@@ -252,11 +252,11 @@ namespace StarkPlatform.Compiler.Stark
 
         public override void VisitExtendedType(IExtendedTypeSymbol symbol)
         {
-            if ((symbol.AccessModifiers & TypeAccessModifiers.Ref) != 0)
-            {
-                builder.Add(CreatePart(SymbolDisplayPartKind.Keyword, symbol, "ref"));
-                AddSpace();
-            }
+            //if ((symbol.AccessModifiers & TypeAccessModifiers.Ref) != 0)
+            //{
+            //    builder.Add(CreatePart(SymbolDisplayPartKind.Keyword, symbol, "ref"));
+            //    AddSpace();
+            //}
 
             if ((symbol.AccessModifiers & TypeAccessModifiers.Readable) != 0)
             {

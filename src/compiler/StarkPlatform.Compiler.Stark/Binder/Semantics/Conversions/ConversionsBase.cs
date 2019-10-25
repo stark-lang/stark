@@ -545,8 +545,8 @@ namespace StarkPlatform.Compiler.Stark
             var destSymbol = destination is IExtendedTypeSymbol destExtended ? (TypeSymbol)destExtended.ElementType : destination;
 
             // Exclude ref from modifier checks
-            var sourceAccessModifiers = source.AccessModifiers & ~TypeAccessModifiers.Ref;
-            var destAccessModifiers = destination.AccessModifiers & ~TypeAccessModifiers.Ref;
+            var sourceAccessModifiers = source.AccessModifiers; // & ~TypeAccessModifiers.Ref;
+            var destAccessModifiers = destination.AccessModifiers; // & ~TypeAccessModifiers.Ref;
 
             // From src (rows) to dest (columns)
             //             None, ReadOnly, Immutable, Isolated, Transient

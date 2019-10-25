@@ -10,7 +10,7 @@ namespace StarkPlatform.Compiler
 
         public static bool IsReadOnly(this TypeAccessModifiers modifiers) => (modifiers & TypeAccessModifiers.Readable) != 0;
 
-        public static bool IsRef(this TypeAccessModifiers modifiers) => (modifiers & TypeAccessModifiers.Ref) != 0;
+        //public static bool IsRef(this TypeAccessModifiers modifiers) => (modifiers & TypeAccessModifiers.Ref) != 0;
 
         public static bool IsTransient(this TypeAccessModifiers modifiers) => (modifiers & TypeAccessModifiers.Transient) != 0;
 

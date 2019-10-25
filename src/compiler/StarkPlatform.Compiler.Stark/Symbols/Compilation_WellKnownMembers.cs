@@ -10,6 +10,7 @@ using StarkPlatform.Compiler.Stark.Symbols;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.RuntimeMembers;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark
 {
@@ -929,6 +930,11 @@ namespace StarkPlatform.Compiler.Stark
                     return null;
                 }
                 return type.GetArrayElementType().TypeSymbol;
+            }
+
+            protected override TypeAccessModifiers GetTypeAccessModifiers(TypeSymbol type)
+            {
+                return type.AccessModifiers;
             }
 
             protected override bool IsByRefParam(ParameterSymbol parameter)

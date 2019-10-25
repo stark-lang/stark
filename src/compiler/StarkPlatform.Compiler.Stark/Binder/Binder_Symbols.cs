@@ -499,7 +499,7 @@ namespace StarkPlatform.Compiler.Stark
                 {
                     // extended type syntax
                     var extendedTypeSyntax = (ExtendedTypeSyntax)syntax;
-                    TypeAccessModifiers accessModifiers = syntax.Kind() == SyntaxKind.RefType ? TypeAccessModifiers.Ref : 0;
+                    TypeAccessModifiers accessModifiers = TypeAccessModifiers.None; // syntax.Kind() == SyntaxKind.RefType ? TypeAccessModifiers.Ref : TypeAccessModifiers.None;
 
                     foreach (var token in extendedTypeSyntax.Modifiers)
                     {
@@ -538,6 +538,11 @@ namespace StarkPlatform.Compiler.Stark
                     var elementType = BindType(extendedTypeSyntax.ElementType, diagnostics, basesBeingResolved);
 
                     if (elementType.IsErrorType()) return elementType;
+
+                    if (accessModifiers == TypeAccessModifiers.None)
+                    {
+                        return elementType;
+                    }
 
                     // Create an extended type symbol
                     return  TypeSymbolWithAnnotations.Create(ExtendedTypeSymbol.CreateExtendedTypeSymbol(extendedTypeSyntax, elementType, accessModifiers));

@@ -695,7 +695,7 @@ namespace StarkPlatform.Compiler.Stark.Symbols
         /// <summary>
         /// Returns true if the type is a ref
         /// </summary>
-        public virtual bool IsRef => AccessModifiers.IsRef();
+        public virtual bool IsRef => false; //AccessModifiers.IsRef();
 
         #region ITypeSymbol Members
 

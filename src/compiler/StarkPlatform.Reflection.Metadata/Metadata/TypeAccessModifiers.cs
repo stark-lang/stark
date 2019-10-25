@@ -7,11 +7,7 @@ namespace StarkPlatform.Reflection.Metadata
     {
         None = 0, // mutable, non ref, not transient
 
-        Ref = 1 << 0,
-
-        ReadOnlyRef = Ref | 1 << 1,
-
-        RetainableRef = Ref | 1 << 2,
+        //Ref = 1 << 0,
 
         Readable = 1 << 3,
 
