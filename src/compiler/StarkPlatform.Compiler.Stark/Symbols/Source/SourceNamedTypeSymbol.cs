@@ -1042,6 +1042,16 @@ next:;
                 AddSynthesizedAttribute(ref attributes, moduleBuilder.SynthesizeIsReadOnlyAttribute(this));
             }
 
+            if (this.Indexers.Any())
+            {
+                string defaultMemberName = this.Indexers.First().MetadataName; // UNDONE: IndexerNameAttribute
+                var defaultMemberNameConstant = new TypedConstant(compilation.GetSpecialType(SpecialType.System_String), TypedConstantKind.Primitive, defaultMemberName);
+
+                AddSynthesizedAttribute(ref attributes, compilation.TrySynthesizeAttribute(
+                    WellKnownMember.core_runtime_DefaultMemberAttribute__ctor,
+                    ImmutableArray.Create(defaultMemberNameConstant)));
+            }
+
             NamedTypeSymbol baseType = this.BaseTypeNoUseSiteDiagnostics;
             if ((object)baseType != null)
             {

@@ -90,7 +90,7 @@ namespace StarkPlatform.Compiler.Diagnostics
 
                     // Special case: Roslyn names indexers "this[]" in CSharp, FxCop names them "Item" with parameters in [] brackets
                     bool isIndexerProperty = false;
-                    if (segment == "Item" && PeekNextChar() == '[')
+                    if (segment == "item" && PeekNextChar() == '[')
                     {
                         isIndexerProperty = true;
                         if (_compilation.Language == LanguageNames.Stark)

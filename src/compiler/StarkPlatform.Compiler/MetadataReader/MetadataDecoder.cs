@@ -1683,14 +1683,14 @@ tryAgain:
                     return false;
                 }
 
-                StringHandle namespaceHandle;
-                StringHandle nameHandle;
+                string namespaceHandle;
+                string nameHandle;
                 if (!Module.GetAttributeNamespaceAndName(attributeType, out namespaceHandle, out nameHandle))
                 {
                     return false;
                 }
 
-                string fullName = Module.GetFullNameOrThrow(namespaceHandle, nameHandle);
+                string fullName = MetadataHelpers.BuildQualifiedName(namespaceHandle, nameHandle);
                 wellKnownAttribute = WellKnownTypes.GetTypeFromMetadataName(fullName);
                 return true;
             }

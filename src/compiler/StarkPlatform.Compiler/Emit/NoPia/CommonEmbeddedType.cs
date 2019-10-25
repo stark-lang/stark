@@ -143,7 +143,7 @@ namespace StarkPlatform.Compiler.Emit.NoPia
                         {
                             if (attrData.CommonConstructorArguments.Length == 1)
                             {
-                                builder.AddOptional(TypeManager.CreateSynthesizedAttribute(WellKnownMember.System_Reflection_DefaultMemberAttribute__ctor, attrData, syntaxNodeOpt, diagnostics));
+                                builder.AddOptional(TypeManager.CreateSynthesizedAttribute(WellKnownMember.core_runtime_DefaultMemberAttribute__ctor, attrData, syntaxNodeOpt, diagnostics));
 
                                 // Embed members matching default member name.
                                 string defaultMember = attrData.CommonConstructorArguments[0].Value as string;

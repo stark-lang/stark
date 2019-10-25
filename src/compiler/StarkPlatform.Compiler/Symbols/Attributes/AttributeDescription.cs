@@ -365,7 +365,7 @@ namespace StarkPlatform.Compiler
         internal static readonly AttributeDescription AssemblyKeyFileAttribute = new AttributeDescription("System.Reflection", "AssemblyKeyFileAttribute", s_signaturesOfAssemblyKeyFileAttribute);
         internal static readonly AttributeDescription AssemblyKeyNameAttribute = new AttributeDescription("System.Reflection", "AssemblyKeyNameAttribute", s_signaturesOfAssemblyKeyNameAttribute);
         internal static readonly AttributeDescription ParamArrayAttribute = new AttributeDescription("System", "ParamArrayAttribute", s_signaturesOfParamArrayAttribute);
-        internal static readonly AttributeDescription DefaultMemberAttribute = new AttributeDescription("System.Reflection", "DefaultMemberAttribute", s_signaturesOfDefaultMemberAttribute);
+        internal static readonly AttributeDescription DefaultMemberAttribute = new AttributeDescription("core.runtime", "DefaultMemberAttribute", s_signaturesOfDefaultMemberAttribute);
         internal static readonly AttributeDescription IndexerNameAttribute = new AttributeDescription("core.runtime", "IndexerNameAttribute", s_signaturesOfIndexerNameAttribute);
         internal static readonly AttributeDescription AssemblyDelaySignAttribute = new AttributeDescription("System.Reflection", "AssemblyDelaySignAttribute", s_signaturesOfAssemblyDelaySignAttribute);
         internal static readonly AttributeDescription AssemblyVersionAttribute = new AttributeDescription("System.Reflection", "AssemblyVersionAttribute", s_signaturesOfAssemblyVersionAttribute);

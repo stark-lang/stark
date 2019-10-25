@@ -68,7 +68,7 @@ namespace StarkPlatform.Compiler
         System_ParamArrayAttribute__ctor,
         System_STAThreadAttribute__ctor,
 
-        System_Reflection_DefaultMemberAttribute__ctor,
+        core_runtime_DefaultMemberAttribute__ctor,
 
         System_Diagnostics_Debugger__Break,
         System_Diagnostics_DebuggerDisplayAttribute__ctor,

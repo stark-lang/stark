@@ -1,0 +1,16 @@
+namespace core
+{
+    public partial module runtime 
+    {
+        @AttributeUsage(AttributeTargets.CLASS | AttributeTargets.STRUCT | AttributeTargets.INTERFACE)
+        public class DefaultMemberAttribute extends Attribute
+        {
+            public constructor(name: string )
+            {
+                this.name = name
+            }
+
+            public func name -> string { get }
+        }
+    }
+}

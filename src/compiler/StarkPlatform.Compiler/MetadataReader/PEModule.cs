@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using StarkPlatform.Compiler.PooledObjects;
 using Roslyn.Utilities;
@@ -39,6 +40,7 @@ namespace StarkPlatform.Compiler
         private MetadataReader _lazyMetadataReader;
 
         private ImmutableArray<AssemblyIdentity> _lazyAssemblyReferences;
+        private readonly ConcurrentDictionary<EntityHandle, string> _mapNestedTypeToFullName;
 
         /// <summary>
         /// This is a tuple for optimization purposes. In valid cases, we need to store
@@ -109,6 +111,7 @@ namespace StarkPlatform.Compiler
             _metadataSizeOpt = metadataSizeOpt;
             _lazyTypeNameCollection = new Lazy<IdentifierCollection>(ComputeTypeNameCollection);
             _lazyNamespaceNameCollection = new Lazy<IdentifierCollection>(ComputeNamespaceNameCollection);
+            _mapNestedTypeToFullName = new ConcurrentDictionary<EntityHandle, string>();
             _hashesOpt = (peReader != null) ? new PEHashProvider(peReader) : null;
             _lazyContainsNoPiaLocalTypes = includeEmbeddedInteropTypes ? ThreeState.False : ThreeState.Unknown;
 
@@ -1661,7 +1664,7 @@ namespace StarkPlatform.Compiler
             return FindTargetAttribute(MetadataReader, hasAttribute, description);
         }
 
-        internal static AttributeInfo FindTargetAttribute(MetadataReader metadataReader, EntityHandle hasAttribute, AttributeDescription description)
+        private AttributeInfo FindTargetAttribute(MetadataReader metadataReader, EntityHandle hasAttribute, AttributeDescription description)
         {
             try
             {
@@ -1869,7 +1872,7 @@ namespace StarkPlatform.Compiler
         /// <param name="ctor">Constructor of the custom attribute.</param>
         /// <param name="ignoreCase">Should case be ignored for name comparison?</param>
         /// <returns>true if match is found</returns>
-        private static bool IsTargetAttribute(
+        private bool IsTargetAttribute(
             MetadataReader metadataReader,
             CustomAttributeHandle customAttribute,
             string namespaceName,
@@ -1881,8 +1884,8 @@ namespace StarkPlatform.Compiler
             Debug.Assert(typeName != null);
 
             EntityHandle ctorType;
-            StringHandle ctorTypeNamespace;
-            StringHandle ctorTypeName;
+            string ctorTypeNamespace;
+            string ctorTypeName;
 
             if (!GetTypeAndConstructor(metadataReader, customAttribute, out ctorType, out ctor))
             {
@@ -1896,8 +1899,7 @@ namespace StarkPlatform.Compiler
 
             try
             {
-                return StringEquals(metadataReader, ctorTypeName, typeName, ignoreCase)
-                    && StringEquals(metadataReader, ctorTypeNamespace, namespaceName, ignoreCase);
+                return ctorTypeName.Equals(typeName, StringComparison.Ordinal) && ctorTypeNamespace.Equals(namespaceName);
             }
             catch (BadImageFormatException)
             {
@@ -2029,7 +2031,7 @@ namespace StarkPlatform.Compiler
         /// signatures array, -1 if
         /// this is not the target attribute.
         /// </returns>
-        private static int GetTargetAttributeSignatureIndex(MetadataReader metadataReader, CustomAttributeHandle customAttribute, AttributeDescription description)
+        private int GetTargetAttributeSignatureIndex(MetadataReader metadataReader, CustomAttributeHandle customAttribute, AttributeDescription description)
         {
             const int No = -1;
             EntityHandle ctor;
@@ -2224,9 +2226,9 @@ namespace StarkPlatform.Compiler
         /// namespaceHandle will be NamespaceDefinitionHandle for defs and StringHandle for refs. 
         /// </summary>
         /// <returns>True if the function successfully returns the name and namespace.</returns>
-        internal bool GetAttributeNamespaceAndName(EntityHandle typeDefOrRef, out StringHandle namespaceHandle, out StringHandle nameHandle)
+        internal bool GetAttributeNamespaceAndName(EntityHandle typeDefOrRef, out string namespaceOrNestedTypeHandle, out string nameHandle)
         {
-            return GetAttributeNamespaceAndName(MetadataReader, typeDefOrRef, out namespaceHandle, out nameHandle);
+            return GetAttributeNamespaceAndName(MetadataReader, typeDefOrRef, out namespaceOrNestedTypeHandle, out nameHandle);
         }
 
         /// <summary>
@@ -2234,10 +2236,10 @@ namespace StarkPlatform.Compiler
         /// namespaceHandle will be NamespaceDefinitionHandle for defs and StringHandle for refs. 
         /// </summary>
         /// <returns>True if the function successfully returns the name and namespace.</returns>
-        private static bool GetAttributeNamespaceAndName(MetadataReader metadataReader, EntityHandle typeDefOrRef, out StringHandle namespaceHandle, out StringHandle nameHandle)
+        private bool GetAttributeNamespaceAndName(MetadataReader metadataReader, EntityHandle typeDefOrRef, out string namespaceOrNestedTypeHandle, out string nameHandle)
         {
-            nameHandle = default(StringHandle);
-            namespaceHandle = default(StringHandle);
+            nameHandle = null;
+            namespaceOrNestedTypeHandle = null;
 
             try
             {
@@ -2248,25 +2250,36 @@ namespace StarkPlatform.Compiler
 
                     if (handleType == HandleKind.TypeReference || handleType == HandleKind.TypeDefinition)
                     {
-                        // TODO - Support nested types.  
-                        return false;
+                        throw new NotImplementedException("TODO: NOT SUPPORTED FOR NESTED TYPES");
                     }
 
-                    nameHandle = typeRefRow.Name;
-                    namespaceHandle = typeRefRow.Namespace;
+                    nameHandle = metadataReader.GetString(typeRefRow.Name);
+                    namespaceOrNestedTypeHandle = metadataReader.GetString(typeRefRow.Namespace);
                 }
                 else if (typeDefOrRef.Kind == HandleKind.TypeDefinition)
                 {
                     var def = metadataReader.GetTypeDefinition((TypeDefinitionHandle)typeDefOrRef);
 
-                    if (IsNested(def.Attributes))
-                    {
-                        // TODO - Support nested types. 
-                        return false;
-                    }
+                    nameHandle = metadataReader.GetString(def.Name);
 
-                    nameHandle = def.Name;
-                    namespaceHandle = def.Namespace;
+                    if (def.IsNested)
+                    {
+                        // Don't try to lock, it is ok to assume that computing the same key at the same type
+                        // can happen but is not going to be a bottleneck
+                        if (!_mapNestedTypeToFullName.TryGetValue(typeDefOrRef, out namespaceOrNestedTypeHandle))
+                        {
+                            var builderInst = PooledStringBuilder.GetInstance();
+                            var builder = builderInst.Builder;
+                            GetTopTypeDefinition(metadataReader, def, builder);
+                            namespaceOrNestedTypeHandle = builder.ToString();
+                            builderInst.Free();
+                            _mapNestedTypeToFullName.TryAdd(typeDefOrRef, namespaceOrNestedTypeHandle);
+                        }
+                    }
+                    else
+                    {
+                        namespaceOrNestedTypeHandle = metadataReader.GetString(def.Namespace);
+                    }
                 }
                 else
                 {
@@ -2279,6 +2292,29 @@ namespace StarkPlatform.Compiler
             catch (BadImageFormatException)
             {
                 return false;
+            }
+        }
+
+        private static void GetTopTypeDefinition(MetadataReader metadataReader, TypeDefinition nestedType, StringBuilder namespaceAndNestedType, int level = 0)
+        {
+            if (nestedType.IsNested)
+            {
+                var nextNestedTypeHandle = nestedType.GetDeclaringType();
+                var nextNestedType = metadataReader.GetTypeDefinition(nextNestedTypeHandle);
+                GetTopTypeDefinition(metadataReader, nextNestedType, namespaceAndNestedType, level + 1);
+                namespaceAndNestedType.Append(metadataReader.GetString(nextNestedType.Name));
+                if (level > 0)
+                {
+                    namespaceAndNestedType.Append('.');
+                }
+            }
+            else
+            {
+                if (!nestedType.Namespace.IsNil)
+                {
+                    namespaceAndNestedType.Append(metadataReader.GetString(nestedType.Namespace));
+                    namespaceAndNestedType.Append('.');
+                }
             }
         }
 

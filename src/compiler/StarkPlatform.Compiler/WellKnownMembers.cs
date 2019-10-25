@@ -425,9 +425,9 @@ namespace StarkPlatform.Compiler
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
 
-                // System_Reflection_DefaultMemberAttribute__ctor
+                // core_runtime_DefaultMemberAttribute__ctor
                 (byte)MemberFlags.Constructor,                                                                              // Flags
-                (byte)WellKnownType.core_Reflection_DefaultMemberAttribute,                                               // DeclaringTypeId
+                (byte)WellKnownType.core_runtime_DefaultMemberAttribute,                                               // DeclaringTypeId
                 0,                                                                                                          // Arity
                     1,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
