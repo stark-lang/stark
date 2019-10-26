@@ -6996,6 +6996,7 @@ namespace StarkPlatform.Compiler.Stark
       switch (throwKeyword.Kind())
       {
         case SyntaxKind.ThrowKeyword:
+        case SyntaxKind.AbortKeyword:
           break;
         default:
           throw new ArgumentException(nameof(throwKeyword));
@@ -7005,12 +7006,6 @@ namespace StarkPlatform.Compiler.Stark
       return (ThrowExpressionSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.ThrowExpression((Syntax.InternalSyntax.SyntaxToken)throwKeyword.Node, expression == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ExpressionSyntax)expression.Green).CreateRed();
     }
 
-
-    /// <summary>Creates a new ThrowExpressionSyntax instance.</summary>
-    public static ThrowExpressionSyntax ThrowExpression(ExpressionSyntax expression)
-    {
-      return SyntaxFactory.ThrowExpression(SyntaxFactory.Token(SyntaxKind.ThrowKeyword), expression);
-    }
 
     /// <summary>Creates a new WhenClauseSyntax instance.</summary>
     public static WhenClauseSyntax WhenClause(SyntaxToken whenKeyword, ExpressionSyntax condition)
@@ -7760,6 +7755,7 @@ namespace StarkPlatform.Compiler.Stark
       switch (throwKeyword.Kind())
       {
         case SyntaxKind.ThrowKeyword:
+        case SyntaxKind.AbortKeyword:
           break;
         default:
           throw new ArgumentException(nameof(throwKeyword));
@@ -7778,15 +7774,9 @@ namespace StarkPlatform.Compiler.Stark
 
 
     /// <summary>Creates a new ThrowStatementSyntax instance.</summary>
-    public static ThrowStatementSyntax ThrowStatement(ExpressionSyntax expression, SyntaxToken eosToken)
+    public static ThrowStatementSyntax ThrowStatement(SyntaxToken throwKeyword)
     {
-      return SyntaxFactory.ThrowStatement(SyntaxFactory.Token(SyntaxKind.ThrowKeyword), expression, eosToken);
-    }
-
-    /// <summary>Creates a new ThrowStatementSyntax instance.</summary>
-    public static ThrowStatementSyntax ThrowStatement(ExpressionSyntax expression = default(ExpressionSyntax))
-    {
-      return SyntaxFactory.ThrowStatement(SyntaxFactory.Token(SyntaxKind.ThrowKeyword), expression, default(SyntaxToken));
+      return SyntaxFactory.ThrowStatement(throwKeyword, default(ExpressionSyntax), default(SyntaxToken));
     }
 
     /// <summary>Creates a new YieldStatementSyntax instance.</summary>

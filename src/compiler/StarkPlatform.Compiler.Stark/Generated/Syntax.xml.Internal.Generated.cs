@@ -43684,6 +43684,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       switch (throwKeyword.Kind)
       {
         case SyntaxKind.ThrowKeyword:
+        case SyntaxKind.AbortKeyword:
           break;
         default:
           throw new ArgumentException(nameof(throwKeyword));
@@ -44604,6 +44605,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       switch (throwKeyword.Kind)
       {
         case SyntaxKind.ThrowKeyword:
+        case SyntaxKind.AbortKeyword:
           break;
         default:
           throw new ArgumentException(nameof(throwKeyword));
@@ -51308,6 +51310,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       switch (throwKeyword.Kind)
       {
         case SyntaxKind.ThrowKeyword:
+        case SyntaxKind.AbortKeyword:
           break;
         default:
           throw new ArgumentException(nameof(throwKeyword));
@@ -52228,6 +52231,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       switch (throwKeyword.Kind)
       {
         case SyntaxKind.ThrowKeyword:
+        case SyntaxKind.AbortKeyword:
           break;
         default:
           throw new ArgumentException(nameof(throwKeyword));

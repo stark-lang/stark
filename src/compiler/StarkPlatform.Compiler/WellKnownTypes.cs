@@ -24,6 +24,7 @@ namespace StarkPlatform.Compiler
         core_Attribute,
         core_CLSCompliantAttribute,
         core_Convert,
+        core_Abort,
         core_Exception,
         core_FlagsAttribute,
         core_FormattableString,
@@ -289,6 +290,7 @@ namespace StarkPlatform.Compiler
             "core.Attribute",
             "core.CLSCompliantAttribute",
             "core.Convert",
+            "core.Abort",
             "core.Exception",
             "core.FlagsAttribute",
             "core.FormattableString",
@@ -575,7 +577,7 @@ namespace StarkPlatform.Compiler
                 Debug.Assert(name == typeIdName, $"Enum name and type name must match {name} != {typeIdName}");
             }
 
-            Debug.Assert((int)WellKnownType.ExtSentinel == 215, $"Unexpected WellKnownType.ExtSentinel {(int)WellKnownType.ExtSentinel}");
+            Debug.Assert((int)WellKnownType.ExtSentinel == 216, $"Unexpected WellKnownType.ExtSentinel {(int)WellKnownType.ExtSentinel}");
             Debug.Assert((int)WellKnownType.NextAvailable <= 512, "Time for a new sentinel");
         }
 

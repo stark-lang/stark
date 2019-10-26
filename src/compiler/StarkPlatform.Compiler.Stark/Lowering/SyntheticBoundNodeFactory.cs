@@ -782,7 +782,7 @@ namespace StarkPlatform.Compiler.Stark
 
         public BoundThrowStatement Throw(BoundExpression e = null)
         {
-            return new BoundThrowStatement(Syntax, e) { WasCompilerGenerated = true };
+            return new BoundThrowStatement(Syntax, e, false) { WasCompilerGenerated = true };
         }
 
         public BoundLocal Local(LocalSymbol local)
@@ -1003,7 +1003,7 @@ namespace StarkPlatform.Compiler.Stark
 
         public BoundExpression ThrowExpression(BoundExpression thrown, TypeSymbol type)
         {
-            return new BoundThrowExpression(thrown.Syntax, thrown, type) { WasCompilerGenerated = true };
+            return new BoundThrowExpression(thrown.Syntax, thrown, false, type) { WasCompilerGenerated = true };
         }
 
         public BoundExpression Null(TypeSymbol type)

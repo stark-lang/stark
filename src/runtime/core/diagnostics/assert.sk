@@ -3,9 +3,6 @@ import core.runtime
 namespace core {
     public partial module diagnostics
     {
-        @Intrinsic
-        public static extern func abort()
-
         // public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: ?string = null)
         // {
         //     if !condition then 
@@ -14,11 +11,18 @@ namespace core {
         //     }
         // }
 
-        public static func assert(condition: bool)
+        public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: ?string = null)
         {
             if !condition then 
             {
-                abort() // TODO: propagate conditionAsText
+                abort new AssertAbort()
+            }
+        }
+
+        public class AssertAbort extends Abort
+        {
+            public constructor() : base(null) // TODO: remove null
+            {
             }
         }
     }

@@ -84,6 +84,7 @@ namespace StarkPlatform.Compiler.Stark.Classification
                 case SyntaxKind.ContinueKeyword:
                 case SyntaxKind.ReturnKeyword:
                 case SyntaxKind.ThrowKeyword:
+                case SyntaxKind.AbortKeyword:
                 case SyntaxKind.YieldKeyword:
                 case SyntaxKind.DefaultKeyword: // Include DefaultKeyword as it can be part of a DefaultSwitchLabel
                 case SyntaxKind.InKeyword: // Include InKeyword as it can be part of an ForEachStatement

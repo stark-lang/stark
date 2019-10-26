@@ -934,6 +934,15 @@ namespace StarkPlatform.Compiler.Stark {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The type caught or aborted must be derived from core.Abort.
+        /// </summary>
+        internal static string ERR_BadAbortType {
+            get {
+                return ResourceManager.GetString("ERR_BadAbortType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; is inaccessible due to its protection level.
         /// </summary>
         internal static string ERR_BadAccess {
@@ -1609,7 +1618,7 @@ namespace StarkPlatform.Compiler.Stark {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The type caught or thrown must be derived from System.Exception.
+        ///   Looks up a localized string similar to The type caught or thrown must be derived from core.Exception.
         /// </summary>
         internal static string ERR_BadExceptionType {
             get {

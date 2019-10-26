@@ -830,6 +830,7 @@
 
   <Node Name="BoundThrowStatement" Base="BoundStatement">
     <Field Name="ExpressionOpt" Type="BoundExpression" Null="allow"/>
+    <Field Name="IsAbort" Type="bool"/>
   </Node>
 
   <Node Name="BoundExpressionStatement" Base="BoundStatement">
@@ -1814,6 +1815,7 @@
 
   <Node Name="BoundThrowExpression" Base="BoundExpression">
     <Field Name="Expression" Type="BoundExpression" Null="disallow"/>
+    <Field Name="IsAbort" Type="bool"/>
   </Node>
 
   <AbstractNode Name="VariablePendingInference" Base="BoundExpression">

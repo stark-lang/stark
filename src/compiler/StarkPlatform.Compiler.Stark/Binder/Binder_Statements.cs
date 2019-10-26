@@ -348,7 +348,7 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private BoundExpression BindThrownExpression(ExpressionSyntax exprSyntax, DiagnosticBag diagnostics, ref bool hasErrors)
+        private BoundExpression BindThrownExpression(ExpressionSyntax exprSyntax, bool isAbort, DiagnosticBag diagnostics, ref bool hasErrors)
         {
             var boundExpr = BindValue(exprSyntax, diagnostics, BindValueKind.RValue);
 
@@ -366,9 +366,10 @@ namespace StarkPlatform.Compiler.Stark
                 // have no compile-time type; give the same error as if the type was wrong.
                 HashSet<DiagnosticInfo> useSiteDiagnostics = null;
 
-                if ((object)type == null || !type.IsErrorType() && !Compilation.IsExceptionType(type.EffectiveType(ref useSiteDiagnostics), ref useSiteDiagnostics))
+                if ((object)type == null || !type.IsErrorType() && ((!isAbort && !Compilation.IsExceptionType(type.EffectiveType(ref useSiteDiagnostics), ref useSiteDiagnostics)) ||
+                                                                     (isAbort && !Compilation.IsAbortType(type.EffectiveType(ref useSiteDiagnostics), ref useSiteDiagnostics))))
                 {
-                    diagnostics.Add(ErrorCode.ERR_BadExceptionType, exprSyntax.Location);
+                    diagnostics.Add(isAbort ? ErrorCode.ERR_BadAbortType : ErrorCode.ERR_BadExceptionType, exprSyntax.Location);
                     hasErrors = true;
                     diagnostics.Add(exprSyntax, useSiteDiagnostics);
                 }
@@ -383,9 +384,10 @@ namespace StarkPlatform.Compiler.Stark
             bool hasErrors = false;
 
             ExpressionSyntax exprSyntax = node.Expression;
+            bool isAbort = node.ThrowKeyword.IsKind(SyntaxKind.AbortKeyword);
             if (exprSyntax != null)
             {
-                boundExpr = BindThrownExpression(exprSyntax, diagnostics, ref hasErrors);
+                boundExpr = BindThrownExpression(exprSyntax, isAbort, diagnostics, ref hasErrors);
             }
             else if (!this.Flags.Includes(BinderFlags.InCatchBlock))
             {
@@ -404,7 +406,7 @@ namespace StarkPlatform.Compiler.Stark
                 hasErrors = true;
             }
 
-            return new BoundThrowStatement(node, boundExpr, hasErrors);
+            return new BoundThrowStatement(node, boundExpr, isAbort, hasErrors);
         }
 
         private static BoundStatement BindEmpty(EmptyStatementSyntax node)

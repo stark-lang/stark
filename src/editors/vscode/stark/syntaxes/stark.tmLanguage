@@ -637,6 +637,12 @@
           </dict>
           <dict>
             <key>name</key>
+            <string>keyword.control.flow.abort.sk</string>
+            <key>match</key>
+            <string>\babort\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
             <string>keyword.control.flow.switch.sk</string>
             <key>match</key>
             <string>\bswitch\b</string>

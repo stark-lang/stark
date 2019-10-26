@@ -3273,11 +3273,11 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
             => SyntaxFactory.YieldStatement(SyntaxKind.YieldReturnStatement, (ExpressionSyntax)expressionOpt);
 
         public override SyntaxNode ThrowStatement(SyntaxNode expressionOpt = null)
-            => SyntaxFactory.ThrowStatement((ExpressionSyntax)expressionOpt);
+            => SyntaxFactory.ThrowStatement(SyntaxFactory.Token(SyntaxKind.ThrowKeyword), (ExpressionSyntax)expressionOpt, SyntaxFactory.EndOfLineToken());
 
         public override SyntaxNode ThrowExpression(SyntaxNode expression)
         {
-            return SyntaxFactory.ThrowExpression((ExpressionSyntax)expression);
+            return SyntaxFactory.ThrowExpression(SyntaxFactory.Token(SyntaxKind.ThrowKeyword), (ExpressionSyntax)expression);
         }
 
         public override SyntaxNode IfStatement(SyntaxNode condition, IEnumerable<SyntaxNode> trueStatements, IEnumerable<SyntaxNode> falseStatements = null)

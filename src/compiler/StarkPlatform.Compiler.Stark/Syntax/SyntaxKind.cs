@@ -131,7 +131,7 @@ namespace StarkPlatform.Compiler.Stark
         ConstKeyword = 8350,
         FixedKeyword = 8351,
         StackAllocKeyword = 8352,
-        // VolatileKeyword = 8353,
+        AbortKeyword = 8353,
         NewKeyword = 8354,
         OverrideKeyword = 8355,
         AbstractKeyword = 8356,

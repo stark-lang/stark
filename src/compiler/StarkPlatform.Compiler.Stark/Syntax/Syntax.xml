@@ -1855,6 +1855,7 @@
     <Kind Name="ThrowExpression" />
     <Field Name="ThrowKeyword" Type="SyntaxToken" Optional="false">
       <Kind Name="ThrowKeyword"/>
+      <Kind Name="AbortKeyword"/>
     </Field>
     <Field Name="Expression" Type="ExpressionSyntax" Optional="false"/>
   </Node>
@@ -2205,6 +2206,7 @@
     <Kind Name="ThrowStatement"/>
     <Field Name="ThrowKeyword" Type="SyntaxToken">
       <Kind Name="ThrowKeyword"/>
+      <Kind Name="AbortKeyword"/>
     </Field>
     <Field Name="Expression" Type="ExpressionSyntax" Optional="true"/>
     <Field Name="EosToken" Type="SyntaxToken" Optional="true">

@@ -3264,25 +3264,28 @@ namespace StarkPlatform.Compiler.Stark
 
     internal sealed partial class BoundThrowStatement : BoundStatement
     {
-        public BoundThrowStatement(SyntaxNode syntax, BoundExpression expressionOpt, bool hasErrors = false)
+        public BoundThrowStatement(SyntaxNode syntax, BoundExpression expressionOpt, bool isAbort, bool hasErrors = false)
             : base(BoundKind.ThrowStatement, syntax, hasErrors || expressionOpt.HasErrors())
         {
             this.ExpressionOpt = expressionOpt;
+            this.IsAbort = isAbort;
         }
 
 
         public BoundExpression ExpressionOpt { get; }
+
+        public bool IsAbort { get; }
 
         public override BoundNode Accept(BoundTreeVisitor visitor)
         {
             return visitor.VisitThrowStatement(this);
         }
 
-        public BoundThrowStatement Update(BoundExpression expressionOpt)
+        public BoundThrowStatement Update(BoundExpression expressionOpt, bool isAbort)
         {
-            if (expressionOpt != this.ExpressionOpt)
+            if (expressionOpt != this.ExpressionOpt || isAbort != this.IsAbort)
             {
-                var result = new BoundThrowStatement(this.Syntax, expressionOpt, this.HasErrors);
+                var result = new BoundThrowStatement(this.Syntax, expressionOpt, isAbort, this.HasErrors);
                 result.CopyAttributes(this);
                 return result;
             }
@@ -7708,28 +7711,31 @@ namespace StarkPlatform.Compiler.Stark
 
     internal sealed partial class BoundThrowExpression : BoundExpression
     {
-        public BoundThrowExpression(SyntaxNode syntax, BoundExpression expression, TypeSymbol type, bool hasErrors = false)
+        public BoundThrowExpression(SyntaxNode syntax, BoundExpression expression, bool isAbort, TypeSymbol type, bool hasErrors = false)
             : base(BoundKind.ThrowExpression, syntax, type, hasErrors || expression.HasErrors())
         {
 
             Debug.Assert((object)expression != null, "Field 'expression' cannot be null (use Null=\"allow\" in BoundNodes.xml to remove this check)");
 
             this.Expression = expression;
+            this.IsAbort = isAbort;
         }
 
 
         public BoundExpression Expression { get; }
+
+        public bool IsAbort { get; }
 
         public override BoundNode Accept(BoundTreeVisitor visitor)
         {
             return visitor.VisitThrowExpression(this);
         }
 
-        public BoundThrowExpression Update(BoundExpression expression, TypeSymbol type)
+        public BoundThrowExpression Update(BoundExpression expression, bool isAbort, TypeSymbol type)
         {
-            if (expression != this.Expression || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
+            if (expression != this.Expression || isAbort != this.IsAbort || !TypeSymbol.Equals(type, this.Type, TypeCompareKind.ConsiderEverything))
             {
-                var result = new BoundThrowExpression(this.Syntax, expression, type, this.HasErrors);
+                var result = new BoundThrowExpression(this.Syntax, expression, isAbort, type, this.HasErrors);
                 result.CopyAttributes(this);
                 return result;
             }
@@ -7738,7 +7744,7 @@ namespace StarkPlatform.Compiler.Stark
 
         protected override BoundExpression ShallowClone()
         {
-            var result = new BoundThrowExpression(this.Syntax, this.Expression, this.Type, this.HasErrors);
+            var result = new BoundThrowExpression(this.Syntax, this.Expression, this.IsAbort, this.Type, this.HasErrors);
             result.CopyAttributes(this);
             return result;
         }
@@ -11122,7 +11128,7 @@ namespace StarkPlatform.Compiler.Stark
         public override BoundNode VisitThrowStatement(BoundThrowStatement node)
         {
             BoundExpression expressionOpt = (BoundExpression)this.Visit(node.ExpressionOpt);
-            return node.Update(expressionOpt);
+            return node.Update(expressionOpt, node.IsAbort);
         }
         public override BoundNode VisitExpressionStatement(BoundExpressionStatement node)
         {
@@ -11728,7 +11734,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             BoundExpression expression = (BoundExpression)this.Visit(node.Expression);
             TypeSymbol type = this.VisitType(node.Type);
-            return node.Update(expression, type);
+            return node.Update(expression, node.IsAbort, type);
         }
         public override BoundNode VisitOutVariablePendingInference(OutVariablePendingInference node)
         {
@@ -12525,7 +12531,8 @@ namespace StarkPlatform.Compiler.Stark
         {
             return new TreeDumperNode("throwStatement", null, new TreeDumperNode[]
             {
-                new TreeDumperNode("expressionOpt", null, new TreeDumperNode[] { Visit(node.ExpressionOpt, null) })
+                new TreeDumperNode("expressionOpt", null, new TreeDumperNode[] { Visit(node.ExpressionOpt, null) }),
+                new TreeDumperNode("isAbort", node.IsAbort, null)
             }
             );
         }
@@ -13640,6 +13647,7 @@ namespace StarkPlatform.Compiler.Stark
             return new TreeDumperNode("throwExpression", null, new TreeDumperNode[]
             {
                 new TreeDumperNode("expression", null, new TreeDumperNode[] { Visit(node.Expression, null) }),
+                new TreeDumperNode("isAbort", node.IsAbort, null),
                 new TreeDumperNode("type", node.Type, null),
                 new TreeDumperNode("isSuppressed", node.IsSuppressed, null)
             }

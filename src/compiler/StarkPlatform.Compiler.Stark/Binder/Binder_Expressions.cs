@@ -663,8 +663,9 @@ namespace StarkPlatform.Compiler.Stark
                 hasErrors = true;
             }
 
-            var thrownExpression = BindThrownExpression(node.Expression, diagnostics, ref hasErrors);
-            return new BoundThrowExpression(node, thrownExpression, null, hasErrors);
+            var isAbort = node.ThrowKeyword.IsKind(SyntaxKind.AbortKeyword);
+            var thrownExpression = BindThrownExpression(node.Expression, isAbort, diagnostics, ref hasErrors);
+            return new BoundThrowExpression(node, thrownExpression, isAbort, null, hasErrors);
         }
 
         private static bool IsThrowExpressionInProperContext(ThrowExpressionSyntax node)

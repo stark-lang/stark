@@ -227,6 +227,11 @@ namespace StarkPlatform.Compiler.Stark
             return IsAttributeType((TypeSymbol)type);
         }
 
+        internal bool IsAbortType(TypeSymbol type, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
+        {
+            return IsEqualOrDerivedFromWellKnownClass(type, WellKnownType.core_Abort, ref useSiteDiagnostics);
+        }
+        
         internal bool IsExceptionType(TypeSymbol type, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             return IsEqualOrDerivedFromWellKnownClass(type, WellKnownType.core_Exception, ref useSiteDiagnostics);
@@ -240,7 +245,8 @@ namespace StarkPlatform.Compiler.Stark
         internal bool IsEqualOrDerivedFromWellKnownClass(TypeSymbol type, WellKnownType wellKnownType, ref HashSet<DiagnosticInfo> useSiteDiagnostics)
         {
             Debug.Assert(wellKnownType == WellKnownType.core_Attribute ||
-                         wellKnownType == WellKnownType.core_Exception);
+                         wellKnownType == WellKnownType.core_Exception ||
+                         wellKnownType == WellKnownType.core_Abort);
 
             if (type.Kind != SymbolKind.NamedType || type.TypeKind != TypeKind.Class)
             {

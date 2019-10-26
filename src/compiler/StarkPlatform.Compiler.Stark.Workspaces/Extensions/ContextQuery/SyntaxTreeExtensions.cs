@@ -2261,7 +2261,8 @@ namespace StarkPlatform.Compiler.Stark.Extensions.ContextQuery
             }
 
             // throw |
-            if (token.IsKind(SyntaxKind.ThrowKeyword))
+            // abort |
+            if (token.IsKind(SyntaxKind.ThrowKeyword) || token.IsKind(SyntaxKind.AbortKeyword))
             {
                 return true;
             }

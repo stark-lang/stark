@@ -879,6 +879,8 @@ namespace StarkPlatform.Compiler.Stark
                     return SyntaxKind.TryKeyword;
                 case "throw":
                     return SyntaxKind.ThrowKeyword;
+                case "abort":
+                    return SyntaxKind.AbortKeyword;
                 case "catch":
                     return SyntaxKind.CatchKeyword;
                 case "finally":
@@ -1473,6 +1475,8 @@ namespace StarkPlatform.Compiler.Stark
                     return "return";
                 case SyntaxKind.ThrowKeyword:
                     return "throw";
+                case SyntaxKind.AbortKeyword:
+                    return "abort";
                 case SyntaxKind.PublicKeyword:
                     return "public";
                 case SyntaxKind.PrivateKeyword:

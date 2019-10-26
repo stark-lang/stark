@@ -754,7 +754,10 @@
     <value>The property or indexer '{0}' cannot be used in this context because it lacks the get accessor</value>
   </data>
   <data name="ERR_BadExceptionType" xml:space="preserve">
-    <value>The type caught or thrown must be derived from System.Exception</value>
+    <value>The type caught or thrown must be derived from core.Exception</value>
+  </data>
+  <data name="ERR_BadAbortType" xml:space="preserve">
+    <value>The type caught or aborted must be derived from core.Abort</value>
   </data>
   <data name="ERR_BadEmptyThrow" xml:space="preserve">
     <value>A throw statement with no arguments is not allowed outside of a catch clause</value>

@@ -181,6 +181,8 @@ repository:
         match: \bcontinue\b
       - name: keyword.control.flow.throw.sk
         match: \bthrow\b
+      - name: keyword.control.flow.abort.sk
+        match: \babort\b
       - name: keyword.control.flow.switch.sk
         match: \bswitch\b
       - name: keyword.control.flow.case.sk

@@ -443,13 +443,16 @@ namespace StarkPlatform.Compiler.Stark
 
         public override BoundNode VisitThrowExpression(BoundThrowExpression node)
         {
-            RecordThrow(node.Syntax, node.Expression.Type);
+            if (!node.IsAbort)
+            {
+                RecordThrow(node.Syntax, node.Expression.Type);
+            }
             return base.VisitThrowExpression(node);
         }
 
         public override BoundNode VisitThrowStatement(BoundThrowStatement node)
         {
-            if (node.ExpressionOpt != null)
+            if (node.ExpressionOpt != null && !node.IsAbort)
             {
                 RecordThrow(node.Syntax, node.ExpressionOpt.Type);
             }

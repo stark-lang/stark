@@ -490,7 +490,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             BoundSpillSequenceBuilder builder = null;
             BoundExpression expression = VisitExpression(ref builder, node.ExpressionOpt);
-            return UpdateStatement(builder, node.Update(expression));
+            return UpdateStatement(builder, node.Update(expression, node.IsAbort));
         }
 
         public override BoundNode VisitExpressionStatement(BoundExpressionStatement node)
@@ -1143,7 +1143,7 @@ namespace StarkPlatform.Compiler.Stark
         {
             BoundSpillSequenceBuilder builder = null;
             BoundExpression operand = VisitExpression(ref builder, node.Expression);
-            return UpdateExpression(builder, node.Update(operand, node.Type));
+            return UpdateExpression(builder, node.Update(operand, node.IsAbort, node.Type));
         }
 
         /// <summary>

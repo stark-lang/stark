@@ -5901,6 +5901,7 @@ tryAgain:
                 case SyntaxKind.SwitchKeyword:
                     return this.ParseSwitchStatement();
                 case SyntaxKind.ThrowKeyword:
+                case SyntaxKind.AbortKeyword:
                     return this.ParseThrowStatement();
                 case SyntaxKind.UnsafeKeyword:
                     // Checking for brace to disambiguate between unsafe statement and unsafe local function
@@ -6282,6 +6283,7 @@ tryAgain:
                 case SyntaxKind.ReturnKeyword:
                 case SyntaxKind.SwitchKeyword:
                 case SyntaxKind.ThrowKeyword:
+                case SyntaxKind.AbortKeyword:
                 case SyntaxKind.UnsafeKeyword:
                 case SyntaxKind.UsingKeyword:
                 case SyntaxKind.WhileKeyword:
@@ -7066,16 +7068,25 @@ tryAgain:
 
         private ThrowStatementSyntax ParseThrowStatement()
         {
-            Debug.Assert(this.CurrentToken.Kind == SyntaxKind.ThrowKeyword);
-            var @throw = this.EatToken(SyntaxKind.ThrowKeyword);
+            Debug.Assert(this.CurrentToken.Kind == SyntaxKind.ThrowKeyword || this.CurrentToken.Kind == SyntaxKind.AbortKeyword);
+            SyntaxToken abortOrThrowKeyword;
+            if (CurrentToken.Kind == SyntaxKind.AbortKeyword)
+            {
+                abortOrThrowKeyword = this.EatToken(SyntaxKind.AbortKeyword);
+            }
+            else
+            {
+                abortOrThrowKeyword = this.EatToken(SyntaxKind.ThrowKeyword);
+            }
+                
             ExpressionSyntax arg = null;
             if (this.CurrentToken.Kind != SyntaxKind.SemicolonToken)
             {
                 arg = this.ParseExpressionCore();
             }
 
-            var eos = arg != null ? EatEos(ref arg) : EatEos(ref @throw);
-            return _syntaxFactory.ThrowStatement(@throw, arg, eos);
+            var eos = arg != null ? EatEos(ref arg) : EatEos(ref abortOrThrowKeyword);
+            return _syntaxFactory.ThrowStatement(abortOrThrowKeyword, arg, eos);
         }
 
         private UnsafeStatementSyntax ParseUnsafeStatement()
@@ -7532,6 +7543,7 @@ tryAgain:
                 case SyntaxKind.NewKeyword:
                 case SyntaxKind.DelegateKeyword:
                 case SyntaxKind.ColonColonToken: // bad aliased name
+                case SyntaxKind.AbortKeyword:
                 case SyntaxKind.ThrowKeyword:
                 case SyntaxKind.StackAllocKeyword:
                 case SyntaxKind.DotDotToken:
@@ -7861,7 +7873,7 @@ tryAgain:
                 skipped = this.AddError(skipped, ErrorCode.ERR_InvalidExprTerm, this.CurrentToken.Text);
                 leftOperand = AddTrailingSkippedSyntax(this.CreateMissingIdentifierName(), skipped);
             }
-            else if (tk == SyntaxKind.ThrowKeyword)
+            else if (tk == SyntaxKind.ThrowKeyword || tk == SyntaxKind.AbortKeyword)
             {
                 var result = ParseThrowExpression();
                 // we parse a throw expression even at the wrong precedence for better recovery
@@ -8041,9 +8053,18 @@ tryAgain:
 
         private ExpressionSyntax ParseThrowExpression()
         {
-            var throwToken = this.EatToken(SyntaxKind.ThrowKeyword);
+            SyntaxToken abortOrThrowToken;
+            if (CurrentToken.Kind == SyntaxKind.AbortKeyword)
+            {
+                abortOrThrowToken = this.EatToken(SyntaxKind.AbortKeyword);
+            }
+            else
+            {
+                abortOrThrowToken = this.EatToken(SyntaxKind.ThrowKeyword);
+            }
+                
             var thrown = this.ParseSubExpression(Precedence.Coalescing);
-            var result = _syntaxFactory.ThrowExpression(throwToken, thrown);
+            var result = _syntaxFactory.ThrowExpression(abortOrThrowToken, thrown);
             return CheckFeatureAvailability(result, MessageID.IDS_FeatureThrowExpression);
         }
 
