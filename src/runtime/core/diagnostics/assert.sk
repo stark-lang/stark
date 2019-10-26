@@ -21,7 +21,10 @@ namespace core {
 
         public class AssertAbort extends Abort
         {
-            public constructor() : base(null) // TODO: remove null
+            /// TODO: transform to const
+            private static let resetAbortToken : object = new object()
+
+            public constructor() : base(resetAbortToken)
             {
             }
         }
