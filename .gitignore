@@ -10,8 +10,8 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-# Lunet private directory
-.lunet/
+# Rider
+.idea/
 
 # Build results
 [Dd]ebug/
