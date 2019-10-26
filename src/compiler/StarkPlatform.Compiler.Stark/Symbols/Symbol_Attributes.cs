@@ -11,6 +11,7 @@ using StarkPlatform.Compiler.Stark.Syntax;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler.Stark
 {
@@ -36,15 +37,15 @@ namespace StarkPlatform.Compiler.Stark
         /// an invalid AttributeTargets value of 0
         /// </summary>
         /// <returns>AttributeTargets or 0</returns>
-        internal virtual AttributeTargets GetAttributeTarget()
+        internal virtual StarkAttributeTargets GetAttributeTarget()
         {
             switch (this.Kind)
             {
                 case SymbolKind.Assembly:
-                    return AttributeTargets.Assembly;
+                    return StarkAttributeTargets.Assembly;
 
                 case SymbolKind.Field:
-                    return AttributeTargets.Field;
+                    return StarkAttributeTargets.Field;
 
                 case SymbolKind.Method:
                     var method = (MethodSymbol)this;
@@ -52,10 +53,11 @@ namespace StarkPlatform.Compiler.Stark
                     {
                         case MethodKind.Constructor:
                         case MethodKind.StaticConstructor:
-                            return AttributeTargets.Constructor;
-
+                            return StarkAttributeTargets.Constructor;
                         default:
-                            return AttributeTargets.Method;
+                            return method.IsStatic ? 
+                                method.IsExtern ? StarkAttributeTargets.ExternStaticFunc : StarkAttributeTargets.StaticFunc :
+                                method.IsExtern ? StarkAttributeTargets.ExternFunc : StarkAttributeTargets.Func;
                     }
 
                 case SymbolKind.NamedType:
@@ -63,22 +65,22 @@ namespace StarkPlatform.Compiler.Stark
                     switch (namedType.TypeKind)
                     {
                         case TypeKind.Class:
-                            return AttributeTargets.Class;
+                            return StarkAttributeTargets.Class;
 
                         case TypeKind.Delegate:
-                            return AttributeTargets.Delegate;
+                            return StarkAttributeTargets.Delegate;
 
                         case TypeKind.Enum:
-                            return AttributeTargets.Enum;
+                            return StarkAttributeTargets.Enum;
 
                         case TypeKind.Interface:
-                            return AttributeTargets.Interface;
+                            return StarkAttributeTargets.Interface;
 
                         case TypeKind.Struct:
-                            return AttributeTargets.Struct;
+                            return StarkAttributeTargets.Struct;
 
                         case TypeKind.TypeParameter:
-                            return AttributeTargets.GenericParameter;
+                            return StarkAttributeTargets.GenericParameter;
 
                         case TypeKind.Submission:
                             // attributes can't be applied on a submission type:
@@ -87,19 +89,19 @@ namespace StarkPlatform.Compiler.Stark
                     break;
 
                 case SymbolKind.NetModule:
-                    return AttributeTargets.Module;
+                    return StarkAttributeTargets.Module;
 
                 case SymbolKind.Parameter:
-                    return AttributeTargets.Parameter;
+                    return StarkAttributeTargets.Parameter;
 
                 case SymbolKind.Property:
-                    return AttributeTargets.Property;
+                    return StarkAttributeTargets.Property;
 
                 case SymbolKind.Event:
-                    return AttributeTargets.Event;
+                    return StarkAttributeTargets.Event;
 
                 case SymbolKind.TypeParameter:
-                    return AttributeTargets.GenericParameter;
+                    return StarkAttributeTargets.GenericParameter;
             }
 
             return 0;
@@ -666,12 +668,12 @@ namespace StarkPlatform.Compiler.Stark
             }
 
             // Verify if the attribute type can be applied to given owner symbol.
-            AttributeTargets attributeTarget;
+            StarkAttributeTargets attributeTarget;
             if (symbolPart == AttributeLocation.Return)
             {
                 // attribute on return type
                 Debug.Assert(this.Kind == SymbolKind.Method);
-                attributeTarget = AttributeTargets.ReturnValue;
+                attributeTarget = StarkAttributeTargets.ReturnValue;
             }
             else
             {

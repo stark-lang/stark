@@ -399,7 +399,7 @@ namespace StarkPlatform.Compiler
             //   
             //   See Roslyn Bug 8603: ETA crashes with InvalidOperationException on duplicate attributes for details.
 
-            var validOn = (AttributeTargets)positionalArg.Value;
+            var validOn = (StarkAttributeTargets)positionalArg.Value;
             bool allowMultiple = DecodeNamedArgument(namedArgs, "AllowMultiple", SpecialType.System_Boolean, false);
             bool inherited = DecodeNamedArgument(namedArgs, "Inherited", SpecialType.System_Boolean, true);
 

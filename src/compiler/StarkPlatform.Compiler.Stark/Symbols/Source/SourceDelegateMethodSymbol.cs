@@ -186,9 +186,9 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             return OneOrMany.Create(((SourceNamedTypeSymbol)ContainingSymbol).GetAttributeDeclarations());
         }
 
-        internal sealed override System.AttributeTargets GetAttributeTarget()
+        internal sealed override StarkAttributeTargets GetAttributeTarget()
         {
-            return System.AttributeTargets.Delegate;
+            return StarkAttributeTargets.Delegate;
         }
 
         private sealed class Constructor : SourceDelegateMethodSymbol

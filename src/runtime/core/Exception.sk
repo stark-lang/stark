@@ -24,12 +24,12 @@ namespace core
         {
             if _token == token then
             {
-                reset()
+                reset(this)
             }
         }
 
-        @Intrinsic
-        private extern func reset()
+        @ExternImport("stark_reset_abort")
+        private extern static func reset(abortInstance: Abort)
     }
 
     public virtual abstract immutable class Exception extends Error

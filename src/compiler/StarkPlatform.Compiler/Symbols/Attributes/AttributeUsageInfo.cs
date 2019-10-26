@@ -6,6 +6,7 @@ using StarkPlatform.Compiler.Collections;
 using StarkPlatform.Compiler.PooledObjects;
 using StarkPlatform.Compiler.Text;
 using Roslyn.Utilities;
+using StarkPlatform.Reflection.Metadata;
 
 namespace StarkPlatform.Compiler
 {
@@ -15,26 +16,29 @@ namespace StarkPlatform.Compiler
         private enum PackedAttributeUsage
         {
             None = 0,
-            Assembly = AttributeTargets.Assembly,
-            Module = AttributeTargets.Module,
-            Class = AttributeTargets.Class,
-            Struct = AttributeTargets.Struct,
-            Enum = AttributeTargets.Enum,
-            Constructor = AttributeTargets.Constructor,
-            Method = AttributeTargets.Method,
-            Property = AttributeTargets.Property,
-            Field = AttributeTargets.Field,
-            Event = AttributeTargets.Event,
-            Interface = AttributeTargets.Interface,
-            Parameter = AttributeTargets.Parameter,
-            Delegate = AttributeTargets.Delegate,
-            ReturnValue = AttributeTargets.ReturnValue,
-            GenericParameter = AttributeTargets.GenericParameter,
-            All = AttributeTargets.All,
+            Assembly = StarkAttributeTargets.Assembly,
+            Module = StarkAttributeTargets.Module,
+            Class = StarkAttributeTargets.Class,
+            Struct = StarkAttributeTargets.Struct,
+            Enum = StarkAttributeTargets.Enum,
+            Constructor = StarkAttributeTargets.Constructor,
+            Func = StarkAttributeTargets.Func,
+            StaticFunc = StarkAttributeTargets.StaticFunc,
+            ExternFunc = StarkAttributeTargets.ExternFunc,
+            ExternStaticFunc = StarkAttributeTargets.ExternStaticFunc,
+            Property = StarkAttributeTargets.Property,
+            Field = StarkAttributeTargets.Field,
+            Event = StarkAttributeTargets.Event,
+            Interface = StarkAttributeTargets.Interface,
+            Parameter = StarkAttributeTargets.Parameter,
+            Delegate = StarkAttributeTargets.Delegate,
+            ReturnValue = StarkAttributeTargets.ReturnValue,
+            GenericParameter = StarkAttributeTargets.GenericParameter,
+            All = StarkAttributeTargets.All,
 
             // NOTE: VB allows AttributeUsageAttribute with no valid target, i.e. <AttributeUsageAttribute(0)>, and doesn't generate any diagnostics.
             // We use PackedAttributeUsage.Initialized field to differentiate between uninitialized AttributeUsageInfo and initialized AttributeUsageInfo with no valid target.
-            Initialized = GenericParameter << 1,
+            Initialized = (StarkAttributeTargets.All + 1),
 
             AllowMultiple = Initialized << 1,
             Inherited = AllowMultiple << 1
@@ -44,15 +48,15 @@ namespace StarkPlatform.Compiler
 
         /// <summary>
         /// Default attribute usage for attribute types:
-        /// (a) Valid targets: AttributeTargets.All
+        /// (a) Valid targets: StarkAttributeTargets.All
         /// (b) AllowMultiple: false
         /// (c) Inherited: true
         /// </summary>
-        static internal readonly AttributeUsageInfo Default = new AttributeUsageInfo(validTargets: AttributeTargets.All, allowMultiple: false, inherited: true);
+        static internal readonly AttributeUsageInfo Default = new AttributeUsageInfo(validTargets: StarkAttributeTargets.All, allowMultiple: false, inherited: true);
 
         static internal readonly AttributeUsageInfo Null = default(AttributeUsageInfo);
 
-        internal AttributeUsageInfo(AttributeTargets validTargets, bool allowMultiple, bool inherited)
+        internal AttributeUsageInfo(StarkAttributeTargets validTargets, bool allowMultiple, bool inherited)
         {
             // NOTE: VB allows AttributeUsageAttribute with no valid target, i.e. <AttributeUsageAttribute(0)>, and doesn't generate any diagnostics.
             // We use PackedAttributeUsage.Initialized field to differentiate between uninitialized AttributeUsageInfo and initialized AttributeUsageInfo with no valid targets.
@@ -78,11 +82,11 @@ namespace StarkPlatform.Compiler
         }
 
 
-        internal AttributeTargets ValidTargets
+        internal StarkAttributeTargets ValidTargets
         {
             get
             {
-                return (AttributeTargets)(_flags & PackedAttributeUsage.All);
+                return (StarkAttributeTargets)(_flags & PackedAttributeUsage.All);
             }
         }
 
@@ -137,7 +141,7 @@ namespace StarkPlatform.Compiler
             get
             {
                 var value = (int)ValidTargets;
-                return value != 0 && (value & (int)~AttributeTargets.All) == 0;
+                return value != 0 && (value & (int)~StarkAttributeTargets.All) == 0;
             }
         }
 
@@ -155,7 +159,7 @@ namespace StarkPlatform.Compiler
             {
                 if ((validTargetsInt & 1) != 0)
                 {
-                    builder.Add(GetErrorDisplayNameResourceId((AttributeTargets)(1 << flag)));
+                    builder.Add(GetErrorDisplayNameResourceId((StarkAttributeTargets)(1 << flag)));
                 }
 
                 validTargetsInt >>= 1;
@@ -205,25 +209,28 @@ namespace StarkPlatform.Compiler
             }
         }
 
-        private static string GetErrorDisplayNameResourceId(AttributeTargets target)
+        private static string GetErrorDisplayNameResourceId(StarkAttributeTargets target)
         {
             switch (target)
             {
-                case AttributeTargets.Assembly: return nameof(CodeAnalysisResources.Assembly);
-                case AttributeTargets.Class: return nameof(CodeAnalysisResources.Class1);
-                case AttributeTargets.Constructor: return nameof(CodeAnalysisResources.Constructor);
-                case AttributeTargets.Delegate: return nameof(CodeAnalysisResources.Delegate1);
-                case AttributeTargets.Enum: return nameof(CodeAnalysisResources.Enum1);
-                case AttributeTargets.Event: return nameof(CodeAnalysisResources.Event1);
-                case AttributeTargets.Field: return nameof(CodeAnalysisResources.Field);
-                case AttributeTargets.GenericParameter: return nameof(CodeAnalysisResources.TypeParameter);
-                case AttributeTargets.Interface: return nameof(CodeAnalysisResources.Interface1);
-                case AttributeTargets.Method: return nameof(CodeAnalysisResources.Method);
-                case AttributeTargets.Module: return nameof(CodeAnalysisResources.Module);
-                case AttributeTargets.Parameter: return nameof(CodeAnalysisResources.Parameter);
-                case AttributeTargets.Property: return nameof(CodeAnalysisResources.Property);
-                case AttributeTargets.ReturnValue: return nameof(CodeAnalysisResources.Return1);
-                case AttributeTargets.Struct: return nameof(CodeAnalysisResources.Struct1);
+                case StarkAttributeTargets.Assembly: return nameof(CodeAnalysisResources.Assembly);
+                case StarkAttributeTargets.Class: return nameof(CodeAnalysisResources.Class1);
+                case StarkAttributeTargets.Constructor: return nameof(CodeAnalysisResources.Constructor);
+                case StarkAttributeTargets.Delegate: return nameof(CodeAnalysisResources.Delegate1);
+                case StarkAttributeTargets.Enum: return nameof(CodeAnalysisResources.Enum1);
+                case StarkAttributeTargets.Event: return nameof(CodeAnalysisResources.Event1);
+                case StarkAttributeTargets.Field: return nameof(CodeAnalysisResources.Field);
+                case StarkAttributeTargets.GenericParameter: return nameof(CodeAnalysisResources.TypeParameter);
+                case StarkAttributeTargets.Interface: return nameof(CodeAnalysisResources.Interface1);
+                case StarkAttributeTargets.Func: return nameof(CodeAnalysisResources.Func);
+                case StarkAttributeTargets.StaticFunc: return nameof(CodeAnalysisResources.StaticFunc);
+                case StarkAttributeTargets.ExternFunc: return nameof(CodeAnalysisResources.ExternFunc);
+                case StarkAttributeTargets.ExternStaticFunc: return nameof(CodeAnalysisResources.ExternStaticFunc);
+                case StarkAttributeTargets.Module: return nameof(CodeAnalysisResources.Module);
+                case StarkAttributeTargets.Parameter: return nameof(CodeAnalysisResources.Parameter);
+                case StarkAttributeTargets.Property: return nameof(CodeAnalysisResources.Property);
+                case StarkAttributeTargets.ReturnValue: return nameof(CodeAnalysisResources.Return1);
+                case StarkAttributeTargets.Struct: return nameof(CodeAnalysisResources.Struct1);
                 default:
                     throw ExceptionUtilities.UnexpectedValue(target);
             }

@@ -3,7 +3,7 @@ import core.runtime
 namespace core {
     public partial module diagnostics
     {
-        @FuncImpl(FuncImplOptions.INTERNAL_CALL)
+        @Intrinsic
         public static extern func abort()
 
         // public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: ?string = null)

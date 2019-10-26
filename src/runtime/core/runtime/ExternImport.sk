@@ -1,0 +1,17 @@
+namespace core
+{
+    public partial module runtime 
+    {
+        /// Import a static function with the specified name
+        @AttributeUsage(AttributeTargets.EXTERN_STATIC_FUNC)
+        public class ExternImportAttribute extends Attribute
+        {
+            public constructor(name: string )
+            {
+                this.name = name
+            }
+
+            public func name -> string { get }
+        }
+    }
+}

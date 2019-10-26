@@ -2,7 +2,7 @@ namespace core
 {
     public partial module runtime 
     {
-        @AttributeUsage(AttributeTargets.FUNC)
+        @AttributeUsage(AttributeTargets.EXTERN_STATIC_FUNC | AttributeTargets.EXTERN_FUNC)
         public class IntrinsicAttribute extends Attribute
         {
             public constructor()

@@ -11,7 +11,7 @@ namespace core
             INTERNAL_CALL = 0x1000
         }
 
-        @AttributeUsage(AttributeTargets.FUNC | AttributeTargets.CONSTRUCTOR)
+        @AttributeUsage(AttributeTargets.FUNC | AttributeTargets.STATIC_FUNC | AttributeTargets.CONSTRUCTOR)
         public class FuncImplAttribute extends Attribute
         {
             private let _val : FuncImplOptions

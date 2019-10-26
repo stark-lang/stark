@@ -159,8 +159,17 @@
   <data name="Interface1" xml:space="preserve">
     <value>interface</value>
   </data>
-  <data name="Method" xml:space="preserve">
-    <value>method</value>
+  <data name="Func" xml:space="preserve">
+    <value>func</value>
+  </data>
+  <data name="StaticFunc" xml:space="preserve">
+    <value>static func</value>
+  </data>
+  <data name="ExternFunc" xml:space="preserve">
+    <value>extern func</value>
+  </data>
+  <data name="ExternStaticFunc" xml:space="preserve">
+    <value>extern static func</value>
   </data>
   <data name="Module" xml:space="preserve">
     <value>module</value>

@@ -559,6 +559,24 @@ namespace StarkPlatform.Compiler {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to extern func.
+        /// </summary>
+        internal static string ExternFunc {
+            get {
+                return ResourceManager.GetString("ExternFunc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to extern static func.
+        /// </summary>
+        internal static string ExternStaticFunc {
+            get {
+                return ResourceManager.GetString("ExternStaticFunc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not locate the rule set file &apos;{0}&apos;..
         /// </summary>
         internal static string FailedToResolveRuleSetName {
@@ -591,6 +609,15 @@ namespace StarkPlatform.Compiler {
         internal static string FileSizeExceedsMaximumAllowed {
             get {
                 return ResourceManager.GetString("FileSizeExceedsMaximumAllowed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to func.
+        /// </summary>
+        internal static string Func {
+            get {
+                return ResourceManager.GetString("Func", resourceCulture);
             }
         }
         
@@ -915,15 +942,6 @@ namespace StarkPlatform.Compiler {
         internal static string MetadataRefNotFoundToRemove1 {
             get {
                 return ResourceManager.GetString("MetadataRefNotFoundToRemove1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to method.
-        /// </summary>
-        internal static string Method {
-            get {
-                return ResourceManager.GetString("Method", resourceCulture);
             }
         }
         
@@ -1329,6 +1347,15 @@ namespace StarkPlatform.Compiler {
         internal static string StartMustNotBeNegative {
             get {
                 return ResourceManager.GetString("StartMustNotBeNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to static func.
+        /// </summary>
+        internal static string StaticFunc {
+            get {
+                return ResourceManager.GetString("StaticFunc", resourceCulture);
             }
         }
         
