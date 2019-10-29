@@ -389,7 +389,7 @@ namespace StarkPlatform.Compiler
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)WellKnownType.core_Collections_Generic_EqualityComparer_T,// Return Type
 
-                // System_AttributeUsageAttribute__ctor
+                // core_AttributeUsageAttribute__ctor
                 (byte)MemberFlags.Constructor,                                                                              // Flags
                 (byte)WellKnownType.core_AttributeUsageAttribute,                                                         // DeclaringTypeId
                 0,                                                                                                          // Arity
@@ -397,14 +397,14 @@ namespace StarkPlatform.Compiler
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Void, // Return Type
                     (byte)SignatureTypeCode.TypeHandle, 0,
 
-                // System_AttributeUsageAttribute__AllowMultiple
+                // core_AttributeUsageAttribute__multiple
                 (byte)MemberFlags.Property,                                                                                 // Flags
                 (byte)WellKnownType.core_AttributeUsageAttribute,                                                         // DeclaringTypeId
                 0,                                                                                                          // Arity
                     0,                                                                                                      // Method Signature
                     (byte)SignatureTypeCode.TypeHandle, (byte)SpecialType.System_Boolean, // Return Type
 
-                // System_AttributeUsageAttribute__Inherited
+                // core_AttributeUsageAttribute__inherited
                 (byte)MemberFlags.Property,                                                                                 // Flags
                 (byte)WellKnownType.core_AttributeUsageAttribute,                                                         // DeclaringTypeId
                 0,                                                                                                          // Arity
@@ -2085,9 +2085,9 @@ namespace StarkPlatform.Compiler
                 "Equals",                                   // System_Collections_Generic_EqualityComparer_T__Equals
                 "GetHashCode",                              // System_Collections_Generic_EqualityComparer_T__GetHashCode
                 "get_Default",                              // System_Collections_Generic_EqualityComparer_T__get_Default
-                ".ctor",                                    // System_AttributeUsageAttribute__ctor
-                "AllowMultiple",                            // System_AttributeUsageAttribute__AllowMultiple
-                "Inherited",                                // System_AttributeUsageAttribute__Inherited
+                ".ctor",                                    // core_AttributeUsageAttribute__ctor
+                "multiple",                                 // core_AttributeUsageAttribute__multiple
+                "inherited",                                // core_AttributeUsageAttribute__inherited
                 ".ctor",                                    // System_ParamArrayAttribute__ctor
                 ".ctor",                                    // System_STAThreadAttribute__ctor
                 ".ctor",                                    // System_Reflection_DefaultMemberAttribute__ctor
