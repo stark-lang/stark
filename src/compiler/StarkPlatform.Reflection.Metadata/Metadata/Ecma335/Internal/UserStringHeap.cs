@@ -25,7 +25,7 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
 
             // Spec: Furthermore, there is an additional terminal byte (so all byte counts are odd, not even). 
             // The size in the blob header is the length of the string in bytes + 1.
-            return Block.PeekUtf16(offset, size & ~1);
+            return Block.PeekUtf8(offset, size & ~1);
         }
 
         internal UserStringHandle GetNextHandle(UserStringHandle handle)
