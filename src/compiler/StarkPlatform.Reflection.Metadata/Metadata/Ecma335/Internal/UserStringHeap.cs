@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using StarkPlatform.Reflection.Internal;
 
 namespace StarkPlatform.Reflection.Metadata.Ecma335
@@ -25,7 +26,16 @@ namespace StarkPlatform.Reflection.Metadata.Ecma335
 
             // Spec: Furthermore, there is an additional terminal byte (so all byte counts are odd, not even). 
             // The size in the blob header is the length of the string in bytes + 1.
-            return Block.PeekUtf8(offset, size & ~1);
+            return Block.PeekUtf8(offset, size - 1);
+        }
+
+        internal unsafe BlobReader GetStringAsBlobReader(UserStringHandle handle)
+        {
+
+            int offset, size;
+            var result = Block.PeekHeapValueOffsetAndSize(handle.GetHeapOffset(), out offset, out size);
+            Debug.Assert(result);
+            return new BlobReader(Block.Pointer + offset, size - 1);
         }
 
         internal UserStringHandle GetNextHandle(UserStringHandle handle)

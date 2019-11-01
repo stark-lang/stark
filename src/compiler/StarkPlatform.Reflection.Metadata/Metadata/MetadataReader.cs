@@ -1089,6 +1089,11 @@ namespace StarkPlatform.Reflection.Metadata
             return UserStringHeap.GetString(handle);
         }
 
+        public BlobReader GetUserStringAsBlobReader(UserStringHandle handle)
+        {
+            return UserStringHeap.GetStringAsBlobReader(handle);
+        }
+
         public Guid GetGuid(GuidHandle handle)
         {
             return GuidHeap.GetGuid(handle);
