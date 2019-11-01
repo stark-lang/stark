@@ -1,28 +1,27 @@
-namespace core {
+namespace core
 
-    /// Base interface for iterable items
-    public interface Iterable<T, TIterator>
-    {
-        /// Starts the iterator
-        readable func iterate_begin() -> TIterator
+/// Base interface for iterable items
+public interface Iterable<T, TIterator>
+{
+    /// Starts the iterator
+    readable func iterate_begin() -> TIterator
 
-        /// Returns true if the iterable has a current element
-        readable func iterate_has_current(iterator: ref TIterator) -> bool 
+    /// Returns true if the iterable has a current element
+    readable func iterate_has_current(iterator: ref TIterator) -> bool 
 
-        /// Returns the current element
-        readable func iterate_current(iterator: ref TIterator) -> T
+    /// Returns the current element
+    readable func iterate_current(iterator: ref TIterator) -> T
 
-        /// Moves the iterator to the next element
-        readable func iterate_next(iterator: ref TIterator)
+    /// Moves the iterator to the next element
+    readable func iterate_next(iterator: ref TIterator)
 
-        /// Ends the iterator
-        readable func iterate_end(iterator: ref TIterator)
-    }
+    /// Ends the iterator
+    readable func iterate_end(iterator: ref TIterator)
+}
 
-    /// Base interface for mutable iterable items
-    public interface MutableIterable<T, TIterator> extends Iterable<T, TIterator>
-    {
-        /// Returns a reference to the next element (mutable)
-        func iterate_current(iterator: ref TIterator) -> ref T
-    }
+/// Base interface for mutable iterable items
+public interface MutableIterable<T, TIterator> extends Iterable<T, TIterator>
+{
+    /// Returns a reference to the next element (mutable)
+    func iterate_current(iterator: ref TIterator) -> ref T
 }

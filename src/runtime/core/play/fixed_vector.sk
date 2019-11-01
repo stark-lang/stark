@@ -1,19 +1,18 @@
 namespace core
-{
-    public class Toto<tSize> where tSize : is const int
-    {
-        //const y : int = tSize
 
-        public func get_value() -> int
+public class Toto<tSize> where tSize : is const int
+{
+    //const y : int = tSize
+
+    public func get_value() -> int
+    {
+        const x : int = tSize
+        var z : int
+        unsafe il
         {
-            const x : int = tSize
-            var z : int
-            unsafe il
-            {
-                sizeof tSize
-                stloc z
-            }
-            return tSize + x + 1
+            sizeof tSize
+            stloc z
         }
+        return tSize + x + 1
     }
 }

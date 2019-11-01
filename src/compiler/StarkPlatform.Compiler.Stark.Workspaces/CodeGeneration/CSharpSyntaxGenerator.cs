@@ -98,6 +98,7 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
         {
             return SyntaxFactory.NamespaceDeclaration(
                 (NameSyntax)name,
+                SyntaxFactory.EndOfLineToken(),
                 default,
                 this.AsUsingDirectives(declarations),
                 AsNamespaceMembers(declarations));

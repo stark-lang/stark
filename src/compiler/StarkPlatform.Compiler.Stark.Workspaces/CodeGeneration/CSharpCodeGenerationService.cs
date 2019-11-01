@@ -689,12 +689,13 @@ namespace StarkPlatform.Compiler.Stark.CodeGeneration
                     return Cast<TDeclarationNode>(parameterSyntax.WithType(newTypeSyntax));
 
                 case SyntaxKind.IncompleteMember:
+                    throw new NotImplementedException("TODO: implement for stark");
                     // Handle incomplete members.
-                    var incompleteMemberSyntax = declaration as IncompleteMemberSyntax;
-                    newTypeSyntax = newType.GenerateTypeSyntax()
-                        .WithLeadingTrivia(incompleteMemberSyntax.Type.GetLeadingTrivia())
-                        .WithTrailingTrivia(incompleteMemberSyntax.Type.GetTrailingTrivia());
-                    return Cast<TDeclarationNode>(incompleteMemberSyntax.WithType(newTypeSyntax));
+                    //var incompleteMemberSyntax = declaration as IncompleteMemberSyntax;
+                    //newTypeSyntax = newType.GenerateTypeSyntax()
+                    //    .WithLeadingTrivia(incompleteMemberSyntax.GetLeadingTrivia())
+                    //    .WithTrailingTrivia(incompleteMemberSyntax.GetTrailingTrivia());
+                    //return Cast<TDeclarationNode>(incompleteMemberSyntax.W(newTypeSyntax));
 
                 case SyntaxKind.ArrayType:
                     // Handle array type.

@@ -160,7 +160,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         {
             Debug.Assert(namespaceDecl != null);
 
-            return IsBetweenTokens(position, namespaceDecl.NamespaceKeyword, namespaceDecl.CloseBraceToken);
+            return IsBetweenTokens(position, namespaceDecl.NamespaceKeyword, namespaceDecl.GetLastToken());
         }
 
         internal static bool IsInConstructorParameterScope(int position, ConstructorDeclarationSyntax constructorDecl)

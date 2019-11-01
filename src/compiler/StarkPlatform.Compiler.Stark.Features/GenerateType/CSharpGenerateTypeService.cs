@@ -602,7 +602,7 @@ namespace StarkPlatform.Compiler.Stark.GenerateType
                     {
                         return Tuple.Create((INamespaceSymbol)enclosingNamespaceSymbol.Symbol,
                                             (INamespaceOrTypeSymbol)namedTypeSymbol,
-                                            enclosingNamespace.CloseBraceToken.GetLocation());
+                                            enclosingNamespace.GetLastToken().GetLocation());
                     }
                 }
             }

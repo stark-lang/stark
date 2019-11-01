@@ -1,12 +1,11 @@
+namespace core
 import core.runtime
 
-namespace core
+/// Base class for Abort and Exception
+public virtual immutable class Error
 {
-    /// Base class for Abort and Exception
-    public virtual immutable class Error
+    private protected constructor()
     {
-        private protected constructor()
-        {
-        }
     }
 }
+

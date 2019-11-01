@@ -1,7 +1,5 @@
-import core.runtime
-
 namespace core
-{
+import core.runtime
     // public union struct Result<T>
     //     case Failure(exception: Exception)
     //     case Success(value: T)
@@ -68,4 +66,3 @@ namespace core
     //     case Value(value: T)
     // {
     // }
-}

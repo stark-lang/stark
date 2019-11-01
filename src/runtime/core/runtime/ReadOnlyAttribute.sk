@@ -1,13 +1,13 @@
 namespace core
+
+public partial module runtime 
 {
-    public partial module runtime 
+    @AttributeUsage(AttributeTargets.FUNC)
+    public class ReadOnlyAttribute extends Attribute
     {
-        @AttributeUsage(AttributeTargets.FUNC)
-        public class ReadOnlyAttribute extends Attribute
+        public constructor()
         {
-            public constructor()
-            {
-            }
         }
     }
 }
+

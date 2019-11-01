@@ -1,37 +1,37 @@
+namespace core.play
 import core.runtime
 
-namespace core.play {
 
-    public module unsafe_utility
+public module unsafe_utility
+{
+    public static func ref_offset<T>(source: ref T, offset: int) -> ref T
     {
-        public static func ref_offset<T>(source: ref T, offset: int) -> ref T
-        {
-            unsafe il {
-                ldarg.0
-                ldarg.1
-                sizeof T
-                conv.i
-                mul
-                add
-                ret                
-            }
-        }
-    }
-
-    public module play
-    {
-        // public static func main<T>(source: ref T) -> in T
-        // {
-        //     var x = ref unsafe_utility.ref_offset(ref source, 10)
-        //     return ref x
-        // }
-
-
-        public static func x(source: []int)
-        {
-            // for x in source {
-
-            // }
+        unsafe il {
+            ldarg.0
+            ldarg.1
+            sizeof T
+            conv.i
+            mul
+            add
+            ret                
         }
     }
 }
+
+public module play
+{
+    // public static func main<T>(source: ref T) -> in T
+    // {
+    //     var x = ref unsafe_utility.ref_offset(ref source, 10)
+    //     return ref x
+    // }
+
+
+    public static func x(source: []int)
+    {
+        // for x in source {
+
+        // }
+    }
+}
+

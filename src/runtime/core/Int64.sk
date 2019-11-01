@@ -1,9 +1,7 @@
 namespace core
+public immutable struct Int64
 {
-    public immutable struct Int64
-    {
 #pragma warning disable CS0169
-        private var _value : i64
+    private var _value : i64
 #pragma warning restore
-    }
 }

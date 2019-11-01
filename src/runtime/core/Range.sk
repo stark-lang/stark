@@ -1,67 +1,65 @@
 namespace core
+public immutable struct Range implements Iterable<int, Range.Iterator>
 {
-    public immutable struct Range implements Iterable<int, Range.Iterator>
+    public constructor(begin: Index, end: Index)
     {
-        public constructor(begin: Index, end: Index)
-        {
-            this.begin = begin
-            this.end = end
-        }
-
-        public let begin : Index
-
-        public let end : Index
-
-        readable func Iterable<int, Iterator>.iterate_begin() -> Iterator {
-            return new Iterator(begin.value, if begin.value > end.value then 1 else -1)
-        }
-
-        readable func Iterable<int, Iterator>.iterate_has_current(iterator: ref Iterator) -> bool => iterator.index <= end.value
-
-        readable func Iterable<int, Iterator>.iterate_current(iterator: ref Iterator) -> int => iterator.index
-
-        readable func Iterable<int, Iterator>.iterate_next(iterator: ref Iterator) => iterator.move()
-
-        readable func Iterable<int, Iterator>.iterate_end(iterator: ref Iterator) {}
-
-        public struct Iterator
-        {
-            private var _index: int
-
-            private let _direction: int
-
-            public constructor(index: int, direction: int)
-            {
-                _index = index
-                _direction = direction
-            }
-
-            public func index -> int => _index
-
-            public func direction -> int => _direction
-
-            public func move() => _index += direction
-        }
+        this.begin = begin
+        this.end = end
     }
 
-    public module range_playground
+    public let begin : Index
+
+    public let end : Index
+
+    readable func Iterable<int, Iterator>.iterate_begin() -> Iterator {
+        return new Iterator(begin.value, if begin.value > end.value then 1 else -1)
+    }
+
+    readable func Iterable<int, Iterator>.iterate_has_current(iterator: ref Iterator) -> bool => iterator.index <= end.value
+
+    readable func Iterable<int, Iterator>.iterate_current(iterator: ref Iterator) -> int => iterator.index
+
+    readable func Iterable<int, Iterator>.iterate_next(iterator: ref Iterator) => iterator.move()
+
+    readable func Iterable<int, Iterator>.iterate_end(iterator: ref Iterator) {}
+
+    public struct Iterator
     {
-        public static func sun_range(range: Range) -> int
+        private var _index: int
+
+        private let _direction: int
+
+        public constructor(index: int, direction: int)
         {
-            var result : int = 141
-            for x in range {
-                result += x
-            }
-            return result
+            _index = index
+            _direction = direction
         }
 
-        public static func sun_range(array: []u8) -> int
-        {
-            var result : int = 0
-            for i in 0..<array.size {
-                result += array[i]
-            }
-            return result
+        public func index -> int => _index
+
+        public func direction -> int => _direction
+
+        public func move() => _index += direction
+    }
+}
+
+public module range_playground
+{
+    public static func sun_range(range: Range) -> int
+    {
+        var result : int = 141
+        for x in range {
+            result += x
         }
+        return result
+    }
+
+    public static func sun_range(array: []u8) -> int
+    {
+        var result : int = 0
+        for i in 0..<array.size {
+            result += array[i]
+        }
+        return result
     }
 }

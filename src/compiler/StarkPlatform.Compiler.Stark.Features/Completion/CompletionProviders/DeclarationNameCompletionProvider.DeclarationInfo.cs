@@ -288,7 +288,7 @@ namespace StarkPlatform.Compiler.Stark.Completion.Providers
                 int position, CancellationToken cancellationToken, out NameDeclarationInfo result)
             {
                 result = IsLastTokenOfType<IncompleteMemberSyntax>(token, semanticModel,
-                    i => i.Type,
+                    i => null,
                     i => i.Modifiers,
                     GetPossibleMemberDeclarations,
                     cancellationToken);

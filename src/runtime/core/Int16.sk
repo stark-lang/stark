@@ -1,9 +1,7 @@
 namespace core
+public immutable struct Int16
 {
-    public immutable struct Int16
-    {
 #pragma warning disable CS0169
-        private var _value : i16
+    private var _value : i16
 #pragma warning restore
-    }
 }

@@ -12891,9 +12891,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         }
     }
 
-    public SyntaxToken OpenBraceToken 
+    /// <summary>SyntaxToken representing the semicolon token.</summary>
+    public SyntaxToken EosToken 
     {
-      get { return new SyntaxToken(this, ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.NamespaceDeclarationSyntax)this.Green).openBraceToken, this.GetChildPosition(2), this.GetChildIndex(2)); }
+        get
+        {
+            var slot = ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.NamespaceDeclarationSyntax)this.Green).eosToken;
+            if (slot != null)
+                return new SyntaxToken(this, slot, this.GetChildPosition(2), this.GetChildIndex(2));
+
+            return default(SyntaxToken);
+        }
     }
 
     public SyntaxList<ExternAliasDirectiveSyntax> Externs 
@@ -12918,11 +12926,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         {
             return new SyntaxList<MemberDeclarationSyntax>(this.GetRed(ref this.members, 5));
         }
-    }
-
-    public SyntaxToken CloseBraceToken 
-    {
-      get { return new SyntaxToken(this, ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.NamespaceDeclarationSyntax)this.Green).closeBraceToken, this.GetChildPosition(6), this.GetChildIndex(6)); }
     }
 
     internal override SyntaxNode GetNodeSlot(int index)
@@ -12958,11 +12961,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         visitor.VisitNamespaceDeclaration(this);
     }
 
-    public NamespaceDeclarationSyntax Update(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken openBraceToken, SyntaxList<ExternAliasDirectiveSyntax> externs, SyntaxList<ImportDirectiveSyntax> usings, SyntaxList<MemberDeclarationSyntax> members, SyntaxToken closeBraceToken)
+    public NamespaceDeclarationSyntax Update(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken eosToken, SyntaxList<ExternAliasDirectiveSyntax> externs, SyntaxList<ImportDirectiveSyntax> usings, SyntaxList<MemberDeclarationSyntax> members)
     {
-        if (namespaceKeyword != this.NamespaceKeyword || name != this.Name || openBraceToken != this.OpenBraceToken || externs != this.Externs || usings != this.Usings || members != this.Members || closeBraceToken != this.CloseBraceToken)
+        if (namespaceKeyword != this.NamespaceKeyword || name != this.Name || eosToken != this.EosToken || externs != this.Externs || usings != this.Usings || members != this.Members)
         {
-            var newNode = SyntaxFactory.NamespaceDeclaration(namespaceKeyword, name, openBraceToken, externs, usings, members, closeBraceToken);
+            var newNode = SyntaxFactory.NamespaceDeclaration(namespaceKeyword, name, eosToken, externs, usings, members);
             var annotations = this.GetAnnotations();
             if (annotations != null && annotations.Length > 0)
                return newNode.WithAnnotations(annotations);
@@ -12974,37 +12977,32 @@ namespace StarkPlatform.Compiler.Stark.Syntax
 
     public NamespaceDeclarationSyntax WithNamespaceKeyword(SyntaxToken namespaceKeyword)
     {
-        return this.Update(namespaceKeyword, this.Name, this.OpenBraceToken, this.Externs, this.Usings, this.Members, this.CloseBraceToken);
+        return this.Update(namespaceKeyword, this.Name, this.EosToken, this.Externs, this.Usings, this.Members);
     }
 
     public NamespaceDeclarationSyntax WithName(NameSyntax name)
     {
-        return this.Update(this.NamespaceKeyword, name, this.OpenBraceToken, this.Externs, this.Usings, this.Members, this.CloseBraceToken);
+        return this.Update(this.NamespaceKeyword, name, this.EosToken, this.Externs, this.Usings, this.Members);
     }
 
-    public NamespaceDeclarationSyntax WithOpenBraceToken(SyntaxToken openBraceToken)
+    public NamespaceDeclarationSyntax WithEosToken(SyntaxToken eosToken)
     {
-        return this.Update(this.NamespaceKeyword, this.Name, openBraceToken, this.Externs, this.Usings, this.Members, this.CloseBraceToken);
+        return this.Update(this.NamespaceKeyword, this.Name, eosToken, this.Externs, this.Usings, this.Members);
     }
 
     public NamespaceDeclarationSyntax WithExterns(SyntaxList<ExternAliasDirectiveSyntax> externs)
     {
-        return this.Update(this.NamespaceKeyword, this.Name, this.OpenBraceToken, externs, this.Usings, this.Members, this.CloseBraceToken);
+        return this.Update(this.NamespaceKeyword, this.Name, this.EosToken, externs, this.Usings, this.Members);
     }
 
     public NamespaceDeclarationSyntax WithUsings(SyntaxList<ImportDirectiveSyntax> usings)
     {
-        return this.Update(this.NamespaceKeyword, this.Name, this.OpenBraceToken, this.Externs, usings, this.Members, this.CloseBraceToken);
+        return this.Update(this.NamespaceKeyword, this.Name, this.EosToken, this.Externs, usings, this.Members);
     }
 
     public NamespaceDeclarationSyntax WithMembers(SyntaxList<MemberDeclarationSyntax> members)
     {
-        return this.Update(this.NamespaceKeyword, this.Name, this.OpenBraceToken, this.Externs, this.Usings, members, this.CloseBraceToken);
-    }
-
-    public NamespaceDeclarationSyntax WithCloseBraceToken(SyntaxToken closeBraceToken)
-    {
-        return this.Update(this.NamespaceKeyword, this.Name, this.OpenBraceToken, this.Externs, this.Usings, this.Members, closeBraceToken);
+        return this.Update(this.NamespaceKeyword, this.Name, this.EosToken, this.Externs, this.Usings, members);
     }
 
     public NamespaceDeclarationSyntax AddExterns(params ExternAliasDirectiveSyntax[] items)
@@ -19664,7 +19662,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax
   public sealed partial class IncompleteMemberSyntax : MemberDeclarationSyntax
   {
     private SyntaxNode attributeLists;
-    private TypeSyntax type;
 
     internal IncompleteMemberSyntax(StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.CSharpSyntaxNode green, SyntaxNode parent, int position)
         : base(green, parent, position)
@@ -19693,11 +19690,15 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         }
     }
 
-    public TypeSyntax Type 
+    public SyntaxToken InvalidToken 
     {
         get
         {
-            return this.GetRed(ref this.type, 2);
+            var slot = ((StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.IncompleteMemberSyntax)this.Green).invalidToken;
+            if (slot != null)
+                return new SyntaxToken(this, slot, this.GetChildPosition(2), this.GetChildIndex(2));
+
+            return default(SyntaxToken);
         }
     }
 
@@ -19706,7 +19707,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         switch (index)
         {
             case 0: return this.GetRedAtZero(ref this.attributeLists);
-            case 2: return this.GetRed(ref this.type, 2);
             default: return null;
         }
     }
@@ -19715,7 +19715,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         switch (index)
         {
             case 0: return this.attributeLists;
-            case 2: return this.type;
             default: return null;
         }
     }
@@ -19730,11 +19729,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax
         visitor.VisitIncompleteMember(this);
     }
 
-    public IncompleteMemberSyntax Update(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, TypeSyntax type)
+    public IncompleteMemberSyntax Update(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, SyntaxToken invalidToken)
     {
-        if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || type != this.Type)
+        if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || invalidToken != this.InvalidToken)
         {
-            var newNode = SyntaxFactory.IncompleteMember(attributeLists, modifiers, type);
+            var newNode = SyntaxFactory.IncompleteMember(attributeLists, modifiers, invalidToken);
             var annotations = this.GetAnnotations();
             if (annotations != null && annotations.Length > 0)
                return newNode.WithAnnotations(annotations);
@@ -19746,17 +19745,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax
 
     public IncompleteMemberSyntax WithAttributeLists(SyntaxList<AttributeSyntax> attributeLists)
     {
-        return this.Update(attributeLists, this.Modifiers, this.Type);
+        return this.Update(attributeLists, this.Modifiers, this.InvalidToken);
     }
 
     public IncompleteMemberSyntax WithModifiers(SyntaxTokenList modifiers)
     {
-        return this.Update(this.AttributeLists, modifiers, this.Type);
+        return this.Update(this.AttributeLists, modifiers, this.InvalidToken);
     }
 
-    public IncompleteMemberSyntax WithType(TypeSyntax type)
+    public IncompleteMemberSyntax WithInvalidToken(SyntaxToken invalidToken)
     {
-        return this.Update(this.AttributeLists, this.Modifiers, type);
+        return this.Update(this.AttributeLists, this.Modifiers, invalidToken);
     }
 
     public IncompleteMemberSyntax AddAttributeLists(params AttributeSyntax[] items)

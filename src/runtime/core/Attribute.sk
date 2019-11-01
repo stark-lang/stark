@@ -1,7 +1,6 @@
 namespace core
+
+public abstract partial class Attribute
 {
-    public abstract partial class Attribute
-    {
-        protected constructor() { }
-    }
+    protected constructor() { }
 }

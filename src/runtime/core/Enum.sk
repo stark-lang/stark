@@ -1,16 +1,15 @@
 namespace core
+
+public abstract immutable struct Enum<T>
 {
-    public abstract immutable struct Enum<T>
-    {
 #pragma warning disable CS0649
-        private let _value : T
+    private let _value : T
 #pragma warning restore
 
-        protected constructor(value: T)
-        {
-            _value = value
-        }
-
-        public func value() -> T => _value
+    protected constructor(value: T)
+    {
+        _value = value
     }
+
+    public func value() -> T => _value
 }

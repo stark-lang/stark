@@ -1,12 +1,12 @@
 namespace core
+
+public partial module runtime 
 {
-    public partial module runtime 
+    public enum LayoutKind
     {
-        public enum LayoutKind
-        {
-            SEQUENTIAL = 0
-            EXPLICIT = 2
-            AUTO = 3
-        }
+        SEQUENTIAL = 0
+        EXPLICIT = 2
+        AUTO = 3
     }
 }
+

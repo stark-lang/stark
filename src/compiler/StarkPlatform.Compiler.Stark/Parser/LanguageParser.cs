@@ -310,12 +310,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 
         internal CompilationUnitSyntax ParseCompilationUnitCore()
         {
-            SyntaxToken tmp = null;
             SyntaxListBuilder initialBadNodes = null;
             var body = new NamespaceBodyBuilder(_pool);
             try
             {
-                this.ParseNamespaceBody(ref tmp, ref body, ref initialBadNodes, SyntaxKind.CompilationUnit);
+                this.ParseNamespaceBody(true, ref body, ref initialBadNodes, SyntaxKind.CompilationUnit);
 
                 var eof = this.EatToken(SyntaxKind.EndOfFileToken);
                 var result = _syntaxFactory.CompilationUnit(body.Externs, body.Imports, body.Attributes, body.Members, eof);
@@ -383,37 +382,26 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             Debug.Assert(this.CurrentToken.Kind == SyntaxKind.NamespaceKeyword);
             var namespaceToken = this.EatToken(SyntaxKind.NamespaceKeyword);
 
-            if (IsScript)
-            {
-                namespaceToken = this.AddError(namespaceToken, ErrorCode.ERR_NamespaceNotAllowedInScript);
-            }
-
             var name = this.ParseQualifiedName();
 
-            SyntaxToken openBrace;
-            if (this.CurrentToken.Kind == SyntaxKind.OpenBraceToken || IsPossibleNamespaceMemberDeclaration())
-            {
-                //either we see the brace we expect here or we see something that could come after a brace
-                //so we insert a missing one
-                openBrace = this.EatToken(SyntaxKind.OpenBraceToken);
-            }
-            else
-            {
-                //the next character is neither the brace we expect, nor a token that could follow the expected
-                //brace so we assume it's a mistake and replace it with a missing brace 
-                openBrace = this.EatTokenWithPrejudice(SyntaxKind.OpenBraceToken);
-                openBrace = this.ConvertToMissingWithTrailingTrivia(openBrace, SyntaxKind.OpenBraceToken);
-            }
+            var eos = EatEos(ref name);
 
             var body = new NamespaceBodyBuilder(_pool);
             SyntaxListBuilder initialBadNodes = null;
             try
             {
-                this.ParseNamespaceBody(ref openBrace, ref body, ref initialBadNodes, SyntaxKind.NamespaceDeclaration);
+                this.ParseNamespaceBody(false, ref body, ref initialBadNodes, SyntaxKind.NamespaceDeclaration);
 
-                var closeBrace = this.EatToken(SyntaxKind.CloseBraceToken);
-                Debug.Assert(initialBadNodes == null); // init bad nodes should have been attached to open brace...
-                return _syntaxFactory.NamespaceDeclaration(namespaceToken, name, openBrace, body.Externs, body.Imports, body.Members, closeBrace);
+                var result = _syntaxFactory.NamespaceDeclaration(namespaceToken, name, eos, body.Externs, body.Imports, body.Members);
+
+                if (initialBadNodes != null)
+                {
+                    // attach initial bad nodes as leading trivia on first token
+                    result = AddLeadingSkippedSyntax(result, initialBadNodes.ToListNode());
+                    _pool.Free(initialBadNodes);
+                }
+
+                return result;
             }
             finally
             {
@@ -448,7 +436,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         }
 
         private void AddSkippedNamespaceText(
-            ref SyntaxToken openBrace,
             ref NamespaceBodyBuilder body,
             ref SyntaxListBuilder initialBadNodes,
             CSharpSyntaxNode skippedSyntax)
@@ -468,10 +455,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             else if (body.Externs.Count > 0)
             {
                 AddTrailingSkippedSyntax(body.Externs, skippedSyntax);
-            }
-            else if (openBrace != null)
-            {
-                openBrace = AddTrailingSkippedSyntax(openBrace, skippedSyntax);
             }
             else
             {
@@ -494,20 +477,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             MembersAndStatements = 4,
         }
 
-        private void ParseNamespaceBody(ref SyntaxToken openBrace, ref NamespaceBodyBuilder body, ref SyntaxListBuilder initialBadNodes, SyntaxKind parentKind)
+        private void ParseNamespaceBody(bool isGlobal, ref NamespaceBodyBuilder body, ref SyntaxListBuilder initialBadNodes, SyntaxKind parentKind)
         {
             // "top-level" expressions and statements should never occur inside an asynchronous context
             Debug.Assert(!IsInAsync);
-
-            bool isGlobal = openBrace == null;
-            bool isGlobalScript = isGlobal && this.IsScript;
 
             var saveTerm = _termState;
             _termState |= TerminatorState.IsNamespaceMemberStartOrStop;
             NamespaceParts seen = NamespaceParts.None;
             var pendingIncompleteMembers = _pool.Allocate<MemberDeclarationSyntax>();
             bool reportUnexpectedToken = true;
-
+            
             try
             {
                 while (true)
@@ -518,9 +498,17 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                             // incomplete members must be processed before we add any nodes to the body:
                             AddIncompleteMembers(ref pendingIncompleteMembers, ref body);
 
-                            body.Members.Add(this.ParseNamespaceDeclaration());
-                            seen = NamespaceParts.MembersAndStatements;
-                            reportUnexpectedToken = true;
+                            if (isGlobal)
+                            {
+                                body.Members.Add(this.ParseNamespaceDeclaration());
+                                seen = NamespaceParts.MembersAndStatements;
+                                reportUnexpectedToken = true;
+                            }
+                            else
+                            {
+                                // We want global to parse the namespace
+                                return;
+                            }
                             break;
 
                         case SyntaxKind.CloseBraceToken:
@@ -530,77 +518,52 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                             // rest of the file unparseable and unusable by intellisense.
                             // We detect that case here and we skip the close curly and
                             // continue parsing as if we did not see the }
-                            if (isGlobal)
-                            {
-                                // incomplete members must be processed before we add any nodes to the body:
-                                ReduceIncompleteMembers(ref pendingIncompleteMembers, ref openBrace, ref body, ref initialBadNodes);
+                            // incomplete members must be processed before we add any nodes to the body:
+                            ReduceIncompleteMembers(ref pendingIncompleteMembers, ref body, ref initialBadNodes);
 
-                                var token = this.EatToken();
-                                token = this.AddError(token,
-                                    IsScript ? ErrorCode.ERR_GlobalDefinitionOrStatementExpected : ErrorCode.ERR_EOFExpected);
+                            var token = this.EatToken();
+                            token = this.AddError(token,
+                                IsScript ? ErrorCode.ERR_GlobalDefinitionOrStatementExpected : ErrorCode.ERR_EOFExpected);
 
-                                this.AddSkippedNamespaceText(ref openBrace, ref body, ref initialBadNodes, token);
-                                reportUnexpectedToken = true;
-                                break;
-                            }
-                            else
-                            {
-                                // This token marks the end of a namespace body
-                                return;
-                            }
+                            this.AddSkippedNamespaceText(ref body, ref initialBadNodes, token);
+                            reportUnexpectedToken = true;
+                            break;
 
                         case SyntaxKind.EndOfFileToken:
                             // This token marks the end of a namespace body
                             return;
 
                         case SyntaxKind.ExternKeyword:
-                            if (isGlobalScript && !ScanExternAliasDirective())
+                            ReduceIncompleteMembers(ref pendingIncompleteMembers, ref body, ref initialBadNodes);
+
+                            var @extern = ParseExternAliasDirective();
+                            if (seen > NamespaceParts.ExternAliases)
                             {
-                                // extern member
-                                goto default;
+                                @extern = this.AddErrorToFirstToken(@extern, ErrorCode.ERR_ExternAfterElements);
+                                this.AddSkippedNamespaceText(ref body, ref initialBadNodes, @extern);
                             }
                             else
                             {
-                                // incomplete members must be processed before we add any nodes to the body:
-                                ReduceIncompleteMembers(ref pendingIncompleteMembers, ref openBrace, ref body, ref initialBadNodes);
-
-                                var @extern = ParseExternAliasDirective();
-                                if (seen > NamespaceParts.ExternAliases)
-                                {
-                                    @extern = this.AddErrorToFirstToken(@extern, ErrorCode.ERR_ExternAfterElements);
-                                    this.AddSkippedNamespaceText(ref openBrace, ref body, ref initialBadNodes, @extern);
-                                }
-                                else
-                                {
-                                    body.Externs.Add(@extern);
-                                    seen = NamespaceParts.ExternAliases;
-                                }
-
-                                reportUnexpectedToken = true;
-                                break;
+                                body.Externs.Add(@extern);
+                                seen = NamespaceParts.ExternAliases;
                             }
+
+                            reportUnexpectedToken = true;
+                            break;
 
                         case SyntaxKind.UsingKeyword:
-                            if (isGlobalScript && this.PeekToken(1).Kind == SyntaxKind.OpenParenToken)
-                            {
-                                // incomplete members must be processed before we add any nodes to the body:
-                                AddIncompleteMembers(ref pendingIncompleteMembers, ref body);
-
-                                body.Members.Add(_syntaxFactory.GlobalStatement(ParseUsingStatement()));
-                                seen = NamespaceParts.MembersAndStatements;
-                            }
                             reportUnexpectedToken = true;
                             break;
 
                         case SyntaxKind.ImportKeyword:
                             // incomplete members must be processed before we add any nodes to the body:
-                            ReduceIncompleteMembers(ref pendingIncompleteMembers, ref openBrace, ref body, ref initialBadNodes);
+                            ReduceIncompleteMembers(ref pendingIncompleteMembers, ref body, ref initialBadNodes);
 
                             var @using = this.ParseImportDirective();
                             if (seen > NamespaceParts.Imports)
                             {
                                 @using = this.AddError(@using, ErrorCode.ERR_UsingAfterElements);
-                                this.AddSkippedNamespaceText(ref openBrace, ref body, ref initialBadNodes, @using);
+                                this.AddSkippedNamespaceText(ref body, ref initialBadNodes, @using);
                             }
                             else
                             {
@@ -615,14 +578,14 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                             if (this.IsPossibleGlobalAttributeDeclaration())
                             {
                                 // incomplete members must be processed before we add any nodes to the body:
-                                ReduceIncompleteMembers(ref pendingIncompleteMembers, ref openBrace, ref body, ref initialBadNodes);
+                                ReduceIncompleteMembers(ref pendingIncompleteMembers, ref body, ref initialBadNodes);
 
                                 var attribute = this.ParseAttribute();
                                 if (!isGlobal || seen > NamespaceParts.GlobalAttributes)
                                 {
                                     // TODO: FIX global attribute error
                                     attribute = this.AddError(attribute, attribute.Target.Identifier, ErrorCode.ERR_GlobalAttributesNotFirst);
-                                    this.AddSkippedNamespaceText(ref openBrace, ref body, ref initialBadNodes, attribute);
+                                    this.AddSkippedNamespaceText(ref body, ref initialBadNodes, attribute);
                                 }
                                 else
                                 {
@@ -641,7 +604,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                             if (memberOrStatement == null)
                             {
                                 // incomplete members must be processed before we add any nodes to the body:
-                                ReduceIncompleteMembers(ref pendingIncompleteMembers, ref openBrace, ref body, ref initialBadNodes);
+                                ReduceIncompleteMembers(ref pendingIncompleteMembers, ref body, ref initialBadNodes);
 
                                 // eat one token and try to parse declaration or statement again:
                                 var skippedToken = EatToken();
@@ -654,7 +617,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
                                     reportUnexpectedToken = false;
                                 }
 
-                                this.AddSkippedNamespaceText(ref openBrace, ref body, ref initialBadNodes, skippedToken);
+                                this.AddSkippedNamespaceText(ref body, ref initialBadNodes, skippedToken);
                             }
                             else if (memberOrStatement.Kind == SyntaxKind.IncompleteMember && seen < NamespaceParts.MembersAndStatements)
                             {
@@ -693,12 +656,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             }
         }
 
-        private void ReduceIncompleteMembers(ref SyntaxListBuilder<MemberDeclarationSyntax> incompleteMembers,
-            ref SyntaxToken openBrace, ref NamespaceBodyBuilder body, ref SyntaxListBuilder initialBadNodes)
+        private void ReduceIncompleteMembers(ref SyntaxListBuilder<MemberDeclarationSyntax> incompleteMembers, ref NamespaceBodyBuilder body, ref SyntaxListBuilder initialBadNodes)
         {
             for (int i = 0; i < incompleteMembers.Count; i++)
             {
-                this.AddSkippedNamespaceText(ref openBrace, ref body, ref initialBadNodes, incompleteMembers[i]);
+                this.AddSkippedNamespaceText(ref body, ref initialBadNodes, incompleteMembers[i]);
             }
             incompleteMembers.Clear();
         }
@@ -1870,7 +1832,7 @@ tryAgain:
                 return _syntaxFactory.IncompleteMember(
                     new SyntaxList<AttributeSyntax>(),
                     new SyntaxList<SyntaxToken>(),
-                    CreateMissingIdentifierName()
+                    CreateMissingIdentifierToken()
                     );
             }
         }
@@ -2034,15 +1996,8 @@ tryAgain:
                 // we will emit an invalid member declaration
                 // but we will eat the offending token to avoid an infinite loop
                 //=======================================================================
-
                 var skippedToken = EatToken();
-
-                var incompleteMember = _syntaxFactory.IncompleteMember(attributes, modifiers.ToList(), null);
-
-                var builder = new SyntaxListBuilder(1);
-                builder.Add(skippedToken);
-                var fileAsTrivia = _syntaxFactory.SkippedTokensTrivia(builder.ToList<SyntaxToken>());
-                incompleteMember = AddTrailingSkippedSyntax(incompleteMember, fileAsTrivia);
+                var incompleteMember = _syntaxFactory.IncompleteMember(attributes, modifiers.ToList(), skippedToken);
 
                 //the error position should indicate skippedToken
                 var error = this.AddError(
@@ -2052,7 +2007,7 @@ tryAgain:
                     ErrorCode.ERR_InvalidMemberDecl,
                     skippedToken.Text);
 
-                return error;
+                return incompleteMember;
             }
             finally
             {

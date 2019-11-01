@@ -288,6 +288,7 @@ namespace StarkPlatform.Compiler.Stark.ChangeNamespace
             var targetNamespaceDecl = SyntaxFactory.NamespaceDeclaration(
                 name: CreateNameSyntax(targetNamespaceParts, aliasQualifier: null, targetNamespaceParts.Length - 1)
                         .WithAdditionalAnnotations(WarningAnnotation),
+                SyntaxFactory.EndOfLineToken(),
                 externs: default,
                 usings: default,
                 members: compilationUnit.Members);
@@ -411,12 +412,9 @@ namespace StarkPlatform.Compiler.Stark.ChangeNamespace
         {
             var openingBuilder = ArrayBuilder<SyntaxTrivia>.GetInstance();
             openingBuilder.AddRange(namespaceDeclaration.GetLeadingTrivia());
-            openingBuilder.AddRange(namespaceDeclaration.OpenBraceToken.LeadingTrivia);
-            openingBuilder.AddRange(namespaceDeclaration.OpenBraceToken.TrailingTrivia);
 
             var closingBuilder = ArrayBuilder<SyntaxTrivia>.GetInstance();
-            closingBuilder.AddRange(namespaceDeclaration.CloseBraceToken.LeadingTrivia);
-            closingBuilder.AddRange(namespaceDeclaration.CloseBraceToken.TrailingTrivia);
+            // TODO: add closing trivia?
 
             return (openingBuilder.ToImmutableAndFree(), closingBuilder.ToImmutableAndFree());
         }

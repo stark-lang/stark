@@ -1,9 +1,8 @@
 namespace core
+
+public immutable struct UInt32
 {
-    public immutable struct UInt32
-    {
 #pragma warning disable CS0169
-        private var _value : u32
+    private var _value : u32
 #pragma warning restore
-    }
 }

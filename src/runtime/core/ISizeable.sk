@@ -1,7 +1,6 @@
-namespace core {
-    /// base interface for an type with a size
-    public interface ISizeable
-    {
-        func size -> int { readable get }
-    }
+namespace core
+/// base interface for an type with a size
+public interface ISizeable
+{
+    func size -> int { readable get }
 }

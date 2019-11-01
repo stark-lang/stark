@@ -194,9 +194,6 @@ namespace StarkPlatform.Compiler.Stark
 
                     case DeclarationExpression:
                         return ((DeclarationExpressionSyntax)parent).Type == node;
-
-                    case IncompleteMember:
-                        return ((IncompleteMemberSyntax)parent).Type == node;
                 }
             }
 

@@ -1,95 +1,94 @@
+namespace core
 import core.runtime
 
-namespace core {
 
-    /// A slice of an array like type
-    public struct Slice<TArray, T> implements IArray<T> where TArray : implements IArray<T>
+/// A slice of an array like type
+public struct Slice<TArray, T> implements IArray<T> where TArray : implements IArray<T>
+{
+    private let _array : TArray
+    private let _offset : int
+    private let _size : int
+
+    /// construct a slice from an array like type
+    public constructor(array: TArray)
     {
-        private let _array : TArray
-        private let _offset : int
-        private let _size : int
-
-        /// construct a slice from an array like type
-        public constructor(array: TArray)
-        {
-            _array = array
-            _offset = 0
-            _size = array.size
-        }
-
-        /// construct a slice from an array like type with the specified offset and size
-        public constructor(array: TArray, offset: int, size: int)
-            requires offset + size <= array.size
-            requires offset >= 0
-            requires size >= 0
-        {
-            _array = array
-            _offset = offset
-            _size = size
-        }
-
-        // Interface of IArray<T>
-
-        public func size -> int => _size
-
-        public func operator [index: int] -> ref T => ref _array[_offset + index]
-
-        // TODO: Make an extension method on IArray<T> for this
-        public func operator [index: Index] -> ref T => ref this[index.offset(this.size)]
-
-        // Slice operator with Range
-
-        public func operator [range: Range] -> Slice<TArray,T> {
-            get {
-                var begin = range.begin.offset(this.size)
-                var end = range.end.offset(this.size)
-                return new Slice<TArray,T>(_array, begin + _offset, end - begin + 1)
-            }
-        }
-
-        // Interface of Iterable<T, int>
-        readable func Iterable<T, int>.iterate_begin() -> int => _offset
-
-        readable func Iterable<T, int>.iterate_has_current(index: ref int) -> bool => index < _offset + _size
-
-        readable func Iterable<T, int>.iterate_current(index: ref int) -> T => _array[index]
-
-        readable func Iterable<T, int>.iterate_next(index: ref int) => index++
-
-        readable func Iterable<T, int>.iterate_end(state: ref int) {}
-
-        func MutableIterable<T, int>.iterate_current(index: ref int) -> ref T => ref _array[index]
-
-        /// Converts implicity an array like type instance to a slice
-        public static func operator implicit as(array: TArray) -> Slice<TArray, T> => new Slice<TArray, T>(array)
+        _array = array
+        _offset = 0
+        _size = array.size
     }
 
-    public module slice_playground
+    /// construct a slice from an array like type with the specified offset and size
+    public constructor(array: TArray, offset: int, size: int)
+        requires offset + size <= array.size
+        requires offset >= 0
+        requires size >= 0
     {
-        static func get_slice_with_string() -> ~string
-        {
-            return "abcd" // return the slice "abcd"
-        }
-
-        static func get_slice_with_string_range() -> ~string
-        {
-            return "abcd"[0..1]  // return the slice "ab"
-        }
-
-        static func get_slice_of_slice(slice: ~string) -> ~string
-        {
-            return slice[0..2][0..1]  // return a slice of a slice from a slice
-        }
-
-        static func get_slice_with_array(array: []int) -> ~[]int
-        {
-            return array[0..1]  // return a slice from an array
-        }
-
-        /// The following method should not compile because int is not a valid IArray<T> type
-
-        // static func get_slice_from_int(array: ~int)
-        // {
-        // }
+        _array = array
+        _offset = offset
+        _size = size
     }
+
+    // Interface of IArray<T>
+
+    public func size -> int => _size
+
+    public func operator [index: int] -> ref T => ref _array[_offset + index]
+
+    // TODO: Make an extension method on IArray<T> for this
+    public func operator [index: Index] -> ref T => ref this[index.offset(this.size)]
+
+    // Slice operator with Range
+
+    public func operator [range: Range] -> Slice<TArray,T> {
+        get {
+            var begin = range.begin.offset(this.size)
+            var end = range.end.offset(this.size)
+            return new Slice<TArray,T>(_array, begin + _offset, end - begin + 1)
+        }
+    }
+
+    // Interface of Iterable<T, int>
+    readable func Iterable<T, int>.iterate_begin() -> int => _offset
+
+    readable func Iterable<T, int>.iterate_has_current(index: ref int) -> bool => index < _offset + _size
+
+    readable func Iterable<T, int>.iterate_current(index: ref int) -> T => _array[index]
+
+    readable func Iterable<T, int>.iterate_next(index: ref int) => index++
+
+    readable func Iterable<T, int>.iterate_end(state: ref int) {}
+
+    func MutableIterable<T, int>.iterate_current(index: ref int) -> ref T => ref _array[index]
+
+    /// Converts implicity an array like type instance to a slice
+    public static func operator implicit as(array: TArray) -> Slice<TArray, T> => new Slice<TArray, T>(array)
+}
+
+public module slice_playground
+{
+    static func get_slice_with_string() -> ~string
+    {
+        return "abcd" // return the slice "abcd"
+    }
+
+    static func get_slice_with_string_range() -> ~string
+    {
+        return "abcd"[0..1]  // return the slice "ab"
+    }
+
+    static func get_slice_of_slice(slice: ~string) -> ~string
+    {
+        return slice[0..2][0..1]  // return a slice of a slice from a slice
+    }
+
+    static func get_slice_with_array(array: []int) -> ~[]int
+    {
+        return array[0..1]  // return a slice from an array
+    }
+
+    /// The following method should not compile because int is not a valid IArray<T> type
+
+    // static func get_slice_from_int(array: ~int)
+    // {
+    // }
 }

@@ -1,15 +1,14 @@
 ﻿namespace core
-{    
-    public partial module diagnostics
-    {
-        @AttributeUsage(AttributeTargets.PARAMETER)
-        public class CallerArgumentExpressionAttribute extends Attribute 
-        {
-            public constructor(parameter_name: string) {
-                this.parameter_name = parameter_name
-            }
 
-            public func parameter_name -> string { get }
+public partial module diagnostics
+{
+    @AttributeUsage(AttributeTargets.PARAMETER)
+    public class CallerArgumentExpressionAttribute extends Attribute 
+    {
+        public constructor(parameter_name: string) {
+            this.parameter_name = parameter_name
         }
+
+        public func parameter_name -> string { get }
     }
 }

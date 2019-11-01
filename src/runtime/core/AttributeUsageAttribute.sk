@@ -1,23 +1,22 @@
 namespace core
+
+@AttributeUsage(AttributeTargets.CLASS, inherited:  true)
+public class AttributeUsageAttribute extends Attribute
 {
-    @AttributeUsage(AttributeTargets.CLASS, inherited:  true)
-    public class AttributeUsageAttribute extends Attribute
+    private let _targets : AttributeTargets
+    private let _multiple : bool
+    private let _inherited : bool
+
+    public constructor(targets: AttributeTargets, multiple: bool = false, inherited: bool = false)
     {
-        private let _targets : AttributeTargets
-        private let _multiple : bool
-        private let _inherited : bool
-
-        public constructor(targets: AttributeTargets, multiple: bool = false, inherited: bool = false)
-        {
-            _targets = targets
-            _multiple = multiple
-            _inherited = inherited
-        }
-               
-        public func targets -> AttributeTargets => _targets
-
-        public func multiple -> bool { get => _multiple }
-
-        public func inherited -> bool { get => _inherited }
+        _targets = targets
+        _multiple = multiple
+        _inherited = inherited
     }
+            
+    public func targets -> AttributeTargets => _targets
+
+    public func multiple -> bool { get => _multiple }
+
+    public func inherited -> bool { get => _inherited }
 }

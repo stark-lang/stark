@@ -20,16 +20,12 @@ namespace StarkPlatform.Compiler.Stark.Structure
             // add leading comments
             CSharpStructureHelpers.CollectCommentBlockSpans(namespaceDeclaration, spans);
 
-            if (!namespaceDeclaration.OpenBraceToken.IsMissing &&
-                !namespaceDeclaration.CloseBraceToken.IsMissing)
-            {
-                spans.AddIfNotNull(CSharpStructureHelpers.CreateBlockSpan(
-                    namespaceDeclaration,
-                    namespaceDeclaration.Name.GetLastToken(includeZeroWidth: true),
-                    autoCollapse: false,
-                    type: BlockTypes.Namespace,
-                    isCollapsible: true));
-            }
+            spans.AddIfNotNull(CSharpStructureHelpers.CreateBlockSpan(
+                namespaceDeclaration,
+                namespaceDeclaration.Name.GetLastToken(includeZeroWidth: true),
+                autoCollapse: false,
+                type: BlockTypes.Namespace,
+                isCollapsible: true));
 
             // extern aliases and usings are outlined in a single region
             var externsAndUsings = Enumerable.Union<SyntaxNode>(namespaceDeclaration.Externs, namespaceDeclaration.Usings)
@@ -47,11 +43,7 @@ namespace StarkPlatform.Compiler.Stark.Structure
                 type: BlockTypes.Imports, isCollapsible: true));
 
             // finally, add any leading comments before the end of the namespace block
-            if (!namespaceDeclaration.CloseBraceToken.IsMissing)
-            {
-                CSharpStructureHelpers.CollectCommentBlockSpans(
-                    namespaceDeclaration.CloseBraceToken.LeadingTrivia, spans);
-            }
+            //CSharpStructureHelpers.CollectCommentBlockSpans(namespaceDeclaration.GetLastToken().LeadingTrivia, spans);
         }
 
         protected override bool SupportedInWorkspaceKind(string kind)

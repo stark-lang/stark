@@ -1,13 +1,11 @@
 namespace core
+public virtual class Object
 {
-    public virtual class Object
-    {
 #pragma warning disable CS0169
-        private unsafe let _type : Type
+    private unsafe let _type : Type
 #pragma warning restore
 
-        public constructor()
-        {
-        }
+    public constructor()
+    {
     }
 }

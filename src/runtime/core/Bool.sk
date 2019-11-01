@@ -1,9 +1,8 @@
 namespace core
-{
-    public struct Bool
-    {        
+
+public struct Bool
+{        
 #pragma warning disable CS0169
-        private var _value : bool
+    private var _value : bool
 #pragma warning restore
-    }
 }

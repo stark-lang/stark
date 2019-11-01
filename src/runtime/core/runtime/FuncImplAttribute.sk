@@ -1,32 +1,31 @@
 namespace core
+
+public partial module runtime 
 {
-    public partial module runtime 
+    public enum FuncImplOptions
     {
-        public enum FuncImplOptions
+        NONE = 0
+        NO_INLINING = 0x0008
+        NO_OPTIMIZATION = 0x0040
+        AGGRESSIVE_INLINING = 0x0100
+        INTERNAL_CALL = 0x1000
+    }
+
+    @AttributeUsage(AttributeTargets.FUNC | AttributeTargets.STATIC_FUNC | AttributeTargets.CONSTRUCTOR)
+    public class FuncImplAttribute extends Attribute
+    {
+        private let _val : FuncImplOptions
+
+        public constructor(func_impl_options: FuncImplOptions)
         {
-            NONE = 0
-            NO_INLINING = 0x0008
-            NO_OPTIMIZATION = 0x0040
-            AGGRESSIVE_INLINING = 0x0100
-            INTERNAL_CALL = 0x1000
+            _val = func_impl_options
         }
 
-        @AttributeUsage(AttributeTargets.FUNC | AttributeTargets.STATIC_FUNC | AttributeTargets.CONSTRUCTOR)
-        public class FuncImplAttribute extends Attribute
+        public constructor(value: u16)
         {
-            private let _val : FuncImplOptions
-
-            public constructor(func_impl_options: FuncImplOptions)
-            {
-                _val = func_impl_options
-            }
-
-            public constructor(value: u16)
-            {
-                _val = value as FuncImplOptions
-            }
-
-            public func value -> FuncImplOptions => _val
+            _val = value as FuncImplOptions
         }
+
+        public func value -> FuncImplOptions => _val
     }
 }

@@ -1,9 +1,8 @@
 namespace core
+
+public immutable struct Float64
 {
-    public immutable struct Float64
-    {
 #pragma warning disable CS0169
-        private var _value : f64
+    private var _value : f64
 #pragma warning restore
-    }
 }

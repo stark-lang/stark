@@ -849,6 +849,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             else
             {
                 var lastToken = node.GetLastToken();
+                Debug.Assert(lastToken != null);
                 var newToken = AddSkippedSyntax(lastToken, skippedSyntax, trailing: true);
                 return SyntaxLastTokenReplacer.Replace(node, newToken);
             }

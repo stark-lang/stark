@@ -164,8 +164,6 @@ namespace StarkPlatform.Compiler.Stark.Extensions
         {
             switch (node)
             {
-                case NamespaceDeclarationSyntax namespaceNode:
-                    return (namespaceNode.OpenBraceToken, namespaceNode.CloseBraceToken);
                 case BaseTypeDeclarationSyntax baseTypeNode:
                     return (baseTypeNode.OpenBraceToken, baseTypeNode.CloseBraceToken);
                 case AccessorListSyntax accessorListNode:

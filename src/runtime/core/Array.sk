@@ -1,24 +1,23 @@
-namespace core {
-    public abstract class Array implements ISizeable
-    {
+namespace core
+public abstract class Array implements ISizeable
+{
 #pragma warning disable CS0169
 #pragma warning disable CS0649
-        private let _size : int
-        private var _firstElement : int
+    private let _size : int
+    private var _firstElement : int
 #pragma warning restore
 
-        private protected constructor() {}
+    private protected constructor() {}
 
-        // size is readable
-        public func size -> int { 
-            get {
-                unsafe il
-                {
-                    ldarg.0
-                    ldlen
-                    ret
-                }
-            } 
-        }
+    // size is readable
+    public func size -> int { 
+        get {
+            unsafe il
+            {
+                ldarg.0
+                ldlen
+                ret
+            }
+        } 
     }
 }

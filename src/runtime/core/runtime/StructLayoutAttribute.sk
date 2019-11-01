@@ -1,25 +1,25 @@
 namespace core
+
+public partial module runtime 
 {
-    public partial module runtime 
+    @AttributeUsage(AttributeTargets.CLASS | AttributeTargets.STRUCT, inherited: false)
+    public class StructLayoutAttribute extends Attribute
     {
-        @AttributeUsage(AttributeTargets.CLASS | AttributeTargets.STRUCT, inherited: false)
-        public class StructLayoutAttribute extends Attribute
+        public constructor(layoutKind: LayoutKind)
         {
-            public constructor(layoutKind: LayoutKind)
-            {
-                Value = layoutKind;
-            }
-
-            public constructor(layoutKind: i16)
-            {
-                Value = layoutKind as LayoutKind;
-            }
-
-            public func Value -> LayoutKind { get }
-
-            public func pack -> i32 { get set }
-            public func size -> i32 { get set }
-            public func align -> i32 { get set }
+            Value = layoutKind;
         }
+
+        public constructor(layoutKind: i16)
+        {
+            Value = layoutKind as LayoutKind;
+        }
+
+        public func Value -> LayoutKind { get }
+
+        public func pack -> i32 { get set }
+        public func size -> i32 { get set }
+        public func align -> i32 { get set }
     }
 }
+

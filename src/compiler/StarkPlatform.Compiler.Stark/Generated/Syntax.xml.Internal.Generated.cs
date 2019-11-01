@@ -20568,22 +20568,24 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
   {
     internal readonly SyntaxToken namespaceKeyword;
     internal readonly NameSyntax name;
-    internal readonly SyntaxToken openBraceToken;
+    internal readonly SyntaxToken eosToken;
     internal readonly GreenNode externs;
     internal readonly GreenNode usings;
     internal readonly GreenNode members;
-    internal readonly SyntaxToken closeBraceToken;
 
-    internal NamespaceDeclarationSyntax(SyntaxKind kind, SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken openBraceToken, GreenNode externs, GreenNode usings, GreenNode members, SyntaxToken closeBraceToken, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
+    internal NamespaceDeclarationSyntax(SyntaxKind kind, SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken eosToken, GreenNode externs, GreenNode usings, GreenNode members, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
         : base(kind, diagnostics, annotations)
     {
-        this.SlotCount = 7;
+        this.SlotCount = 6;
         this.AdjustFlagsAndWidth(namespaceKeyword);
         this.namespaceKeyword = namespaceKeyword;
         this.AdjustFlagsAndWidth(name);
         this.name = name;
-        this.AdjustFlagsAndWidth(openBraceToken);
-        this.openBraceToken = openBraceToken;
+        if (eosToken != null)
+        {
+            this.AdjustFlagsAndWidth(eosToken);
+            this.eosToken = eosToken;
+        }
         if (externs != null)
         {
             this.AdjustFlagsAndWidth(externs);
@@ -20599,22 +20601,23 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             this.AdjustFlagsAndWidth(members);
             this.members = members;
         }
-        this.AdjustFlagsAndWidth(closeBraceToken);
-        this.closeBraceToken = closeBraceToken;
     }
 
 
-    internal NamespaceDeclarationSyntax(SyntaxKind kind, SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken openBraceToken, GreenNode externs, GreenNode usings, GreenNode members, SyntaxToken closeBraceToken, SyntaxFactoryContext context)
+    internal NamespaceDeclarationSyntax(SyntaxKind kind, SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken eosToken, GreenNode externs, GreenNode usings, GreenNode members, SyntaxFactoryContext context)
         : base(kind)
     {
         this.SetFactoryContext(context);
-        this.SlotCount = 7;
+        this.SlotCount = 6;
         this.AdjustFlagsAndWidth(namespaceKeyword);
         this.namespaceKeyword = namespaceKeyword;
         this.AdjustFlagsAndWidth(name);
         this.name = name;
-        this.AdjustFlagsAndWidth(openBraceToken);
-        this.openBraceToken = openBraceToken;
+        if (eosToken != null)
+        {
+            this.AdjustFlagsAndWidth(eosToken);
+            this.eosToken = eosToken;
+        }
         if (externs != null)
         {
             this.AdjustFlagsAndWidth(externs);
@@ -20630,21 +20633,22 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             this.AdjustFlagsAndWidth(members);
             this.members = members;
         }
-        this.AdjustFlagsAndWidth(closeBraceToken);
-        this.closeBraceToken = closeBraceToken;
     }
 
 
-    internal NamespaceDeclarationSyntax(SyntaxKind kind, SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken openBraceToken, GreenNode externs, GreenNode usings, GreenNode members, SyntaxToken closeBraceToken)
+    internal NamespaceDeclarationSyntax(SyntaxKind kind, SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken eosToken, GreenNode externs, GreenNode usings, GreenNode members)
         : base(kind)
     {
-        this.SlotCount = 7;
+        this.SlotCount = 6;
         this.AdjustFlagsAndWidth(namespaceKeyword);
         this.namespaceKeyword = namespaceKeyword;
         this.AdjustFlagsAndWidth(name);
         this.name = name;
-        this.AdjustFlagsAndWidth(openBraceToken);
-        this.openBraceToken = openBraceToken;
+        if (eosToken != null)
+        {
+            this.AdjustFlagsAndWidth(eosToken);
+            this.eosToken = eosToken;
+        }
         if (externs != null)
         {
             this.AdjustFlagsAndWidth(externs);
@@ -20660,17 +20664,15 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             this.AdjustFlagsAndWidth(members);
             this.members = members;
         }
-        this.AdjustFlagsAndWidth(closeBraceToken);
-        this.closeBraceToken = closeBraceToken;
     }
 
     public SyntaxToken NamespaceKeyword { get { return this.namespaceKeyword; } }
     public NameSyntax Name { get { return this.name; } }
-    public SyntaxToken OpenBraceToken { get { return this.openBraceToken; } }
+    /// <summary>SyntaxToken representing the semicolon token.</summary>
+    public SyntaxToken EosToken { get { return this.eosToken; } }
     public StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ExternAliasDirectiveSyntax> Externs { get { return new StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ExternAliasDirectiveSyntax>(this.externs); } }
     public StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ImportDirectiveSyntax> Usings { get { return new StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ImportDirectiveSyntax>(this.usings); } }
     public StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<MemberDeclarationSyntax> Members { get { return new StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<MemberDeclarationSyntax>(this.members); } }
-    public SyntaxToken CloseBraceToken { get { return this.closeBraceToken; } }
 
     internal override GreenNode GetSlot(int index)
     {
@@ -20678,11 +20680,10 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         {
             case 0: return this.namespaceKeyword;
             case 1: return this.name;
-            case 2: return this.openBraceToken;
+            case 2: return this.eosToken;
             case 3: return this.externs;
             case 4: return this.usings;
             case 5: return this.members;
-            case 6: return this.closeBraceToken;
             default: return null;
         }
     }
@@ -20702,11 +20703,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         visitor.VisitNamespaceDeclaration(this);
     }
 
-    public NamespaceDeclarationSyntax Update(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken openBraceToken, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ExternAliasDirectiveSyntax> externs, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ImportDirectiveSyntax> usings, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<MemberDeclarationSyntax> members, SyntaxToken closeBraceToken)
+    public NamespaceDeclarationSyntax Update(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken eosToken, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ExternAliasDirectiveSyntax> externs, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ImportDirectiveSyntax> usings, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<MemberDeclarationSyntax> members)
     {
-        if (namespaceKeyword != this.NamespaceKeyword || name != this.Name || openBraceToken != this.OpenBraceToken || externs != this.Externs || usings != this.Usings || members != this.Members || closeBraceToken != this.CloseBraceToken)
+        if (namespaceKeyword != this.NamespaceKeyword || name != this.Name || eosToken != this.EosToken || externs != this.Externs || usings != this.Usings || members != this.Members)
         {
-            var newNode = SyntaxFactory.NamespaceDeclaration(namespaceKeyword, name, openBraceToken, externs, usings, members, closeBraceToken);
+            var newNode = SyntaxFactory.NamespaceDeclaration(namespaceKeyword, name, eosToken, externs, usings, members);
             var diags = this.GetDiagnostics();
             if (diags != null && diags.Length > 0)
                newNode = newNode.WithDiagnosticsGreen(diags);
@@ -20721,18 +20722,18 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 
     internal override GreenNode SetDiagnostics(DiagnosticInfo[] diagnostics)
     {
-         return new NamespaceDeclarationSyntax(this.Kind, this.namespaceKeyword, this.name, this.openBraceToken, this.externs, this.usings, this.members, this.closeBraceToken, diagnostics, GetAnnotations());
+         return new NamespaceDeclarationSyntax(this.Kind, this.namespaceKeyword, this.name, this.eosToken, this.externs, this.usings, this.members, diagnostics, GetAnnotations());
     }
 
     internal override GreenNode SetAnnotations(SyntaxAnnotation[] annotations)
     {
-         return new NamespaceDeclarationSyntax(this.Kind, this.namespaceKeyword, this.name, this.openBraceToken, this.externs, this.usings, this.members, this.closeBraceToken, GetDiagnostics(), annotations);
+         return new NamespaceDeclarationSyntax(this.Kind, this.namespaceKeyword, this.name, this.eosToken, this.externs, this.usings, this.members, GetDiagnostics(), annotations);
     }
 
     internal NamespaceDeclarationSyntax(ObjectReader reader)
         : base(reader)
     {
-      this.SlotCount = 7;
+      this.SlotCount = 6;
       var namespaceKeyword = (SyntaxToken)reader.ReadValue();
       if (namespaceKeyword != null)
       {
@@ -20745,11 +20746,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
          AdjustFlagsAndWidth(name);
          this.name = name;
       }
-      var openBraceToken = (SyntaxToken)reader.ReadValue();
-      if (openBraceToken != null)
+      var eosToken = (SyntaxToken)reader.ReadValue();
+      if (eosToken != null)
       {
-         AdjustFlagsAndWidth(openBraceToken);
-         this.openBraceToken = openBraceToken;
+         AdjustFlagsAndWidth(eosToken);
+         this.eosToken = eosToken;
       }
       var externs = (GreenNode)reader.ReadValue();
       if (externs != null)
@@ -20769,12 +20770,6 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
          AdjustFlagsAndWidth(members);
          this.members = members;
       }
-      var closeBraceToken = (SyntaxToken)reader.ReadValue();
-      if (closeBraceToken != null)
-      {
-         AdjustFlagsAndWidth(closeBraceToken);
-         this.closeBraceToken = closeBraceToken;
-      }
     }
 
     internal override void WriteTo(ObjectWriter writer)
@@ -20782,11 +20777,10 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       base.WriteTo(writer);
       writer.WriteValue(this.namespaceKeyword);
       writer.WriteValue(this.name);
-      writer.WriteValue(this.openBraceToken);
+      writer.WriteValue(this.eosToken);
       writer.WriteValue(this.externs);
       writer.WriteValue(this.usings);
       writer.WriteValue(this.members);
-      writer.WriteValue(this.closeBraceToken);
     }
 
     static NamespaceDeclarationSyntax()
@@ -30117,9 +30111,9 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
   {
     internal readonly GreenNode attributeLists;
     internal readonly GreenNode modifiers;
-    internal readonly TypeSyntax type;
+    internal readonly SyntaxToken invalidToken;
 
-    internal IncompleteMemberSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, TypeSyntax type, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
+    internal IncompleteMemberSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, SyntaxToken invalidToken, DiagnosticInfo[] diagnostics, SyntaxAnnotation[] annotations)
         : base(kind, diagnostics, annotations)
     {
         this.SlotCount = 3;
@@ -30133,15 +30127,15 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             this.AdjustFlagsAndWidth(modifiers);
             this.modifiers = modifiers;
         }
-        if (type != null)
+        if (invalidToken != null)
         {
-            this.AdjustFlagsAndWidth(type);
-            this.type = type;
+            this.AdjustFlagsAndWidth(invalidToken);
+            this.invalidToken = invalidToken;
         }
     }
 
 
-    internal IncompleteMemberSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, TypeSyntax type, SyntaxFactoryContext context)
+    internal IncompleteMemberSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, SyntaxToken invalidToken, SyntaxFactoryContext context)
         : base(kind)
     {
         this.SetFactoryContext(context);
@@ -30156,15 +30150,15 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             this.AdjustFlagsAndWidth(modifiers);
             this.modifiers = modifiers;
         }
-        if (type != null)
+        if (invalidToken != null)
         {
-            this.AdjustFlagsAndWidth(type);
-            this.type = type;
+            this.AdjustFlagsAndWidth(invalidToken);
+            this.invalidToken = invalidToken;
         }
     }
 
 
-    internal IncompleteMemberSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, TypeSyntax type)
+    internal IncompleteMemberSyntax(SyntaxKind kind, GreenNode attributeLists, GreenNode modifiers, SyntaxToken invalidToken)
         : base(kind)
     {
         this.SlotCount = 3;
@@ -30178,10 +30172,10 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
             this.AdjustFlagsAndWidth(modifiers);
             this.modifiers = modifiers;
         }
-        if (type != null)
+        if (invalidToken != null)
         {
-            this.AdjustFlagsAndWidth(type);
-            this.type = type;
+            this.AdjustFlagsAndWidth(invalidToken);
+            this.invalidToken = invalidToken;
         }
     }
 
@@ -30189,7 +30183,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     public StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> AttributeLists { get { return new StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax>(this.attributeLists); } }
     /// <summary>Gets the modifier list.</summary>
     public StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> Modifiers { get { return new StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken>(this.modifiers); } }
-    public TypeSyntax Type { get { return this.type; } }
+    public SyntaxToken InvalidToken { get { return this.invalidToken; } }
 
     internal override GreenNode GetSlot(int index)
     {
@@ -30197,7 +30191,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         {
             case 0: return this.attributeLists;
             case 1: return this.modifiers;
-            case 2: return this.type;
+            case 2: return this.invalidToken;
             default: return null;
         }
     }
@@ -30217,11 +30211,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
         visitor.VisitIncompleteMember(this);
     }
 
-    public IncompleteMemberSyntax Update(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeSyntax type)
+    public IncompleteMemberSyntax Update(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, SyntaxToken invalidToken)
     {
-        if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || type != this.Type)
+        if (attributeLists != this.AttributeLists || modifiers != this.Modifiers || invalidToken != this.InvalidToken)
         {
-            var newNode = SyntaxFactory.IncompleteMember(attributeLists, modifiers, type);
+            var newNode = SyntaxFactory.IncompleteMember(attributeLists, modifiers, invalidToken);
             var diags = this.GetDiagnostics();
             if (diags != null && diags.Length > 0)
                newNode = newNode.WithDiagnosticsGreen(diags);
@@ -30236,12 +30230,12 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 
     internal override GreenNode SetDiagnostics(DiagnosticInfo[] diagnostics)
     {
-         return new IncompleteMemberSyntax(this.Kind, this.attributeLists, this.modifiers, this.type, diagnostics, GetAnnotations());
+         return new IncompleteMemberSyntax(this.Kind, this.attributeLists, this.modifiers, this.invalidToken, diagnostics, GetAnnotations());
     }
 
     internal override GreenNode SetAnnotations(SyntaxAnnotation[] annotations)
     {
-         return new IncompleteMemberSyntax(this.Kind, this.attributeLists, this.modifiers, this.type, GetDiagnostics(), annotations);
+         return new IncompleteMemberSyntax(this.Kind, this.attributeLists, this.modifiers, this.invalidToken, GetDiagnostics(), annotations);
     }
 
     internal IncompleteMemberSyntax(ObjectReader reader)
@@ -30260,11 +30254,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
          AdjustFlagsAndWidth(modifiers);
          this.modifiers = modifiers;
       }
-      var type = (TypeSyntax)reader.ReadValue();
-      if (type != null)
+      var invalidToken = (SyntaxToken)reader.ReadValue();
+      if (invalidToken != null)
       {
-         AdjustFlagsAndWidth(type);
-         this.type = type;
+         AdjustFlagsAndWidth(invalidToken);
+         this.invalidToken = invalidToken;
       }
     }
 
@@ -30273,7 +30267,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       base.WriteTo(writer);
       writer.WriteValue(this.attributeLists);
       writer.WriteValue(this.modifiers);
-      writer.WriteValue(this.type);
+      writer.WriteValue(this.invalidToken);
     }
 
     static IncompleteMemberSyntax()
@@ -40285,12 +40279,11 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     {
       var namespaceKeyword = (SyntaxToken)this.Visit(node.NamespaceKeyword);
       var name = (NameSyntax)this.Visit(node.Name);
-      var openBraceToken = (SyntaxToken)this.Visit(node.OpenBraceToken);
+      var eosToken = (SyntaxToken)this.Visit(node.EosToken);
       var externs = this.VisitList(node.Externs);
       var usings = this.VisitList(node.Usings);
       var members = this.VisitList(node.Members);
-      var closeBraceToken = (SyntaxToken)this.Visit(node.CloseBraceToken);
-      return node.Update(namespaceKeyword, name, openBraceToken, externs, usings, members, closeBraceToken);
+      return node.Update(namespaceKeyword, name, eosToken, externs, usings, members);
     }
 
     public override CSharpSyntaxNode VisitAttributeTargetSpecifier(AttributeTargetSpecifierSyntax node)
@@ -40747,8 +40740,8 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
     {
       var attributeLists = this.VisitList(node.AttributeLists);
       var modifiers = this.VisitList(node.Modifiers);
-      var type = (TypeSyntax)this.Visit(node.Type);
-      return node.Update(attributeLists, modifiers, type);
+      var invalidToken = (SyntaxToken)this.Visit(node.InvalidToken);
+      return node.Update(attributeLists, modifiers, invalidToken);
     }
 
     public override CSharpSyntaxNode VisitSkippedTokensTrivia(SkippedTokensTriviaSyntax node)
@@ -45547,7 +45540,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return new ImportDirectiveSyntax(SyntaxKind.ImportDirective, importKeyword, staticKeyword, alias, name, eosToken, this.context);
     }
 
-    public NamespaceDeclarationSyntax NamespaceDeclaration(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken openBraceToken, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ExternAliasDirectiveSyntax> externs, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ImportDirectiveSyntax> usings, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<MemberDeclarationSyntax> members, SyntaxToken closeBraceToken)
+    public NamespaceDeclarationSyntax NamespaceDeclaration(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken eosToken, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ExternAliasDirectiveSyntax> externs, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ImportDirectiveSyntax> usings, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<MemberDeclarationSyntax> members)
     {
 #if DEBUG
       if (namespaceKeyword == null)
@@ -45561,27 +45554,21 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       }
       if (name == null)
         throw new ArgumentNullException(nameof(name));
-      if (openBraceToken == null)
-        throw new ArgumentNullException(nameof(openBraceToken));
-      switch (openBraceToken.Kind)
+      if (eosToken != null)
       {
-        case SyntaxKind.OpenBraceToken:
+      switch (eosToken.Kind)
+      {
+        case SyntaxKind.SemicolonToken:
+        case SyntaxKind.EndOfLineTrivia:
+        case SyntaxKind.None:
           break;
         default:
-          throw new ArgumentException(nameof(openBraceToken));
+          throw new ArgumentException(nameof(eosToken));
       }
-      if (closeBraceToken == null)
-        throw new ArgumentNullException(nameof(closeBraceToken));
-      switch (closeBraceToken.Kind)
-      {
-        case SyntaxKind.CloseBraceToken:
-          break;
-        default:
-          throw new ArgumentException(nameof(closeBraceToken));
       }
 #endif
 
-      return new NamespaceDeclarationSyntax(SyntaxKind.NamespaceDeclaration, namespaceKeyword, name, openBraceToken, externs.Node, usings.Node, members.Node, closeBraceToken, this.context);
+      return new NamespaceDeclarationSyntax(SyntaxKind.NamespaceDeclaration, namespaceKeyword, name, eosToken, externs.Node, usings.Node, members.Node, this.context);
     }
 
     public AttributeTargetSpecifierSyntax AttributeTargetSpecifier(SyntaxToken identifier, SyntaxToken colonToken)
@@ -47222,12 +47209,12 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return new ParameterSyntax(SyntaxKind.Parameter, attributeLists.Node, identifier, colonToken, type, @default, this.context);
     }
 
-    public IncompleteMemberSyntax IncompleteMember(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeSyntax type)
+    public IncompleteMemberSyntax IncompleteMember(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, SyntaxToken invalidToken)
     {
 #if DEBUG
 #endif
 
-      return new IncompleteMemberSyntax(SyntaxKind.IncompleteMember, attributeLists.Node, modifiers.Node, type, this.context);
+      return new IncompleteMemberSyntax(SyntaxKind.IncompleteMember, attributeLists.Node, modifiers.Node, invalidToken, this.context);
     }
 
     public SkippedTokensTriviaSyntax SkippedTokensTrivia(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> tokens)
@@ -53173,7 +53160,7 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return new ImportDirectiveSyntax(SyntaxKind.ImportDirective, importKeyword, staticKeyword, alias, name, eosToken);
     }
 
-    public static NamespaceDeclarationSyntax NamespaceDeclaration(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken openBraceToken, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ExternAliasDirectiveSyntax> externs, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ImportDirectiveSyntax> usings, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<MemberDeclarationSyntax> members, SyntaxToken closeBraceToken)
+    public static NamespaceDeclarationSyntax NamespaceDeclaration(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken eosToken, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ExternAliasDirectiveSyntax> externs, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<ImportDirectiveSyntax> usings, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<MemberDeclarationSyntax> members)
     {
 #if DEBUG
       if (namespaceKeyword == null)
@@ -53187,27 +53174,21 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       }
       if (name == null)
         throw new ArgumentNullException(nameof(name));
-      if (openBraceToken == null)
-        throw new ArgumentNullException(nameof(openBraceToken));
-      switch (openBraceToken.Kind)
+      if (eosToken != null)
       {
-        case SyntaxKind.OpenBraceToken:
+      switch (eosToken.Kind)
+      {
+        case SyntaxKind.SemicolonToken:
+        case SyntaxKind.EndOfLineTrivia:
+        case SyntaxKind.None:
           break;
         default:
-          throw new ArgumentException(nameof(openBraceToken));
+          throw new ArgumentException(nameof(eosToken));
       }
-      if (closeBraceToken == null)
-        throw new ArgumentNullException(nameof(closeBraceToken));
-      switch (closeBraceToken.Kind)
-      {
-        case SyntaxKind.CloseBraceToken:
-          break;
-        default:
-          throw new ArgumentException(nameof(closeBraceToken));
       }
 #endif
 
-      return new NamespaceDeclarationSyntax(SyntaxKind.NamespaceDeclaration, namespaceKeyword, name, openBraceToken, externs.Node, usings.Node, members.Node, closeBraceToken);
+      return new NamespaceDeclarationSyntax(SyntaxKind.NamespaceDeclaration, namespaceKeyword, name, eosToken, externs.Node, usings.Node, members.Node);
     }
 
     public static AttributeTargetSpecifierSyntax AttributeTargetSpecifier(SyntaxToken identifier, SyntaxToken colonToken)
@@ -54848,12 +54829,12 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
       return new ParameterSyntax(SyntaxKind.Parameter, attributeLists.Node, identifier, colonToken, type, @default);
     }
 
-    public static IncompleteMemberSyntax IncompleteMember(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, TypeSyntax type)
+    public static IncompleteMemberSyntax IncompleteMember(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<AttributeSyntax> attributeLists, StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> modifiers, SyntaxToken invalidToken)
     {
 #if DEBUG
 #endif
 
-      return new IncompleteMemberSyntax(SyntaxKind.IncompleteMember, attributeLists.Node, modifiers.Node, type);
+      return new IncompleteMemberSyntax(SyntaxKind.IncompleteMember, attributeLists.Node, modifiers.Node, invalidToken);
     }
 
     public static SkippedTokensTriviaSyntax SkippedTokensTrivia(StarkPlatform.Compiler.Syntax.InternalSyntax.SyntaxList<SyntaxToken> tokens)

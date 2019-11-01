@@ -3762,12 +3762,11 @@ namespace StarkPlatform.Compiler.Stark
     {
       var namespaceKeyword = this.VisitToken(node.NamespaceKeyword);
       var name = (NameSyntax)this.Visit(node.Name);
-      var openBraceToken = this.VisitToken(node.OpenBraceToken);
+      var eosToken = this.VisitToken(node.EosToken);
       var externs = this.VisitList(node.Externs);
       var usings = this.VisitList(node.Usings);
       var members = this.VisitList(node.Members);
-      var closeBraceToken = this.VisitToken(node.CloseBraceToken);
-      return node.Update(namespaceKeyword, name, openBraceToken, externs, usings, members, closeBraceToken);
+      return node.Update(namespaceKeyword, name, eosToken, externs, usings, members);
     }
 
     public override SyntaxNode VisitAttributeTargetSpecifier(AttributeTargetSpecifierSyntax node)
@@ -4224,8 +4223,8 @@ namespace StarkPlatform.Compiler.Stark
     {
       var attributeLists = this.VisitList(node.AttributeLists);
       var modifiers = this.VisitList(node.Modifiers);
-      var type = (TypeSyntax)this.Visit(node.Type);
-      return node.Update(attributeLists, modifiers, type);
+      var invalidToken = this.VisitToken(node.InvalidToken);
+      return node.Update(attributeLists, modifiers, invalidToken);
     }
 
     public override SyntaxNode VisitSkippedTokensTrivia(SkippedTokensTriviaSyntax node)
@@ -8743,7 +8742,7 @@ namespace StarkPlatform.Compiler.Stark
     }
 
     /// <summary>Creates a new NamespaceDeclarationSyntax instance.</summary>
-    public static NamespaceDeclarationSyntax NamespaceDeclaration(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken openBraceToken, SyntaxList<ExternAliasDirectiveSyntax> externs, SyntaxList<ImportDirectiveSyntax> usings, SyntaxList<MemberDeclarationSyntax> members, SyntaxToken closeBraceToken)
+    public static NamespaceDeclarationSyntax NamespaceDeclaration(SyntaxToken namespaceKeyword, NameSyntax name, SyntaxToken eosToken, SyntaxList<ExternAliasDirectiveSyntax> externs, SyntaxList<ImportDirectiveSyntax> usings, SyntaxList<MemberDeclarationSyntax> members)
     {
       switch (namespaceKeyword.Kind())
       {
@@ -8754,34 +8753,29 @@ namespace StarkPlatform.Compiler.Stark
       }
       if (name == null)
         throw new ArgumentNullException(nameof(name));
-      switch (openBraceToken.Kind())
+      switch (eosToken.Kind())
       {
-        case SyntaxKind.OpenBraceToken:
+        case SyntaxKind.SemicolonToken:
+        case SyntaxKind.EndOfLineTrivia:
+        case SyntaxKind.None:
           break;
         default:
-          throw new ArgumentException(nameof(openBraceToken));
+          throw new ArgumentException(nameof(eosToken));
       }
-      switch (closeBraceToken.Kind())
-      {
-        case SyntaxKind.CloseBraceToken:
-          break;
-        default:
-          throw new ArgumentException(nameof(closeBraceToken));
-      }
-      return (NamespaceDeclarationSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.NamespaceDeclaration((Syntax.InternalSyntax.SyntaxToken)namespaceKeyword.Node, name == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.NameSyntax)name.Green, (Syntax.InternalSyntax.SyntaxToken)openBraceToken.Node, externs.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ExternAliasDirectiveSyntax>(), usings.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ImportDirectiveSyntax>(), members.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.MemberDeclarationSyntax>(), (Syntax.InternalSyntax.SyntaxToken)closeBraceToken.Node).CreateRed();
+      return (NamespaceDeclarationSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.NamespaceDeclaration((Syntax.InternalSyntax.SyntaxToken)namespaceKeyword.Node, name == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.NameSyntax)name.Green, (Syntax.InternalSyntax.SyntaxToken)eosToken.Node, externs.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ExternAliasDirectiveSyntax>(), usings.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.ImportDirectiveSyntax>(), members.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.MemberDeclarationSyntax>()).CreateRed();
     }
 
 
     /// <summary>Creates a new NamespaceDeclarationSyntax instance.</summary>
-    public static NamespaceDeclarationSyntax NamespaceDeclaration(NameSyntax name, SyntaxList<ExternAliasDirectiveSyntax> externs, SyntaxList<ImportDirectiveSyntax> usings, SyntaxList<MemberDeclarationSyntax> members)
+    public static NamespaceDeclarationSyntax NamespaceDeclaration(NameSyntax name, SyntaxToken eosToken, SyntaxList<ExternAliasDirectiveSyntax> externs, SyntaxList<ImportDirectiveSyntax> usings, SyntaxList<MemberDeclarationSyntax> members)
     {
-      return SyntaxFactory.NamespaceDeclaration(SyntaxFactory.Token(SyntaxKind.NamespaceKeyword), name, SyntaxFactory.Token(SyntaxKind.OpenBraceToken), externs, usings, members, SyntaxFactory.Token(SyntaxKind.CloseBraceToken));
+      return SyntaxFactory.NamespaceDeclaration(SyntaxFactory.Token(SyntaxKind.NamespaceKeyword), name, eosToken, externs, usings, members);
     }
 
     /// <summary>Creates a new NamespaceDeclarationSyntax instance.</summary>
     public static NamespaceDeclarationSyntax NamespaceDeclaration(NameSyntax name)
     {
-      return SyntaxFactory.NamespaceDeclaration(SyntaxFactory.Token(SyntaxKind.NamespaceKeyword), name, SyntaxFactory.Token(SyntaxKind.OpenBraceToken), default(SyntaxList<ExternAliasDirectiveSyntax>), default(SyntaxList<ImportDirectiveSyntax>), default(SyntaxList<MemberDeclarationSyntax>), SyntaxFactory.Token(SyntaxKind.CloseBraceToken));
+      return SyntaxFactory.NamespaceDeclaration(SyntaxFactory.Token(SyntaxKind.NamespaceKeyword), name, default(SyntaxToken), default(SyntaxList<ExternAliasDirectiveSyntax>), default(SyntaxList<ImportDirectiveSyntax>), default(SyntaxList<MemberDeclarationSyntax>));
     }
 
     /// <summary>Creates a new AttributeTargetSpecifierSyntax instance.</summary>
@@ -10433,16 +10427,16 @@ namespace StarkPlatform.Compiler.Stark
     }
 
     /// <summary>Creates a new IncompleteMemberSyntax instance.</summary>
-    public static IncompleteMemberSyntax IncompleteMember(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, TypeSyntax type)
+    public static IncompleteMemberSyntax IncompleteMember(SyntaxList<AttributeSyntax> attributeLists, SyntaxTokenList modifiers, SyntaxToken invalidToken)
     {
-      return (IncompleteMemberSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.IncompleteMember(attributeLists.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.AttributeSyntax>(), modifiers.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxToken>(), type == null ? null : (StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.TypeSyntax)type.Green).CreateRed();
+      return (IncompleteMemberSyntax)StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxFactory.IncompleteMember(attributeLists.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.AttributeSyntax>(), modifiers.Node.ToGreenList<StarkPlatform.Compiler.Stark.Syntax.InternalSyntax.SyntaxToken>(), (Syntax.InternalSyntax.SyntaxToken)invalidToken.Node).CreateRed();
     }
 
 
     /// <summary>Creates a new IncompleteMemberSyntax instance.</summary>
-    public static IncompleteMemberSyntax IncompleteMember(TypeSyntax type = default(TypeSyntax))
+    public static IncompleteMemberSyntax IncompleteMember()
     {
-      return SyntaxFactory.IncompleteMember(default(SyntaxList<AttributeSyntax>), default(SyntaxTokenList), type);
+      return SyntaxFactory.IncompleteMember(default(SyntaxList<AttributeSyntax>), default(SyntaxTokenList), default(SyntaxToken));
     }
 
     /// <summary>Creates a new SkippedTokensTriviaSyntax instance.</summary>

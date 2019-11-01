@@ -1,32 +1,33 @@
+namespace core
+
 import core.runtime
 
-namespace core {
-    public partial module diagnostics
+public partial module diagnostics
+{
+    // public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: ?string = null)
+    // {
+    //     if !condition then 
+    //     {
+    //         abort() // TODO: propagate conditionAsText
+    //     }
+    // }
+
+    public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: ?string = null)
     {
-        // public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: ?string = null)
-        // {
-        //     if !condition then 
-        //     {
-        //         abort() // TODO: propagate conditionAsText
-        //     }
-        // }
-
-        public static func assert(condition: bool, @CallerArgumentExpression(nameof(condition)) conditionAsText: ?string = null)
+        if !condition then 
         {
-            if !condition then 
-            {
-                abort new AssertAbort()
-            }
+            abort new AssertAbort()
         }
+    }
 
-        public class AssertAbort extends Abort
+    public class AssertAbort extends Abort
+    {
+        /// TODO: transform to const
+        private static let resetAbortToken : object = new object()
+
+        public constructor() : base(resetAbortToken)
         {
-            /// TODO: transform to const
-            private static let resetAbortToken : object = new object()
-
-            public constructor() : base(resetAbortToken)
-            {
-            }
         }
     }
 }
+

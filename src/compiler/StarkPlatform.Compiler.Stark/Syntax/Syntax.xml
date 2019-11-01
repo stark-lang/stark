@@ -2754,15 +2754,16 @@
       <Kind Name="NamespaceKeyword"/>
     </Field>
     <Field Name="Name" Type="NameSyntax"/>
-    <Field Name="OpenBraceToken" Type="SyntaxToken">
-      <Kind Name="OpenBraceToken"/>
+    <Field Name="EosToken" Type="SyntaxToken" Optional="true">
+      <Kind Name="SemicolonToken"/>
+      <Kind Name="EndOfLineTrivia"/>
+      <PropertyComment>
+        <summary>SyntaxToken representing the semicolon token.</summary>
+      </PropertyComment>
     </Field>
     <Field Name="Externs" Type="SyntaxList&lt;ExternAliasDirectiveSyntax&gt;"/>
     <Field Name="Usings" Type="SyntaxList&lt;ImportDirectiveSyntax&gt;"/>
     <Field Name="Members" Type="SyntaxList&lt;MemberDeclarationSyntax&gt;"/>
-    <Field Name="CloseBraceToken" Type="SyntaxToken">
-      <Kind Name="CloseBraceToken"/>
-    </Field>
   </Node>
   <Node Name="AttributeTargetSpecifierSyntax" Base="CSharpSyntaxNode">
     <TypeComment>
@@ -4048,7 +4049,7 @@
         <summary>Gets the modifier list.</summary>
       </PropertyComment>
     </Field>
-    <Field Name="Type" Type="TypeSyntax" Optional="true"/>
+    <Field Name="InvalidToken" Type="SyntaxToken" Optional="true"/>
   </Node>
   <Node Name="SkippedTokensTriviaSyntax" Base="StructuredTriviaSyntax">
     <Kind Name="SkippedTokensTrivia"/>

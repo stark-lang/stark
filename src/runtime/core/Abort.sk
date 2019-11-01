@@ -1,26 +1,24 @@
+namespace core
 import core.runtime
 
-namespace core
+/// Base class for an abort
+public virtual abstract immutable class Abort extends Error
 {
-    /// Base class for an abort
-    public virtual abstract immutable class Abort extends Error
+    private let _token : immutable object
+
+    protected constructor(token: immutable object)
     {
-        private let _token : immutable object
-
-        protected constructor(token: immutable object)
-        {
-            _token = token
-        }
-
-        public func reset(token: immutable object)
-        {
-            if _token == token then
-            {
-                reset(this)
-            }
-        }
-
-        @ExternImport("stark_reset_abort")
-        private extern static func reset(abortInstance: Abort)
+        _token = token
     }
+
+    public func reset(token: immutable object)
+    {
+        if _token == token then
+        {
+            reset(this)
+        }
+    }
+
+    @ExternImport("stark_reset_abort")
+    private extern static func reset(abortInstance: Abort)
 }

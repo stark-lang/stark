@@ -1,12 +1,10 @@
+namespace core
 import core.runtime
 
-namespace core
+/// Base class for an exception
+public virtual abstract immutable class Exception extends Error
 {
-    /// Base class for an exception
-    public virtual abstract immutable class Exception extends Error
+    protected constructor()
     {
-        protected constructor()
-        {
-        }
     }
 }

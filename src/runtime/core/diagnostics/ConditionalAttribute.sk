@@ -1,18 +1,16 @@
+namespace core
 import core.runtime
 
-namespace core
-{    
-    public partial module diagnostics
+public partial module diagnostics
+{
+    @AttributeUsage(AttributeTargets.MODULE | AttributeTargets.FUNC, multiple: true)
+    public class ConditionalAttribute extends Attribute
     {
-        @AttributeUsage(AttributeTargets.MODULE | AttributeTargets.FUNC, multiple: true)
-        public class ConditionalAttribute extends Attribute
+        public constructor(condition: string)
         {
-            public constructor(condition: string)
-            {
-                this.condition = condition
-            }
-
-            public func condition -> string { get }
+            this.condition = condition
         }
+
+        public func condition -> string { get }
     }
 }

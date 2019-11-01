@@ -1,21 +1,19 @@
 namespace core
+public struct Option<T>
 {
-    public struct Option<T>
+    private var _has_value: bool
+    private var _value : T
+
+    public constructor()
     {
-        private var _has_value: bool
-        private var _value : T
-
-        public constructor()
-        {
-        }
-
-        public constructor(value: T)
-        {
-            _value = value
-            _has_value = true
-        }
-
-        public func has_value -> bool => _has_value
-        public func value -> T => _value
     }
+
+    public constructor(value: T)
+    {
+        _value = value
+        _has_value = true
+    }
+
+    public func has_value -> bool => _has_value
+    public func value -> T => _value
 }

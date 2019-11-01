@@ -1,9 +1,8 @@
 namespace core
+
+public immutable struct Float32
 {
-    public immutable struct Float32
-    {
 #pragma warning disable CS0169
-        private var _value : f32
+    private var _value : f32
 #pragma warning restore
-    }
 }

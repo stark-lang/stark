@@ -1,40 +1,38 @@
+namespace core
 import core.runtime
 
-namespace core
+public immutable struct Index 
 {
-    public immutable struct Index 
-    {
-        public constructor(value: int) {
-            this.value = value
-        }
-
-        public let value : int
-
-        public static func operator implicit as(value: i32) -> Index => new Index(value)
-
-        public static func operator implicit as(value: int) -> Index => new Index(value)
-
-        public static func operator as(index: Index) -> int => index.value
-
-        @FuncImpl(FuncImplOptions.AGGRESSIVE_INLINING)
-        public func offset(size: int) -> int => if value < 0 then value + size else value
+    public constructor(value: int) {
+        this.value = value
     }
 
-    public module index_playground
+    public let value : int
+
+    public static func operator implicit as(value: i32) -> Index => new Index(value)
+
+    public static func operator implicit as(value: int) -> Index => new Index(value)
+
+    public static func operator as(index: Index) -> int => index.value
+
+    @FuncImpl(FuncImplOptions.AGGRESSIVE_INLINING)
+    public func offset(size: int) -> int => if value < 0 then value + size else value
+}
+
+public module index_playground
+{
+    static func get_string_element_from_last(text: string) -> u8
     {
-        static func get_string_element_from_last(text: string) -> u8
-        {
-            return text[^0]
-        }
+        return text[^0]
+    }
 
-        static func get_array_element_from_last(array: ~[]u8) -> u8
-        {
-            return array[^0]
-        }
+    static func get_array_element_from_last(array: ~[]u8) -> u8
+    {
+        return array[^0]
+    }
 
-        static func get_slice_element_from_last(text: ~string) -> u8
-        {
-            return text[^0]
-        }
+    static func get_slice_element_from_last(text: ~string) -> u8
+    {
+        return text[^0]
     }
 }

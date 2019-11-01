@@ -1,10 +1,10 @@
 namespace core
+
+@AttributeUsage(AttributeTargets.ENUM, inherited: false)
+public class FlagsAttribute extends Attribute
 {
-    @AttributeUsage(AttributeTargets.ENUM, inherited: false)
-    public class FlagsAttribute extends Attribute
+    public constructor()
     {
-        public constructor()
-        {
-        }
     }
 }
+

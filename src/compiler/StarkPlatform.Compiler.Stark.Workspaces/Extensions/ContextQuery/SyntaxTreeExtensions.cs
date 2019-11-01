@@ -524,7 +524,7 @@ namespace StarkPlatform.Compiler.Stark.Extensions.ContextQuery
                 // readonly ref $$
                 if (container.IsKind(SyntaxKind.IncompleteMember))
                 {
-                    return ((IncompleteMemberSyntax)container).Type.IsKind(SyntaxKind.RefType);
+                    return ((IncompleteMemberSyntax)container).InvalidToken.IsKind(SyntaxKind.RefKeyword);
                 }
 
                 if (container.IsKind(SyntaxKind.CompilationUnit) ||

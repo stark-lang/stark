@@ -1,13 +1,12 @@
 namespace core
+
+public partial module runtime 
 {
-    public partial module runtime 
+    @AttributeUsage(AttributeTargets.PARAMETER)
+    public class InAttribute extends Attribute
     {
-        @AttributeUsage(AttributeTargets.PARAMETER)
-        public class InAttribute extends Attribute
+        public constructor()
         {
-            public constructor()
-            {
-            }
         }
     }
 }

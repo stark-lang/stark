@@ -733,7 +733,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 // test for position equality in case the open brace token is missing:
                 // namespace X class C { }
-                bool inBody = LookupPosition.IsBetweenTokens(_position, parent.OpenBraceToken, parent.CloseBraceToken);
+                bool inBody = LookupPosition.IsBetweenTokens(_position, parent.NamespaceKeyword, parent.GetLastToken());
 
                 bool inUsing = IsInUsing(parent);
 
