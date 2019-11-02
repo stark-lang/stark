@@ -500,7 +500,14 @@ namespace StarkPlatform.Compiler.Stark.Syntax.InternalSyntax
 
                             if (isGlobal)
                             {
-                                body.Members.Add(this.ParseNamespaceDeclaration());
+                                var nsDeclaration = this.ParseNamespaceDeclaration();
+
+                                if (body.Imports.Count > 0 || body.Attributes.Count > 0 || body.Externs.Count > 0 || body.Members.Count > 0)
+                                {
+                                    nsDeclaration = AddError(nsDeclaration, body.Members.Count > 0 ? ErrorCode.ERR_InvalidMultipleNamespace : ErrorCode.ERR_NamespaceMustBeDeclaredFirst);
+                                }
+
+                                body.Members.Add(nsDeclaration);
                                 seen = NamespaceParts.MembersAndStatements;
                                 reportUnexpectedToken = true;
                             }

@@ -6334,6 +6334,15 @@ namespace StarkPlatform.Compiler.Stark {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot declare multiple namespace in a file.
+        /// </summary>
+        internal static string ERR_InvalidMultipleNamespace {
+            get {
+                return ResourceManager.GetString("ERR_InvalidMultipleNamespace", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid value for named attribute argument &apos;{0}&apos;.
         /// </summary>
         internal static string ERR_InvalidNamedArgument {
@@ -7293,6 +7302,15 @@ namespace StarkPlatform.Compiler.Stark {
         internal static string ERR_NameofMethodGroupWithTypeParameters {
             get {
                 return ResourceManager.GetString("ERR_NameofMethodGroupWithTypeParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A namespace must be declared first in a file before attributes, imports or extern aliases.
+        /// </summary>
+        internal static string ERR_NamespaceMustBeDeclaredFirst {
+            get {
+                return ResourceManager.GetString("ERR_NamespaceMustBeDeclaredFirst", resourceCulture);
             }
         }
         
