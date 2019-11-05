@@ -11,11 +11,13 @@ public immutable struct Range implements Iterable<int, Range.Iterator>
 
     public let end : Index
 
-    readable func Iterable<int, Iterator>.iterate_begin() -> Iterator {
-        return new Iterator(begin.value, if begin.value > end.value then 1 else -1)
-    }
+    readable func Iterable<int, Iterator>.iterate_begin() -> Iterator =>
+        if begin.value > end.value then 
+            new Iterator(begin.value, end.value, begin.value, 1)
+        else 
+            new Iterator(end.value, begin.value, begin.value, -1)
 
-    readable func Iterable<int, Iterator>.iterate_has_current(iterator: ref Iterator) -> bool => iterator.index <= end.value
+    readable func Iterable<int, Iterator>.iterate_has_current(iterator: ref Iterator) -> bool => iterator.index >= iterator.min && iterator.index <= iterator.max
 
     readable func Iterable<int, Iterator>.iterate_current(iterator: ref Iterator) -> int => iterator.index
 
@@ -27,17 +29,21 @@ public immutable struct Range implements Iterable<int, Range.Iterator>
     {
         private var _index: int
 
-        private let _direction: int
-
-        public constructor(index: int, direction: int)
+        public constructor(min: int, max: int, index: int, direction: int) requires min <= max
         {
+            this.min = min
+            this.max = max
             _index = index
-            _direction = direction
+            this.direction = direction
         }
 
-        public func index -> int => _index
+        public let min: int
 
-        public func direction -> int => _direction
+        public let max: int
+
+        public let direction: int
+
+        public func index -> int => _index
 
         public func move() => _index += direction
     }
@@ -45,6 +51,15 @@ public immutable struct Range implements Iterable<int, Range.Iterator>
 
 public module range_playground
 {
+    public static func sun_range() -> int
+    {
+        var result : int = 142
+        for x in 0..^0 {
+            result += x
+        }
+        return result
+    }
+
     public static func sun_range(range: Range) -> int
     {
         var result : int = 141
