@@ -372,6 +372,7 @@ namespace StarkPlatform.Compiler
             {
                 case ConstantValueTypeDiscriminator.Bad: return Bad;
 
+                case ConstantValueTypeDiscriminator.Int: return ConstantValueDefault.Int;
                 case ConstantValueTypeDiscriminator.Int8: return ConstantValueDefault.Int8;
                 case ConstantValueTypeDiscriminator.UInt8: return ConstantValueDefault.UInt8;
                 case ConstantValueTypeDiscriminator.Int16: return ConstantValueDefault.Int16;

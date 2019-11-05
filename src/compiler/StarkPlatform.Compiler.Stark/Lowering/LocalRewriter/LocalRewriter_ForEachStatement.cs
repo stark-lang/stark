@@ -65,7 +65,6 @@ namespace StarkPlatform.Compiler.Stark
                 indexerGet = (MethodSymbol)nodeExpressionType.FindImplementationForInterfaceMember(indexerGetGeneric);
             }
 
-
             return (object)sizeGet != null && (object)indexerGet != null;
         }
 
@@ -490,7 +489,7 @@ namespace StarkPlatform.Compiler.Stark
             BoundExpression collectionExpression = GetUnconvertedCollectionExpression(node);
             NamedTypeSymbol collectionType = (NamedTypeSymbol)collectionExpression.Type;
 
-            TypeSymbol intType = _compilation.GetSpecialType(SpecialType.System_Int32);
+            TypeSymbol intType = _compilation.GetSpecialType(SpecialType.System_Int);
             TypeSymbol boolType = _compilation.GetSpecialType(SpecialType.System_Boolean);
 
             BoundExpression rewrittenExpression = (BoundExpression)Visit(collectionExpression);
@@ -515,7 +514,7 @@ namespace StarkPlatform.Compiler.Stark
 
             // int p = 0;
             BoundStatement positionVarDecl = MakeLocalDeclaration(forEachSyntax, positionVar,
-                MakeLiteral(forEachSyntax, ConstantValue.Default(SpecialType.System_Int32), intType));
+                MakeLiteral(forEachSyntax, ConstantValue.Default(SpecialType.System_Int), intType));
 
             // (V)a[p]
             BoundExpression iterationVarInitValue = MakeConversionNode(
@@ -547,7 +546,7 @@ namespace StarkPlatform.Compiler.Stark
             // p < a.Length
             BoundExpression exitCondition = new BoundBinaryOperator(
                 syntax: forEachSyntax,
-                operatorKind: BinaryOperatorKind.Int32LessThan,
+                operatorKind: BinaryOperatorKind.IntLessThan,
                 left: boundPositionVar,
                 right: arrayLength,
                 constantValueOpt: null,
@@ -696,7 +695,7 @@ namespace StarkPlatform.Compiler.Stark
 
             TypeSymbol arrayType = collectionExpression.Type;
 
-            TypeSymbol intType = _compilation.GetSpecialType(SpecialType.System_Int32);
+            TypeSymbol intType = _compilation.GetSpecialType(SpecialType.System_Int);
             TypeSymbol boolType = _compilation.GetSpecialType(SpecialType.System_Boolean);
 
             BoundExpression rewrittenExpression = (BoundExpression)Visit(collectionExpression);
@@ -721,7 +720,7 @@ namespace StarkPlatform.Compiler.Stark
 
             // int p = 0;
             BoundStatement positionVarDecl = MakeLocalDeclaration(forEachSyntax, positionVar,
-                MakeLiteral(forEachSyntax, ConstantValue.Default(SpecialType.System_Int32), intType));
+                MakeLiteral(forEachSyntax, ConstantValue.Default(SpecialType.System_Int), intType));
 
             // (V)a[p]
             BoundExpression iterationVarInitValue = MakeConversionNode(
@@ -753,7 +752,7 @@ namespace StarkPlatform.Compiler.Stark
             // p < a.Length
             BoundExpression exitCondition = new BoundBinaryOperator(
                 syntax: forEachSyntax,
-                operatorKind: BinaryOperatorKind.Int32LessThan,
+                operatorKind: BinaryOperatorKind.IntLessThan,
                 left: boundPositionVar,
                 right: arrayLength,
                 constantValueOpt: null,
@@ -838,10 +837,10 @@ namespace StarkPlatform.Compiler.Stark
                     expression: new BoundAssignmentOperator(syntax,
                         left: boundPositionVar,
                         right: new BoundBinaryOperator(syntax,
-                            operatorKind: BinaryOperatorKind.Int32Addition, // unchecked, never overflows since array/string index can't be >= Int32.MaxValue
+                            operatorKind: BinaryOperatorKind.IntAddition, // unchecked, never overflows since array/string index can't be >= Int32.MaxValue
                             left: boundPositionVar,
                             right: MakeLiteral(syntax,
-                                constantValue: ConstantValue.Create(1),
+                                constantValue: ConstantValue.CreateInt(1),
                                 type: intType),
                             constantValueOpt: null,
                             methodOpt: null,
