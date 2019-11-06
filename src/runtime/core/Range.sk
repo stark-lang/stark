@@ -1,5 +1,5 @@
 namespace core
-public immutable struct Range implements Iterable<int, Range.Iterator>
+public immutable struct Range implements Iterable<int, int>
 {
     public constructor(begin: Index, end: Index)
     {
@@ -11,53 +11,27 @@ public immutable struct Range implements Iterable<int, Range.Iterator>
 
     public let end : Index
 
-    readable func Iterable<int, Iterator>.iterate_begin() -> Iterator =>
-        if begin.value > end.value then 
-            new Iterator(begin.value, end.value, begin.value, 1)
-        else 
-            new Iterator(end.value, begin.value, begin.value, -1)
+    readable func Iterable<int, int>.iterate_begin() -> int => begin.value
 
-    readable func Iterable<int, Iterator>.iterate_has_current(iterator: ref Iterator) -> bool => iterator.index >= iterator.min && iterator.index <= iterator.max
+    readable func Iterable<int, int>.iterate_has_current(index: ref int) -> bool => index >= begin.value && index <= end.value
 
-    readable func Iterable<int, Iterator>.iterate_current(iterator: ref Iterator) -> int => iterator.index
+    readable func Iterable<int, int>.iterate_current(index: ref int) -> int => index
 
-    readable func Iterable<int, Iterator>.iterate_next(iterator: ref Iterator) => iterator.move()
+    readable func Iterable<int, int>.iterate_next(index: ref int) => index++
 
-    readable func Iterable<int, Iterator>.iterate_end(iterator: ref Iterator) {}
-
-    public struct Iterator
-    {
-        private var _index: int
-
-        public constructor(min: int, max: int, index: int, direction: int) requires min <= max
-        {
-            this.min = min
-            this.max = max
-            _index = index
-            this.direction = direction
-        }
-
-        public let min: int
-
-        public let max: int
-
-        public let direction: int
-
-        public func index -> int => _index
-
-        public func move() => _index += direction
-    }
+    readable func Iterable<int, int>.iterate_end(index: ref int) {}
 }
 
 public module range_playground
 {
     public static func sun_range() -> int
     {
-        var result : int = 142
-        for x in 0..^0 {
+        var result : int = 0
+        // iterates from -1 to 1 inclusive
+        for x in -1..1 {
             result += x
         }
-        return result
+        return result // returns 0
     }
 
     public static func sun_range(range: Range) -> int
