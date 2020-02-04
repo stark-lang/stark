@@ -45,7 +45,7 @@ namespace StarkPlatform.Compiler.FlowAnalysis
             }
 
             var initialAnalysisData = analyzer.GetCurrentAnalysisData(blocks[0]);
-            if (initialAnalysisData == default)
+            if (initialAnalysisData.Equals(default(TBlockAnalysisData)))
             {
                 initialAnalysisData = analyzer.GetEmptyAnalysisData();
             }
