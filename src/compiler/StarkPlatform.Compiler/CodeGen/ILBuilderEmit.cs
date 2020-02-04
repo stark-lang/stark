@@ -577,11 +577,14 @@ namespace StarkPlatform.Compiler.CodeGen
                     EmitShortConstant(value.Int16Value);
                     break;
                 case ConstantValueTypeDiscriminator.Rune:
-                case ConstantValueTypeDiscriminator.Int:
-                case ConstantValueTypeDiscriminator.UInt:
                 case ConstantValueTypeDiscriminator.Int32:
                 case ConstantValueTypeDiscriminator.UInt32:
                     EmitIntConstant(value.Int32Value);
+                    break;
+                case ConstantValueTypeDiscriminator.Int:
+                case ConstantValueTypeDiscriminator.UInt:
+                    EmitIntConstant(value.Int32Value);
+                    EmitOpCode(discriminator == ConstantValueTypeDiscriminator.Int ? ILOpCode.Conv_i : ILOpCode.Conv_u);
                     break;
                 case ConstantValueTypeDiscriminator.Int64:
                 case ConstantValueTypeDiscriminator.UInt64:
