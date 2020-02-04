@@ -2865,7 +2865,7 @@ namespace StarkPlatform.Compiler.Stark
             //
             // SPEC ends
 
-            var type = (ArrayTypeSymbol)BindArrayType(node.Type, diagnostics, permitDimensions: true, basesBeingResolved: null).TypeSymbol;
+            var type = (ArrayTypeSymbol)BindArrayType(node.Type, diagnostics, permitDimensions: true, isArrayCreation: true, basesBeingResolved: null).TypeSymbol;
 
             // CONSIDER: 
             //
@@ -3230,7 +3230,7 @@ namespace StarkPlatform.Compiler.Stark
 
             ArrayTypeSyntax arrayTypeSyntax = (ArrayTypeSyntax)typeSyntax;
             var elementTypeSyntax = arrayTypeSyntax.ElementType;
-            var arrayType = (ArrayTypeSymbol)BindArrayType(arrayTypeSyntax, diagnostics, permitDimensions: true, basesBeingResolved: null).TypeSymbol;
+            var arrayType = (ArrayTypeSymbol)BindArrayType(arrayTypeSyntax, diagnostics, permitDimensions: true, isArrayCreation: true, basesBeingResolved: null).TypeSymbol;
             var elementType = arrayType.ElementType;
 
             TypeSymbol type = GetStackAllocType(node, elementType, diagnostics, out bool hasErrors);

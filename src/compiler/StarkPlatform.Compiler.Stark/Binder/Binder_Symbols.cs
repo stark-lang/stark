@@ -414,7 +414,7 @@ namespace StarkPlatform.Compiler.Stark
 
                 case SyntaxKind.ArrayType:
                     {
-                        return BindArrayType((ArrayTypeSyntax)syntax, diagnostics, permitDimensions: false, basesBeingResolved);
+                        return BindArrayType((ArrayTypeSyntax)syntax, diagnostics, permitDimensions: true, isArrayCreation: false, basesBeingResolved: basesBeingResolved);
                     }
 
                 case SyntaxKind.PointerType:
@@ -573,10 +573,10 @@ namespace StarkPlatform.Compiler.Stark
             }
         }
 
-        private TypeSymbolWithAnnotations BindArrayType(
-            ArrayTypeSyntax node,
+        private TypeSymbolWithAnnotations BindArrayType(ArrayTypeSyntax node,
             DiagnosticBag diagnostics,
             bool permitDimensions,
+            bool isArrayCreation,
             ConsList<TypeSymbol> basesBeingResolved)
         {
             TypeSymbolWithAnnotations type = BindType(node.ElementType, diagnostics, basesBeingResolved);
@@ -610,7 +610,18 @@ namespace StarkPlatform.Compiler.Stark
                     Error(diagnostics, ErrorCode.ERR_ArraySizeInDeclaration, rankSpecifier);
                 }
 
-                var array = ArrayTypeSymbol.CreateArray(this.Compilation.Assembly, type);
+                TypeSymbol array;
+                if (!isArrayCreation && dimension != null)
+                {
+                    var sliceGenericType = GetSpecialType(SpecialType.core_FixedArray_T_tSize, diagnostics, node);
+                    var size = BindValue(dimension, diagnostics, BindValueKind.RValue);
+                    var constArraySize = new ConstLiteralTypeSymbol(TypeSymbolWithAnnotations.Create(size.Type), size.ConstantValue.Int32Value);
+                    array = sliceGenericType.Construct(type.TypeSymbol, constArraySize);
+                }
+                else
+                {
+                    array = ArrayTypeSymbol.CreateArray(this.Compilation.Assembly, type);
+                }
                 type = TypeSymbolWithAnnotations.Create(IsNullableEnabled(rankSpecifier.CloseBracketToken), array);
             }
 

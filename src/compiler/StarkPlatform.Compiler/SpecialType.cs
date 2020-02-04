@@ -168,6 +168,11 @@ namespace StarkPlatform.Compiler
         core_Slice_TArray_T,
 
         /// <summary>
+        /// Indicates that the type is <see cref="FixedArray{T, tSize}"/>.
+        /// </summary>
+        core_FixedArray_T_tSize,
+        
+        /// <summary>
         /// Indicates that the type is <see cref="Nullable{T}"/>.
         /// </summary>
         core_Option_T,
