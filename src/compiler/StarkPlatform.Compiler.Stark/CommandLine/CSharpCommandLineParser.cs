@@ -60,7 +60,7 @@ namespace StarkPlatform.Compiler.Stark
             bool displayVersion = false;
             bool displayLangVersions = false;
             bool optimize = false;
-            bool checkOverflow = false;
+            bool checkOverflow = true;
             NullableContextOptions nullableContextOptions = NullableContextOptions.Disable;
             bool allowUnsafe = false;
             bool concurrentBuild = true;
