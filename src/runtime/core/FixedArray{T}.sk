@@ -10,7 +10,9 @@ public struct FixedArray<T, tSize> implements IArray<T> where tSize: is const in
     public func size -> int => tSize
 
     /// ref indexer
-    public func operator [index: int] -> ref T { 
+    public func operator [index: int] -> ref T
+        requires index as uint < tSize as uint
+     { 
         get
         {
             unsafe il
@@ -28,12 +30,14 @@ public struct FixedArray<T, tSize> implements IArray<T> where tSize: is const in
 
     // public func operator [index: Index] -> ref T => ref this[index.offset(this.size)]
 
-    // public func operator [range: Range] -> Slice<[]T,T> 
+    // TODO: tSize is not working yet, as the compiler is expecting a literal constant
+
+    // public func operator [range: Range] -> Slice<[tSize]T,T> 
     // {
     //     get {
     //         var begin = range.begin.offset(this.size)
     //         var end = range.end.offset(this.size)
-    //         return new Slice<[]T,T>(this, begin, end - begin + 1)
+    //         return new Slice<[tSize]T,T>(this, begin, end - begin + 1)
     //     }
     // }
 
@@ -54,13 +58,16 @@ public class PlayFixedArray
 {
     // Declare a field with a fixed size array
     public var field_table: [4]int
+
+    // Fixed size array of objects
+    public var field_table_of_objects: [3]object
 }
 
 public module fixedarray_playground
 {
-    public static func play_with_fixed(cls: PlayFixedArray, fixed_array_by_ref: ref [2]int) -> int {
+    public static func play_with_fixed(cls: PlayFixedArray, 
+                                       fixed_array_by_ref: ref [2]int) -> int {
         // Fixed size array access
         return cls.field_table[0] + fixed_array_by_ref[1]
     }
 }    
-
