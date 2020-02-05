@@ -629,6 +629,14 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         internal override bool Equals(TypeSymbol t2, TypeCompareKind comparison)
         {
+            if (t2 is ConstLiteralTypeSymbol literalTypeSymbol)
+            {
+                if (literalTypeSymbol.Value is TypeParameterSymbol constParamSymbol2)
+                {
+                    return this.Equals(constParamSymbol2, comparison);
+                }
+            }
+
             return this.Equals(t2 as TypeParameterSymbol, comparison);
         }
 

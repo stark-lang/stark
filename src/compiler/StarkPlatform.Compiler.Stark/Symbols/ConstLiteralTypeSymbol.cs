@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using Roslyn.Utilities;
 using StarkPlatform.Compiler.PooledObjects;
 
@@ -29,7 +30,11 @@ namespace StarkPlatform.Compiler.Stark.Symbols
             {
                 return _elementType.TypeSymbol.Equals(t2Extended.UnderlyingType.TypeSymbol, comparison) && Value.Equals(t2Extended.Value);
             }
-            return _elementType.TypeSymbol.Equals(t2, comparison);
+            if (Value is TypeParameterSymbol argType && t2 is TypeParameterSymbol argType2)
+            {
+                return argType.Equals(argType2);
+            }
+            return false;
         }
 
         internal override ObsoleteAttributeData ObsoleteAttributeData => null;
@@ -118,22 +123,24 @@ namespace StarkPlatform.Compiler.Stark.Symbols
 
         internal override void AddNullableTransforms(ArrayBuilder<byte> transforms)
         {
-            throw new NotSupportedException();
         }
 
         internal override bool ApplyNullableTransforms(byte defaultTransformFlag, ImmutableArray<byte> transforms, ref int position, out TypeSymbol result)
         {
-            throw new NotSupportedException();
+            result = this;
+            return true;
         }
 
         internal override TypeSymbol SetNullabilityForReferenceTypes(Func<TypeSymbolWithAnnotations, TypeSymbolWithAnnotations> transform)
         {
-            throw new NotSupportedException();
+            return this;
         }
 
         internal override TypeSymbol MergeNullability(TypeSymbol other, VarianceKind variance, out bool hadNullabilityMismatch)
         {
-            throw new NotSupportedException();
+            Debug.Assert(this.Equals(other, TypeCompareKind.IgnoreDynamicAndTupleNames | TypeCompareKind.IgnoreNullableModifiersForReferenceTypes));
+            hadNullabilityMismatch = false;
+            return this;
         }
 
         public override bool IsRefLikeType => false;

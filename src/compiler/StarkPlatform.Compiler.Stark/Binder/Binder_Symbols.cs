@@ -614,9 +614,18 @@ namespace StarkPlatform.Compiler.Stark
                 if (!isArrayCreation && dimension != null)
                 {
                     var sliceGenericType = GetSpecialType(SpecialType.core_FixedArray_T_tSize, diagnostics, node);
-                    var size = BindValue(dimension, diagnostics, BindValueKind.RValue);
-                    var constArraySize = new ConstLiteralTypeSymbol(TypeSymbolWithAnnotations.Create(size.Type), size.ConstantValue.Int32Value);
-                    array = sliceGenericType.Construct(type.TypeSymbol, constArraySize);
+                    var sizeExpr = BindValue(dimension, diagnostics, BindValueKind.RValue);
+                    TypeSymbol sizeArgSymbol;
+                    if (sizeExpr.ConstantValue != null)
+                    {
+                        sizeArgSymbol = new ConstLiteralTypeSymbol(TypeSymbolWithAnnotations.Create(sizeExpr.Type), sizeExpr.ConstantValue.Value);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException($"The dimension `{dimension}` is not supported yet.");
+                    }
+                    
+                    array = sliceGenericType.Construct(type.TypeSymbol, sizeArgSymbol);
                 }
                 else
                 {

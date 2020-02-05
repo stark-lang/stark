@@ -3672,11 +3672,18 @@ namespace StarkPlatform.Cci
                 var constTypeReference = typeReference as IConstLiteralTypeReference;
                 if (constTypeReference != null)
                 {
+                    var constValue = constTypeReference.Value;
+
+                    if (constValue is ITypeReference typeParameterSymbol)
+                    {
+                        SerializeTypeReference(encoder, typeParameterSymbol);
+                        return;
+                    }
+                    
                     // ELEMENT_CONST_LITERAL_TYPE: 0x61
                     encoder.Builder.WriteByte((byte)CorElementType.ELEMENT_CONST_LITERAL_TYPE);
                     var underlyingTypeReference = constTypeReference.GetElementType(Context);
                     SerializeTypeReference(encoder, underlyingTypeReference);
-                    var constValue = constTypeReference.Value;
                     switch (Type.GetTypeCode(constValue.GetType()))
                     {
                         case TypeCode.Boolean:

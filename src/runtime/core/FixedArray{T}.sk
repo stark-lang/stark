@@ -28,18 +28,16 @@ public struct FixedArray<T, tSize> implements IArray<T> where tSize: is const in
         } 
     }
 
-    // public func operator [index: Index] -> ref T => ref this[index.offset(this.size)]
+    public func operator [index: Index] -> ref T => ref this[index.offset(this.size)]
 
-    // TODO: tSize is not working yet, as the compiler is expecting a literal constant
-
-    // public func operator [range: Range] -> Slice<[tSize]T,T> 
-    // {
-    //     get {
-    //         var begin = range.begin.offset(this.size)
-    //         var end = range.end.offset(this.size)
-    //         return new Slice<[tSize]T,T>(this, begin, end - begin + 1)
-    //     }
-    // }
+    public func operator [range: Range] -> Slice<[tSize]T,T> 
+    {
+        get {
+            var begin = range.begin.offset(this.size)
+            var end = range.end.offset(this.size)
+            return new Slice<[tSize]T,T>(this, begin, end - begin + 1)
+        }
+    }
 
     readable func Iterable<T, int>.iterate_begin() -> int => 0
 
