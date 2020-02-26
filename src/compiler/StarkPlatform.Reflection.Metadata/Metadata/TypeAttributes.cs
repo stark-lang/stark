@@ -28,7 +28,7 @@ namespace StarkPlatform.Reflection.Metadata
 
         /// <summary>Specifies class semantics information; the current class is contextful (else agile).</summary>
         /// <returns></returns>
-        ClassSemanticsMask = 32, // 0x00000060
+        ClassSemanticsMask = 0x60, // 0x00000060
 
         /// <summary>Specifies that the type is a class.</summary>
         /// <returns></returns>
