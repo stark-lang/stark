@@ -107,4 +107,6 @@ public module array_playground
 
     static func get_array_class_to_array(array: Array<u8>) -> []u8 => array
 
+    class ManagedObject {}
+    static func get_array_class_to_array_object(array: []ManagedObject) -> []object => array // TODO: generate a compiler error
 }    

@@ -1,0 +1,23 @@
+namespace play
+import core
+import core.diagnostics
+
+public module diagnostics_playground {
+
+    public static func toto() -> int
+    {
+        return 0
+    }
+
+    public class MyInnerClass {
+
+    }
+}
+
+public module diagnostics_playground_release {
+
+    public static func tata()
+    {
+        var x = new diagnostics_playground.MyInnerClass()
+    }
+}

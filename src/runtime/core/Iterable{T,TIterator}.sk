@@ -1,7 +1,7 @@
 namespace core
 
 /// Base interface for iterable items
-public interface Iterable<T, TIterator>
+public interface Iterable<out T, TIterator>
 {
     /// Starts the iterator
     readable func iterate_begin() -> TIterator

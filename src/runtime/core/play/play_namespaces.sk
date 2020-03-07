@@ -1,0 +1,32 @@
+/*
+// This file is generating multiple expected errors
+// play\play_namespaces.sk(4,1): error CS9034: A namespace must be declared first in a file before attributes, imports or extern aliases
+// play\play_namespaces.sk(12,1): error CS9035: Cannot declare multiple namespace in a file
+// play\play_namespaces.sk(20,1): error CS9035: Cannot declare multiple namespace in a file
+
+import core.runtime
+
+// declare a top level `core` namespace
+namespace core
+
+// belongs to `core`
+public partial module my_module {
+    // ...
+}
+
+// declare a top level `core.collections` namespace
+namespace core.collections
+
+// belongs to `core.collections`
+public partial class List<T> {
+    // ...
+}
+
+// declare a top level `anoter_core` namespace
+namespace another_core
+
+// belongs to `another_core`
+public partial module my_module2 {
+    // ...
+}
+*/

@@ -1,0 +1,25 @@
+/*
+public module inline_asm
+{
+    @Intrinsic
+    public static func get_value() -> int
+    {
+        unsafe asm {
+            push   r15
+            push   rbx
+            movsx  rdi,dl
+            xor    esi,esi
+            mov    rdx,-9
+            xor    r8d,r8d
+            xor    r9d,r9d
+            xor    r15,r15
+            mov    rbx,rsp
+            syscall
+            mov    rsp,rbx
+            pop    rbx
+            pop    r15
+            ret
+        }
+    }
+}
+*/

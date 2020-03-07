@@ -17,3 +17,39 @@ public struct Option<T>
     public func has_value -> bool => _has_value
     public func value -> T => _value
 }
+/*
+
+
+public union MyCheck
+{
+    public var x : i32
+    public var y : f32
+}
+
+public union struct Option<T>
+    with Some(value: T)
+    with None
+
+
+public union class Tree 
+    with Tip
+    with Node(value:int, left: Tree, right: Tree) 
+    {}
+
+public union struct Shape
+    with Rectangle(width: f32, length: f32)
+    with Circle(radius: f32)
+    with Prism(width: (f32, f32), height: f32) 
+    {}
+
+public struct MyValue(x: f32, y: f32) {}
+
+
+public interface IEquatable<T>
+{
+    readable func equals(value: T) -> bool
+}
+*/
+
+
+

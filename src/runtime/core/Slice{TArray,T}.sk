@@ -66,28 +66,15 @@ public struct Slice<TArray, T> implements IArray<T> where TArray : implements IA
 
 public module slice_playground
 {
-    static func get_slice_with_string() -> ~string
-    {
-        return "abcd" // return the slice "abcd"
-    }
+    public static func get_slice_with_string() -> ~string => "abcd" // return the slice "abcd"
+    
+    public static func get_slice_with_string_range() -> ~string => "abcd"[0..1]  // return the slice "ab"
 
-    static func get_slice_with_string_range() -> ~string
-    {
-        return "abcd"[0..1]  // return the slice "ab"
-    }
+    public static func get_slice_of_slice(slice: ~string) -> ~string => slice[0..2][0..1]  // return a slice of a slice from a slice
 
-    static func get_slice_of_slice(slice: ~string) -> ~string
-    {
-        return slice[0..2][0..1]  // return a slice of a slice from a slice
-    }
-
-    static func get_slice_with_array(array: []int) -> ~[]int
-    {
-        return array[0..1]  // return a slice from an array
-    }
+    public static func get_slice_with_array(array: []int) -> ~[]int =>  array[0..1]  // return a slice from an array
 
     /// The following method should not compile because int is not a valid IArray<T> type
-
     // static func get_slice_from_int(array: ~int)
     // {
     // }
