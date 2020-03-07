@@ -262,7 +262,7 @@ repository:
  
   string-literal:
     name: string.quoted.double.sk
-    begin: (?<!@)"
+    begin: (?<!\\)"
     beginCaptures:
       '0': {name: punctuation.definition.string.begin.sk}
     end: (")|((?:[^\\\n])$)
@@ -278,10 +278,10 @@ repository:
 
   verbatim-string-literal:
     name: string.quoted.double.sk
-    begin: '`"'
+    begin: '\\"'
     beginCaptures:
       '0': {name: punctuation.definition.string.begin.sk}
-    end: '"`'
+    end: '"'
     endCaptures:
       '0': {name: punctuation.definition.string.end.sk}
     patterns:
