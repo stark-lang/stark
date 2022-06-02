@@ -40,6 +40,10 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#generic-modifiers</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#inline-il</string>
       </dict>
       <dict>
@@ -80,6 +84,10 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#lifetime-identifier</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#keywords</string>
       </dict>
       <dict>
@@ -115,12 +123,19 @@
           </dict>
         </dict>
       </dict>
+      <key>generic-modifiers</key>
+      <dict>
+        <key>name</key>
+        <string>storage.modifier.sk</string>
+        <key>match</key>
+        <string>\b(lifetime|permission)\b</string>
+      </dict>
       <key>visibility-modifiers</key>
       <dict>
         <key>name</key>
         <string>storage.modifier.sk</string>
         <key>match</key>
-        <string>(?&lt;!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readable|transient|static|unsafe|virtual|sealed)\b</string>
+        <string>(?&lt;!\.)\b(abstract|async|const|extern|fixed|internal|isolated|unique|immutable|retainable|mutable|new|override|partial|private|protected|public|dynamic|readable|transient|static|unsafe|virtual|sealed)\b</string>
       </dict>
       <key>module-declaration</key>
       <dict>
@@ -305,6 +320,23 @@
           </dict>
           <dict>
             <key>match</key>
+            <string>\b(type)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.class.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.class.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
             <string>\b(struct)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
             <key>captures</key>
             <dict>
@@ -355,6 +387,29 @@
             </dict>
           </dict>
           <dict>
+            <key>match</key>
+            <string>\b(attr)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.attr.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.attr.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.type.sk</string>
+            <key>match</key>
+            <string>\b(type)\b</string>
+          </dict>
+          <dict>
             <key>name</key>
             <string>keyword.other.union.sk</string>
             <key>match</key>
@@ -383,6 +438,12 @@
             <string>keyword.other.enum.sk</string>
             <key>match</key>
             <string>\b(enum)\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.attr.sk</string>
+            <key>match</key>
+            <string>\b(attr)\b</string>
           </dict>
         </array>
       </dict>
@@ -634,6 +695,12 @@
             <string>keyword.control.flow.throw.sk</string>
             <key>match</key>
             <string>\bthrow\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.control.flow.ignore.sk</string>
+            <key>match</key>
+            <string>\bignore\b</string>
           </dict>
           <dict>
             <key>name</key>
@@ -916,6 +983,13 @@
         <string>constant.character.escape.sk</string>
         <key>match</key>
         <string>""</string>
+      </dict>
+      <key>lifetime-identifier</key>
+      <dict>
+        <key>name</key>
+        <string>variable.storage.lifetime.sk</string>
+        <key>match</key>
+        <string>#[A-Za-z_][A-Za-z_0-9]*</string>
       </dict>
       <key>verbatim-string-literal</key>
       <dict>

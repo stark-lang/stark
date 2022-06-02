@@ -11,6 +11,7 @@ patterns:
 - include: '#keywords'
 - include: '#builtin-types'
 - include: '#vector-types'
+- include: '#generic-modifiers'
 - include: '#inline-il'
 - include: '#visibility-modifiers'
 - include: '#attribute-declaration'
@@ -21,6 +22,7 @@ patterns:
 - include: '#invoke-declaration'
 - include: '#type-declaration'
 - include: '#inherit-declarations'
+- include: '#lifetime-identifier'
 - include: '#keywords'
 - include: '#literals'
 
@@ -33,9 +35,12 @@ repository:
     match: \b(f64x2|f32x4|i64x2|i32x4|i16x8|i8x16|u64x2|u32x4|u16x8|u8x16)\b
     captures:
       '1': {name: keyword.type.sk}
+  generic-modifiers:
+    name: storage.modifier.sk
+    match: \b(lifetime|permission)\b
   visibility-modifiers:
     name: storage.modifier.sk
-    match: (?<!\.)\b(abstract|async|const|extern|fixed|internal|isolated|immutable|retainable|mutable|new|override|partial|private|protected|public|readable|transient|static|unsafe|virtual|sealed)\b
+    match: (?<!\.)\b(abstract|async|const|extern|fixed|internal|isolated|unique|immutable|retainable|mutable|new|override|partial|private|protected|public|dynamic|readable|transient|static|unsafe|virtual|sealed)\b
   module-declaration:
     patterns:
     - match: \b(module)\b\s*([_[:alpha:]][_[:alnum:]]*)
@@ -87,6 +92,10 @@ repository:
       captures:
         '1': { name: keyword.other.class.sk }      
         '2': { name: entity.name.type.class.sk }      
+    - match: \b(type)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.class.sk }      
+        '2': { name: entity.name.type.class.sk }      
     - match: \b(struct)\b\s*([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.struct.sk }      
@@ -99,6 +108,12 @@ repository:
       captures:
         '1': { name: keyword.other.enum.sk }      
         '2': { name: entity.name.type.enum.sk }      
+    - match: \b(attr)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.attr.sk }      
+        '2': { name: entity.name.type.attr.sk }      
+    - name: keyword.other.type.sk
+      match: \b(type)\b
     - name: keyword.other.union.sk
       match: \b(union)\b
     - name: keyword.other.struct.sk
@@ -109,6 +124,8 @@ repository:
       match: \b(interface)\b
     - name: keyword.other.enum.sk
       match: \b(enum)\b
+    - name: keyword.other.attr.sk
+      match: \b(attr)\b
   extension-declaration:
     patterns:
     - match: \b(extension)\b\s*([_[:alpha:]][_[:alnum:]]*)\s*(?:<[^>]*>)?\s*\b(for)\b\s*([_[:alpha:]][_[:alnum:]]*)
@@ -181,6 +198,8 @@ repository:
         match: \bcontinue\b
       - name: keyword.control.flow.throw.sk
         match: \bthrow\b
+      - name: keyword.control.flow.ignore.sk
+        match: \bignore\b
       - name: keyword.control.flow.abort.sk
         match: \babort\b
       - name: keyword.control.flow.switch.sk
@@ -275,6 +294,10 @@ repository:
   verbatim-string-character-escape:
     name: constant.character.escape.sk
     match: '""'
+
+  lifetime-identifier:
+    name: variable.storage.lifetime.sk
+    match: '#[A-Za-z_][A-Za-z_0-9]*'
 
   verbatim-string-literal:
     name: string.quoted.double.sk
