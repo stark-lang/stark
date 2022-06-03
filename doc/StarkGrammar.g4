@@ -37,7 +37,7 @@ top_level_declaration
 // ------------------------------------------------------------------    
 
 module_declaration
-    : attr* visibility? 'module' module_path? identifier EOS
+    : attr* visibility? 'partial'? 'module' module_path? identifier EOS
     ;
 
 import_statement
