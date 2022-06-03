@@ -79,7 +79,7 @@ interface_declaration
     ;
 
 extension_declaration
-    : attr* visibility? 'partial'? 'extension' generic_parameters? FOR full_typename extension_constraint*  (EOS | '{' extension_members '}')
+    : attr* visibility? 'partial'? 'extension' generic_parameters? FOR qualified_type extension_constraint*  (EOS | '{' extension_members '}')
     ;
 
 union_declaration
@@ -121,11 +121,11 @@ struct_constraint
     ;
 
 implement_contraint
-    : 'implements' full_typename
+    : 'implements' qualified_type
     ;
 
 extends_constraint
-    : 'extends' full_typename
+    : 'extends' qualified_type
     ;
 
 struct_members
@@ -237,7 +237,7 @@ func_constraint
     ;
 
 throws_constraint
-    : 'throws' full_typename (',' full_typename)*
+    : 'throws' qualified_type (',' qualified_type)*
     ;
 
 property_constraint
@@ -352,13 +352,8 @@ lifetime:
     HASH_IDENTIFIER
     ;
 
-// Can be a type name or a func name
-fully_qualified_path
+qualified_type
     : module_path? identifier_with_generic_arguments 
-    ;
-
-full_typename
-    : fully_qualified_path
     ;
 
 at_identifier
@@ -530,7 +525,7 @@ argument_list:
 
 type:
     primitive_type
-    | full_typename
+    | qualified_type
     | ref_type
     | mutable_type
     | array_type
