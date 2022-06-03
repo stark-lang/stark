@@ -9,145 +9,85 @@
 
 grammar StarkGrammar;
 
-file_declaration:
-    module_declaration? 
-    import_statement*
-    top_level_declaration*
+// ------------------------------------------------------------------
+// Entrypoint
+// ------------------------------------------------------------------    
+
+file_declaration
+    : module_declaration? 
+      import_statement*
+      top_level_declaration*
     ;
 
 top_level_declaration
     : struct_declaration
     | union_declaration
+    | enum_declaration
     | interface_declaration
     | extension_declaration
     | global_func_declaration
     | const_declaration
-    | static_declaration
+    | static_declaration 
+    | attr_declaration
+    | lifetime_declaration
     ;
 
-module_declaration:
-    visibility_modifier? MODULE module_path? identifier EOS
+// ------------------------------------------------------------------
+// Top level Declaration
+// ------------------------------------------------------------------    
+
+module_declaration
+    : attr* visibility? 'module' module_path? identifier EOS
     ;
 
 import_statement
-    : IMPORT module_path? import_typename RIGHT_BRACE EOS
+    : 'import' module_path? import_identifier EOS
     ;
 
-import_typename
+import_identifier
     : identifier
-    | STAR
-    | LEFT_BRACE identifier (COMMA identifier)* RIGHT_BRACE
+    | '*'
+    | '{' identifier (',' identifier)* '}'
+    ;
+
+attr_declaration
+    : attr* visibility? 'attr' identifier parameters EOS
+    ;
+
+attr
+    : at_identifier arguments?
+    ;
+
+lifetime_declaration
+    : attr* visibility? 'lifetime' lifetime (('<' | '<=') lifetime)+ EOS
     ;
 
 const_declaration
-    : visibility_modifier? CONST identifier (COLON type_reference) EQUAL expression EOS
+    : attr* visibility? 'const' identifier (':' type)? '=' expression EOS
     ;
 
 static_declaration
-    : STATIC identifier (: type_reference) EQUAL expression EOS
+    : attr* 'static' identifier (':' type)? '=' expression EOS
     ;
 
-generic_definition_name:
-    identifier generic_parameters?
+struct_declaration
+    : attr* visibility? 'partial'? 'ref'? 'mutable'? 'struct' identifier_with_generic_parameters parameters? struct_constraint* (EOS | '{' struct_members '}')
     ;
 
-generic_name:
-    identifier generic_arguments?
+interface_declaration
+    : attr* visibility? 'partial'? 'interface' identifier_with_generic_parameters parameters? interface_constraint* (EOS | '{' interface_members '}')
     ;
 
-generic_parameters:
-    GRAVE LESS_THAN generic_parameter_list GREATER_THAN
+extension_declaration
+    : attr* visibility? 'partial'? 'extension' generic_parameters? FOR full_typename extension_constraint*  (EOS | '{' extension_members '}')
     ;
 
-generic_arguments:
-    GRAVE LESS_THAN generic_argument_list GREATER_THAN
+union_declaration
+    : attr* visibility? 'union' identifier_with_generic_parameters union_constraint* '{' union_members '}'
     ;
 
-generic_parameter_list:
-    generic_parameter generic_parameter_cont*
-    ;
-
-generic_argument_list:
-    generic_argument generic_argument_cont*
-    ;
-
-generic_parameter_cont:
-    COMMA generic_parameter
-    ;
-
-generic_argument_cont:
-    COMMA generic_argument
-    ;    
-
-generic_parameter:
-    generic_parameter_name
-    | lifetime
-    ;
-
-generic_argument:
-    generic_argument_type
-    | generic_argument_literal
-    | lifetime
-    ;
-
-generic_argument_literal:
-    literal
-    ;
-
-generic_argument_type:
-    type_reference
-    ;
-
-generic_parameter_initializer:
-    EQUAL generic_argument
-    ;
-
-generic_parameter_name: 
-    identifier
-    ;
-
-lifetime:
-    HASH identifier
-    ;
-
-// Can be a type name or a func name
-fully_qualified_path:
-    module_path? generic_name 
-    ;
-
-full_typename:
-    fully_qualified_path
-    ;
-
-identifier:
-    IDENTIFIER;
-
-module_path:
-    (identifier COLON_COLON)+
-    ;
-
-declaration: 
-    struct_declaration
-    ;
-
-struct_declaration:
-    visibility_modifier? PARTIAL? REF? MUTABLE? STRUCT generic_definition_name parameters? struct_constraint* (EOS | LEFT_BRACE struct_members RIGHT_BRACE)
-    ;
-
-interface_declaration:
-    visibility_modifier? PARTIAL? INTERFACE generic_definition_name parameters? interface_constraint* (EOS | LEFT_BRACE interface_members RIGHT_BRACE)
-    ;
-
-extension_declaration:
-    visibility_modifier? PARTIAL? EXTENSION generic_parameters? FOR full_typename extension_constraint*  (EOS | LEFT_BRACE extension_members RIGHT_BRACE)
-    ;
-
-union_declaration:
-    visibility_modifier? UNION generic_definition_name union_constraint* LEFT_BRACE union_members RIGHT_BRACE
-    ;
-
-enum_declaration:
-    visibility_modifier? ENUM identifier (COLON primitive_type)? LEFT_BRACE enum_members RIGHT_BRACE
+enum_declaration
+    : attr* visibility? 'enum' identifier (':' primitive_type)? '{' enum_members '}'
     ;
 
 union_constraint
@@ -155,14 +95,14 @@ union_constraint
     ;
 
 where_constraint
-    : WHERE (identifier | lifetime) COLON where_constraint_part (COMMA where_constraint_part)*
+    : 'where' (identifier | lifetime) ':' where_constraint_part (',' where_constraint_part)*
     ;
 
 where_constraint_part
-    : IS type_reference
-    | CAN NEW 
-    | HAS LIFETIME (LESS_THAN | LESS_THAN_OR_EQUAL) lifetime
-    | HAS CONSTRUCTOR identifier? parameters
+    : 'is' type
+    | 'can' 'new'
+    | 'has' 'lifetime' ('<' | '<=') lifetime
+    | 'has' 'constructor' identifier? parameters
     ;
 
 extension_constraint
@@ -180,12 +120,12 @@ struct_constraint
     | where_constraint
     ;
 
-implement_contraint:
-    IMPLEMENTS full_typename
+implement_contraint
+    : 'implements' full_typename
     ;
 
-extends_constraint:
-    EXTENDS full_typename
+extends_constraint
+    : 'extends' full_typename
     ;
 
 struct_members
@@ -196,20 +136,20 @@ struct_members
     ;    
 
 union_members
-    : union_member (COMMA union_member)* COMMA?
+    : union_member (',' union_member)* ','?
     ; 
 
 union_member
     : identifier parameters
-    | type_reference
+    | type
     ;
 
 enum_members
-    : enum_member (COMMA enum_member)* COMMA?
+    : enum_member (',' enum_member)* ','?
     ;
 
 enum_member
-    : identifier (EQUAL expression)
+    : identifier ('=' expression)
     ;
 
 interface_members
@@ -223,68 +163,72 @@ extension_members
       func_member_declaration_with_visibility*
     ;    
 
-field_declaration:
-    visibility_modifier? (LET | VAR) identifier COLON type_reference EOS
+field_declaration
+    : attr* visibility? ('let' | 'var') identifier ':' type EOS
     ;
 
-func_member_declaration_with_visibility:
-    visibility_modifier? func_member_declaration
+// ------------------------------------------------------------------
+// Functions
+// ------------------------------------------------------------------
+
+func_member_declaration_with_visibility
+    : attr* visibility? func_member_declaration
     ;    
 
 global_func_declaration
-    : visibility_modifier? global_func_simple_declaration
-    | visibility_modifier? global_func_property_declaration
+    : attr* visibility? global_func_simple_declaration
+    | attr* visibility? global_func_property_declaration
     ;        
 
-func_member_declaration:
-    func_simple_declaration
+func_member_declaration
+    : func_simple_declaration
     | func_property_declaration
     | func_array_declaration
     ;
 
-func_simple_declaration: 
-    func_modifier raw_func_simple_declaration
+func_simple_declaration
+    : func_modifier raw_func_simple_declaration
     ;
 
-func_property_declaration: 
-    func_modifier raw_func_property_declaration
+func_property_declaration
+    : func_modifier raw_func_property_declaration
     ;
 
-global_func_simple_declaration: 
-    global_func_modifier raw_func_simple_declaration
+global_func_simple_declaration
+    : global_func_modifier raw_func_simple_declaration
     ;
 
-global_func_property_declaration: 
-    global_func_modifier raw_func_property_declaration
+global_func_property_declaration
+    : global_func_modifier raw_func_property_declaration
     ;    
 
-raw_func_simple_declaration: 
-    FUNC generic_definition_name parameters func_return_type? throws_constraint? func_constraint* func_body
+raw_func_simple_declaration
+    : 'func' identifier_with_generic_parameters parameters func_return_type? throws_constraint? func_constraint* func_body
     ;
 
-raw_func_property_declaration: 
-    FUNC generic_definition_name property_type property_constraint* property_body
+raw_func_property_declaration
+    : 'func' identifier_with_generic_parameters func_return_type property_constraint* property_body
     ;
 
-func_array_declaration: 
-    func_this_modifier FUNC LEFT_SQUARE_BRACKET identifier COLON type_reference RIGHT_SQUARE_BRACKET property_constraint* property_body
+func_array_declaration
+    : func_this_modifier 'func' '[' identifier ':' type ']' func_return_type property_constraint* property_body
     ;
 
-func_global_declaration: 
-    func_global_modifier FUNC generic_definition_name parameters func_return_type? throws_constraint? func_constraint* func_body
-    func_global_modifier FUNC generic_definition_name property_type property_body
+func_global_declaration
+    : func_global_modifier 'func' identifier_with_generic_parameters parameters func_return_type? throws_constraint? func_constraint* func_body
+    | func_global_modifier 'func' identifier_with_generic_parameters func_return_type property_body
     ;
 
-func_modifier:
-    PARTIAL? UNSAFE? (THIS | MUTABLE THIS)?
+func_modifier
+    : 'partial'? 'unsafe'? ('this' | 'mutable' 'this')?
     ;
 
-global_func_modifier:
-    PARTIAL? UNSAFE?
+global_func_modifier
+    : 'partial'? 'unsafe'?
     ;
 
-func_this_modifier:
-    PARTIAL? UNSAFE? (THIS | MUTABLE THIS)
+func_this_modifier
+    : 'partial'? 'unsafe'? ('this' | 'mutable' 'this')
     ;
 
 func_constraint
@@ -293,7 +237,7 @@ func_constraint
     ;
 
 throws_constraint
-    : THROWS full_typename (COMMA full_typename)*
+    : 'throws' full_typename (',' full_typename)*
     ;
 
 property_constraint
@@ -301,207 +245,290 @@ property_constraint
     ;
 
 requires_constraint
-    : REQUIRES expression
+    : 'requires' expression
     ;
 
-func_global_modifier:
-    PARTIAL? UNSAFE?
+func_global_modifier
+    : 'partial'? 'unsafe'?
     ;
 
-constructor_declaration_with_visibility:
-    constructor_definition_with_visibility func_body;
+constructor_declaration_with_visibility
+    : constructor_definition_with_visibility func_body
+    ;
 
-constructor_definition_with_visibility:
-    visibility_modifier? constructor_definition;
+constructor_definition_with_visibility
+    : attr* visibility? constructor_definition
+    ;
 
-constructor_definition:
-    constructor_modifier CONSTRUCTOR identifier? parameters constructor_constraint*;
+constructor_definition
+    : constructor_modifier 'constructor' identifier? parameters constructor_constraint*
+    ;
 
 constructor_constraint
     : requires_constraint
     ;
 
-constructor_modifier:
-    PARTIAL? UNSAFE?
+constructor_modifier
+    : 'partial'? 'unsafe'?
     ;    
 
-func_return_type:
-    MINUS_GREATER_THAN type_reference
+func_return_type
+    : '->' attr* type
     ;
 
-func_body:
-    func_simple_body EOS
-    | property_block_body
+func_body
+    : func_simple_body EOS
+    | block_statement
     ;
 
 property_body
     : func_simple_body
-    | property_getter
-      property_setter?
+    | property_block_body
     ;
 
 property_block_body
-    : LEFT_SQUARE_BRACKET property_getter property_setter? RIGHT_SQUARE_BRACKET
+    : '{' property_getter property_setter? '}'
     ;
 
-property_type:
-    COLON type_reference
+property_getter
+    : 'get' func_body  // GET contextual only in property getter/setter
+    ;
+property_setter
+    : 'set' func_body  // SET contextual only in property getter/setter
     ;
 
-property_getter:
-    GET func_body  // GET contextual only in property getter/setter
-    ;
-property_setter:
-    SET func_body  // SET contextual only in property getter/setter
+func_simple_body
+    : '=>' expression
     ;
 
-func_simple_body:
-    EQUAL_GREATER_THAN expression
+func_block_body
+    : block_statement
     ;
 
-func_block_body:
-    block_statement
+// ------------------------------------------------------------------
+// Shared
+// ------------------------------------------------------------------
+
+identifier_with_generic_parameters
+    : identifier generic_parameters?
     ;
 
-block_statement:
-    LEFT_BRACE statement* RIGHT_BRACE;
+identifier_with_generic_arguments
+    : identifier generic_arguments?
+    ;
+
+generic_parameters
+    : '`' '<' generic_parameter (',' generic_parameter)* '>'
+    ;
+
+generic_arguments
+    : '`' '<' generic_argument (',' generic_argument)* '>'
+    ;
+
+generic_parameter
+    : generic_parameter_name ('=' generic_argument)?
+    | lifetime
+    ;
+
+generic_argument
+    : generic_argument_type
+    | generic_argument_literal
+    | lifetime
+    ;
+
+generic_argument_literal
+    : literal
+    ;
+
+generic_argument_type
+    : type
+    ;
+
+generic_parameter_name
+    : identifier
+    ;
+
+lifetime:
+    HASH_IDENTIFIER
+    ;
+
+// Can be a type name or a func name
+fully_qualified_path
+    : module_path? identifier_with_generic_arguments 
+    ;
+
+full_typename
+    : fully_qualified_path
+    ;
+
+at_identifier
+    : AT_IDENTIFIER
+    ;
+
+identifier
+    : IDENTIFIER
+    ;
+
+module_path
+    : (identifier '::')+
+    ;
+
+parameters
+    : '(' parameter_list? ')'
+    ;
+
+parameter_list
+    : parameter parameter_cont*
+    ;
+
+parameter_cont
+    : ',' parameter
+    ;
+
+parameter
+    : parameter_name ':' attr* type
+    ;
+
+parameter_name
+    : IDENTIFIER
+    ;
+
+visibility
+    : 'public' 
+    ;
+
+// ------------------------------------------------------------------
+// Statements
+// ------------------------------------------------------------------
 
 statement:
     let_var_statement
     | for_statement
     | if_statement
     | while_statement
-    | assign_statement
     | unsafe_statement
     | block_statement
     | expression_statement
+    | assign_statement
     ;
 
 let_var_statement:
-    (LET | VAR) identifier COLON type_reference (EQUAL expression) EOS
+    attr* ('let' | 'var') identifier ':' type ('=' expression) EOS
     ;
 
 for_statement:
-    FOR identifier IN expression block_statement
+    attr* 'for' identifier 'in' expression block_statement
     ;
 
 if_statement:
-    IF expression THEN block_statement (ELSE IF expression THEN block_statement)* (ELSE block_statement)?
+    attr* 'if' expression 'then' block_statement ('else' 'if' expression 'then' block_statement)* ('else' block_statement)?
     ;
 
 while_statement:
-    WHILE expression block_statement
+    attr* 'while' expression block_statement
     ;
 
+block_statement:
+    attr* '{' statement* '}';
+
 unsafe_statement:
-    UNSAFE block_statement
+    'unsafe' block_statement
     ;
+
+expression_statement
+    : expression_simple EOS
+    ;
+
+assign_statement:
+    left_expression ('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '<' '<' '=' |  '>' '>' '=' | '%=' ) expression EOS
+    ;
+
+// ------------------------------------------------------------------
+// Expressions
+// ------------------------------------------------------------------
 
 expression
     : expression_simple
-    | IF expression_simple THEN expression_simple ELSE expression_simple
-    | UNSAFE expression_simple
+    | 'if' expression_simple 'then' expression_simple 'else' expression_simple
+    | 'unsafe' expression_simple
     ;
 
 // TODO: order is still not fully correct for operator precedence
 expression_simple
-    : LEFT_PAREN expression_list RIGHT_PAREN
-    | THIS
+    : '(' expression_list ')'
+    | 'this'
     | literal
     // left_expression
     | expression_simple expression_path
     | module_path? (identifier | method_call)
-    | module_path? generic_name DOT (identifier | method_call)
+    | module_path? identifier_with_generic_arguments '.' (identifier | method_call)
     // end of left_expression
-    | DOT (identifier | method_call)
+    | '.' (identifier | method_call)
     | new_expression
-    | prefix=(PLUS|MINUS) expression_simple
-    | prefix=(TILDE|BANG) expression_simple
-    | expression_simple bop=AS expression_simple
-    | expression_simple bop=(STAR|DIVIDE|MODULO) expression_simple
-    | expression_simple bop=(PLUS|MINUS) expression_simple
-    | expression_simple (LESS_THAN LESS_THAN | GREATER_THAN GREATER_THAN) expression_simple
-    | expression_simple bop=(LESS_THAN_OR_EQUAL | GREATER_THAN_OR_EQUAL | LESS_THAN | GREATER_THAN) expression_simple
-    | expression_simple bop=IS type_reference
-    | expression_simple bop=(EQUAL_EQUAL | BANGL_EQUAL) expression_simple
-    | expression_simple bop=BITWISE_AND expression_simple
-    | expression_simple bop=BITWISE_XOR expression_simple
-    | expression_simple bop=BITWISE_OR expression_simple
-    | expression_simple bop=AND expression_simple
-    | expression_simple bop=OR expression_simple
-    | REF expression_simple
-    | AND expression_simple
-    | TRY expression_simple (ELSE CATCH)?
-    | IGNORE expression_simple
+    | prefix=('+'|'-') expression_simple
+    | prefix=('~'|'!') expression_simple
+    | expression_simple bop='as' expression_simple
+    | expression_simple bop=('*'|'/'|'%') expression_simple
+    | expression_simple bop=('+'|'-') expression_simple
+    | expression_simple ('<' '<' | '>' '>') expression_simple
+    | expression_simple bop=('<=' | '>=' | '<' | '>') expression_simple
+    | expression_simple bop=IS type
+    | expression_simple bop=('==' | '!=') expression_simple
+    | expression_simple bop='&' expression_simple
+    | expression_simple bop='^' expression_simple
+    | expression_simple bop='|' expression_simple
+    | expression_simple bop='&&' expression_simple
+    | expression_simple bop='||' expression_simple
+    | 'ref' expression_simple
+    | '&' expression_simple
+    | 'catch'? 'try' expression_simple
+    | 'ignore' expression_simple
     ;
 
 left_expression
     : module_path? (identifier | method_call)
     | literal expression_path
-    | THIS expression_path
-    | LEFT_PAREN expression_list RIGHT_PAREN expression_path
+    | 'this' expression_path
+    | '(' expression_list ')' expression_path
     | left_expression expression_path
     ;
 
 expression_path
-    : DOT identifier
-    | DOT method_call
-    | LEFT_SQUARE_BRACKET expression RIGHT_SQUARE_BRACKET
-    ;
-
-expression_statement
-    : expression_simple
-    ;
-
-assign_statement:
-    left_expression (EQUAL | PLUS_EQUAL | MINUS_EQUAL | STAR_EQUAL | DIVIDE_EQUAL | BITWISE_AND_EQUAL | BITWISE_OR_EQUAL | BITWISE_XOR_EQUAL | GREATER_THAN GREATER_THAN_OR_EQUAL | LESS_THAN LESS_THAN_OR_EQUAL | MODULO_EQUAL) expression
+    : '.' identifier
+    | '.' method_call
+    | '[' expression ']'
     ;
 
 new_expression:
-    NEW lifetime? type_constructor
+    'new' lifetime? type_constructor
     ;
 
 type_constructor:
-    module_path? generic_name arguments
+    module_path? identifier_with_generic_arguments arguments
     // TODO: Add array constructor
     ;    
 
 method_call:
-    generic_name arguments
+    identifier_with_generic_arguments arguments
     ;
 
 expression_list:
-    expression (COMMA expression)*
+    expression (',' expression)*
     ;
 
 arguments:
-    LEFT_PAREN argument_list? RIGHT_PAREN
+    '(' argument_list? ')'
     ;
 
 argument_list:
-    expression argument_cont*
+    expression (',' expression)*
     ;
 
-argument_cont:
-    COMMA expression;
+// ------------------------------------------------------------------
+// Types
+// ------------------------------------------------------------------
 
-parameters:
-    LEFT_PAREN parameter_list? RIGHT_PAREN;
-
-parameter_list:
-    parameter parameter_cont*;
-
-parameter_cont:
-     COMMA parameter;
-
-parameter:
-    parameter_name COLON type_reference;
-
-parameter_name:
-    IDENTIFIER
-    ;
-
-type_reference:
+type:
     primitive_type
     | full_typename
     | ref_type
@@ -513,36 +540,54 @@ type_reference:
     | const_type
     ;
 
-primitive_type:
-    TYPE_BOOL | TYPE_U8 | TYPE_U16 | TYPE_U32 | TYPE_U64 | TYPE_U128 | TYPE_I8 | TYPE_I16 | TYPE_I32 | TYPE_I64 | TYPE_I128 | TYPE_F32 | TYPE_F64;
+primitive_type
+    : 'bool' 
+    | 'u8'
+    | 'u16'
+    | 'u32'
+    | 'u64'
+    | 'u128'
+    | 'i8'
+    | 'i16'
+    | 'i32'
+    | 'i64'
+    | 'i128'
+    | 'f32'
+    | 'f64'
+    ;
 
 const_type:
-    CONST type_reference
+    'const' type
     ;
 
 ref_type:
-    UNIQUE? REF lifetime? type_reference
+    'unique'? 'ref' lifetime? type
     ;
 
 mutable_type:
-    MUTABLE type_reference
+    'mutable' type
     ;
 
 array_type:
-    LEFT_SQUARE_BRACKET type_reference RIGHT_SQUARE_BRACKET 
+    '[' type ']' 
     ;
 
+// We will validate the <expression> for the dimension in the semantic analysis
 fixed_array_type:
-    LEFT_SQUARE_BRACKET type_reference COMMA expression RIGHT_SQUARE_BRACKET 
+    '[' type ',' expression ']' 
     ;    
 
 slice_type:
-    TILDE type_reference
+    '~' type
     ;
 
 pointer_type:
-    STAR type_reference
+    '*' type
     ;
+
+// ------------------------------------------------------------------
+// Literals
+// ------------------------------------------------------------------
 
 literal_integer:
     DECIMAL_LITERAL | HEX_LITERAL | OCT_LITERAL | BINARY_LITERAL;
@@ -570,15 +615,12 @@ literal:
     | literal_string
     ;
 
-visibility_modifier:
-    PUBLIC 
-    ;
-
-// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------
 // TOKENS
-// ------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 STRUCT: 'struct';
+ATTR: 'attr';
 INTERFACE: 'interface';
 ENUM: 'enum';
 UNION: 'union';
@@ -633,13 +675,11 @@ LEFT_PAREN: '(';
 RIGHT_PAREN: ')';
 LEFT_BRACE: '{';
 RIGHT_BRACE: '}';
-COLON: ':';
 COLON_COLON: '::';
-EQUAL: '=';
+COLON: ':';
 STAR: '*';
 TILDE: '~';
 BANG: '!';
-HASH: '#';
 COMMA: ',';
 GRAVE: '`';
 LESS_THAN: '<';
@@ -654,7 +694,7 @@ MINUS: '-';
 DIVIDE: '/';
 MODULO: '%';
 EQUAL_EQUAL: '==';
-BANGL_EQUAL: '!=';
+BANG_EQUAL: '!=';
 BITWISE_AND: '&';
 BITWISE_OR: '|';
 BITWISE_XOR: '^';
@@ -668,6 +708,7 @@ BITWISE_AND_EQUAL: '&=';
 BITWISE_OR_EQUAL: '|=';
 BITWISE_XOR_EQUAL: '^=';
 MODULO_EQUAL: '%=';
+EQUAL: '=';
 
 TYPE_BOOL:   'bool';
 
@@ -713,13 +754,19 @@ COMMENT:            '/*' .*? '*/'    -> channel(HIDDEN);
 LINE_COMMENT:       '//' ~[\r\n]*    -> channel(HIDDEN);
 
 IDENTIFIER: ([_]+ LetterOnly LetterOrDigit* | LetterOnly LetterOrDigit*);
-
 UNDERSCORE: '_';
 
-EOS: [\n;];
+HASH_IDENTIFIER: '#' IDENTIFIER;
+HASH: '#';
+
+AT_IDENTIFIER: '@' IDENTIFIER;
+AT: '@';
+
+// This is not fully correct, that should not be hidden, 
+// but we don't want to handle correctly NEW_LINE in this grammar
+EOS: [\n;] -> channel(HIDDEN);
 
 // Fragment rules
-
 fragment ExponentPart
     : [eE] [+-]? Digits
     ;
