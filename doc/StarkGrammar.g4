@@ -483,12 +483,6 @@ expression
     : expression_simple
     | 'if' expression_simple 'then' expression_simple 'else' expression_simple
     | 'unsafe' expression_simple
-    | 'ignore' expression_simple
-    | 'async' expression_simple
-    | 'await' expression_simple
-    | 'throw' expression_simple
-    | 'catch'? 'try' expression_simple
-    | ('ref' | '&') expression_simple
     ;
 
 // TODO: order is still not fully correct for operator precedence
@@ -520,6 +514,12 @@ expression_simple
     | expression_simple bop='|' expression_simple
     | expression_simple bop='&&' expression_simple
     | expression_simple bop='||' expression_simple
+    | ('ref' | '&') expression_simple
+    | 'ignore' expression_simple
+    | 'async' expression_simple
+    | 'await' expression_simple
+    | 'throw' expression_simple
+    | 'catch'? 'try' expression_simple
     ;
 
 left_expression
