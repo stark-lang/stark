@@ -238,7 +238,7 @@ func_property_part
 
 
 func_pre_modifier
-    : 'partial'? 'unsafe'? 'async'?
+    : 'partial'? 'unsafe'? async?
     ;
 
 func_this
@@ -320,6 +320,24 @@ func_block_body
     : block_statement
     ;
 
+// parametrize async/await
+async
+    : 'async'
+    | 'async' '`' async_await_generic_param
+    | 'async' '`' '<' async_await_generic_param '>'
+    ;
+
+await
+    : 'await'
+    | 'await' '`' async_await_generic_param
+    | 'await' '`' '<' async_await_generic_param '>'
+    ;
+
+async_await_generic_param
+    : identifier
+    | literal_bool
+    ;
+
 // ------------------------------------------------------------------
 // Shared
 // ------------------------------------------------------------------
@@ -338,6 +356,7 @@ generic_parameters
 
 generic_arguments
     : '`' '<' generic_argument (',' generic_argument)* '>'
+    | '`' (identifier | lifetime | literal_integer | literal_bool | primitive_type) // for small one arg generic (e.g no module path)
     ;
 
 generic_parameter
@@ -516,8 +535,8 @@ expression_simple
     | expression_simple bop='||' expression_simple
     | ('ref' | '&') expression_simple
     | 'ignore' expression_simple
-    | 'async' expression_simple
-    | 'await' expression_simple
+    | async expression_simple
+    | await expression_simple
     | 'throw' expression_simple
     | 'catch'? 'try' expression_simple
     ;
