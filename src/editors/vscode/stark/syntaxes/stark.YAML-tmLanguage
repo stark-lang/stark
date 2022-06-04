@@ -6,7 +6,6 @@ uuid: 582789B5-991D-49E1-8E39-54327B3DBDFF
 
 patterns:
 - include: '#comment'
-- include: '#extension-declaration'
 - include: '#control-keywords'
 - include: '#keywords'
 - include: '#builtin-types'
@@ -88,26 +87,15 @@ repository:
         '1': { name: keyword.other.namespace.sk }      
   type-declaration:
     patterns:
-    - match: \b(class)\b\s*([_[:alpha:]][_[:alnum:]]*)
+    - match: \b(struct|union|enum|interface|unit|type)\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
-        '1': { name: keyword.other.class.sk }      
+        '1': { name: keyword.other.type.sk }      
         '2': { name: entity.name.type.class.sk }      
-    - match: \b(type)\b\s*([_[:alpha:]][_[:alnum:]]*)
+    - match: \b(extension)(?:\s*`<.*?>)?\s*(for)\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
-        '1': { name: keyword.other.class.sk }      
-        '2': { name: entity.name.type.class.sk }      
-    - match: \b(struct)\b\s*([_[:alpha:]][_[:alnum:]]*)
-      captures:
-        '1': { name: keyword.other.struct.sk }      
-        '2': { name: entity.name.type.struct.sk }      
-    - match: \b(interface)\b\s*([_[:alpha:]][_[:alnum:]]*)
-      captures:
-        '1': { name: keyword.other.interface.sk }      
-        '2': { name: entity.name.type.interface.sk }      
-    - match: \b(enum)\b\s*([_[:alpha:]][_[:alnum:]]*)
-      captures:
-        '1': { name: keyword.other.enum.sk }      
-        '2': { name: entity.name.type.enum.sk }      
+        '1': { name: keyword.other.type.sk }      
+        '2': { name: keyword.other.for.sk }      
+        '3': { name: entity.name.type.class.sk }      
     - match: \b(attr)\b\s*([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.attr.sk }      
@@ -126,17 +114,6 @@ repository:
       match: \b(enum)\b
     - name: keyword.other.attr.sk
       match: \b(attr)\b
-  extension-declaration:
-    patterns:
-    - match: \b(extension)\b\s*([_[:alpha:]][_[:alnum:]]*)\s*(?:<[^>]*>)?\s*\b(for)\b\s*([_[:alpha:]][_[:alnum:]]*)
-      captures:
-        '1': { name: keyword.other.extension.sk }      
-        '2': { name: entity.name.type.extension.sk }      
-        '3': { name: keyword.other.for.sk }      
-        '4': { name: entity.name.type.class.sk }      
-    - match: \b(extension)\b
-      captures:
-        '1': { name: keyword.other.extension.sk }      
   inherit-declarations:
     patterns:
     - match: \b(extends)\b\s*([_[:alpha:]][_[:alnum:]]*)
@@ -153,18 +130,22 @@ repository:
       match: \b(implements)\b
   func-declaration:
     patterns:
-    - match: \b(func)\b\s*(operator)\b
+    - match: \b(func(?:\s+mutable\s+this|\s+this))\s+(operator)\b
       captures:
         '1': { name: keyword.other.func.sk }      
         '2': { name: keyword.other.operator.sk }      
-    - match: \b(func)\b\s*([_[:alpha:]][_[:alnum:]]*)
+    - match: \b(func(?:\s+mutable\s+this|\s+this))\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.func.sk }      
         '2': { name: entity.name.function.cs  }      
-    - name: keyword.other.func.sk
-      match: \bfunc\b
+    - match: \b(constructor)(\s+[_[:alpha:]][_[:alnum:]]*)?
+      captures:
+        '1': { name: keyword.other.func.sk }      
+        '2': { name: entity.name.function.cs  }      
     - name: keyword.other.constructor.sk
       match: \bconstructor\b
+    - name: keyword.other.func.sk
+      match: \bfunc\b
   invoke-declaration:
     patterns:
     - match: '([_[:alpha:]][_[:alnum:]]*)(?:\s*\()'

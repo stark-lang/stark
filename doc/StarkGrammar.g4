@@ -13,7 +13,9 @@ grammar StarkGrammar;
 // Entrypoint
 // ------------------------------------------------------------------    
 
+
 file_declaration
+    // Expected to be in this order, we will warning otherwise
     : module_declaration? 
       import_statement*
       top_level_declaration*
@@ -32,6 +34,8 @@ top_level_declaration
     | lifetime_declaration
     | unit_declaration
     | type_declaration
+    | alias_type_declaration
+    | alias_func_declaration
     ;
 
 // ------------------------------------------------------------------
@@ -73,27 +77,35 @@ static_declaration
     ;
 
 struct_declaration
-    : attr* visibility? 'partial'? 'type' 'ref'? 'mutable'? 'struct' identifier_with_generic_parameters parameters? struct_constraint* (EOS | '{' struct_members '}')
+    : attr* visibility? 'partial'? 'ref'? 'mutable'? 'struct' identifier_with_generic_parameters parameters? struct_constraint* (EOS | '{' struct_members '}')
     ;
 
 interface_declaration
-    : attr* visibility? 'partial'? 'type' 'interface' identifier_with_generic_parameters parameters? interface_constraint* (EOS | '{' interface_members '}')
+    : attr* visibility? 'partial'? 'interface' identifier_with_generic_parameters parameters? interface_constraint* (EOS | '{' interface_members '}')
     ;
 
 extension_declaration
-    : attr* visibility? 'partial'? 'type' 'extension' generic_parameters? FOR qualified_type extension_constraint*  (EOS | '{' extension_members '}')
+    : attr* visibility? 'partial'? 'extension' generic_parameters? FOR qualified_type extension_constraint*  (EOS | '{' extension_members '}')
     ;
 
 union_declaration
-    : attr* visibility? 'type' 'union' identifier_with_generic_parameters union_constraint* '{' union_members '}'
+    : attr* visibility? 'union' identifier_with_generic_parameters union_constraint* '{' union_members '}'
     ;
 
 enum_declaration
-    : attr* visibility? 'type' 'enum' identifier (':' primitive_type)? '{' enum_members '}'
+    : attr* visibility? 'enum' identifier (':' primitive_type)? '{' enum_members '}'
     ;
 
 type_declaration
-    : attr* visibility? 'type' 'indirect' identifier_with_generic_parameters where_constraint* '=' type EOS
+    : attr* visibility? 'type' identifier_with_generic_parameters where_constraint* '=' type EOS
+    ;
+
+alias_type_declaration
+    : attr* visibility? 'alias' 'type' identifier '=' type EOS
+    ;
+
+alias_func_declaration
+    : attr* visibility? 'alias' 'func' identifier '=' qualified_name (DOT identifier)? EOS
     ;
 
 union_constraint
@@ -106,7 +118,7 @@ where_constraint
 
 where_constraint_part
     : 'is' type
-    | 'is' 'type' ('enum' | 'union' | 'struct' | 'interface' | 'unit')
+    | 'enum' | 'union' | 'struct' | 'interface' | 'unit'
     | 'can' 'new'
     | 'has' 'lifetime' ('<' | '<=') lifetime
     | 'has' 'constructor' identifier? parameters
@@ -136,6 +148,7 @@ extends_constraint
     ;
 
 struct_members
+    // Expected to be in this order, we will warning otherwise
     : import_statement*
       const_declaration*
       field_declaration*
@@ -161,12 +174,13 @@ enum_member
     ;
 
 interface_members
-    : import_statement*
-      constructor_definition*
-      func_member_declaration_with_visibility*
+    // Expected to be in this order, we will warning otherwise
+    : (attr* constructor_definition)*
+      (attr* func_member_declaration)*
     ;
 
 extension_members
+    // Expected to be in this order, we will warning otherwise
     : import_statement*
       const_declaration*
       constructor_declaration_with_visibility*
@@ -194,39 +208,39 @@ unit_expression
 
 func_member_declaration_with_visibility
     : attr* visibility? func_member_declaration
-    ;    
+    ;
 
 global_func_declaration
-    : attr* visibility? func_static_regular_declaration
-    | attr* visibility? func_static_property_declaration
+    : attr* visibility? func_static_regular_declaration_part
+    | attr* visibility? func_static_property_declaration_part
     ;        
 
 func_member_declaration
-    : func_this_regular_declaration
-    | func_this_property_declaration
-    | func_this_array_declaration
-    | func_static_regular_declaration
-    | func_static_property_declaration
+    : func_this_regular_declaration_part
+    | func_this_property_declaration_part
+    | func_this_array_declaration_part
+    | func_static_regular_declaration_part
+    | func_static_property_declaration_part
     ;
 
-func_this_regular_declaration
+func_this_regular_declaration_part
     : func_pre_modifier 'func' func_this func_regular_part
     ;
 
-func_this_property_declaration
+func_this_property_declaration_part
     : func_pre_modifier 'func' func_this func_property_part
     ;
 
-func_this_array_declaration
+func_this_array_declaration_part
     : func_pre_modifier 'func' func_this '[' identifier ':' type ']' func_return_type property_constraint* property_body
     ;
 
-func_static_regular_declaration
-    : func_pre_modifier 'func' 'static' func_regular_part
+func_static_regular_declaration_part
+    : func_pre_modifier 'func' func_regular_part
     ;
 
-func_static_property_declaration
-    : func_pre_modifier 'func' 'static' func_property_part
+func_static_property_declaration_part
+    : func_pre_modifier 'func' func_property_part
     ;    
 
 func_regular_part
@@ -239,7 +253,7 @@ func_property_part
 
 
 func_pre_modifier
-    : 'partial'? 'unsafe'?
+    : 'partial'? 'unsafe'? 'async'?
     ;
 
 func_this
@@ -276,7 +290,7 @@ constructor_definition_with_visibility
     ;
 
 constructor_definition
-    : constructor_modifier 'func' 'constructor' identifier? parameters constructor_constraint*
+    : constructor_modifier 'constructor' identifier? parameters constructor_constraint*
     ;
 
 constructor_constraint
@@ -302,6 +316,7 @@ property_body
     ;
 
 property_block_body
+    // Expected to be in this order, we will warning otherwise
     : '{' property_getter property_setter? '}'
     ;
 
@@ -317,10 +332,7 @@ func_simple_body
     ;
 
 func_block_body
-    : '{' 
-      import_statement*  
-      statement*
-      '}'
+    : block_statement
     ;
 
 // ------------------------------------------------------------------
@@ -366,11 +378,15 @@ generic_parameter_name
     : identifier
     ;
 
-lifetime:
-    HASH_IDENTIFIER
+lifetime
+    : HASH_IDENTIFIER
     ;
 
-qualified_type
+qualified_func
+    : qualified_name
+    ;
+
+qualified_name
     : module_path? identifier_with_generic_arguments 
     ;
 
@@ -380,30 +396,34 @@ at_identifier
 
 identifier
     : IDENTIFIER
-    | 'struct'
-    | 'attr'
-    | 'interface'
-    | 'enum'
-    | 'union'
-    | 'extension'
-    | 'module'
-    | 'constructor'
-    | 'in'
-    | 'where'
-    | 'lifetime'
-    | 'exclusive'
-    | 'static'
-    | 'unit'
-    | 'indirect'
-    | 'partial'
-    | 'implements'
-    | 'extends'
-    | 'requires'
-    | 'can'
-    | 'has'
+    | 'alias'
     | 'are'
+    | 'attr'
+    | 'can'
+    | 'constructor'
+    | 'enum'
+    | 'exclusive'
+    | 'extends'
+    | 'extension'
     | 'get'
+    | 'has'
+    | 'implements'
+    | 'import'
+    | 'in'
+    | 'indirect'
+    | 'interface'
+    | 'lifetime'
+    | 'module'
+    | 'partial'
+    | 'requires'
     | 'set'
+    | 'static'
+    | 'struct'
+    | 'throws'
+    | 'type'
+    | 'union'
+    | 'unit'
+    | 'where'
     ;
 
 module_path
@@ -438,8 +458,8 @@ visibility
 // Statements
 // ------------------------------------------------------------------
 
-statement:
-    let_var_statement
+statement
+    : let_var_statement
     | for_statement
     | if_statement
     | while_statement
@@ -449,36 +469,36 @@ statement:
     | assign_statement
     ;
 
-let_var_statement:
-    attr* ('let' | 'var') identifier ':' type ('=' expression) EOS
+let_var_statement
+    : attr* ('let' | 'var') identifier ':' type ('=' expression) EOS
     ;
 
-for_statement:
-    attr* 'for' identifier 'in' expression block_statement
+for_statement
+    : attr* 'for' identifier 'in' expression block_statement
     ;
 
-if_statement:
-    attr* 'if' expression 'then' block_statement ('else' 'if' expression 'then' block_statement)* ('else' block_statement)?
+if_statement
+    : attr* 'if' expression 'then' block_statement ('else' 'if' expression 'then' block_statement)* ('else' block_statement)?
     ;
 
-while_statement:
-    attr* 'while' expression block_statement
+while_statement
+    : attr* 'while' expression block_statement
     ;
 
 block_statement
     : attr* '{' statement* '}'
     ;
 
-unsafe_statement:
-    'unsafe' block_statement
+unsafe_statement
+    : 'unsafe' block_statement
     ;
 
 expression_statement
-    : expression_simple EOS
+    : expression EOS
     ;
 
-assign_statement:
-    left_expression ('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '<' '<' '=' |  '>' '>' '=' | '%=' ) expression EOS
+assign_statement
+    : left_expression ('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '<' '<' '=' |  '>' '>' '=' | '%=' ) expression EOS
     ;
 
 // ------------------------------------------------------------------
@@ -489,6 +509,10 @@ expression
     : expression_simple
     | 'if' expression_simple 'then' expression_simple 'else' expression_simple
     | 'unsafe' expression_simple
+    | 'ignore' expression_simple
+    | 'async' expression_simple
+    | 'await' expression_simple
+    | 'throw' expression_simple
     ;
 
 // TODO: order is still not fully correct for operator precedence
@@ -505,23 +529,23 @@ expression_simple
     | new_expression
     | prefix=('+'|'-') expression_simple
     | prefix=('~'|'!') expression_simple
-    | expression_simple bop='as' expression_simple
-    | expression_simple unit
+    | expression_simple bop='as' type
+    | expression_simple bop='is' type identifier?
+    | expression_simple bop='is' '.' (identifier | method_call) 
+    | expression_simple bop='is' 'not' type
+    | expression_simple unit // implicitly convert to *, so same precedence
     | expression_simple bop=('*'|'/'|'%') expression_simple
     | expression_simple bop=('+'|'-') expression_simple
     | expression_simple ('<' '<' | '>' '>') expression_simple
     | expression_simple bop=('<=' | '>=' | '<' | '>') expression_simple
-    | expression_simple bop=IS type
     | expression_simple bop=('==' | '!=') expression_simple
     | expression_simple bop='&' expression_simple
     | expression_simple bop='^' expression_simple
     | expression_simple bop='|' expression_simple
     | expression_simple bop='&&' expression_simple
     | expression_simple bop='||' expression_simple
-    | 'ref' expression_simple
-    | '&' expression_simple
+    | ('ref' | '&') expression_simple
     | 'catch'? 'try' expression_simple
-    | 'ignore' expression_simple
     ;
 
 left_expression
@@ -538,45 +562,46 @@ expression_path
     | '[' expression ']'
     ;
 
-new_expression:
-    'new' lifetime? type_constructor
+new_expression
+    : 'new' lifetime? type_constructor
     ;
 
-type_constructor:
-    module_path? identifier_with_generic_arguments arguments
+type_constructor
+    : module_path? identifier_with_generic_arguments arguments
     // TODO: Add array constructor
     ;    
 
-method_call:
-    identifier_with_generic_arguments arguments
+method_call
+    : identifier_with_generic_arguments arguments
     ;
 
-expression_list:
-    expression (',' expression)*
+expression_list
+    : expression (',' expression)*
     ;
 
-arguments:
-    '(' argument_list? ')'
+arguments
+    : '(' argument_list? ')'
     ;
 
-argument_list:
-    expression (',' expression)*
+argument_list
+    : expression (',' expression)*
     ;
 
 // ------------------------------------------------------------------
 // Types
 // ------------------------------------------------------------------
 
-type:
-    primitive_type
+type
+    : primitive_type
     | qualified_type
+    | const_type
     | ref_type
+    | tuple_type
     | mutable_type
     | array_type
     | fixed_array_type
     | slice_type
     | pointer_type
-    | const_type
     | measure_type
     ;
 
@@ -614,131 +639,146 @@ vector_type
     | 'v256'
     ;    
 
-const_type:
-    'const' type
+qualified_type
+    : qualified_name
     ;
 
-ref_type:
-    'unique'? 'ref' lifetime? type
+const_type
+    : 'const' type
     ;
 
-mutable_type:
-    'mutable' type
+ref_type
+    : 'unique'? 'ref' lifetime? type
     ;
 
-array_type:
-    '[' type ']' 
+tuple_type
+    : '(' type (',' type)+ ')'
+    ;
+
+mutable_type
+    : 'mutable' (primitive_type | qualified_type | array_type | fixed_array_type | slice_type)
+    ;
+
+array_type
+    : '[' type ']' 
     ;
 
 // We will validate the <expression> for the dimension in the semantic analysis
-fixed_array_type:
-    '[' type ',' expression ']' 
+fixed_array_type
+    : '[' type ',' expression ']' 
     ;    
 
-slice_type:
-    '~' type
+slice_type
+    : '~' type
     ;
 
-pointer_type:
-    '*' type
+pointer_type
+    : '*' (primitive_type | qualified_type)
     ;
 
 unit
     : identifier
     ;
 
-measure_type:
-    (integer_type | float_type) '*' unit
+measure_type
+    : (integer_type | float_type) '*' unit
     ;
 
 // ------------------------------------------------------------------
 // Literals
 // ------------------------------------------------------------------
 
-literal_integer:
-    DECIMAL_LITERAL | HEX_LITERAL | OCT_LITERAL | BINARY_LITERAL;
-
-literal_float:
-    FLOAT_LITERAL;
-
-literal_bool:
-    BOOL_LITERAL;
-
-literal_char:
-    CHAR_LITERAL
+literal_integer
+    : DECIMAL_LITERAL | HEX_LITERAL | OCT_LITERAL | BINARY_LITERAL
     ;
 
-literal_string:
-    STRING_LITERAL
+literal_float
+    : FLOAT_LITERAL
+    ;
+
+literal_bool
+    : BOOL_LITERAL
+    ;
+
+literal_char
+    : CHAR_LITERAL
+    ;
+
+literal_string
+    : STRING_LITERAL
     | STRING_BLOCK_LITERAL
     ;
 
-literal:
-    literal_integer 
-    | literal_float
+literal
+    : literal_integer integer_type?
+    | literal_float float_type?
     | literal_bool
     | literal_char
     | literal_string
     ;
 
-
 // ------------------------------------------------------------------
 // KEYWORDS
 // ------------------------------------------------------------------
 
-TYPE: 'type';
-FUNC: 'func';
-VAR: 'var';
-LET: 'let';
-REF: 'ref';
-CONST: 'const';
-IMPORT: 'import';
-FOR: 'for';
-IF: 'if';
-THEN: 'then';
-ELSE: 'else';
-WHILE: 'while';
-IS: 'is';
-NEW: 'new';
 AS: 'as';
-UNIQUE: 'unique';
-TRY: 'try';
+ASYNC: 'async';
+AWAIT: 'await';
 CATCH: 'catch';
-THROWS: 'throws';
+CONST: 'const';
+ELSE: 'else';
+FOR: 'for';
+FUNC: 'func';
+IF: 'if';
 IGNORE: 'ignore';
-PUBLIC: 'public';
+IS: 'is';
+LET: 'let';
 MUTABLE: 'mutable';
+NEW: 'new';
+NOT: 'not';
+PUBLIC: 'public';
+REF: 'ref';
+THEN: 'then';
 THIS: 'this';
+THROW: 'throw';
+TRY: 'try';
+UNIQUE: 'unique';
 UNSAFE: 'unsafe';
-STATIC: 'static';
+VAR: 'var';
+WHILE: 'while';
 
 // ------------------------------------------------------------------
-// NON KEYWORDS
+// NON KEYWORDS (can be used as identifiers)
 // ------------------------------------------------------------------
 
-STRUCT: 'struct';
-ATTR: 'attr';
-INTERFACE: 'interface';
-ENUM: 'enum';
-UNION: 'union';
-EXTENSION: 'extension';
-MODULE: 'module';
-CONSTRUCTOR: 'constructor';
-IN: 'in';
-WHERE: 'where';
-LIFETIME: 'lifetime';
-EXCLUSIVE: 'exclusive';
-UNIT: 'unit';
-INDIRECT: 'indirect';
-PARTIAL: 'partial';
-IMPLEMENTS: 'implements';
-EXTENDS: 'extends';
-REQUIRES: 'requires';
-CAN: 'can';
-HAS: 'has';
+ALIAS: 'alias';
 ARE: 'are';
+ATTR: 'attr';
+CAN: 'can';
+CONSTRUCTOR: 'constructor';
+ENUM: 'enum';
+EXCLUSIVE: 'exclusive';
+EXTENDS: 'extends';
+EXTENSION: 'extension';
 GET: 'get';
+HAS: 'has';
+IMPLEMENTS: 'implements';
+IMPORT: 'import';
+IN: 'in';
+INDIRECT: 'indirect';
+INTERFACE: 'interface';
+LIFETIME: 'lifetime';
+MODULE: 'module';
+PARTIAL: 'partial';
+REQUIRES: 'requires';
 SET: 'set';
+STATIC: 'static';
+STRUCT: 'struct';
+THROWS: 'throws';
+TYPE: 'type';
+UNION: 'union';
+UNIT: 'unit';
+WHERE: 'where';
 
 LEFT_SQUARE_BRACKET: '[';
 RIGHT_SQUARE_BRACKET: ']';
