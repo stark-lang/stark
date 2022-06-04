@@ -323,18 +323,23 @@ func_block_body
 // parametrize async/await
 async
     : 'async'
-    | 'async' '`' async_await_generic_param
-    | 'async' '`' '<' async_await_generic_param '>'
+    | 'async' '`' async_await_generic_short_param
+    | 'async' '`' '<' async_await_generic_long_param '>'
     ;
 
 await
     : 'await'
-    | 'await' '`' async_await_generic_param
-    | 'await' '`' '<' async_await_generic_param '>'
+    | 'await' '`' async_await_generic_short_param
+    | 'await' '`' '<' async_await_generic_long_param '>'
     ;
 
-async_await_generic_param
+async_await_generic_short_param
     : identifier
+    | literal_bool
+    ;
+
+async_await_generic_long_param
+    : const_path
     | literal_bool
     ;
 
@@ -380,6 +385,10 @@ qualified_func
 
 qualified_name
     : module_path? identifier_with_generic_arguments 
+    ;
+
+qualified_name_no_generic_arguments
+    : module_path? identifier
     ;
 
 at_identifier
@@ -539,6 +548,11 @@ expression_simple
     | await expression_simple
     | 'throw' expression_simple
     | 'catch'? 'try' expression_simple
+    | anonymous_func_expression
+    ;
+
+anonymous_func_expression
+    : (async | await)? 'func' generic_arguments? arguments? func_return_type? func_body
     ;
 
 left_expression
@@ -547,6 +561,13 @@ left_expression
     | 'this' expression_path
     | '(' expression_list ')' expression_path
     | left_expression expression_path
+    ;
+
+// A const expression path is an identifier, or a path to a const
+// that could involve a generic instance type
+const_path
+    : qualified_name_no_generic_arguments // path for a const declared in a module: e.g core::module::const_field
+    | qualified_name '.' identifier // generic instance const field: core::module::MyType<true>.const_field
     ;
 
 expression_path
@@ -613,7 +634,13 @@ non_const_type
     ;
 
 // Core types are types without a qualifier (ref, const, mutable, pointer)
+// Usable by e.g type_declaration
 core_type
+    : mutable_core_type 
+    | func_type // TODO: should it be a core_type or not?
+    ;
+
+mutable_core_type
     : primitive_type 
     | qualified_type
     | array_type
@@ -674,7 +701,7 @@ tuple_type
     ;
 
 mutable_type
-    : 'mutable' core_type
+    : 'mutable' mutable_core_type
     ;
 
 array_type
@@ -700,6 +727,10 @@ unit
 
 measure_type
     : (integer_type | float_type) unit
+    ;
+
+func_type
+    : async? 'func' generic_parameters? parameters func_return_type? throws_constraint? func_constraint*
     ;
 
 // ------------------------------------------------------------------
