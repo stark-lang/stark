@@ -12,6 +12,7 @@ patterns:
 - include: '#vector-types'
 - include: '#generic-modifiers'
 - include: '#inline-il'
+- include: '#measure_type'
 - include: '#visibility-modifiers'
 - include: '#attribute-declaration'
 - include: '#import-declaration'
@@ -27,11 +28,11 @@ patterns:
 
 repository:
   builtin-types:
-    match: \b(bool|rune|f64|f32|i64|i32|i16|i8|u64|u32|u16|u8|int|uint|object|string)\b
+    match: \b(bool|f64|f32|i64|i32|i16|i8|u64|u32|u16|u8|int|uint|string)\b
     captures:
       '1': {name: keyword.type.sk}
   vector-types:
-    match: \b(f64x2|f32x4|i64x2|i32x4|i16x8|i8x16|u64x2|u32x4|u16x8|u8x16)\b
+    match: \b(v128|v256)\b
     captures:
       '1': {name: keyword.type.sk}
   generic-modifiers:
@@ -137,11 +138,11 @@ repository:
     - match: \b(func(?:\s+mutable\s+this|\s+this))\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.func.sk }      
-        '2': { name: entity.name.function.cs  }      
+        '2': { name: entity.name.function.sk  }      
     - match: \b(constructor)(\s+[_[:alpha:]][_[:alnum:]]*)?
       captures:
         '1': { name: keyword.other.func.sk }      
-        '2': { name: entity.name.function.cs  }      
+        '2': { name: entity.name.function.sk  }      
     - name: keyword.other.constructor.sk
       match: \bconstructor\b
     - name: keyword.other.func.sk
@@ -150,7 +151,7 @@ repository:
     patterns:
     - match: '([_[:alpha:]][_[:alnum:]]*)(?:\s*\()'
       captures:
-        '1': { name: entity.name.function.cs  }      
+        '1': { name: entity.name.function.sk  }      
   control-keywords:
     patterns:
       - name: keyword.control.conditional.if.sk
@@ -198,6 +199,12 @@ repository:
   keywords:
     name: keyword.type.sk
     match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b
+
+  measure_type:
+    match: '`([a-zA-Z_][a-zA-Z_0-9]*)'
+    captures:
+      '1': { name: entity.name.type.unit.sk }
+  
   comment:
     patterns:
     - name: comment.block.sk
@@ -228,7 +235,6 @@ repository:
       - include: '#char-literal'
       - include: '#string-literal'
       - include: '#verbatim-string-literal'
-
   numeric-literal:
     patterns:
     - name: constant.numeric.hex.sk

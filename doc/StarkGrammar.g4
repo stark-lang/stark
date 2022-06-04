@@ -77,19 +77,19 @@ static_declaration
     ;
 
 struct_declaration
-    : attr* visibility? 'partial'? 'ref'? 'mutable'? 'struct' identifier_with_generic_parameters parameters? struct_constraint* (EOS | '{' struct_members '}')
+    : attr* visibility? 'partial'? 'ref'? 'mutable'? 'struct' identifier_with_generic_parameters parameters? implement_contraint* where_constraint* (EOS | '{' struct_members '}')
     ;
 
 interface_declaration
-    : attr* visibility? 'partial'? 'interface' identifier_with_generic_parameters parameters? interface_constraint* (EOS | '{' interface_members '}')
+    : attr* visibility? 'partial'? 'interface' identifier_with_generic_parameters parameters? extends_constraint* where_constraint* (EOS | '{' interface_members '}')
     ;
 
 extension_declaration
-    : attr* visibility? 'partial'? 'extension' generic_parameters? FOR qualified_type extension_constraint*  (EOS | '{' extension_members '}')
+    : attr* visibility? 'partial'? 'extension' generic_parameters? FOR qualified_type implement_contraint* where_constraint* (EOS | '{' extension_members '}')
     ;
 
 union_declaration
-    : attr* visibility? 'union' identifier_with_generic_parameters union_constraint* '{' union_members '}'
+    : attr* visibility? 'union' identifier_with_generic_parameters where_constraint* '{' union_members '}'
     ;
 
 enum_declaration
@@ -97,46 +97,31 @@ enum_declaration
     ;
 
 type_declaration
-    : attr* visibility? 'type' identifier_with_generic_parameters where_constraint* '=' type EOS
+    : attr* visibility? 'type' identifier_with_generic_parameters where_constraint* '=' core_type EOS
     ;
 
 alias_type_declaration
-    : attr* visibility? 'alias' 'type' identifier '=' type EOS
+    : attr* visibility? 'alias' 'type' identifier '=' core_type EOS
     ;
 
 alias_func_declaration
     : attr* visibility? 'alias' 'func' identifier '=' qualified_name (DOT identifier)? EOS
     ;
 
-union_constraint
-    : where_constraint
-    ;
-
 where_constraint
-    : 'where' (identifier | lifetime) ':' where_constraint_part (',' where_constraint_part)*
+    : 'where' lifetime (',' lifetime)* ':' where_constraint_lifetime_part (',' where_constraint_lifetime_part)*
+    | 'where' identifier (',' identifier)* ':' where_constraint_part (',' where_constraint_part)*
     ;
 
 where_constraint_part
     : 'is' type
-    | 'enum' | 'union' | 'struct' | 'interface' | 'unit'
-    | 'can' 'new'
-    | 'has' 'lifetime' ('<' | '<=') lifetime
+    | 'kind' ('enum' | 'union' | 'struct' | 'interface' | 'unit' | 'ref' 'struct') // TODO: should we add e.g | 'integer' | 'float' | 'number'?
     | 'has' 'constructor' identifier? parameters
     ;
 
-extension_constraint
-    : implement_contraint
-    | where_constraint
-    ;
-
-interface_constraint
-    : extends_constraint
-    | where_constraint
-    ;
-
-struct_constraint
-    : implement_contraint
-    | where_constraint
+where_constraint_lifetime_part
+    : 'has' 'lifetime' ('<' | '<=') lifetime
+    | 'can' 'new'
     ;
 
 implement_contraint
@@ -192,11 +177,11 @@ field_declaration
     ;
 
 unit_declaration
-    : attr* visibility? 'unit' unit ('=' unit_expression)? EOS
+    : attr* visibility? 'unit' identifier ('=' unit_expression)? EOS
     ;
 
 unit_expression
-    : unit ('^' literal_integer)?
+    : identifier ('^' literal_integer)?
     | literal_float
     | literal_integer
     | unit_expression ('/' '*') unit_expression
@@ -356,26 +341,14 @@ generic_arguments
     ;
 
 generic_parameter
-    : generic_parameter_name ('=' generic_argument)?
+    : identifier ('=' generic_argument)?
     | lifetime
     ;
 
 generic_argument
-    : generic_argument_type
-    | generic_argument_literal
-    | lifetime
-    ;
-
-generic_argument_literal
-    : literal
-    ;
-
-generic_argument_type
     : type
-    ;
-
-generic_parameter_name
-    : identifier
+    | literal
+    | lifetime
     ;
 
 lifetime
@@ -412,6 +385,7 @@ identifier
     | 'in'
     | 'indirect'
     | 'interface'
+    | 'kind'
     | 'lifetime'
     | 'module'
     | 'partial'
@@ -513,6 +487,8 @@ expression
     | 'async' expression_simple
     | 'await' expression_simple
     | 'throw' expression_simple
+    | 'catch'? 'try' expression_simple
+    | ('ref' | '&') expression_simple
     ;
 
 // TODO: order is still not fully correct for operator precedence
@@ -533,7 +509,7 @@ expression_simple
     | expression_simple bop='is' type identifier?
     | expression_simple bop='is' '.' (identifier | method_call) 
     | expression_simple bop='is' 'not' type
-    | expression_simple unit // implicitly convert to *, so same precedence
+    | expression_simple measure_type // implicitly convert to *, so same precedence
     | expression_simple bop=('*'|'/'|'%') expression_simple
     | expression_simple bop=('+'|'-') expression_simple
     | expression_simple ('<' '<' | '>' '>') expression_simple
@@ -544,8 +520,6 @@ expression_simple
     | expression_simple bop='|' expression_simple
     | expression_simple bop='&&' expression_simple
     | expression_simple bop='||' expression_simple
-    | ('ref' | '&') expression_simple
-    | 'catch'? 'try' expression_simple
     ;
 
 left_expression
@@ -563,13 +537,29 @@ expression_path
     ;
 
 new_expression
-    : 'new' lifetime? type_constructor
+    : 'new' lifetime? new_constructor
     ;
 
-type_constructor
-    : module_path? identifier_with_generic_arguments arguments
-    // TODO: Add array constructor
-    ;    
+new_constructor
+    : module_path? identifier_with_generic_arguments arguments list_initializer?
+    | new_array_constructor
+    | new_string_constructor
+    ; 
+
+new_array_constructor
+    : '[' type ']' list_initializer?                    // with list initializer
+    | '[' type ']' '(' expression ')' list_initializer? // with list initializer
+    | '[' type ']' '(' expression ',' expression ')'    // with func initializer
+    | '[' 'u8' ']' literal_string                       // with list initializer
+    ;
+
+new_string_constructor
+    : literal_string
+    ;
+
+list_initializer
+    : '{' expression (',' expression)* '}'
+    ;  
 
 method_call
     : identifier_with_generic_arguments arguments
@@ -592,16 +582,25 @@ argument_list
 // ------------------------------------------------------------------
 
 type
-    : primitive_type
-    | qualified_type
+    : non_const_type
     | const_type
+    ;
+
+non_const_type
+    : core_type
     | ref_type
-    | tuple_type
     | mutable_type
+    | pointer_type
+    ;
+
+// Core types are types without a qualifier (ref, const, mutable, pointer)
+core_type
+    : primitive_type 
+    | qualified_type
     | array_type
     | fixed_array_type
     | slice_type
-    | pointer_type
+    | tuple_type
     | measure_type
     ;
 
@@ -644,7 +643,7 @@ qualified_type
     ;
 
 const_type
-    : 'const' type
+    : 'const' non_const_type // avoid const const
     ;
 
 ref_type
@@ -656,7 +655,7 @@ tuple_type
     ;
 
 mutable_type
-    : 'mutable' (primitive_type | qualified_type | array_type | fixed_array_type | slice_type)
+    : 'mutable' core_type
     ;
 
 array_type
@@ -669,7 +668,7 @@ fixed_array_type
     ;    
 
 slice_type
-    : '~' type
+    : '~' type // should we use % vs ~ for a slice?
     ;
 
 pointer_type
@@ -677,11 +676,11 @@ pointer_type
     ;
 
 unit
-    : identifier
+    : '`' identifier
     ;
 
 measure_type
-    : (integer_type | float_type) '*' unit
+    : (integer_type | float_type) unit
     ;
 
 // ------------------------------------------------------------------
@@ -767,6 +766,7 @@ IMPORT: 'import';
 IN: 'in';
 INDIRECT: 'indirect';
 INTERFACE: 'interface';
+KIND: 'kind';
 LIFETIME: 'lifetime';
 MODULE: 'module';
 PARTIAL: 'partial';
@@ -858,9 +858,15 @@ BOOL_LITERAL:       'true'
             |       'false'
             ;
 
-CHAR_LITERAL:       '\'' (~['\\\r\n] | EscapeSequence) '\'';
-STRING_LITERAL:     '"' (~["\\\r\n] | EscapeSequence)* '"';
-STRING_BLOCK_LITERAL:         '"""' [ \t]* [\r\n] (. | EscapeSequence)*? '"""';
+CHAR_LITERAL:         '\'' (~['\\\r\n] | EscapeSequence) '\'';
+
+// Interpolated strings are not correctly described here, but as it requires parser
+// cooperation, we will leave it to the implementation.
+STRING_LITERAL:       '$'? '"' (~["\\\r\n] | EscapeSequence)* '"';
+
+// Block literal is not correctly described here. 
+// The opening """ is actually at least 3+, and the closing should match the opening
+STRING_BLOCK_LITERAL: '$'? '"""' .*? '"""';
 
 // Whitespace and comments
 WS:                 [ \t\r\n\u000C]+ -> channel(HIDDEN);

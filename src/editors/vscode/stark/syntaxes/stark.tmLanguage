@@ -44,6 +44,10 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#measure_type</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#visibility-modifiers</string>
       </dict>
       <dict>
@@ -96,7 +100,7 @@
       <key>builtin-types</key>
       <dict>
         <key>match</key>
-        <string>\b(bool|rune|f64|f32|i64|i32|i16|i8|u64|u32|u16|u8|int|uint|object|string)\b</string>
+        <string>\b(bool|f64|f32|i64|i32|i16|i8|u64|u32|u16|u8|int|uint|string)\b</string>
         <key>captures</key>
         <dict>
           <key>1</key>
@@ -109,7 +113,7 @@
       <key>vector-types</key>
       <dict>
         <key>match</key>
-        <string>\b(f64x2|f32x4|i64x2|i32x4|i16x8|i8x16|u64x2|u32x4|u16x8|u8x16)\b</string>
+        <string>\b(v128|v256)\b</string>
         <key>captures</key>
         <dict>
           <key>1</key>
@@ -483,7 +487,7 @@
               <key>2</key>
               <dict>
                 <key>name</key>
-                <string>entity.name.function.cs</string>
+                <string>entity.name.function.sk</string>
               </dict>
             </dict>
           </dict>
@@ -500,7 +504,7 @@
               <key>2</key>
               <dict>
                 <key>name</key>
-                <string>entity.name.function.cs</string>
+                <string>entity.name.function.sk</string>
               </dict>
             </dict>
           </dict>
@@ -530,7 +534,7 @@
               <key>1</key>
               <dict>
                 <key>name</key>
-                <string>entity.name.function.cs</string>
+                <string>entity.name.function.sk</string>
               </dict>
             </dict>
           </dict>
@@ -674,6 +678,19 @@
         <string>keyword.type.sk</string>
         <key>match</key>
         <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b</string>
+      </dict>
+      <key>measure_type</key>
+      <dict>
+        <key>match</key>
+        <string>`([a-zA-Z_][a-zA-Z_0-9]*)</string>
+        <key>captures</key>
+        <dict>
+          <key>1</key>
+          <dict>
+            <key>name</key>
+            <string>entity.name.type.unit.sk</string>
+          </dict>
+        </dict>
       </dict>
       <key>comment</key>
       <dict>
