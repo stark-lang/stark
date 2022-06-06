@@ -10,18 +10,17 @@
 grammar StarkGrammar;
 
 // ------------------------------------------------------------------
-// Entrypoint
+// Compilation Unit
 // ------------------------------------------------------------------    
 
-
-file_declaration
+compilation_unit
     // Expected to be in this order, we will warning otherwise
     : module_declaration? 
-      import_statement*
-      top_level_declaration*
+      statement_import*
+      module_member_declaration*
     ;
 
-top_level_declaration
+module_member_declaration
     : struct_declaration
     | union_declaration
     | enum_declaration
@@ -47,7 +46,7 @@ module_declaration
     : attr* visibility? 'partial'? 'module' module_path? identifier EOS
     ;
 
-import_statement
+statement_import
     : 'import' module_path? import_identifier EOS
     ;
 
@@ -135,7 +134,7 @@ extends_constraint
 
 struct_members
     // Expected to be in this order, we will warning otherwise
-    : import_statement*
+    : statement_import*
       const_declaration*
       field_declaration*
       constructor_declaration_with_visibility*
@@ -167,7 +166,7 @@ interface_members
 
 extension_members
     // Expected to be in this order, we will warning otherwise
-    : import_statement*
+    : statement_import*
       const_declaration*
       constructor_declaration_with_visibility*
       func_member_declaration_with_visibility*
@@ -292,12 +291,12 @@ func_return_type
     ;
 
 func_body
-    : func_simple_body EOS
-    | block_statement
+    : func_expression_body EOS
+    | expression_block
     ;
 
 property_body
-    : func_simple_body
+    : func_expression_body EOS
     | property_block_body
     ;
 
@@ -313,12 +312,12 @@ property_setter
     : 'set' func_body  // SET contextual only in property getter/setter
     ;
 
-func_simple_body
+func_expression_body
     : '=>' expression
     ;
 
 func_block_body
-    : block_statement
+    : expression_block
     ;
 
 // parametrize async/await
@@ -471,110 +470,175 @@ visibility
 // ------------------------------------------------------------------
 
 statement
-    : let_var_statement
-    | for_statement
-    | if_statement
-    | while_statement
-    | unsafe_statement
-    | expression_statement
-    | assign_statement
+    : attr* 
+        ( statement_let_var
+        | statement_for
+        | statement_while
+        | statement_ignore
+        | statement_continue
+        | statement_break
+        | statement_return
+        | statement_expression
+        )
     ;
 
-let_var_statement
-    : attr* ('let' | 'var') identifier ':' type ('=' expression) EOS
+statement_let_var
+    : ('let' | 'var') identifier ':' type ('=' expression) EOS
     ;
 
-for_statement
-    : attr* 'for' identifier 'in' expression block_statement
+statement_for
+    : (async | await)? 'for' identifier 'in' expression expression_block
     ;
 
-if_statement
-    : attr* 'if' expression 'then' block_statement ('else' 'if' expression 'then' block_statement)* ('else' block_statement)?
+statement_while
+    : 'while' expression expression_block
     ;
 
-while_statement
-    : attr* 'while' expression block_statement
+statement_return
+    : 'return' expression? EOS
     ;
 
-block_statement
-    : attr* '{' statement* '}'
+statement_ignore
+    : 'ignore' expression? EOS
     ;
 
-block_expression
-    : attr* '{' statement* '}'
+statement_continue
+    : 'continue' EOS
     ;
 
-unsafe_statement
-    : 'unsafe' block_statement
+statement_break
+    : 'break' EOS
     ;
 
-expression_statement
-    : expression EOS
-    ;
-
-assign_statement
-    : left_expression ('=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '<' '<' '=' |  '>' '>' '=' | '%=' ) expression EOS
+statement_expression
+    : expression_statement EOS
     ;
 
 // ------------------------------------------------------------------
 // Expressions
 // ------------------------------------------------------------------
 
+expression_statement
+    : expression
+    // left ':=' right is a deref and assign equivalent to: *left = right
+    | expression_assignable (':=' | '=' | '+=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '<' '<' '=' |  '>' '>' '=' | '%=' ) expression EOS
+    ;
+
 expression
-    : expression_simple
-    | 'if' expression_simple 'then' expression_simple 'else' expression_simple
-    | 'unsafe' expression_simple
-    | block_expression
+    : 'unsafe'? (expression_with_block | expression_without_block)
     ;
 
-// TODO: order is still not fully correct for operator precedence
-expression_simple
-    : '(' expression_list ')'
-    | 'this'
-    | literal
-    // left_expression
-    | expression_simple expression_path
-    | module_path? (identifier | method_call)
-    | module_path? identifier_with_generic_arguments '.' (identifier | method_call)
-    // end of left_expression
-    | '.' (identifier | method_call)
-    | new_expression
-    | prefix=('+'|'-') expression_simple
-    | prefix=('~'|'!') expression_simple
-    | expression_simple bop='as' type
-    | expression_simple bop='is' type identifier?
-    | expression_simple bop='is' '.' (identifier | method_call) 
-    | expression_simple bop='is' 'not' type
-    | expression_simple measure_type // implicitly convert to *, so same precedence
-    | expression_simple bop=('*'|'/'|'%') expression_simple
-    | expression_simple bop=('+'|'-') expression_simple
-    | expression_simple ('<' '<' | '>' '>') expression_simple
-    | expression_simple bop=('<=' | '>=' | '<' | '>') expression_simple
-    | expression_simple bop=('==' | '!=') expression_simple
-    | expression_simple bop='&' expression_simple
-    | expression_simple bop='^' expression_simple
-    | expression_simple bop='|' expression_simple
-    | expression_simple bop='&&' expression_simple
-    | expression_simple bop='||' expression_simple
-    | ('ref' | '&') expression_simple
-    | 'ignore' expression_simple
-    | async expression_simple
-    | await expression_simple
-    | 'throw' expression_simple
-    | 'catch'? 'try' expression_simple
-    | anonymous_func_expression
+expression_with_block
+    : expression_block
+    | expression_if_with_block
     ;
 
-anonymous_func_expression
-    : (async | await)? 'func' generic_arguments? arguments? func_return_type? func_body
+// If an if expression starts to use expression_block, it should use them all along
+expression_if_with_block
+    : 'if' expression_unary_or_binary 'then' expression_block ('else' expression_with_block)?
     ;
 
-left_expression
+expression_without_block
+    : expression_unary_or_binary
+    | ('ref' | '&') expression_unary_or_binary
+    | expression_if 
+    | expression_range
+    | expression_anonymous_func
+    | expression_constructor_struct
+    | expression_constructor_array
+    ;
+
+expression_range
+    : expression_unary_or_binary? '..' expression_unary_or_binary?
+    ;
+
+// If an if expression starts to use expression_without_block, it should use them all along
+expression_if
+    : 'if' expression_unary_or_binary 'then' expression_without_block ('else' expression_without_block)+
+    ;
+
+expression_block
+    : '{' statement* '}'
+    ;
+
+expression_unary_or_binary
+    : expression_unary
+    | expression_unary_or_binary measure_type // implicitly convert to *, so same precedence
+    | expression_unary_or_binary bop=('*'|'/'|'%') expression_unary_or_binary
+    | expression_unary_or_binary bop=('+'|'-') expression_unary_or_binary
+    | expression_unary_or_binary bop='as' type
+    | expression_unary_or_binary bop='is' 'not'? type identifier?
+    | expression_unary_or_binary ('<' '<' | '>' '>') expression_unary_or_binary
+    | expression_unary_or_binary bop=('<=' | '>=' | '<' | '>') expression_unary_or_binary
+    | expression_unary_or_binary bop=('==' | '!=') expression_unary_or_binary
+    | expression_unary_or_binary bop='&' expression_unary_or_binary
+    | expression_unary_or_binary bop='^' expression_unary_or_binary
+    | expression_unary_or_binary bop='|' expression_unary_or_binary
+    | expression_unary_or_binary bop='&&' expression_unary_or_binary
+    | expression_unary_or_binary bop='||' expression_unary_or_binary
+    ;
+
+expression_unary
+    : expression_primary1 expression_member_path*
+    | expression_primary2 expression_member_path*
+    | expression_new
+    | 'throw' expression_unary_or_binary
+    | 'catch'? 'try' expression_unary_or_binary
+    | async expression_unary_or_binary
+    | await expression_unary_or_binary    
+    | prefix=('+'|'-') expression_unary_or_binary
+    | prefix=('~'|'!') expression_unary_or_binary
+    | expression_discard
+    ;
+
+expression_anonymous_func
+    : (async | await)? 'func' generic_arguments? arguments? func_return_type? func_expression_body
+    | (async | await)? identifier func_expression_body
+    | (async | await)? '(' identifier (',' identifier)* ')' func_expression_body
+    ;
+
+expression_assignable
+    : expression_primary1 expression_member_path+ // assignable expressions that requires at least one member path
+    | expression_primary2 expression_member_path* // assignable expressions that can be assigned directly
+    ;
+
+// These expressions cannot be assigned directly
+expression_primary1
+    : 'this'                    #expression_this
+    | literal                   #expression_literal
+    // An enum or union constructor
+    | '.' (identifier | method_call) #expression_enum_or_union
+    ;
+
+// These expressions can be assigned directly
+expression_primary2
+    // A local variable: e.g x
+    // A local func call: e.g f(x)
+    // A module variable: e.g core::sub::x
+    // A module func call: e.g core::sub::f(x)
     : module_path? (identifier | method_call)
-    | literal expression_path
-    | 'this' expression_path
-    | '(' expression_list ')' expression_path
-    | left_expression expression_path
+    // A field of a generic type, e.g:
+    // - MyStruct`<int>.x / MyStruct`<int>.f(x)
+    // - core::sub::MyStruct`<int>.x / core::sub::MyStruct`<int>.f(x)
+    | module_path? identifier generic_arguments expression_dot_path
+    // Group and Tuple/List expression
+    | '(' expression (',' expression)* ')'
+    // Dereferencing
+    | '*' expression_unary_or_binary
+    ;
+
+expression_member_path
+    : expression_dot_path
+    | expression_indexer_path
+    ;
+
+expression_dot_path
+    : '.' identifier
+    | '.' method_call
+    ;
+
+expression_indexer_path
+    : '[' expression ']'
     ;
 
 // A const expression path is an identifier, or a path to a const
@@ -584,31 +648,34 @@ const_path
     | qualified_name '.' identifier // generic instance const field: core::module::MyType<true>.const_field
     ;
 
-expression_path
-    : '.' identifier
-    | '.' method_call
-    | '[' expression ']'
+expression_new
+    : 'new' lifetime? expression_new_constructor
     ;
 
-new_expression
-    : 'new' lifetime? new_constructor
-    ;
-
-new_constructor
-    : module_path? identifier_with_generic_arguments arguments list_initializer?
-    | new_array_constructor
-    | new_string_constructor
+expression_new_constructor
+    : expression_constructor_struct
+    | expression_constructor_array
+    | expression_constructor_string
     ; 
 
-new_array_constructor
+
+expression_constructor_struct
+    : module_path? identifier_with_generic_arguments arguments? list_initializer?
+    ;
+
+expression_constructor_array
     : '[' type ']' list_initializer?                    // with list initializer
     | '[' type ']' '(' expression ')' list_initializer? // with list initializer
     | '[' type ']' '(' expression ',' expression ')'    // with func initializer
     | '[' 'u8' ']' literal_string                       // with list initializer
     ;
 
-new_string_constructor
+expression_constructor_string
     : literal_string
+    ;
+
+expression_discard
+    : '_'
     ;
 
 list_initializer
@@ -624,11 +691,7 @@ expression_list
     ;
 
 arguments
-    : '(' argument_list? ')'
-    ;
-
-argument_list
-    : expression (',' expression)*
+    : '(' expression_list? ')'
     ;
 
 // ------------------------------------------------------------------
@@ -669,8 +732,13 @@ macro_func_parameter_expression
     ;
 
 macro_func_body
-    : '=>' macro_statement
+    : '=>' macro_statement EOS
+    // here the number of leading $ must match the trailing $
+    // but we can't express here this without custom hooks
+    // so we declare only 3 levels
     | '{' '$' macro_statement* '$' '}'
+    | '{' '$' '$' macro_statement* '$' '$' '}'
+    | '{' '$' '$' '$' macro_statement* '$' '$' '$' '}'
     ;
 
 macro_statement
@@ -678,7 +746,12 @@ macro_statement
     | '(' macro_statement* ')'
     | '[' macro_statement* ']'
     | '{' macro_statement* '}'
+    // here the number of leading $ must match the trailing $
+    // but we can't express here this without custom hooks
+    // so we declare only 3 levels
     | '<' '$' macro_command '$' '>'
+    | '<' '$' '$' macro_command '$' '$' '>'
+    | '<' '$' '$' '$' macro_command '$' '$' '$' '>'
     ;
 
 macro_command
@@ -693,7 +766,7 @@ macro_command
 // All tokens except group tokens '('|')'|'['|']'|'{'|'}'
 // as we expect that all tokens are well balanced according to group tokens.
 macro_tokens
-    :'_'|'-'|'-='|'->'|','|'::'|':'|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'bool'|'can'|'catch'|'const'|'constructor'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'ignore'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'kind'|'let'|'lifetime'|'lifetime'|'literal'|'macro'|'module'|'mutable'|'new'|'not'|'partial'|'public'|'ref'|'requires'|'set'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
+    :'_'|'-'|'-='|'->'|','|'::'|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'bool'|'break'|'can'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'ignore'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'kind'|'let'|'lifetime'|'lifetime'|'literal'|'macro'|'module'|'mutable'|'new'|'not'|'partial'|'public'|'ref'|'requires'|'return'|'set'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
     | literal
     | IDENTIFIER
     | lifetime
@@ -889,8 +962,10 @@ literal
 AS: 'as';
 ASYNC: 'async';
 AWAIT: 'await';
+BREAK: 'break';
 CATCH: 'catch';
 CONST: 'const';
+CONTINUE: 'continue';
 ELSE: 'else';
 FOR: 'for';
 FUNC: 'func';
@@ -903,6 +978,7 @@ NEW: 'new';
 NOT: 'not';
 PUBLIC: 'public';
 REF: 'ref';
+RETURN: 'return';
 THEN: 'then';
 THIS: 'this';
 THROW: 'throw';
@@ -995,6 +1071,7 @@ BITWISE_OR_EQUAL: '|=';
 BITWISE_XOR_EQUAL: '^=';
 MODULO_EQUAL: '%=';
 EQUAL: '=';
+COLON_EQUAL: ':=';
 
 TYPE_BOOL: 'bool';
 
