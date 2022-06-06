@@ -36,6 +36,7 @@ top_level_declaration
     | type_declaration
     | alias_type_declaration
     | alias_func_declaration
+    | macro_declaration
     ;
 
 // ------------------------------------------------------------------
@@ -396,7 +397,8 @@ at_identifier
     ;
 
 identifier
-    : IDENTIFIER
+    : macro_inline_call
+    | IDENTIFIER
     | 'alias'
     | 'are'
     | 'attr'
@@ -416,6 +418,7 @@ identifier
     | 'kind'
     | 'lifetime'
     | 'module'
+    | 'macro'
     | 'partial'
     | 'requires'
     | 'set'
@@ -426,6 +429,13 @@ identifier
     | 'union'
     | 'unit'
     | 'where'
+    // Macro tokens
+    | 'identifier'
+    | 'lifetime'
+    | 'expression'
+    | 'statement'
+    | 'literal'
+    | 'token'
     ;
 
 module_path
@@ -466,7 +476,6 @@ statement
     | if_statement
     | while_statement
     | unsafe_statement
-    | block_statement
     | expression_statement
     | assign_statement
     ;
@@ -491,6 +500,10 @@ block_statement
     : attr* '{' statement* '}'
     ;
 
+block_expression
+    : attr* '{' statement* '}'
+    ;
+
 unsafe_statement
     : 'unsafe' block_statement
     ;
@@ -511,6 +524,7 @@ expression
     : expression_simple
     | 'if' expression_simple 'then' expression_simple 'else' expression_simple
     | 'unsafe' expression_simple
+    | block_expression
     ;
 
 // TODO: order is still not fully correct for operator precedence
@@ -615,6 +629,108 @@ arguments
 
 argument_list
     : expression (',' expression)*
+    ;
+
+// ------------------------------------------------------------------
+// Macros
+// ------------------------------------------------------------------
+
+macro_declaration
+    : visibility? ('partial' | 'extern')? 'macro' identifier '{' macro_members '}'
+    ;
+
+macro_members
+    : attr
+    | macro_func_declaration
+    ;
+
+macro_func_declaration
+    : 'func' '(' macro_func_parameter* ')' macro_func_body
+    | 'func' '[' macro_func_parameter* ']' macro_func_body
+    | 'func' '{' macro_func_parameter* '}' macro_func_body
+    ;
+
+macro_func_parameter
+    : macro_identifier ':' macro_func_parameter_expression*
+    ;
+
+macro_func_parameter_expression
+    : 'identifier'
+    | 'lifetime'
+    | 'expression'
+    | 'statement'
+    | 'literal'
+    | 'token'
+    | macro_literal_token
+    | '?' macro_func_parameter_expression
+    | '*' macro_func_parameter_expression
+    | '+' macro_func_parameter_expression
+    | '(' macro_func_parameter_expression+ ')'
+    ;
+
+macro_func_body
+    : '=>' macro_statement
+    | '{' '$' macro_statement* '$' '}'
+    ;
+
+macro_statement
+    : macro_tokens
+    | '(' macro_statement* ')'
+    | '[' macro_statement* ']'
+    | '{' macro_statement* '}'
+    | '<' '$' macro_command '$' '>'
+    ;
+
+macro_command
+    : 'for' macro_identifier 'in' macro_identifier '{'
+    | 'if' macro_expression 'then' '{'
+    | '}' 'else' '{'
+    | 'else'
+    | '{'
+    | '}'
+    ;
+
+// All tokens except group tokens '('|')'|'['|']'|'{'|'}'
+// as we expect that all tokens are well balanced according to group tokens.
+macro_tokens
+    :'_'|'-'|'-='|'->'|','|'::'|':'|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'bool'|'can'|'catch'|'const'|'constructor'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'ignore'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'kind'|'let'|'lifetime'|'lifetime'|'literal'|'macro'|'module'|'mutable'|'new'|'not'|'partial'|'public'|'ref'|'requires'|'set'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
+    | literal
+    | IDENTIFIER
+    | lifetime
+    | at_identifier
+    | macro_identifier
+    | macro_literal_token
+    ;
+
+macro_expression
+    : macro_identifier
+    | literal
+    | '(' macro_expression ')'
+    | macro_expression bop=('<=' | '>=' | '<' | '>') macro_expression
+    | macro_expression bop=('==' | '!=') macro_expression
+    | macro_expression bop='&&' macro_expression
+    | macro_expression bop='||' macro_expression    
+    ;
+
+macro_identifier
+    : MACRO_IDENTIFIER
+    ;
+
+macro_literal_token
+    : MACRO_STRING_LITERAL
+    ;
+
+macro_inline_call
+    : macro_identifier '(' macro_argument* ')'
+    | macro_identifier '[' macro_argument* ']'
+    | macro_identifier '{' macro_argument* '}'
+    ;
+
+macro_argument
+    : macro_tokens
+    | '(' macro_argument* ')'
+    | '[' macro_argument* ']'
+    | '{' macro_argument* '}'
     ;
 
 // ------------------------------------------------------------------
@@ -819,6 +935,7 @@ INTERFACE: 'interface';
 KIND: 'kind';
 LIFETIME: 'lifetime';
 MODULE: 'module';
+MACRO: 'macro';
 PARTIAL: 'partial';
 REQUIRES: 'requires';
 SET: 'set';
@@ -829,6 +946,14 @@ TYPE: 'type';
 UNION: 'union';
 UNIT: 'unit';
 WHERE: 'where';
+
+// Begin MACRO Tokens
+MACRO_TOKEN_IDENTIFIER: 'identifier';
+MACRO_TOKEN_EXPRESSION: 'expression';
+MACRO_TOKEN_STATEMENT: 'statement';
+MACRO_TOKEN_LITERAL: 'literal';
+MACRO_TOKEN_TOKEN: 'token';
+// End MACRO Tokens
 
 LEFT_SQUARE_BRACKET: '[';
 RIGHT_SQUARE_BRACKET: ']';
@@ -909,6 +1034,7 @@ BOOL_LITERAL:       'true'
             ;
 
 CHAR_LITERAL:         '\'' (~['\\\r\n] | EscapeSequence) '\'';
+MACRO_STRING_LITERAL: '\'' (~['\\])* '\'';
 
 // Interpolated strings are not correctly described here, but as it requires parser
 // cooperation, we will leave it to the implementation.
@@ -923,14 +1049,17 @@ WS:                 [ \t\r\n\u000C]+ -> channel(HIDDEN);
 COMMENT:            '/*' .*? '*/'    -> channel(HIDDEN);
 LINE_COMMENT:       '//' ~[\r\n]*    -> channel(HIDDEN);
 
-IDENTIFIER: ([_]+ LetterOnly LetterOrDigit* | LetterOnly LetterOrDigit*);
+IDENTIFIER: Identifier;
 UNDERSCORE: '_';
 
-HASH_IDENTIFIER: '#' IDENTIFIER;
+HASH_IDENTIFIER: '#' Identifier;
 HASH: '#';
 
-AT_IDENTIFIER: '@' IDENTIFIER;
+AT_IDENTIFIER: '@' Identifier;
 AT: '@';
+
+MACRO_IDENTIFIER: '$'+ Identifier;
+DOLLAR: '$';
 
 // This is not fully correct, that should not be hidden, 
 // but we don't want to handle correctly NEW_LINE in this grammar
@@ -955,13 +1084,21 @@ fragment HexDigit
 fragment Digits
     : [0-9] ([0-9_]* [0-9])?
     ;
+fragment LetterOrDigitOrUnderscore
+    : LetterOrDigit
+    | '_'
+    ;
+
 fragment LetterOrDigit
     : Letter
     | [0-9]
-    ;
+    ;    
+
 fragment Letter
-    : [a-zA-Z_]
-    ;
-fragment LetterOnly
     : [a-zA-Z]
+    ;
+
+fragment Identifier
+    : [_]+ LetterOrDigit LetterOrDigitOrUnderscore*
+    | Letter LetterOrDigitOrUnderscore*
     ;

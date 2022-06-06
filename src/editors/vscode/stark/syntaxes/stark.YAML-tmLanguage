@@ -19,10 +19,12 @@ patterns:
 - include: '#namespace-declaration'
 - include: '#module-declaration'
 - include: '#func-declaration'
+- include: '#macro-declaration'
 - include: '#invoke-declaration'
 - include: '#type-declaration'
 - include: '#inherit-declarations'
 - include: '#lifetime-identifier'
+- include: '#macros'
 - include: '#keywords'
 - include: '#literals'
 
@@ -147,6 +149,14 @@ repository:
       match: \bconstructor\b
     - name: keyword.other.func.sk
       match: \bfunc\b
+  macro-declaration:
+    patterns:
+    - match: \b(macro)\s+([_[:alpha:]][_[:alnum:]]*)\b
+      captures:
+        '1': { name: keyword.other.macro.sk }      
+        '2': { name: entity.name.function.sk  }      
+    - name: keyword.other.macro.sk
+      match: \bmacro\b
   invoke-declaration:
     patterns:
     - match: '([_[:alpha:]][_[:alnum:]]*)(?:\s*\()'
@@ -285,6 +295,13 @@ repository:
   lifetime-identifier:
     name: variable.storage.lifetime.sk
     match: '#[A-Za-z_][A-Za-z_0-9]*'
+
+  macros:
+    patterns:
+      - name: variable.storage.macro.sk
+        match: '\$+[A-Za-z_][A-Za-z_0-9]*'
+      - name: invalid.sk
+        match: '(<\$+|\$+>|\{\$+|\$+\})'
 
   verbatim-string-literal:
     name: string.quoted.double.sk

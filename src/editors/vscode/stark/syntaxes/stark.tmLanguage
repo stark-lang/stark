@@ -72,6 +72,10 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#macro-declaration</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#invoke-declaration</string>
       </dict>
       <dict>
@@ -85,6 +89,10 @@
       <dict>
         <key>include</key>
         <string>#lifetime-identifier</string>
+      </dict>
+      <dict>
+        <key>include</key>
+        <string>#macros</string>
       </dict>
       <dict>
         <key>include</key>
@@ -522,6 +530,35 @@
           </dict>
         </array>
       </dict>
+      <key>macro-declaration</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>\b(macro)\s+([_[:alpha:]][_[:alnum:]]*)\b</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.macro.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.function.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.macro.sk</string>
+            <key>match</key>
+            <string>\bmacro\b</string>
+          </dict>
+        </array>
+      </dict>
       <key>invoke-declaration</key>
       <dict>
         <key>patterns</key>
@@ -929,6 +966,24 @@
         <string>variable.storage.lifetime.sk</string>
         <key>match</key>
         <string>#[A-Za-z_][A-Za-z_0-9]*</string>
+      </dict>
+      <key>macros</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>name</key>
+            <string>variable.storage.macro.sk</string>
+            <key>match</key>
+            <string>\$+[A-Za-z_][A-Za-z_0-9]*</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>invalid.sk</string>
+            <key>match</key>
+            <string>(&lt;\$+|\$+&gt;|\{\$+|\$+\})</string>
+          </dict>
+        </array>
       </dict>
       <key>verbatim-string-literal</key>
       <dict>
