@@ -209,23 +209,23 @@ func_member_declaration
     ;
 
 func_this_regular_declaration_part
-    : func_pre_modifier 'func' func_this func_regular_part
+    : func_pre_modifier* 'func' func_this func_regular_part
     ;
 
 func_this_property_declaration_part
-    : func_pre_modifier 'func' func_this func_property_part
+    : func_pre_modifier* 'func' func_this func_property_part
     ;
 
 func_this_array_declaration_part
-    : func_pre_modifier 'func' func_this '[' identifier ':' type ']' func_return_type property_constraint* property_body
+    : func_pre_modifier* 'func' func_this '[' identifier ':' type ']' func_return_type property_constraint* property_body
     ;
 
 func_static_regular_declaration_part
-    : func_pre_modifier 'func' func_regular_part
+    : func_pre_modifier* 'func' func_regular_part
     ;
 
 func_static_property_declaration_part
-    : func_pre_modifier 'func' func_property_part
+    : func_pre_modifier* 'func' func_property_part
     ;    
 
 func_regular_part
@@ -236,9 +236,11 @@ func_property_part
     : identifier_with_generic_parameters func_return_type property_constraint* property_body
     ;
 
-
 func_pre_modifier
-    : 'partial'? 'unsafe'? async?
+    : 'partial'
+    | 'unsafe'
+    | 'dispatch' // only valid for regular functions
+    | async
     ;
 
 func_this
@@ -456,6 +458,7 @@ parameter_cont
 
 parameter
     : parameter_name ':' attr* type
+    | '.' '.' '.' // variable parameter
     ;
 
 parameter_name
@@ -1021,6 +1024,7 @@ ARE: 'are';
 ATTR: 'attr';
 CAN: 'can';
 CONSTRUCTOR: 'constructor';
+DISPATCH: 'dispatch';
 ENUM: 'enum';
 EXCLUSIVE: 'exclusive';
 EXTENDS: 'extends';
