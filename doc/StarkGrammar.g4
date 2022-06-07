@@ -402,6 +402,7 @@ identifier
     | 'are'
     | 'attr'
     | 'can'
+    | 'case'
     | 'constructor'
     | 'enum'
     | 'exclusive'
