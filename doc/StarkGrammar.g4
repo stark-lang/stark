@@ -855,6 +855,7 @@ mutable_core_type
     | slice_type
     | tuple_type
     | measure_type
+    | union_type
     ;
 
 primitive_type
@@ -909,6 +910,10 @@ tuple_type
 
 mutable_type
     : 'mutable' mutable_core_type
+    ;
+
+union_type
+    : '.' identifier
     ;
 
 array_type
