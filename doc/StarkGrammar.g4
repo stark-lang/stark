@@ -474,7 +474,6 @@ statement
         ( statement_let_var
         | statement_for
         | statement_while
-        | statement_ignore
         | statement_continue
         | statement_break
         | statement_return
@@ -496,10 +495,6 @@ statement_while
 
 statement_return
     : 'return' expression? EOS
-    ;
-
-statement_ignore
-    : 'ignore' expression? EOS
     ;
 
 statement_continue
@@ -541,7 +536,8 @@ expression_if_with_block
 expression_without_block
     : expression_unary_or_binary
     | ('ref' | '&') expression_unary_or_binary
-    | expression_if 
+    | expression_if
+    | expression_match
     | expression_range
     | expression_anonymous_func
     | expression_constructor_struct
@@ -557,6 +553,26 @@ expression_if
     : 'if' expression_unary_or_binary 'then' expression_without_block ('else' expression_without_block)+
     ;
 
+expression_match
+    : 'match' expression_unary_or_binary '{' expression_case (',' expression_case)* ','? '}'
+    ;
+
+expression_case
+    : 'case' expression_pattern func_expression_body
+    ;
+
+expression_pattern
+    // case _ => ...
+    : expression_discard
+    // case x: int => ...
+    | (identifier ':')? type
+    // case 0, 1, 2 => ...
+    | literal (',' literal)*
+    // case .ENUM_VALUE1, .ENUM_VALUE2 => ...
+    | '.' identifier (',' '.' identifier)*
+    // TODO add more patterns (range, ...etc.)
+    ;
+
 expression_block
     : '{' statement* '}'
     ;
@@ -567,7 +583,8 @@ expression_unary_or_binary
     | expression_unary_or_binary bop=('*'|'/'|'%') expression_unary_or_binary
     | expression_unary_or_binary bop=('+'|'-') expression_unary_or_binary
     | expression_unary_or_binary bop='as' type
-    | expression_unary_or_binary bop='is' 'not'? type identifier?
+    | expression_unary_or_binary bop='is' (identifier ':')? type 
+    | expression_unary_or_binary bop='is' 'not' type 
     | expression_unary_or_binary ('<' '<' | '>' '>') expression_unary_or_binary
     | expression_unary_or_binary bop=('<=' | '>=' | '<' | '>') expression_unary_or_binary
     | expression_unary_or_binary bop=('==' | '!=') expression_unary_or_binary
@@ -588,7 +605,6 @@ expression_unary
     | await expression_unary_or_binary    
     | prefix=('+'|'-') expression_unary_or_binary
     | prefix=('~'|'!') expression_unary_or_binary
-    | expression_discard
     ;
 
 expression_anonymous_func
@@ -625,6 +641,8 @@ expression_primary2
     | '(' expression (',' expression)* ')'
     // Dereferencing
     | '*' expression_unary_or_binary
+    // Discard '_'
+    | expression_discard
     ;
 
 expression_member_path
@@ -970,9 +988,9 @@ ELSE: 'else';
 FOR: 'for';
 FUNC: 'func';
 IF: 'if';
-IGNORE: 'ignore';
 IS: 'is';
 LET: 'let';
+MATCH: 'match';
 MUTABLE: 'mutable';
 NEW: 'new';
 NOT: 'not';
