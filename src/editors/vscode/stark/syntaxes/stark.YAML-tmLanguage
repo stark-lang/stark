@@ -133,11 +133,11 @@ repository:
       match: \b(implements)\b
   func-declaration:
     patterns:
-    - match: \b((?:(dispatch|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+(operator)\b
+    - match: \b((?:(dispatch|override|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+(operator)\b
       captures:
         '1': { name: keyword.other.func.sk }      
         '2': { name: keyword.other.operator.sk }      
-    - match: \b((?:(?:dispatch|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+([_[:alpha:]][_[:alnum:]]*)\b
+    - match: \b((?:(?:dispatch|override|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+([_[:alpha:]][_[:alnum:]]*)\b
       captures:
         '1': { name: keyword.other.func.sk }      
         '2': { name: entity.name.function.sk  }      
