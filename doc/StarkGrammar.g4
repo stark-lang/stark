@@ -548,7 +548,8 @@ expression_without_block
     | expression_match
     | expression_range
     | expression_anonymous_func
-    | expression_constructor_struct
+    // struct constructor
+    | module_path? (identifier | method_call) list_initializer
     | expression_constructor_array
     ;
 
@@ -640,6 +641,8 @@ expression_primary2
     // A local func call: e.g f(x)
     // A module variable: e.g core::sub::x
     // A module func call: e.g core::sub::f(x)
+    // A constructor by value (MyStruct): e.g var x = MyStruct
+    // A constructor by value (MyStruct): e.g var x = MyStruct(1,2,3)
     : module_path? (identifier | method_call)
     // A field of a generic type, e.g:
     // - MyStruct`<int>.x / MyStruct`<int>.f(x)
@@ -683,7 +686,6 @@ expression_new_constructor
     | expression_constructor_array
     | expression_constructor_string
     ; 
-
 
 expression_constructor_struct
     : module_path? identifier_with_generic_arguments arguments? list_initializer?
