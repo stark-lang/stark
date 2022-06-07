@@ -227,7 +227,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>\b(import)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)</string>
+            <string>\b(import)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*::\s*[_[:alpha:]][_[:alnum:]]*)*)</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -467,7 +467,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>\b(func(?:\s+mutable\s+this|\s+this))\s+(operator)\b</string>
+            <string>\b((?:(dispatch|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+(operator)\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -484,7 +484,7 @@
           </dict>
           <dict>
             <key>match</key>
-            <string>\b(func(?:\s+mutable\s+this|\s+this))\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <string>\b((?:(?:dispatch|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+([_[:alpha:]][_[:alnum:]]*)\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
