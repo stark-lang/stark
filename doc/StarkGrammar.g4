@@ -422,6 +422,7 @@ identifier
     | 'module'
     | 'macro'
     | 'partial'
+    | 'public'
     | 'requires'
     | 'set'
     | 'static'
@@ -788,7 +789,7 @@ macro_command
 // All tokens except group tokens '('|')'|'['|']'|'{'|'}'
 // as we expect that all tokens are well balanced according to group tokens.
 macro_tokens
-    :'_'|'-'|'-='|'->'|','|'::'|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'bool'|'break'|'can'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'ignore'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'kind'|'let'|'lifetime'|'lifetime'|'literal'|'macro'|'module'|'mutable'|'new'|'not'|'partial'|'public'|'ref'|'requires'|'return'|'set'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
+    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'dispatch'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'kind'|'let'|'lifetime'|'lifetime'|'literal'|'macro'|'match'|'module'|'mutable'|'new'|'not'|'partial'|'public'|'ref'|'requires'|'return'|'set'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'union'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
     | literal
     | IDENTIFIER
     | lifetime
@@ -905,7 +906,9 @@ const_type
     ;
 
 ref_type
-    : 'unique'? 'ref' lifetime? type
+    // ref!: unique ref
+    // ref: shared ref
+    : 'ref' '!'? lifetime? type
     ;
 
 tuple_type
@@ -983,7 +986,7 @@ literal
     ;
 
 // ------------------------------------------------------------------
-// KEYWORDS
+// KEYWORDS (so used in method body / expressions)
 // ------------------------------------------------------------------
 
 AS: 'as';
@@ -1003,14 +1006,12 @@ MATCH: 'match';
 MUTABLE: 'mutable';
 NEW: 'new';
 NOT: 'not';
-PUBLIC: 'public';
 REF: 'ref';
 RETURN: 'return';
 THEN: 'then';
 THIS: 'this';
 THROW: 'throw';
 TRY: 'try';
-UNIQUE: 'unique';
 UNSAFE: 'unsafe';
 VAR: 'var';
 WHILE: 'while';
@@ -1023,6 +1024,7 @@ ALIAS: 'alias';
 ARE: 'are';
 ATTR: 'attr';
 CAN: 'can';
+CASE: 'case';
 CONSTRUCTOR: 'constructor';
 DISPATCH: 'dispatch';
 ENUM: 'enum';
@@ -1041,6 +1043,7 @@ LIFETIME: 'lifetime';
 MODULE: 'module';
 MACRO: 'macro';
 PARTIAL: 'partial';
+PUBLIC: 'public';
 REQUIRES: 'requires';
 SET: 'set';
 STATIC: 'static';
