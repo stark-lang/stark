@@ -439,7 +439,7 @@ identifier
     ;
 
 module_path
-    : (identifier '::')+
+    : (identifier ':' ':')+
     ;
 
 parameters
@@ -546,7 +546,7 @@ expression_without_block
     ;
 
 expression_range
-    : expression_unary_or_binary? '..' expression_unary_or_binary?
+    : expression_unary_or_binary? '.' '.' expression_unary_or_binary?
     ;
 
 // If an if expression starts to use expression_without_block, it should use them all along
@@ -1061,7 +1061,6 @@ LEFT_PAREN: '(';
 RIGHT_PAREN: ')';
 LEFT_BRACE: '{';
 RIGHT_BRACE: '}';
-COLON_COLON: '::';
 COLON: ':';
 STAR: '*';
 TILDE: '~';
