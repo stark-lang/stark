@@ -36,6 +36,7 @@ module_member_declaration
     | alias_type_declaration
     | alias_func_declaration
     | macro_declaration
+    | macro_inline_call
     ;
 
 // ------------------------------------------------------------------
@@ -135,10 +136,11 @@ extends_constraint
 struct_members
     // Expected to be in this order, we will warning otherwise
     : statement_import*
-      const_declaration*
-      field_declaration*
-      constructor_declaration_with_visibility*
-      func_member_declaration_with_visibility*
+    | const_declaration*
+    | field_declaration*
+    | constructor_declaration_with_visibility*
+    | func_member_declaration_with_visibility*
+    | macro_inline_call*
     ;    
 
 union_members
@@ -161,15 +163,17 @@ enum_member
 interface_members
     // Expected to be in this order, we will warning otherwise
     : (attr* constructor_definition)*
-      (attr* func_member_declaration)*
+    | (attr* func_member_declaration)*
+    | macro_inline_call*
     ;
 
 extension_members
     // Expected to be in this order, we will warning otherwise
     : statement_import*
-      const_declaration*
-      constructor_declaration_with_visibility*
-      func_member_declaration_with_visibility*
+    | const_declaration*
+    | constructor_declaration_with_visibility*
+    | func_member_declaration_with_visibility*
+    | macro_inline_call*
     ;    
 
 field_declaration
