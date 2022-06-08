@@ -590,11 +590,11 @@ expression_unary_or_binary
     : expression_unary
     | expression_unary_or_binary measure_type // implicitly convert to *, so same precedence
     | expression_unary_or_binary bop=('*'|'/'|'%') expression_unary_or_binary
+    | expression_unary_or_binary ('<' '<' | '>' '>') expression_unary_or_binary // we are departing from the classical C precedence here
     | expression_unary_or_binary bop=('+'|'-') expression_unary_or_binary
     | expression_unary_or_binary bop='as' type
     | expression_unary_or_binary bop='is' (identifier ':')? type 
     | expression_unary_or_binary bop='is' 'not' type 
-    | expression_unary_or_binary ('<' '<' | '>' '>') expression_unary_or_binary
     | expression_unary_or_binary bop=('<=' | '>=' | '<' | '>') expression_unary_or_binary
     | expression_unary_or_binary bop=('==' | '!=') expression_unary_or_binary
     | expression_unary_or_binary bop='&' expression_unary_or_binary
