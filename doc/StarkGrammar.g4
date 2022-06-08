@@ -791,9 +791,9 @@ macro_command
     | '}'
     ;
 
-// All tokens except group tokens '('|')'|'['|']'|'{'|'}'
-// as we expect that all tokens are well balanced according to group tokens.
 macro_tokens
+    // All tokens except group tokens '('|')'|'['|']'|'{'|'}'
+    // as they are parsed below to match balanced groups
     :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'kind'|'let'|'lifetime'|'lifetime'|'literal'|'macro'|'match'|'module'|'mutable'|'new'|'not'|'partial'|'public'|'ref'|'requires'|'return'|'set'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'union'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
     | literal
     | IDENTIFIER
@@ -801,6 +801,9 @@ macro_tokens
     | at_identifier
     | macro_identifier
     | macro_literal_token
+    | '(' macro_tokens* ')'
+    | '[' macro_tokens* ']'
+    | '{' macro_tokens* '}'
     ;
 
 macro_expression
@@ -991,7 +994,7 @@ literal
     ;
 
 // ------------------------------------------------------------------
-// KEYWORDS (so used in method body / expressions)
+// Keywords (so used in method body / expressions)
 // ------------------------------------------------------------------
 
 AS: 'as';
@@ -1022,7 +1025,7 @@ VAR: 'var';
 WHILE: 'while';
 
 // ------------------------------------------------------------------
-// NON KEYWORDS (can be used as identifiers)
+// Non Keywords (can be used as identifiers)
 // ------------------------------------------------------------------
 
 ALIAS: 'alias';
