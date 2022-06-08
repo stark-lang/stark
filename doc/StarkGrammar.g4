@@ -783,10 +783,10 @@ macro_statement
     ;
 
 macro_command
-    : 'for' macro_identifier 'in' macro_identifier '{'
-    | 'if' macro_expression 'then' '{'
-    | '}' 'else' '{'
-    | 'else'
+    : macro_expression
+    | 'for' macro_identifier 'in' macro_identifier '{'?
+    | 'if' macro_expression 'then' '{'?
+    | '}'? 'else' '{'?
     | '{'
     | '}'
     ;
