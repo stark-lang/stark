@@ -86,7 +86,7 @@ interface_declaration
     ;
 
 extension_declaration
-    : attr* visibility? 'partial'? 'extension' generic_parameters? FOR qualified_type implement_contraint* where_constraint* (EOS | '{' extension_members '}')
+    : attr* visibility? 'partial'? 'extension' generic_parameters? FOR type_qualified implement_contraint* where_constraint* (EOS | '{' extension_members '}')
     ;
 
 union_declaration
@@ -94,15 +94,15 @@ union_declaration
     ;
 
 enum_declaration
-    : attr* visibility? 'enum' identifier (':' primitive_type)? '{' enum_members '}'
+    : attr* visibility? 'enum' identifier (':' type_primitive)? '{' enum_members '}'
     ;
 
 type_declaration
-    : attr* visibility? 'type' identifier_with_generic_parameters where_constraint* '=' core_type EOS
+    : attr* visibility? 'type' identifier_with_generic_parameters where_constraint* '=' type_core EOS
     ;
 
 alias_type_declaration
-    : attr* visibility? 'alias' 'type' identifier '=' core_type EOS
+    : attr* visibility? 'alias' 'type' identifier '=' type_core EOS
     ;
 
 alias_func_declaration
@@ -116,7 +116,7 @@ where_constraint
 
 where_constraint_part
     : 'is' type
-    | 'kind' ('enum' | 'union' | 'struct' | 'interface' | 'unit' | 'ref' 'struct') // TODO: should we add e.g | 'integer' | 'float' | 'number'?
+    | 'kind' ('enum' | 'union' | 'struct' | 'interface' | 'unit' | 'ref' 'struct' | 'layout') // TODO: should we add e.g | 'integer' | 'float' | 'number'?
     | 'has' 'constructor' identifier? parameters
     ;
 
@@ -126,11 +126,11 @@ where_constraint_lifetime_part
     ;
 
 implement_contraint
-    : 'implements' qualified_type
+    : 'implements' type_qualified
     ;
 
 extends_constraint
-    : 'extends' qualified_type
+    : 'extends' type_qualified
     ;
 
 struct_members
@@ -221,7 +221,7 @@ func_this_property_declaration_part
     ;
 
 func_this_array_declaration_part
-    : func_pre_modifier* 'func' func_this '[' identifier ':' type ']' func_return_type property_constraint* property_body
+    : func_pre_modifier* 'func' func_this '[' identifier ':' type ']' type_func_return property_constraint* property_body
     ;
 
 func_static_regular_declaration_part
@@ -233,11 +233,11 @@ func_static_property_declaration_part
     ;    
 
 func_regular_part
-    : identifier_with_generic_parameters parameters func_return_type? throws_constraint? func_constraint* func_body
+    : identifier_with_generic_parameters parameters type_func_return? throws_constraint? func_constraint* func_body
     ;
 
 func_property_part
-    : identifier_with_generic_parameters func_return_type property_constraint* property_body
+    : identifier_with_generic_parameters type_func_return property_constraint* property_body
     ;
 
 func_pre_modifier
@@ -256,7 +256,7 @@ func_constraint
     ;
 
 throws_constraint
-    : 'throws' qualified_type (',' qualified_type)*
+    : 'throws' type_qualified (',' type_qualified)*
     ;
 
 property_constraint
@@ -291,7 +291,7 @@ constructor_modifier
     : 'partial'? 'unsafe'?
     ;    
 
-func_return_type
+type_func_return
     : '->' attr* type
     ;
 
@@ -366,7 +366,7 @@ generic_parameters
 
 generic_arguments
     : '`' '<' generic_argument (',' generic_argument)* '>'
-    | '`' (identifier | lifetime | literal_integer | literal_bool | primitive_type) // for small one arg generic (e.g no module path)
+    | '`' (identifier | lifetime | literal_integer | literal_bool | type_primitive) // for small one arg generic (e.g no module path)
     ;
 
 generic_parameter
@@ -588,7 +588,7 @@ expression_block
 
 expression_unary_or_binary
     : expression_unary
-    | expression_unary_or_binary measure_type // implicitly convert to *, so same precedence
+    | expression_unary_or_binary type_measure // implicitly convert to *, so same precedence
     | expression_unary_or_binary bop=('*'|'/'|'%') expression_unary_or_binary
     | expression_unary_or_binary ('<' '<' | '>' '>') expression_unary_or_binary // we are departing from the classical C precedence here
     | expression_unary_or_binary bop=('+'|'-') expression_unary_or_binary
@@ -617,7 +617,7 @@ expression_unary
     ;
 
 expression_anonymous_func
-    : (async | await)? 'func' generic_arguments? arguments? func_return_type? func_expression_body
+    : (async | await)? 'func' generic_arguments? arguments? type_func_return? func_expression_body
     | (async | await)? identifier func_expression_body
     | (async | await)? '(' identifier (',' identifier)* ')' func_expression_body
     ;
@@ -842,47 +842,49 @@ macro_argument
 // ------------------------------------------------------------------
 
 type
-    : non_const_type
-    | const_type
+    : type_non_const
+    | type_const
     ;
 
-non_const_type
-    : core_type
-    | ref_type
-    | mutable_type
-    | pointer_type
+type_non_const
+    : type_core
+    | type_ref
+    | type_mutable
+    | type_pointer
     ;
 
 // Core types are types without a qualifier (ref, const, mutable, pointer)
 // Usable by e.g type_declaration
-core_type
-    : mutable_core_type 
-    | func_type // TODO: should it be a core_type or not?
+type_core
+    : type_mutable_core 
+    | type_func // TODO: should it be a type_core or not?
     ;
 
-mutable_core_type
-    : primitive_type 
-    | qualified_type
-    | array_type
-    | fixed_array_type
-    | slice_type
-    | tuple_type
-    | measure_type
-    | union_type
+type_mutable_core
+    : type_primitive 
+    | type_qualified
+    | type_array
+    | type_fixed_array
+    | type_slice
+    | type_tuple
+    | type_measure
+    | type_union
     ;
 
-primitive_type
-    : bool_type
-    | integer_type
-    | float_type
-    | vector_type
     ;
 
-bool_type
+type_primitive
+    : type_bool
+    | type_integer
+    | type_float
+    | type_vector
+    ;
+
+type_bool
     : 'bool'
     ;
 
-integer_type
+type_integer
     : 'uint'
     | 'u8'
     | 'u16'
@@ -895,69 +897,69 @@ integer_type
     | 'i64'
     ;
 
-float_type
+type_float
     : 'f32'
     | 'f64'
     ;
 
-vector_type
+type_vector
     : 'v128'
     | 'v256'
     ;    
 
-qualified_type
+type_qualified
     : qualified_name
     ;
 
-const_type
-    : 'const' non_const_type // avoid const const
+type_const
+    : 'const' type_non_const // avoid const const
     ;
 
-ref_type
+type_ref
     // ref!: unique ref
     // ref: shared ref
     : 'ref' '!'? lifetime? type
     ;
 
-tuple_type
+type_tuple
     : '(' type (',' type)+ ')'
     ;
 
-mutable_type
-    : 'mutable' mutable_core_type
+type_mutable
+    : 'mutable' type_mutable_core
     ;
 
-union_type
+type_union
     : '.' identifier
     ;
 
-array_type
+type_array
     : '[' type ']' 
     ;
 
 // We will validate the <expression> for the dimension in the semantic analysis
-fixed_array_type
+type_fixed_array
     : '[' type ',' expression ']' 
     ;    
 
-slice_type
+type_slice
     : '~' type // should we use % vs ~ for a slice?
     ;
 
-pointer_type
-    : '*' (primitive_type | qualified_type)
+type_pointer
+    : '*' (type_primitive | type_qualified)
     ;
 
 unit
     : '`' identifier
     ;
 
-measure_type
-    : (integer_type | float_type) unit
+type_measure
+    : (type_integer | type_float) unit
     ;
 
-func_type
-    : async? 'func' generic_parameters? parameters func_return_type? throws_constraint? func_constraint*
+type_func
+    : async? 'func' generic_parameters? parameters type_func_return? throws_constraint? func_constraint*
     ;
 
 // ------------------------------------------------------------------
@@ -986,8 +988,8 @@ literal_string
     ;
 
 literal
-    : literal_integer integer_type?
-    | literal_float float_type?
+    : literal_integer type_integer?
+    | literal_float type_float?
     | literal_bool
     | literal_char
     | literal_string
