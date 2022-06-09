@@ -362,7 +362,7 @@ identifier_with_generic_arguments
 
 layout_parameters
     : '[' identifier ']'    // Generic parametrized SOA
-    | '[' literal? '|' ']'  // SOA
+    | '[' literal_integer? '|' ']'  // SOA
     | '[' ']'               // AOS
     ;
 
