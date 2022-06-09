@@ -78,7 +78,7 @@ static_declaration
     ;
 
 struct_declaration
-    : attr* visibility? 'partial'? 'ref'? 'mutable'? 'struct' identifier_with_generic_parameters parameters? implement_contraint* where_constraint* (EOS | '{' struct_members '}')
+    : attr* visibility? 'partial'? 'ref'? 'mutable'? 'struct' identifier layout_parameters? generic_parameters? parameters? implement_contraint* where_constraint* (EOS | '{' struct_members '}')
     ;
 
 interface_declaration
@@ -358,6 +358,12 @@ identifier_with_generic_parameters
 
 identifier_with_generic_arguments
     : identifier generic_arguments?
+    ;
+
+layout_parameters
+    : '[' identifier ']'    // Generic parametrized SOA
+    | '[' literal? '|' ']'  // SOA
+    | '[' ']'               // AOS
     ;
 
 generic_parameters
@@ -862,7 +868,7 @@ type_core
 
 type_mutable_core
     : type_primitive 
-    | type_qualified
+    | type_qualified type_struct_layout?
     | type_array
     | type_fixed_array
     | type_slice
@@ -871,6 +877,10 @@ type_mutable_core
     | type_union
     ;
 
+// For SOA and AOS
+type_struct_layout
+    : '[' literal_integer? '|'  ']' // SOA
+    | '[' ']'                       // AOS
     ;
 
 type_primitive
