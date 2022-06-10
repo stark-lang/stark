@@ -140,6 +140,7 @@ struct_members
     | field_declaration*
     | constructor_declaration_with_visibility*
     | func_member_declaration_with_visibility*
+    | operator_member_declaration_with_visibility*
     | macro_inline_call*
     ;    
 
@@ -164,6 +165,7 @@ interface_members
     // Expected to be in this order, we will warning otherwise
     : (attr* constructor_definition)*
     | (attr* func_member_declaration)*
+    | (attr* operator_member_declaration)*
     | macro_inline_call*
     ;
 
@@ -173,6 +175,7 @@ extension_members
     | const_declaration*
     | constructor_declaration_with_visibility*
     | func_member_declaration_with_visibility*
+    | operator_member_declaration_with_visibility*
     | macro_inline_call*
     ;    
 
@@ -349,6 +352,36 @@ async_await_generic_long_param
     ;
 
 // ------------------------------------------------------------------
+// Operators
+// ------------------------------------------------------------------
+
+operator_member_declaration_with_visibility
+    : attr* visibility? operator_member_declaration
+    ;
+
+operator_member_declaration
+    : operator_part
+    ;
+
+operator_pre_modifier
+    : 'partial'
+    | 'unsafe'
+    ;
+
+operator_binary
+    : '+' | '-' | '*' | '/' | '%' | '&' | '|' | '^' | '<' '<' | '>' '>' | '==' | '!=' | '<' | '>' | '<=' | '>='
+    ;
+
+operator_unary
+    : '+' | '-' | '!' | '~'
+    ;
+
+operator_part
+    : operator_pre_modifier* 'operator' 'unary'  operator_unary parameters type_func_return func_body
+    | operator_pre_modifier* 'operator' 'binary' operator_binary parameters type_func_return func_body
+    ;
+
+// ------------------------------------------------------------------
 // Shared
 // ------------------------------------------------------------------
 
@@ -412,6 +445,7 @@ identifier
     | 'alias'
     | 'are'
     | 'attr'
+    | 'binary'
     | 'can'
     | 'case'
     | 'constructor'
@@ -430,6 +464,7 @@ identifier
     | 'lifetime'
     | 'module'
     | 'macro'
+    | 'operator'
     | 'partial'
     | 'public'
     | 'requires'
@@ -438,6 +473,7 @@ identifier
     | 'struct'
     | 'throws'
     | 'type'
+    | 'unary'
     | 'union'
     | 'unit'
     | 'where'
@@ -800,7 +836,7 @@ macro_command
 macro_tokens
     // All tokens except group tokens '('|')'|'['|']'|'{'|'}'
     // as they are parsed below to match balanced groups
-    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'kind'|'let'|'lifetime'|'lifetime'|'literal'|'macro'|'match'|'module'|'mutable'|'new'|'not'|'partial'|'public'|'ref'|'requires'|'return'|'set'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'union'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
+    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'kind'|'let'|'lifetime'|'lifetime'|'literal'|'macro'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'partial'|'public'|'ref'|'requires'|'return'|'set'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
     | literal
     | IDENTIFIER
     | lifetime
@@ -1043,6 +1079,7 @@ WHILE: 'while';
 ALIAS: 'alias';
 ARE: 'are';
 ATTR: 'attr';
+BINARY: 'binary';
 CAN: 'can';
 CASE: 'case';
 CONSTRUCTOR: 'constructor';
@@ -1061,6 +1098,7 @@ KIND: 'kind';
 LIFETIME: 'lifetime';
 MODULE: 'module';
 MACRO: 'macro';
+OPERATOR: 'operator';
 PARTIAL: 'partial';
 PUBLIC: 'public';
 REQUIRES: 'requires';
@@ -1069,6 +1107,7 @@ STATIC: 'static';
 STRUCT: 'struct';
 THROWS: 'throws';
 TYPE: 'type';
+UNARY: 'unary';
 UNION: 'union';
 UNIT: 'unit';
 WHERE: 'where';

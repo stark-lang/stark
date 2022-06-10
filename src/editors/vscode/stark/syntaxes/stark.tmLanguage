@@ -467,23 +467,6 @@
         <array>
           <dict>
             <key>match</key>
-            <string>\b((?:(dispatch|override|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+(operator)\b</string>
-            <key>captures</key>
-            <dict>
-              <key>1</key>
-              <dict>
-                <key>name</key>
-                <string>keyword.other.func.sk</string>
-              </dict>
-              <key>2</key>
-              <dict>
-                <key>name</key>
-                <string>keyword.other.operator.sk</string>
-              </dict>
-            </dict>
-          </dict>
-          <dict>
-            <key>match</key>
             <string>\b((?:(?:dispatch|override|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+([_[:alpha:]][_[:alnum:]]*)\b</string>
             <key>captures</key>
             <dict>
@@ -496,6 +479,18 @@
               <dict>
                 <key>name</key>
                 <string>entity.name.function.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
+            <string>\b((?:(unsafe|partial)\s+)*operator(?:\s+(?:binary|unary)))\b</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.func.sk</string>
               </dict>
             </dict>
           </dict>
@@ -714,7 +709,7 @@
         <key>name</key>
         <string>keyword.type.sk</string>
         <key>match</key>
-        <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b</string>
+        <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b</string>
       </dict>
       <key>measure_type</key>
       <dict>

@@ -133,14 +133,13 @@ repository:
       match: \b(implements)\b
   func-declaration:
     patterns:
-    - match: \b((?:(dispatch|override|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+(operator)\b
-      captures:
-        '1': { name: keyword.other.func.sk }      
-        '2': { name: keyword.other.operator.sk }      
     - match: \b((?:(?:dispatch|override|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+([_[:alpha:]][_[:alnum:]]*)\b
       captures:
         '1': { name: keyword.other.func.sk }      
         '2': { name: entity.name.function.sk  }      
+    - match: \b((?:(unsafe|partial)\s+)*operator(?:\s+(?:binary|unary)))\b
+      captures:
+        '1': { name: keyword.other.func.sk }      
     - match: \b(constructor)(\s+[_[:alpha:]][_[:alnum:]]*)?
       captures:
         '1': { name: keyword.other.func.sk }      
@@ -210,7 +209,7 @@ repository:
         match: \bnull\b
   keywords:
     name: keyword.type.sk
-    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|operator|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b
+    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b
 
   measure_type:
     match: '`([a-zA-Z_][a-zA-Z_0-9]*)'
