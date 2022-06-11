@@ -907,7 +907,6 @@ type_mutable_core
     | type_qualified type_struct_layout?
     | type_array
     | type_fixed_array
-    | type_slice
     | type_tuple
     | type_measure
     | type_union
@@ -987,10 +986,6 @@ type_array
 type_fixed_array
     : '[' type ',' expression ']' 
     ;    
-
-type_slice
-    : '~' type // should we use % vs ~ for a slice?
-    ;
 
 type_pointer
     : '*' (type_primitive | type_qualified)
