@@ -992,7 +992,7 @@ type_pointer
     ;
 
 unit
-    : '`' identifier
+    : '\'' identifier
     ;
 
 type_measure

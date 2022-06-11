@@ -44,10 +44,6 @@
       </dict>
       <dict>
         <key>include</key>
-        <string>#measure_type</string>
-      </dict>
-      <dict>
-        <key>include</key>
         <string>#visibility-modifiers</string>
       </dict>
       <dict>
@@ -101,6 +97,10 @@
       <dict>
         <key>include</key>
         <string>#literals</string>
+      </dict>
+      <dict>
+        <key>include</key>
+        <string>#measure_type</string>
       </dict>
     </array>
     <key>repository</key>
@@ -711,19 +711,6 @@
         <key>match</key>
         <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b</string>
       </dict>
-      <key>measure_type</key>
-      <dict>
-        <key>match</key>
-        <string>`([a-zA-Z_][a-zA-Z_0-9]*)</string>
-        <key>captures</key>
-        <dict>
-          <key>1</key>
-          <dict>
-            <key>name</key>
-            <string>entity.name.type.unit.sk</string>
-          </dict>
-        </dict>
-      </dict>
       <key>comment</key>
       <dict>
         <key>patterns</key>
@@ -871,38 +858,21 @@
       <dict>
         <key>name</key>
         <string>string.quoted.single.sk</string>
-        <key>begin</key>
-        <string>'</string>
-        <key>beginCaptures</key>
-        <dict>
-          <key>0</key>
-          <dict>
-            <key>name</key>
-            <string>punctuation.definition.char.begin.sk</string>
-          </dict>
-        </dict>
-        <key>end</key>
-        <string>(\')|((?:[^\\\n])$)</string>
-        <key>endCaptures</key>
+        <key>match</key>
+        <string>'(\s+|[\w\\]+)'</string>
+      </dict>
+      <key>measure_type</key>
+      <dict>
+        <key>match</key>
+        <string>'([a-zA-Z_][a-zA-Z_0-9]*)</string>
+        <key>captures</key>
         <dict>
           <key>1</key>
           <dict>
             <key>name</key>
-            <string>punctuation.definition.char.end.sk</string>
-          </dict>
-          <key>2</key>
-          <dict>
-            <key>name</key>
-            <string>invalid.illegal.newline.sk</string>
+            <string>entity.name.type.unit.sk</string>
           </dict>
         </dict>
-        <key>patterns</key>
-        <array>
-          <dict>
-            <key>include</key>
-            <string>#string-character-escape</string>
-          </dict>
-        </array>
       </dict>
       <key>string-character-escape</key>
       <dict>
