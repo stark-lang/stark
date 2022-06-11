@@ -406,6 +406,8 @@ generic_parameters
 generic_arguments
     : '`' '<' generic_argument (',' generic_argument)* '>'
     | '`' (identifier | lifetime | literal_integer | literal_bool | type_primitive) // for small one arg generic (e.g no module path)
+    | '`' identifier lifetime+ // for generic with mixed lifetime e.g Slice`T#l
+
     ;
 
 generic_parameter
