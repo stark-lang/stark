@@ -78,7 +78,7 @@ static_declaration
     ;
 
 struct_declaration
-    : attr* visibility? 'partial'? 'ref'? 'mutable'? 'struct' identifier layout_parameters? generic_parameters? parameters? implement_contraint* where_constraint* (EOS | '{' struct_members '}')
+    : attr* visibility? 'partial'? 'managed'? 'mutable'? 'struct' identifier layout_parameters? generic_parameters? parameters? implement_contraint* where_constraint* (EOS | '{' struct_members '}')
     ;
 
 interface_declaration
@@ -116,7 +116,7 @@ where_constraint
 
 where_constraint_part
     : 'is' type
-    | 'kind' ('enum' | 'union' | 'struct' | 'interface' | 'unit' | 'ref' 'struct' | 'layout' | 'ownership' | 'permission') // TODO: should we add e.g | 'integer' | 'float' | 'number'?
+    | 'kind' ('enum' | 'union' | 'managed'? 'struct' | 'interface' | 'unit' | 'layout' | 'ownership' | 'permission') // TODO: should we add e.g | 'integer' | 'float' | 'number'?
     | 'has' 'constructor' identifier? parameters
     ;
 
@@ -478,6 +478,7 @@ identifier
     | 'lifetime'
     | 'module'
     | 'macro'
+    | 'managed'
     | 'mutable'
     | 'operator'
     | 'ownership'
@@ -880,7 +881,7 @@ macro_command
 macro_tokens
     // All tokens except group tokens '('|')'|'['|']'|'{'|'}'
     // as they are parsed below to match balanced groups
-    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'belted'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'immutable'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'isolated'|'kind'|'let'|'lifetime'|'literal'|'macro'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'ownership'|'permission'|'partial'|'public'|'readable'|'ref'|'requires'|'return'|'set'|'shared'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'transient'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
+    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'belted'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'immutable'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'isolated'|'kind'|'let'|'lifetime'|'literal'|'macro'|'managed'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'ownership'|'permission'|'partial'|'public'|'readable'|'ref'|'requires'|'return'|'set'|'shared'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'transient'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
     | literal
     | IDENTIFIER
     | lifetime
@@ -1163,6 +1164,7 @@ KIND: 'kind';
 LIFETIME: 'lifetime';
 MODULE: 'module';
 MACRO: 'macro';
+MANAGED: 'managed';
 MUTABLE: 'mutable';
 OPERATOR: 'operator';
 OWNERSHIP: 'ownership';

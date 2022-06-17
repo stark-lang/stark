@@ -489,7 +489,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>\b((?:(?:dispatch|override|extern|partial)\s+)*func(?:\s+mutable\s+this|\s+this))\s+([_[:alpha:]][_[:alnum:]]*)\b</string>
+            <string>\b((?:(?:dispatch|override|extern|mutable|partial)\s+)*func(?:\s+mutable\s+this|\s+this)?)\s+([_[:alpha:]][_[:alnum:]]*)\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
