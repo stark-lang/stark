@@ -92,7 +92,7 @@ repository:
 
   type-attributes:
     patterns:
-    - match: `(immutable|mutable|transient|retainable|shared|belted|unique|readable)\b
+    - match: `(immutable|mutable|transient|retainable|shared|rooted|unique|readable)\b
       captures:
         '1': { name: keyword.other.type.sk }      
 

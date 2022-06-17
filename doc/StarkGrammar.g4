@@ -456,7 +456,6 @@ identifier
     | 'alias'
     | 'are'
     | 'attr'
-    | 'belted'
     | 'binary'
     | 'can'
     | 'case'
@@ -487,6 +486,7 @@ identifier
     | 'public'
     | 'readable'
     | 'requires'
+    | 'rooted'
     | 'set'
     | 'shared'
     | 'static'
@@ -607,6 +607,7 @@ expression_if_with_block
 expression_without_block
     : expression_unary_or_binary
     | expression_ref
+    | expression_out
     | expression_address_of
     | expression_if
     | expression_match
@@ -618,6 +619,13 @@ expression_without_block
     | type_permission_explicit expression_identifier_or_method_call_with_optional_generics
     // Here the permission is optional
     | type_permission_explicit? expression_constructor_array
+    ;
+
+expression_out
+    // out only supports a path (because that's the parameter declaration that says what is the lifetime/ownership/permission)
+    : 'out' expression_unary_or_binary
+    // return a ref
+    | 'out' expression_ref
     ;
 
 expression_ref
@@ -881,7 +889,7 @@ macro_command
 macro_tokens
     // All tokens except group tokens '('|')'|'['|']'|'{'|'}'
     // as they are parsed below to match balanced groups
-    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'belted'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'immutable'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'isolated'|'kind'|'let'|'lifetime'|'literal'|'macro'|'managed'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'ownership'|'permission'|'partial'|'public'|'readable'|'ref'|'requires'|'return'|'set'|'shared'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'transient'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
+    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'immutable'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'isolated'|'kind'|'let'|'lifetime'|'literal'|'macro'|'managed'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'out'|'ownership'|'permission'|'partial'|'public'|'readable'|'ref'|'requires'|'return'|'rooted'|'set'|'shared'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'transient'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
     | literal
     | IDENTIFIER
     | lifetime
@@ -1001,11 +1009,15 @@ type_const
     ;
 
 type_ref
-    : 'ref' lifetime? type_ownership_explicit? type
+    : ref_or_out lifetime? type_ownership_explicit? type
     //              lifetime     ownership                                 permission
-    | 'ref' '`' '<' lifetime ',' type_owrnership_identifier_or_generic ',' type_permission_identifier_or_generic ',' type '>'
+    | ref_or_out '`' '<' lifetime ',' type_owrnership_identifier_or_generic ',' type_permission_identifier_or_generic ',' type '>'
     ;
 
+ref_or_out
+    : 'ref'
+    | 'out'
+    ;
 
 type_tuple
     : '(' type (',' type)+ ')'
@@ -1023,7 +1035,7 @@ type_ownership_explicit
 type_owrnership_identifier
     : 'unique'
     | 'shared'
-    | 'belted'
+    | 'rooted'
     | 'transient'
     ;
 
@@ -1125,6 +1137,7 @@ LET: 'let';
 MATCH: 'match';
 NEW: 'new';
 NOT: 'not';
+OUT: 'out';
 REF: 'ref';
 RETURN: 'return';
 THEN: 'then';
@@ -1142,7 +1155,6 @@ WHILE: 'while';
 ALIAS: 'alias';
 ARE: 'are';
 ATTR: 'attr';
-BELTED: 'belted';
 BINARY: 'binary';
 CAN: 'can';
 CASE: 'case';
@@ -1173,6 +1185,7 @@ PARTIAL: 'partial';
 PUBLIC: 'public';
 READABLE: 'readable';
 REQUIRES: 'requires';
+ROOTED: 'rooted';
 SET: 'set';
 SHARED: 'shared';
 STATIC: 'static';

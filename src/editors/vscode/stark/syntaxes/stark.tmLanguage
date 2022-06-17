@@ -315,7 +315,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>`(immutable|mutable|transient|retainable|shared|belted|unique|readable)\b</string>
+            <string>`(immutable|mutable|transient|retainable|shared|rooted|unique|readable)\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
