@@ -44,6 +44,10 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#type-attributes</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#visibility-modifiers</string>
       </dict>
       <dict>
@@ -143,7 +147,7 @@
         <key>name</key>
         <string>storage.modifier.sk</string>
         <key>match</key>
-        <string>(?&lt;!\.)\b(abstract|async|const|extern|fixed|internal|isolated|unique|immutable|retainable|mutable|new|override|partial|private|protected|public|dynamic|readable|transient|static|unsafe|virtual|sealed)\b</string>
+        <string>(?&lt;!\.)\b(abstract|async|const|extern|internal|new|override|partial|public|dynamic|static|unsafe|virtual)\b</string>
       </dict>
       <key>module-declaration</key>
       <dict>
@@ -305,13 +309,31 @@
           </dict>
         </array>
       </dict>
+      <key>type-attributes</key>
+      <dict>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>match</key>
+            <string>`(immutable|mutable|transient|retainable|shared|belted|unique|readable)\b</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.type.sk</string>
+              </dict>
+            </dict>
+          </dict>
+        </array>
+      </dict>
       <key>type-declaration</key>
       <dict>
         <key>patterns</key>
         <array>
           <dict>
             <key>match</key>
-            <string>\b(struct|union|enum|interface|unit|type)\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <string>\b((?:(?:managed|mutable|transient)\s+)*struct|union|enum|interface|unit|type)\s+([_[:alpha:]][_[:alnum:]]*)</string>
             <key>captures</key>
             <dict>
               <key>1</key>

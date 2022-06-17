@@ -12,6 +12,7 @@ patterns:
 - include: '#vector-types'
 - include: '#generic-modifiers'
 - include: '#inline-il'
+- include: '#type-attributes'
 - include: '#visibility-modifiers'
 - include: '#attribute-declaration'
 - include: '#import-declaration'
@@ -42,7 +43,7 @@ repository:
     match: \b(lifetime|permission)\b
   visibility-modifiers:
     name: storage.modifier.sk
-    match: (?<!\.)\b(abstract|async|const|extern|fixed|internal|isolated|unique|immutable|retainable|mutable|new|override|partial|private|protected|public|dynamic|readable|transient|static|unsafe|virtual|sealed)\b
+    match: (?<!\.)\b(abstract|async|const|extern|internal|new|override|partial|public|dynamic|static|unsafe|virtual)\b
   module-declaration:
     patterns:
     - match: \b(module)\b\s*([_[:alpha:]][_[:alnum:]]*)
@@ -88,9 +89,16 @@ repository:
     - match: '\b(namespace)\b'
       captures:
         '1': { name: keyword.other.namespace.sk }      
+
+  type-attributes:
+    patterns:
+    - match: `(immutable|mutable|transient|retainable|shared|belted|unique|readable)\b
+      captures:
+        '1': { name: keyword.other.type.sk }      
+
   type-declaration:
     patterns:
-    - match: \b(struct|union|enum|interface|unit|type)\s+([_[:alpha:]][_[:alnum:]]*)
+    - match: \b((?:(?:managed|mutable|transient)\s+)*struct|union|enum|interface|unit|type)\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.type.sk }      
         '2': { name: entity.name.type.class.sk }      

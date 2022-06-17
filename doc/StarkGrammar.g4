@@ -116,7 +116,7 @@ where_constraint
 
 where_constraint_part
     : 'is' type
-    | 'kind' ('enum' | 'union' | 'struct' | 'interface' | 'unit' | 'ref' 'struct' | 'layout') // TODO: should we add e.g | 'integer' | 'float' | 'number'?
+    | 'kind' ('enum' | 'union' | 'struct' | 'interface' | 'unit' | 'ref' 'struct' | 'layout' | 'ownership' | 'permission') // TODO: should we add e.g | 'integer' | 'float' | 'number'?
     | 'has' 'constructor' identifier? parameters
     ;
 
@@ -149,7 +149,7 @@ union_members
     ; 
 
 union_member
-    : identifier parameters
+    : '.' identifier parameters?
     | type
     ;
 
@@ -247,6 +247,7 @@ func_pre_modifier
     : 'partial'
     | 'unsafe'
     | async
+    | 'mutable'
     ;
 
 func_this
@@ -400,14 +401,13 @@ layout_parameters
     ;
 
 generic_parameters
-    : '`' '<' generic_parameter (',' generic_parameter)* '>'
+    : '`' '<' generic_parameter (',' generic_parameter)* '>'  // full form of generic parameters: Dictionary`<TKey, TValue>
+    | generic_parameter_simple+ // simple form of generic parameters e.g Dictionary`TKey`Tvalue
     ;
 
 generic_arguments
-    : '`' '<' generic_argument (',' generic_argument)* '>'
-    | '`' (identifier | lifetime | literal_integer | literal_bool | type_primitive) // for small one arg generic (e.g no module path)
-    | '`' identifier lifetime+ // for generic with mixed lifetime e.g Slice`T#l
-
+    : '`' '<' generic_argument (',' generic_argument)* '>' // full form: Dictionary`<int, string>
+    | generic_argument_simple+ // simple form: Dictionary`int`string 
     ;
 
 generic_parameter
@@ -415,9 +415,18 @@ generic_parameter
     | lifetime
     ;
 
+generic_parameter_simple
+    : '`' identifier
+    | lifetime
+    ;
+
 generic_argument
     : type
     | literal
+    | lifetime
+    ;
+generic_argument_simple
+    : '`' (identifier | literal_integer | literal_bool | type_primitive)
     | lifetime
     ;
 
@@ -447,6 +456,7 @@ identifier
     | 'alias'
     | 'are'
     | 'attr'
+    | 'belted'
     | 'binary'
     | 'can'
     | 'case'
@@ -457,31 +467,39 @@ identifier
     | 'extension'
     | 'get'
     | 'has'
+    | 'immutable'
     | 'implements'
     | 'import'
     | 'in'
     | 'indirect'
     | 'interface'
+    | 'isolated'
     | 'kind'
     | 'lifetime'
     | 'module'
     | 'macro'
+    | 'mutable'
     | 'operator'
+    | 'ownership'
+    | 'permission'
     | 'partial'
     | 'public'
+    | 'readable'
     | 'requires'
     | 'set'
+    | 'shared'
     | 'static'
     | 'struct'
     | 'throws'
+    | 'transient'
     | 'type'
     | 'unary'
     | 'union'
+    | 'unique'
     | 'unit'
     | 'where'
     // Macro tokens
     | 'identifier'
-    | 'lifetime'
     | 'expression'
     | 'statement'
     | 'literal'
@@ -587,14 +605,26 @@ expression_if_with_block
 
 expression_without_block
     : expression_unary_or_binary
-    | ('ref' | '&') expression_unary_or_binary
+    | expression_ref
+    | expression_address_of
     | expression_if
     | expression_match
     | expression_range
     | expression_anonymous_func
     // struct constructor
     | module_path? (identifier | method_call) list_initializer
-    | expression_constructor_array
+    // Here the permission is mandatory otherwise the expression_unary_or_binary will a default constructor (with default permission)
+    | type_permission_explicit expression_identifier_or_method_call_with_optional_generics
+    // Here the permission is optional
+    | type_permission_explicit? expression_constructor_array
+    ;
+
+expression_ref
+    : 'ref' lifetime? type_ownership_explicit? type_permission_explicit? expression_unary_or_binary
+    ;
+
+expression_address_of
+    : '&' expression_unary_or_binary
     ;
 
 expression_range
@@ -650,6 +680,8 @@ expression_unary_or_binary
 
 expression_unary
     : expression_primary1 expression_member_path*
+    // Note that if ownership / permission are present, the only expression_primary2 supported behind
+    // is method call
     | expression_primary2 expression_member_path*
     | expression_new
     | 'throw' expression_unary_or_binary
@@ -687,17 +719,27 @@ expression_primary2
     // A module func call: e.g core::sub::f(x)
     // A constructor by value (MyStruct): e.g var x = MyStruct
     // A constructor by value (MyStruct): e.g var x = MyStruct(1,2,3)
-    : module_path? (identifier | method_call)
-    // A field of a generic type, e.g:
-    // - MyStruct`<int>.x / MyStruct`<int>.f(x)
-    // - core::sub::MyStruct`<int>.x / core::sub::MyStruct`<int>.f(x)
-    | module_path? identifier generic_arguments expression_dot_path
+    : expression_identifier_or_method_call_with_optional_generics
     // Group and Tuple/List expression
     | '(' expression (',' expression)* ')'
     // Dereferencing
     | '*' expression_unary_or_binary
     // Discard '_'
     | expression_discard
+    ;
+
+expression_identifier_or_method_call_with_optional_generics
+    // A local variable: e.g x
+    // A local func call: e.g f(x)
+    // A module variable: e.g core::sub::x
+    // A module func call: e.g core::sub::f(x)
+    // A constructor by value (MyStruct): e.g var x = MyStruct
+    // A constructor by value (MyStruct): e.g var x = MyStruct(1,2,3)
+    : module_path? (identifier | method_call)
+    // A field of a generic type, e.g:
+    // - MyStruct`<int>.x / MyStruct`<int>.f(x)
+    // - core::sub::MyStruct`<int>.x / core::sub::MyStruct`<int>.f(x)
+    | module_path? identifier generic_arguments expression_dot_path
     ;
 
 expression_member_path
@@ -722,7 +764,7 @@ const_path
     ;
 
 expression_new
-    : 'new' lifetime? expression_new_constructor
+    : 'new' lifetime? type_ownership_explicit? type_permission_explicit? expression_new_constructor
     ;
 
 expression_new_constructor
@@ -838,7 +880,7 @@ macro_command
 macro_tokens
     // All tokens except group tokens '('|')'|'['|']'|'{'|'}'
     // as they are parsed below to match balanced groups
-    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'kind'|'let'|'lifetime'|'lifetime'|'literal'|'macro'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'partial'|'public'|'ref'|'requires'|'return'|'set'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
+    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'belted'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'immutable'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'isolated'|'kind'|'let'|'lifetime'|'literal'|'macro'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'ownership'|'permission'|'partial'|'public'|'readable'|'ref'|'requires'|'return'|'set'|'shared'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'transient'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
     | literal
     | IDENTIFIER
     | lifetime
@@ -891,20 +933,14 @@ type
     ;
 
 type_non_const
-    : type_core
+    : type_permission_explicit? type_core
     | type_ref
-    | type_mutable
     | type_pointer
     ;
 
 // Core types are types without a qualifier (ref, const, mutable, pointer)
 // Usable by e.g type_declaration
 type_core
-    : type_mutable_core 
-    | type_func // TODO: should it be a type_core or not?
-    ;
-
-type_mutable_core
     : type_primitive 
     | type_qualified type_struct_layout?
     | type_array
@@ -912,6 +948,7 @@ type_mutable_core
     | type_tuple
     | type_measure
     | type_union
+    | type_func // TODO: should it be a type_core or not?
     ;
 
 // For SOA and AOS
@@ -963,17 +1000,46 @@ type_const
     ;
 
 type_ref
-    // ref!: unique ref
-    // ref: shared ref
-    : 'ref' '!'? lifetime? type
+    : 'ref' lifetime? type_ownership_explicit? type
+    //              lifetime     ownership                                 permission
+    | 'ref' '`' '<' lifetime ',' type_owrnership_identifier_or_generic ',' type_permission_identifier_or_generic ',' type '>'
     ;
+
 
 type_tuple
     : '(' type (',' type)+ ')'
     ;
 
-type_mutable
-    : 'mutable' type_mutable_core
+type_owrnership_identifier_or_generic
+    : type_owrnership_identifier
+    | identifier
+    ;
+
+type_ownership_explicit
+    : '`' type_owrnership_identifier
+    ;
+
+type_owrnership_identifier
+    : 'unique'
+    | 'shared'
+    | 'belted'
+    | 'transient'
+    ;
+
+type_permission_explicit
+    : '`' type_permission_identifier
+    ;
+
+type_permission_identifier_or_generic
+    : type_permission_identifier
+    | identifier
+    ;
+
+type_permission_identifier
+    : 'mutable'
+    | 'immutable'
+    | 'readable'
+    | 'const'
     ;
 
 type_union
@@ -1056,7 +1122,6 @@ IF: 'if';
 IS: 'is';
 LET: 'let';
 MATCH: 'match';
-MUTABLE: 'mutable';
 NEW: 'new';
 NOT: 'not';
 REF: 'ref';
@@ -1076,6 +1141,7 @@ WHILE: 'while';
 ALIAS: 'alias';
 ARE: 'are';
 ATTR: 'attr';
+BELTED: 'belted';
 BINARY: 'binary';
 CAN: 'can';
 CASE: 'case';
@@ -1086,26 +1152,35 @@ EXTENDS: 'extends';
 EXTENSION: 'extension';
 GET: 'get';
 HAS: 'has';
+IMMUTABLE: 'immutable';
 IMPLEMENTS: 'implements';
 IMPORT: 'import';
 IN: 'in';
 INDIRECT: 'indirect';
 INTERFACE: 'interface';
+ISOLATED: 'isolated';
 KIND: 'kind';
 LIFETIME: 'lifetime';
 MODULE: 'module';
 MACRO: 'macro';
+MUTABLE: 'mutable';
 OPERATOR: 'operator';
+OWNERSHIP: 'ownership';
+PERMISSION: 'permission';
 PARTIAL: 'partial';
 PUBLIC: 'public';
+READABLE: 'readable';
 REQUIRES: 'requires';
 SET: 'set';
+SHARED: 'shared';
 STATIC: 'static';
 STRUCT: 'struct';
+TRANSIENT: 'transient';
 THROWS: 'throws';
 TYPE: 'type';
 UNARY: 'unary';
 UNION: 'union';
+UNIQUE: 'unique';
 UNIT: 'unit';
 WHERE: 'where';
 
