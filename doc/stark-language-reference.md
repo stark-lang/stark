@@ -9,6 +9,7 @@
     - [Ownership](#ownership)
     - [Permission](#permission)
   - [Capabilities](#capabilities)
+  - [Asynchronous programming](#asynchronous-programming)
 - [Types](#types)
   - [Primitive types](#primitive-types)
   - [Enum types](#enum-types)
@@ -144,6 +145,7 @@ The import statement can also be used by interface, struct and extension declara
 Before diving into the other parts of this document we need to explain a few core concepts:
 - [Smart references](#smart-references)
 - [Capabilities](#capabilities)
+- [Asynchronous programming](#asynchronous-programming)
 
 ### Smart references
 
@@ -247,6 +249,22 @@ The permission defines which interactions are allowed with an object.
 > **Rule-1242**: `mutable` is the permission tha allows to mutate the value referenced.
 
 ### Capabilities
+
+Stark is an [object-capability](https://en.wikipedia.org/wiki/Object-capability_model) based programming language.
+
+A library or a program to interact with the operating system has to explicitly request objects with the right capability.
+
+For example, a console program will need to request to a e.g `IConsoleService` capability in order to print to the console. Same to get an access to the network/socket layer, or to the filesystem.
+
+```stark
+// This program is a console program asking for the `IConsoleService` capability
+async func main(console: ref #heap`shared`mutable IConsoleService) = 
+    await console.println("Hello World!")
+```
+
+### Asynchronous programming
+
+All interactions requiring an access to an I/O OS layer must be done through non-blocking asynchronous API.
 
 ## Types
 
