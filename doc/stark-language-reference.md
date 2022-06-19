@@ -48,7 +48,7 @@ A module allows to group together types and functions. It can be private (the de
 You can have multiple modules in a [library](#libraries)
 ### Module declaration
 
-> **Rule 1001**: The name of a module is composed of a list of `snake_case` [identifiers](#identifier-lexer) separated by `::`.
+> <span id="#rule-1001">**Rule 1001**</span>: The name of a module is composed of a list of `snake_case` [identifiers](#identifier-lexer) separated by `::`.
 
 A module name is separated by `::`. For example the module `core::io::console` declares:
 - a module `core`
@@ -59,9 +59,9 @@ A module name is separated by `::`. For example the module `core::io::console` d
 module core::io::console
 ```
 
-> **Rule 1002**: You can declare **only one module in a file** and it must come first **at the beginning of the file** before any other declarations or imports.
+> <span id="#rule-1002">**Rule 1002**</span>: You can declare **only one module in a file** and it must come first **at the beginning of the file** before any other declarations or imports.
 
-> **Rule 1003**: By default, a module can only be declared from one file, if you use it from different file, you need to prefix it with `partial`
+> <span id="#rule-1003">**Rule 1003**</span>: By default, a module can only be declared from one file, if you use it from different file, you need to prefix it with `partial`
 
 ```stark
 // File: types.sk
@@ -72,31 +72,31 @@ partial module core::io::console
 ...
 ```
 
-> **Rule 1004**: By default, a module is private. You need to declare it public to be visible from outside a library
+> <span id="#rule-1004">**Rule 1004**</span>: By default, a module is private. You need to declare it public to be visible from outside a library
 
 ```stark
 // The module will be visible outside of the library
 public module core::io::console
 ```
 
-> **Rule 1005**: All private modules and types are visible/accessible from a same library.
+> <span id="#rule-1005">**Rule 1005**</span>: All private modules and types are visible/accessible from a same library.
 
 It is recommended to organize the code on the filesystem like this:
 - If a module doesn't have nested modules
   - It can be stored in a single file and in that case the file should be the name of the module. (e.g `console.sk` above)
   - It can be stored in a folder if the module requires multiple files and in that case the directory should be the name of the module. (e.g `console/` above)
 
-> **Rule 1006**: A file declared without a module lands into the top level anonymous module. 
+> <span id="#rule-1006">**Rule 1006**</span>: A file declared without a module lands into the top level anonymous module. 
 
 Usually, the top-level anonymous module is used by executables with a main entrypoint function.
 
 It is not recommended to use an anonymous module within a library.
 
-> **Rule 1007**: A module is closed from a library. It cannot be extended outside of this library except that sub-modules can be created. An alias that doesn't collide needs to be created in the build configuration file.
+> <span id="#rule-1007">**Rule 1007**</span>: A module is closed from a library. It cannot be extended outside of this library except that sub-modules can be created. An alias that doesn't collide needs to be created in the build configuration file.
 
 TBD link to how to declare this in a configuration file.
 
-> **Rule 1008**: Multiple modules declared in a library must share the same root name.
+> <span id="#rule-1008">**Rule 1008**</span>: Multiple modules declared in a library must share the same root name.
 
 For example, `core::io` and `core::collections` share the same `core` root name.
 
