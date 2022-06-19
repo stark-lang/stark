@@ -44,7 +44,61 @@
 
 ## Modules
 
+A module allows to group together types and functions. It can be private (the default) or public.
+You can have multiple modules in a [library](#libraries)
 ### Module declaration
+
+> **Rule**: The name of a module is composed of a list of [identifiers](#identifier-lexer) separated by `::`.
+
+A module name is separated by `::`. For example the module `core::io::console` declares:
+- a module `core`
+- the sub-module `io` of `core`
+- the sub-module `console` of `core::io`.
+
+```stark
+module core::io::console
+```
+
+> **Rule**: You can declare **only one module in a file** and it must come first **at the beginning of the file** before any other declarations or imports.
+
+> **Rule**: By default, a module can only be declared from one file, if you use it from different file, you need to prefix it with `partial`
+
+```stark
+// File: types.sk
+partial module core::io::console
+...
+// File: funcs.sk
+partial module core::io::console
+...
+```
+
+> **Rule**: By default, a module is private. You need to declare it public to be visible from outside a library
+
+```stark
+// The module will be visible outside of the library
+public module core::io::console
+```
+
+> **Rule**: All modules and types, whether they are public or private are visible/accessible from a same library.
+
+It is recommended to organize the code on the filesystem like this:
+- If a module doesn't have nested modules
+  - It can be stored in a single file and in that case the file should be the name of the module. (e.g `console.sk` above)
+  - It can be stored in a folder if the module requires multiple files and in that case the directory should be the name of the module. (e.g `console/` above)
+
+> **Rule**: A file declared without a module lands into the top level anonymous module. 
+
+Usually, the top-level anonymous module is used by executables with a main entrypoint function.
+
+It is not recommended to use an anonymous module within a library.
+
+> **Rule**: A module is closed from a library. It cannot be extended outside of this library except that sub-modules can be created. An alias that doesn't collide needs to be created in the build configuration file.
+
+TBD link to how to declare this in a configuration file.
+
+> **Rule**: Multiple modules declared in a library must share the same root name.
+
+For example, `core::io` and `core::collections` share the same `core` root name.
 
 ### Import statement
 
