@@ -7,12 +7,16 @@
   - [Lifetime](#lifetime)
   - [Ownership](#ownership)
   - [Permission](#permission)
+  - [Capability](#capability)
 - [Types](#types)
   - [Primitive types](#primitive-types)
   - [Enum types](#enum-types)
   - [Union types](#union-types)
   - [Struct types](#struct-types)
   - [Interface types](#interface-types)
+  - [Optional types](#optional-types)
+  - [Tuple types](#tuple-types)
+  - [Unit types](#unit-types)
   - [Alias and indirect types](#alias-and-indirect-types)
   - [Type extensions](#type-extensions)
   - [Function types](#function-types)
@@ -32,7 +36,11 @@
 - [Exceptions](#exceptions)
 - [Attributes](#attributes)
 - [Macros](#macros)
-- [Packages and Libraries](#packages-and-libraries)
+- [Packages](#packages)
+- [Libraries](#libraries)
+- [Naming conventions](#naming-conventions)
+- [Lexicals](#lexicals)
+  - [`identifier` (lexer)](#identifier-lexer)
 
 ## Modules
 
@@ -48,6 +56,8 @@
 
 ### Permission
 
+### Capability
+
 ## Types
 
 ### Primitive types
@@ -59,6 +69,12 @@
 ### Struct types
 
 ### Interface types
+
+### Optional types
+
+### Tuple types
+
+### Unit types
 
 ### Alias and indirect types
 
@@ -98,4 +114,16 @@
 
 ## Macros
 
-## Packages and Libraries
+## Packages
+
+## Libraries
+## Naming conventions
+
+
+
+## Lexicals
+
+### `identifier` (lexer)
+
+
+
