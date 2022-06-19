@@ -1,0 +1,328 @@
+# [PackageDev] target_format: plist, ext: tmLanguage
+name: Stark
+scopeName: source.sk
+fileTypes: [sk]
+uuid: 582789B5-991D-49E1-8E39-54327B3DBDFF
+
+patterns:
+- include: '#comment'
+- include: '#control-keywords'
+- include: '#keywords'
+- include: '#builtin-types'
+- include: '#vector-types'
+- include: '#generic-modifiers'
+- include: '#inline-il'
+- include: '#type-attributes'
+- include: '#visibility-modifiers'
+- include: '#attribute-declaration'
+- include: '#import-declaration'
+- include: '#namespace-declaration'
+- include: '#module-declaration'
+- include: '#func-declaration'
+- include: '#macro-declaration'
+- include: '#invoke-declaration'
+- include: '#type-declaration'
+- include: '#inherit-declarations'
+- include: '#lifetime-identifier'
+- include: '#macros'
+- include: '#keywords'
+- include: '#literals'
+- include: '#measure_type'
+
+repository:
+  builtin-types:
+    match: \b(bool|f64|f32|i64|i32|i16|i8|u64|u32|u16|u8|int|uint|string)\b
+    captures:
+      '1': {name: keyword.type.sk}
+  vector-types:
+    match: \b(v128|v256)\b
+    captures:
+      '1': {name: keyword.type.sk}
+  generic-modifiers:
+    name: storage.modifier.sk
+    match: \b(lifetime|permission)\b
+  visibility-modifiers:
+    name: storage.modifier.sk
+    match: (?<!\.)\b(abstract|async|const|extern|internal|new|override|partial|public|dynamic|static|unsafe|virtual)\b
+  module-declaration:
+    patterns:
+    - match: \b(module)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.module.sk }      
+        '2': { name: entity.name.type.module.sk }      
+  attribute-declaration:
+    patterns:
+    - match: '(@)\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)'
+      captures:
+        '1': { name: markup.underline.sk }      
+        '2': 
+             patterns: 
+             - match: '[_[:alpha:]][_[:alnum:]]*'
+               name: entity.name.type.attribute.sk     
+  inline-il:
+    patterns:
+    - match: '\b(unsafe)\s+(il)\b'
+      captures:
+        '1': { name: keyword.other.unsafe.sk }      
+        '2': { name: keyword.other.il.sk }      
+  import-declaration:
+    patterns:
+    - match: '\b(import)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*::\s*[_[:alpha:]][_[:alnum:]]*)*)'
+      captures:
+        '1': { name: keyword.other.import.sk }      
+        '2': 
+             patterns: 
+             - match: '[_[:alpha:]][_[:alnum:]]*'
+               name: entity.name.type.import.sk     
+    - match: '\b(import)\b'
+      captures:
+        '1': { name: keyword.other.import.sk }      
+  namespace-declaration:
+    patterns:
+    - match: '\b(namespace)\b\s*([_[:alpha:]][_[:alnum:]]*(?:\s*\.\s*[_[:alpha:]][_[:alnum:]]*)*)'
+      captures:
+        '1': { name: keyword.other.namespace.sk }      
+        '2': 
+             patterns: 
+             - match: '[_[:alpha:]][_[:alnum:]]*'
+               name: entity.name.type.namespace.sk     
+    - match: '\b(namespace)\b'
+      captures:
+        '1': { name: keyword.other.namespace.sk }      
+
+  type-attributes:
+    patterns:
+    - match: `(immutable|mutable|transient|retainable|shared|rooted|unique|readable)\b
+      captures:
+        '1': { name: keyword.other.type.sk }      
+
+  type-declaration:
+    patterns:
+    - match: \b((?:(?:managed|mutable|transient)\s+)*struct|union|enum|interface|unit|type)\s+([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.type.sk }      
+        '2': { name: entity.name.type.class.sk }      
+    - match: \b(extension)(?:\s*`<.*?>)?\s*(for)\s+([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.type.sk }      
+        '2': { name: keyword.other.for.sk }      
+        '3': { name: entity.name.type.class.sk }      
+    - match: \b(attr)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.attr.sk }      
+        '2': { name: entity.name.type.attr.sk }      
+    - name: keyword.other.type.sk
+      match: \b(type)\b
+    - name: keyword.other.union.sk
+      match: \b(union)\b
+    - name: keyword.other.struct.sk
+      match: \b(struct)\b
+    - name: keyword.other.class.sk
+      match: \b(class)\b
+    - name: keyword.other.interface.sk
+      match: \b(interface)\b
+    - name: keyword.other.enum.sk
+      match: \b(enum)\b
+    - name: keyword.other.attr.sk
+      match: \b(attr)\b
+  inherit-declarations:
+    patterns:
+    - match: \b(extends)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.extends.sk }      
+        '2': { name: entity.name.type.class.sk }      
+    - match: \b(implements)\b\s*([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.implements.sk }      
+        '2': { name: entity.name.type.interface.sk }      
+    - name: keyword.other.extends.sk
+      match: \b(extends)\b
+    - name: keyword.other.implements.sk
+      match: \b(implements)\b
+  func-declaration:
+    patterns:
+    - match: \b((?:(?:dispatch|override|extern|mutable|partial)\s+)*func(?:\s+mutable\s+this|\s+this)?)\s+([_[:alpha:]][_[:alnum:]]*)\b
+      captures:
+        '1': { name: keyword.other.func.sk }      
+        '2': { name: entity.name.function.sk  }      
+    - match: \b((?:(unsafe|partial)\s+)*operator(?:\s+(?:binary|unary)))\b
+      captures:
+        '1': { name: keyword.other.func.sk }      
+    - match: \b(constructor)(\s+[_[:alpha:]][_[:alnum:]]*)?
+      captures:
+        '1': { name: keyword.other.func.sk }      
+        '2': { name: entity.name.function.sk  }      
+    - name: keyword.other.constructor.sk
+      match: \bconstructor\b
+    - name: keyword.other.func.sk
+      match: \bfunc\b
+
+  macro-declaration:
+    patterns:
+    - match: \b(macro)\s+([_[:alpha:]][_[:alnum:]]*)\b
+      captures:
+        '1': { name: keyword.other.macro.sk }      
+        '2': { name: entity.name.function.sk  }      
+    - name: keyword.other.macro.sk
+      match: \bmacro\b
+  
+  invoke-declaration:
+    patterns:
+    - match: '([_[:alpha:]][_[:alnum:]]*)(?:\s*\()'
+      captures:
+        '1': { name: entity.name.function.sk  }      
+  control-keywords:
+    patterns:
+      - name: keyword.control.conditional.if.sk
+        match: \bif\b
+      - name: keyword.control.conditional.then.sk
+        match: \bthen\b
+      - name: keyword.control.conditional.else.sk
+        match: \belse\b
+      - name: keyword.control.loop.do.sk
+        match: \bdo\b
+      - name: keyword.control.loop.while.sk
+        match: \bwhile\b
+      - name: keyword.control.loop.for.sk
+        match: \bfor\b
+      - name: keyword.control.try.sk
+        match: \btry\b
+      - name: keyword.control.catch.sk
+        match: \bcatch\b
+      - name: keyword.control.flow.yield.sk
+        match: \byield\b
+      - name: keyword.control.flow.return.sk
+        match: \breturn\b
+      - name: keyword.control.flow.break.sk
+        match: \bbreak\b
+      - name: keyword.control.flow.continue.sk
+        match: \bcontinue\b
+      - name: keyword.control.flow.throw.sk
+        match: \bthrow\b
+      - name: keyword.control.flow.ignore.sk
+        match: \bignore\b
+      - name: keyword.control.flow.abort.sk
+        match: \babort\b
+      - name: keyword.control.flow.switch.sk
+        match: \bswitch\b
+      - name: keyword.control.flow.case.sk
+        match: \bcase\b
+      - name: keyword.control.flow.with.sk
+        match: \bwith\b
+      - name: constant.language.boolean.true.sk
+        match: \btrue\b
+      - name: constant.language.boolean.false.sk
+        match: \bfalse\b
+      - name: constant.language.class.null.sk
+        match: \bnull\b
+  keywords:
+    name: keyword.type.sk
+    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b
+ 
+  comment:
+    patterns:
+    - name: comment.block.sk
+      begin: /\*
+      beginCaptures:
+        '0': {name: punctuation.definition.comment.sk}
+      end: \*/
+      endCaptures:
+        '0': {name: punctuation.definition.comment.sk}
+    - begin: (^\s+)?(?=//)
+      beginCaptures:
+        '1': {name: punctuation.whitespace.comment.leading.sk}
+      end: (?=$)
+      patterns:
+      - name: comment.block.documentation.sk
+        begin: (?<!/)///(?!/)
+        beginCaptures:
+          '0': {name: punctuation.definition.comment.sk}
+        end: (?=$)
+      - name: comment.line.double-slash.sk
+        begin: (?<!/)//(?!/)
+        beginCaptures:
+          '0': {name: punctuation.definition.comment.sk}
+        end: (?=$)
+  literals:
+    patterns:
+      - include: '#numeric-literal'
+      - include: '#char-literal'
+      - include: '#string-literal'
+      - include: '#verbatim-string-literal'
+  numeric-literal:
+    patterns:
+    - name: constant.numeric.hex.sk
+      match: \b0(x|X)[0-9a-fA-F_]+(i8|i16|i32|i64|u8|u16|u32|u64)?\b
+    - name: constant.numeric.binary.sk
+      match: \b0(b|B)[01_]+(i8|i16|i32|i64|u8|u16|u32|u64)?\b
+    - name: constant.numeric.decimal.sk
+      match: \b([0-9_]+)?\.[0-9_]+((e|E)[0-9]+)?(f32|64)?\b
+    - name: constant.numeric.decimal.sk
+      match: \b[0-9_]+(e|E)[0-9_]+(f32|f64)?\b
+    - name: constant.numeric.decimal.sk
+      match: \b[0-9_]+(f32|f64)\b
+    - name: constant.numeric.decimal.sk
+      match: \b[0-9_]+(i8|i16|i32|i64|u8|u16|u32|u64)?\b
+
+  char-literal:
+    name: string.quoted.single.sk
+    match: '''(\s+|[\w\\]+)'''
+
+  measure_type:
+    match: '''([a-zA-Z_][a-zA-Z_0-9]*)'
+    captures:
+      '1': { name: entity.name.type.unit.sk }
+
+  # char-literal:
+  #   name: string.quoted.single.sk
+  #   begin: ''''
+  #   beginCaptures:
+  #     '0': {name: punctuation.definition.char.begin.sk}
+  #   end: (\')|((?:[^\\\n])$)
+  #   endCaptures:
+  #     '1': {name: punctuation.definition.char.end.sk}
+  #     '2': {name: invalid.illegal.newline.sk}
+  #   patterns:
+  #   - include: '#string-character-escape'
+ 
+  string-character-escape:
+    name: constant.character.escape.sk
+    match: \\.
+ 
+  string-literal:
+    name: string.quoted.double.sk
+    begin: (?<!\\)"
+    beginCaptures:
+      '0': {name: punctuation.definition.string.begin.sk}
+    end: (")|((?:[^\\\n])$)
+    endCaptures:
+      '1': {name: punctuation.definition.string.end.sk}
+      '2': {name: invalid.illegal.newline.sk}
+    patterns:
+    - include: '#string-character-escape'
+
+  verbatim-string-character-escape:
+    name: constant.character.escape.sk
+    match: '""'
+
+  lifetime-identifier:
+    name: variable.storage.lifetime.sk
+    match: '#[A-Za-z_][A-Za-z_0-9]*'
+
+  macros:
+    patterns:
+      - name: variable.storage.macro.sk
+        match: '\$+[A-Za-z_][A-Za-z_0-9]*'
+      - name: invalid.sk
+        match: '(<\$+|\$+>|\{\$+|\$+\})'
+
+  verbatim-string-literal:
+    name: string.quoted.double.sk
+    begin: '\\"'
+    beginCaptures:
+      '0': {name: punctuation.definition.string.begin.sk}
+    end: '"'
+    endCaptures:
+      '0': {name: punctuation.definition.string.end.sk}
+    patterns:
+    - include: '#verbatim-string-character-escape'

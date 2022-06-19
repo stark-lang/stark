@@ -21,7 +21,7 @@ You can find more details about this project in the following blog post series:
 
 You need to have Visual Studio Code installed.
 
-- Open the folder `src/editors/vscode/stark` with Visual Studio Code
+- Open the folder `src/ide/vscode/stark` with Visual Studio Code
 - Run the build task via the menu `Terminal/Run Build Task...` (or `CTRL+SHIFT+B` on Windows).
   - If the build is failing, it could be a misconfiguration of npm/tsc. Open a terminal from VSCode and run the command `npm install -g typescript`. Check that `tsc --version` is running fine (you should have a version above `3.x` or more)
 - Press F5 and it should open a new Visual Studio Code instance with the syntax highlighting for Stark and a pseudo integration with a compiler server (nothing is actually plugged there).
