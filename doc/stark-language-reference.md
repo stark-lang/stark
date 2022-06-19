@@ -4,10 +4,11 @@
   - [Module declaration](#module-declaration)
   - [Import statement](#import-statement)
 - [Concepts](#concepts)
-  - [Lifetime](#lifetime)
-  - [Ownership](#ownership)
-  - [Permission](#permission)
-  - [Capability](#capability)
+  - [Smart references](#smart-references)
+    - [Lifetime](#lifetime)
+    - [Ownership](#ownership)
+    - [Permission](#permission)
+  - [Capabilities](#capabilities)
 - [Types](#types)
   - [Primitive types](#primitive-types)
   - [Enum types](#enum-types)
@@ -140,13 +141,26 @@ The import statement can also be used by interface, struct and extension declara
 
 ## Concepts
 
-### Lifetime
+Before diving into the other parts of this document we need to explain a few core concepts.
+- [Smart references](#smart-references)
+- [Capabilities](#capabilities)
 
-### Ownership
+### Smart references
 
-### Permission
+When a reference is made to a value in memory, it is composed of 4 different aspects:
 
-### Capability
+- A [lifetime](#lifetime).
+- A [ownership](#ownership).
+- A [permission](#permission).
+- The type of the value referenced.
+
+#### Lifetime
+
+#### Ownership
+
+#### Permission
+
+### Capabilities
 
 ## Types
 
