@@ -102,6 +102,35 @@ For example, `core::io` and `core::collections` share the same `core` root name.
 
 ### Import statement
 
+The `import` statement allows to import declarations from another module into the current scope.
+
+> **Rule-1101**: The declarations within a module are all accessible within the same module or from sub-modules.
+
+For declarations that are in a different module path that doesn't share the same module path, you need to import the module.
+
+```stark
+module core::io
+
+// Imports all declarations from the sub-module core::io::internal
+import core::io::internal::*
+```
+
+> **Rule-1102**: The import statement provides 3 kinds of import. 
+> 1. Wildcard: `*` that will import all declarations from a module.
+>    ```stark
+>    import core::io::internal::*
+>    ```
+> 2. Single: Will import a single declarations from a module.
+>    ```stark
+>    import core::io::internal::MyInternalType
+>    ```
+> 3. Grouped: Will import a list of declarations from a module.
+>    ```stark
+>    import core::io::internal::{ MyInternalType, my_function2 }
+>    ```
+
+The import statement can also be used by interface, struct and extension declarations within their extra-declarations. (TBD: add a link to extra-declaration).
+
 ## Concepts
 
 ### Lifetime
