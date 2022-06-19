@@ -21,6 +21,8 @@
   - [Unit types](#unit-types)
   - [Alias and indirect types](#alias-and-indirect-types)
   - [Type extensions](#type-extensions)
+  - [Reference types](#reference-types)
+  - [Pointer types](#pointer-types)
   - [Function types](#function-types)
   - [Generic type parameterization](#generic-type-parameterization)
 - [Functions](#functions)
@@ -268,11 +270,119 @@ All interactions requiring an access to an I/O OS layer must be done through non
 
 ## Types
 
+All type declarations:
+- Their visibility can be changed by prefixing `public`
+- They can be declared partially by prefixing by `partial`
+
 ### Primitive types
+
+| Name         | Description
+|--------------|---------------------------------------------
+| `bool`       | `true` or `false`, occupies 1 byte in memory.
+| `i8`, `u8`   | A single 8 bits integer, signed and unsigned
+| `i16`, `u16` | A single 16 bits integer, signed and unsigned
+| `i32`, `u32` | A single 32 bits integer, signed and unsigned
+| `i64`, `u64` | A single 64 bits integer, signed and unsigned
+| `int`, `uint`| A single pointer size integer, signed and unsigned
+| `f32`        | An IEEE 754 32-bits single-precision floating point number.
+| `f64`        | An IEEE 754 64-bits double-precision floating point number.
+| `v128`       | A SIMD 128 bits value
+| `v256`       | A SIMD 256 bits value
 
 ### Enum types
 
+An enumeration type (or enum type) is a value type defined by a set of named constants of the underlying integral numeric type.
+
+```stark
+enum Season = Sprint, Summer, Autumn, Winter
+```
+
+By default, the underlying type of an enum is an `u32`.
+
+You can specify the underlying type, notice the change of visibility to `public`:
+
+```stark
+public enum ErrorCode: u8 = None, Unknown, ConnectionLost, BufferEmpty
+```
+
+You can assign integer values to each item:
+
+```stark
+enum Season: u8 = 
+    None   = 0,
+    Sprint = 3, 
+    Summer = 6, 
+    Autumn = 9, 
+    Winter = 12
+```
+
+Note that an enum is always required to provide a value that equals to `0`.
+
+An enum can be used as bit flags
+
+```stark
+@flags
+public enum Days = 
+    None      = 0b_0000_0000,  // 0
+    Monday    = 0b_0000_0001,  // 1
+    Tuesday   = 0b_0000_0010,  // 2
+    Wednesday = 0b_0000_0100,  // 4
+    Thursday  = 0b_0000_1000,  // 8
+    Friday    = 0b_0001_0000,  // 16
+    Saturday  = 0b_0010_0000,  // 32
+    Sunday    = 0b_0100_0000,  // 64
+    Weekend   = Saturday | Sunday
+```
+
+An enum can be declared partial and can be further declared from another file (in the same module):
+```stark
+partial enum Season
+```
+
 ### Union types
+
+An union type is a value type defined by a set of names, parameterized named values or plain direct types.
+
+On the surface, an union can look like an enum:
+
+```stark
+union Season = .Sprint, .Summer, .Autumn, .Winter
+```
+
+But the real power of an union is to allow parameterized named values:
+
+```stark
+union Shape = 
+    .Circle(radius: f32),
+    .Rectangle(width: f32, height: 32),
+    .Triangle(base: f32, height: 32)
+```
+
+The presence of a `.` is necessary to distinguish a parameterized named values from a plain direct type:
+
+```stark
+// Any can be an error code or a result in the form of `i32`, `u32`, `f32` or `f64`
+union Any = 
+    .Error(code: uint),
+    i32, u32, f32, f64
+
+func check_result(result: Result) -> uint =
+    match result {
+        case is u32 a => a as uint
+        case is f32 b => if b != 0.0 then 1 else 0
+        case is .Error c => c.code
+        case _ => 0
+    }
+```
+
+An union can be declared partial:
+
+```stark
+partial union Season
+```
+
+and can be further declared from another file (in the same module).
+
 
 ### Struct types
 
@@ -287,6 +397,10 @@ All interactions requiring an access to an I/O OS layer must be done through non
 ### Alias and indirect types
 
 ### Type extensions
+
+### Reference types
+
+### Pointer types
 
 ### Function types
 
