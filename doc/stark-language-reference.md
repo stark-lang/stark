@@ -108,12 +108,13 @@ For example, `core::io` and `core::collections` share the same `core` root name.
 
 The `import` statement allows to import declarations from another module into the current scope.
 
-> **Rule-1101**: The declarations within a module are all accessible within the same module or from sub-modules.
+> **Rule-1101**: All declarations from parent modules are accessible to the current module.
 
 For declarations that are in a different module path that doesn't share the same module path, you need to import the module.
 
 ```stark
-module core::io
+partial module core::io
+// has access to all declarations from `core::io` and from `core`
 
 // Imports all declarations from the sub-module core::io::internal
 import core::io::internal::*
