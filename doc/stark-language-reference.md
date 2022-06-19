@@ -119,6 +119,32 @@
 ## Libraries
 ## Naming conventions
 
+Stark is using `UpperCamelCase` for "type-level" constructs (struct, enum, interface, union, extension)
+and `snake_case` for "value-level" constructs
+
+> note: this was inspired from [Rust naming convention](https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md)
+
+| Item | Convention |
+| ---- | ---------- |
+| Package | `snake_case` (but prefer single word)
+| Library | `snake_case` (but prefer single word)
+| Module | `snake_case`
+| Primitive types | concise `snake_case`, but should be mainly with no underscore `_`
+| Types: struct, interface, enum, union, extension, type | `UpperCamelCase`
+| Union cases | `UpperCamelCase`
+| Functions | `snake_case`
+| Methods   | `snake_case`
+| Named Constructors | `snake_case`
+| Local variables | `snake_case`
+| Static variables | `SCREAMING_SNAKE_CASE`
+| Constant variables | `SCREAMING_SNAKE_CASE`
+| Enum items | `SCREAMING_SNAKE_CASE`
+| Type parameters | concise `UpperCamelCase`, prefixed by single letter, uppercase `T` for types or lowercase `t` for literals
+| Type arguments | `` `snake_case`` or `` `UpperCamelCase``, prefixed by a backstick `` ` ``
+| Lifetime | `#snake_case`, prefixed by a `#`, concise for type parameters `#l`
+| Attribute | `@snake_case`, prefixed by a `@`
+| Macros | `$snake_case`, prefixed by a `$`
+| Unit | `'snake_case`, prefixed by a `'`
 
 
 ## Lexicals
