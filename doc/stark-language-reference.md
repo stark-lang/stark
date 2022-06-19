@@ -308,7 +308,7 @@ public enum ErrorCode: u8 = None, Unknown, ConnectionLost, BufferEmpty
 You can assign integer values to each item:
 
 ```stark
-enum Season: u8 = 
+enum Season = 
     None   = 0,
     Sprint = 3, 
     Summer = 6, 
@@ -316,7 +316,7 @@ enum Season: u8 =
     Winter = 12
 ```
 
-Note that an enum is always required to provide a value that equals to `0`.
+Note that an enum is always required to provide a value that equals to `0`. If no values are specified, it is the first item in declared that will receive the `0` value.
 
 An enum can be used as bit flags
 
