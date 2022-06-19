@@ -209,6 +209,8 @@ The import statement can also be used by interface, struct and extension declara
 ## Libraries
 ## Naming conventions
 
+Stark is following a strict naming convention meaning that the compiler will emit a compiler warning if the convention is not respected. By default, warning are treated as errors by the compiler.
+
 Stark is using `UpperCamelCase` for "type-level" constructs (struct, enum, interface, union, extension)
 and `snake_case` for "value-level" constructs
 
