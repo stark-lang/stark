@@ -48,7 +48,7 @@ A module allows to group together types and functions. It can be private (the de
 You can have multiple modules in a [library](#libraries)
 ### Module declaration
 
-> <span id="#rule-1001">**Rule 1001**</span>: The name of a module is composed of a list of `snake_case` [identifiers](#identifier-lexer) separated by `::`.
+> <a id="#rule-1001">**Rule 1001**</a>: The name of a module is composed of a list of `snake_case` [identifiers](#identifier-lexer) separated by `::`.
 
 A module name is separated by `::`. For example the module `core::io::console` declares:
 - a module `core`
