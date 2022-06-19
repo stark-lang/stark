@@ -42,6 +42,8 @@
 - [Lexicals](#lexicals)
   - [`identifier` (lexer)](#identifier-lexer)
 
+[:top:](#stark-language-reference)
+
 ## Modules
 
 A `module` allows to group together types and functions. It can be private (the default) or public.
@@ -100,6 +102,8 @@ TBD link to how to declare this in a configuration file.
 
 For example, `core::io` and `core::collections` share the same `core` root name.
 
+[:top:](#stark-language-reference)
+
 ### Import statement
 
 The `import` statement allows to import declarations from another module into the current scope.
@@ -130,6 +134,8 @@ import core::io::internal::*
 >    ```
 
 The import statement can also be used by interface, struct and extension declarations within their extra-declarations. (TBD: add a link to extra-declaration).
+
+[:top:](#stark-language-reference)
 
 ## Concepts
 
