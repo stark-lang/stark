@@ -238,7 +238,7 @@ The ownership defines the copy-ability of a reference when it is passed and used
 
 #### Permission
 
-The permission defines how the allowed interactions with an object.
+The permission defines which interactions are allowed with an object.
 
 > **Rule-1240**: `readable` is the implicit default permission for functions and ref. The pointed object can be read from, it won't mutate the object. The object might mutate in the future.
 
