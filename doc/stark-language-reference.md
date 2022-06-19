@@ -141,24 +141,110 @@ The import statement can also be used by interface, struct and extension declara
 
 ## Concepts
 
-Before diving into the other parts of this document we need to explain a few core concepts.
+Before diving into the other parts of this document we need to explain a few core concepts:
 - [Smart references](#smart-references)
 - [Capabilities](#capabilities)
 
 ### Smart references
 
-When a reference is made to a value in memory, it is composed of 4 different aspects:
+When a reference is made to a value in memory, it is composed of a type of the value referenced and 3 kind of qualifiers:
 
 - A [lifetime](#lifetime).
 - A [ownership](#ownership).
 - A [permission](#permission).
-- The type of the value referenced.
 
+```stark
+// A reference to a unique mutable MyObject with the #heap lifetime
+let obj: ref #heap`unique`mutable MyObject
+```
 #### Lifetime
+
+Stark is using the concept of lifetime to identify the kind of region of memory that is referenced. Lifetimes  have also a hierarchy of precedence.
+
+> **Rule-1201**: A lifetime is composed of an [identifier](#identifier-lexer) prefixed by `#`.
+
+For example, the lifetime `#heap` denotes a general lifetime allocated on the heap.
+
+> **Rule-1202**: A lifetime is defined relatively to a parent lifetime. The parent lifetime has a longer scope than the lifetime being defined.
+> 
+> **Rule-1203**: A global lifetime can only be declared at the module level.
+
+```stark
+lifetime #my_special_sub_heap < #heap
+```
+
+> **Rule-1204**: A lifetime can have multiple child lifetime but an object of one lifetime can only reference objects with a lifetime that are directly a child of their lifetime.
+
+```stark
+lifetime #my_special_sub_heap < #heap
+lifetime #my_special_sub_heap_1 < #my_special_sub_heap
+lifetime #my_special_sub_heap_2 < #my_special_sub_heap
+```
+
+In the example above the lifetime `#my_special_sub_heap` can only be referenced by an object on the heap `#heap`. The lifetime `#my_special_sub_heap1` and `2` can only be referenced by an object on the `#my_special_sub_heap`.
+
+It is recommended to define lifetimes at the application level and to use lifetime parameterization for all the object containers.
+
+> **Rule-1205**: The special lifetime `#stack` is the parent of any lifetime deriving from the `#heap`. This lifetime cannot be used directly by a `ref` as it is inferred from the code and it is scoped to the liveness of the value the reference is pointing to.
+
+Conceptually, it's like defining the following lifetime:
+
+```stark
+// Stack is a the only existing root lifetime
+lifetime #stack
+// Heap is deriving from the #stack lifetime
+lifetime #heap < #stack
+```
+
+An object with the `#heap` cannot reference an object with the `#stack` lifetime.
+
+> **Rule-1206**: The special lifetime `#temp` is a child of the `#heap` lifetime, but can only be used from within the `#stack` or the `#temp` lifetime.
+
+Conceptually, it's like defining the following lifetime:
+
+```stark
+// Temp is deriving from the #stack lifetime
+lifetime #temp < #stack
+```
+
+An object from the `#heap` cannot reference an object from `#temp` lifetime.
+
+> **Rule-1207**: The special lifetime `#this` is derived from the lifetime of the enclosing declaration object. This lifetime can only be used for type parameterization of input/output of a struct.
+
+Reserved lifetime identifiers:
+
+- `#stack` denotes a lifetime on the stack.
+- `#heap` denotes a lifetime on the heap.
+- `#temp` denotes a lifetime on the temp heap.
+- `#this` denotes a lifetime of the parent declaration.
+
+We will see in the [generic type parameterization](#generic-type-parameterization) how lifetime can be parameterized.
 
 #### Ownership
 
+The ownership defines the copy-ability of a reference when it is passed and used around in a program.
+
+> **Rule-1220**: `transient` is the implicit default ownership for which a reference can only be used from the stack and cannot be stored outside of it. This reference can be copied around as long as it stays on the stack.
+
+> **Rule-1221**: `shared` is a reference that can be copied around. Multiple objects can reference the same object with this kind of reference.
+
+> **Rule-1222**: `unique` is a unique reference to an object. When it is copied around, it invalidates the previous reference.
+
+> **Rule-1223**: `rooted` is a unique reference to a root object that can have a sub-object graph. No external references can be made to its internal objects. When it is copied around, it invalidates the previous reference.
+
+> **Rule-1224**: A `shared` ref can be casted to a `transient` ref.
+
+> **Rule-1225**: A `rooted` ref can be casted to a `shared` ref. It can be temporarily casted to it and reverted back to `rooted` as long as the sub-object graph is known to respect the `rooted` ref subgraph rules (rule-1223 above). The previous `rooted` ref cannot be used if the cast to a `shared` ref is definitive.
+
 #### Permission
+
+The permission defines how the allowed interactions with an object.
+
+> **Rule-1240**: `readable` is the implicit default permission for functions and ref. The pointed object can be read from, it won't mutate the object. The object might mutate in the future.
+
+> **Rule-1241**: `immutable` is the implicit default permission for struct declaration or when creating objects. The referenced object can be read from and will never mutate.
+
+> **Rule-1242**: `mutable` is the permission tha allows to mutate the value referenced.
 
 ### Capabilities
 
