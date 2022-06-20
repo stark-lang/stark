@@ -584,6 +584,57 @@ public extension for Coord =
 
 Notice in the example above that as the extension is declared in the same module, it has access to the private fields of Coord.
 
+An interface can extend another interface:
+
+```stark
+public interface IPoint =
+    func this x -> f32
+    func this y -> f32
+
+public interface IIdentifiable =
+    func this id -> u32
+
+public interface IIdentifiablePoint =
+    | extends IPoint, IIdentifiable
+```
+
+An interface can provide a default implementation to some methods:
+
+```stark
+public interface IRectangle =
+    func this width -> f32
+    func this height -> f32
+
+    // default implementation for surface()
+    func this surface() -> f32 =
+        this.width * this.height
+
+public struct Rectangle =
+    | implements IRectangle
+
+    let _width: f32
+    let _height: f32
+
+    public constructor(width: f32, height: f32) =
+        this._width = width
+        this._height = height
+
+    func this width -> f32 = this._width
+    func this height -> f32 = this._height
+```
+
+But a struct can override this implementation:
+
+```stark
+public struct WeirdRectangle =
+    | implements IRectangle
+
+    // [...] implementation of IRectangle
+
+    override func this surface() -> f32 =
+        this.width * this.height * 3.0
+```
+
 [:top:](#stark-language-reference)
 ### Optional types
 
