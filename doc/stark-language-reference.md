@@ -30,6 +30,10 @@
   - [Pointer types](#pointer-types)
   - [Function types](#function-types)
 - [Generic parameterization](#generic-parameterization)
+  - [Generics: an example](#generics-an-example)
+  - [Generic forms](#generic-forms)
+  - [Generic parameters](#generic-parameters)
+  - [Generic parameter constraints](#generic-parameter-constraints)
 - [Functions](#functions)
   - [Static functions](#static-functions)
   - [This functions](#this-functions)
@@ -900,6 +904,145 @@ var result = calc(1.0, 2.0)
 [:top:](#stark-language-reference)
 ## Generic parameterization
 
+A generic parameterization allows to create a generalized type with type parameters that can be further specialized with type arguments.
+
+In Stark, generic parameterization can be applied to a:
+- Types: union, struct, interface, extension, indirect type.
+- Functions
+- Some qualifiers/expressions: async/await
+
+A generic parameter/argument is easily identified in Stark as it is preceded by a backstick `` ` `` or it is a `#lifetime`.
+
+### Generics: an example
+
+A struct can be parameterized by specifying its type parameters:
+
+```stark
+struct DualValue`T1`T2(left: T1, right T2)
+```
+
+An can be instantiated like this:
+
+```stark
+var dual = DualValue(1, 2.0)
+// left contains var left: i32 = 1
+var left = dual.left
+// right contains var right: f32 = 2.0
+var right = dual.right
+```
+
+The type of the `dual` variable is a specialization of the generic struct ``DualValue1`i32`f32``:
+- `T1` is `i32`
+- `T2` is `f32`
+
+### Generic forms
+
+A generic definition and specialization support 2 forms:
+
+- **Inline** form:
+  - Type parameters ``struct DualValue`T1`T2(left: T1, right T2)``
+  - Type arguments ``DualValue`i32`f32``.
+- **Enclosed** form:
+  - Type parameters ``struct DualValue`<T1, T2>(left: T1, right T2)``
+  - Type arguments ``DualValue`<i32, f32>``.
+
+### Generic parameters
+
+A generic parameter is defined by either:
+- A generic lifetime (e.g `#l`)
+  - Requires a lifetime argument
+- A generic identifier (e.g `T1` or `tValue`)
+  - By default, without any constraints, is expecting a type.
+
+The type of an identifier based generic parameter can be constrained to:
+- A type (e.g `i32`)
+- A const primitive literal (e.g `const bool`)
+- An ownership (e.g `unique` or `shared`)
+- A permission (e.g `mutable`)
+
+A default value can be assigned to a generic parameter.
+
+```stark
+struct MixedGenericValue`<t2: const int = 0, t3: const bool = false, T1, #l> =
+    let value: ref #l`shared T1
+
+    constructor(value: ref #l`shared T1) =
+        this.value = value
+
+    func this calculate() -> i32 =
+      if t3 then
+        if t2 > 10 then 256 else 512
+      else
+        1024
+```
+
+And can be used like this:
+
+```stark
+var local = 1
+// Type of mixed is: MixedGenericValue`<1, true, int, #stack>
+var mixed = MixedGenericValue`<1, true>(ref local)
+// result will be equal to 512
+var result = mixed.calculate()
+```
+
+### Generic parameter constraints
+
+Generic parameters can be better constraints with the `where` constraint:
+
+```stark
+interface IHelloGenerics
+
+struct HelloGenerics`t1`t2`T3 =
+    | where t1, t2: is const int 
+    | where T3: is IHelloGenerics
+```
+
+The following `where` constraints are supported:
+- For generic parameter identifiers
+  - `where T: is <Type>`, where `<Type>` is either an `interface` type or a `const` primitive.
+  - `where T: <Kind>`, where `<Kind>`: `permission`, `struct`, `managed struct` (TBD define more clearly the list)
+  - `where T: has constructor <identifier>?(<arguments>?)`, specifies that the type `T` must have a specific constructor
+- For generic parameter lifetime
+  - `where #l: new`, means that the can allocated into the passed lifetime. Some lifetimes cannot be dynamically allocated into (e.g `#stack` for example)
+
+
+```stark
+// Default lifetime #heap with an immutable ref to T
+struct ValueHolder`<T, #l = #heap, tP = immutable> =
+    | where #l: new // we can allocate into this lifetime
+    | where T: managed struct // the type is a managed struct (that can be allocated on the heap)
+    | where T: has constructor() // the type T has a default constructor
+    | where tP: permission
+
+    let value: ref #l`shared`tP T
+
+    constructor() =
+        this.value = new #l`shared`tP T()
+
+managed struct HelloValue =
+    var left, right: i32
+```
+
+And this generic class can be used like this, with its default generic arguments:
+
+```stark
+// #l = #heap
+// #tP = immutable
+var holder_default = ValueHolder`HelloValue()
+// Value is 0
+var zero = holder_default.value.left
+```
+
+Or by specializing with other generic arguments:
+
+```stark
+var holder = ValueHolder`<HelloValue, #temp, mutable>()
+var refToHelloValue = holder.value
+// refToHelloValue is: ref #temp`shared`mutable HelloValue
+refToHelloValue.left = 1
+refToHelloValue.right = 2
+```
 ## Functions
 
 ### Static functions
