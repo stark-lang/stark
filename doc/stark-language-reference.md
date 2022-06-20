@@ -576,7 +576,97 @@ Notice in the example above that as the extension is declared in the same module
 
 ### Optional types
 
+An optional type `?T` is a value type that contains a optional value.
+
+In practice, it is represented by an union declared as:
+
+```stark
+public union Option`T = .None, T
+```
+
+It can be used with a simple pattern matching to safely extract the value:
+
+```stark
+// Extract a value or return -1 if no value
+func extract_value(input: ?int) -> int => if input is int v then v else -1
+
+// Return true if the input does not have a value
+func check_no_value(input: ?int) -> bool => input is .None
+```
+
+On the stack, an optional value can be used like this:
+
+```stark
+var value: ?int = .None
+// value doesn't have a value
+value = 1
+if value is int then
+    value += 1
+// direct is 1
+var direct = ?int(1)
+// Declare a none value
+var none = ?int.None
+```
 ### Tuple types
+
+A tuple type is an immutable struct that groups multiple data elements in a lightweight data structure.
+
+The type declaration of a tuple is `(type1, type2, ...)`.
+
+```stark
+func swap_tuple(pair: (i32, bool)) -> (bool, i32) =
+    let (integer, boolean) = pair
+    (boolean, integer)
+```
+
+For example, a tuple composed of an `i32` and `f32` can be declared as `(i32, f32)`.
+
+```stark
+var both: (i32, f32) = (1, 2.0)
+// x: i32 = 1
+var x = both.0
+// y: f32 = 1
+var y = both.1
+```
+
+A tuple can also be decomposed into named variables:
+
+```stark
+var both: (i32, f32) = (1, 2.0)
+let (x, y) = both
+// let x: f32 = 1
+// let y: f32 = 2.0
+```
+
+A function can return a tuple with named arguments:
+
+Let's define a function `find_min_max`:
+
+```stark
+// A simple min-max function
+func find_min_max(input: ref [int]) -> (min: int, max: int) =
+    var min = int.max_value
+    var max = int.min_value
+    for i in input
+        if i < min then
+            min = i
+        if i > max then
+            max = i
+    (min, max)
+```
+
+And use this function:
+
+```stark
+var input = new [int] {1, 2, 3, 4}
+var result = find_min_max(input)
+var min = result.min
+var max = result.max
+// Decompose a tuple
+var (min1, max1) = result
+```
+
+Notice that a tuple with named arguments has the same type as a tuple without any named arguments.
 
 ### Unit types
 
