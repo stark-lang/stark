@@ -682,6 +682,44 @@ Notice that a tuple with named arguments has the same type as a tuple without an
 [:top:](#stark-language-reference)
 ### Unit types
 
+Floating point (`f32`, `f64`) and signed integer (`i8`, `i16`, `i32`, `i64`, `int`) values can have associated units of measure, which are typically used to indicate length, volume, mass, and so on. By using quantities with units, you enable the compiler to verify that arithmetic relationships have the correct units, which helps prevent programming errors.
+
+A unit of measure type is prefixed by the character `'`. For example `'px`
+
+You can declare a unit
+
+```stark
+// Declare a pixel unit
+public unit px
+// Declare a kilo-pixel unit
+public unit kpx = 1000 'px
+```
+
+The unit can then be used:
+
+```stark
+// equivalent of 15 * 'px
+var width = 15 'px
+// equivalent of 32 * 'px
+var height = 32 'px
+```
+
+A unit can be declared relative to other units by using `/`, `*` and `^` operators.
+
+```stark
+unit m
+unit cm = 'm / 100
+unit ml = 'cm ^ 3
+```
+
+The units can be also composed with their values:
+
+```stark
+// 15 meters per second
+// The type of speed is f32'm/'s
+var speed = 15.0 'm/'s
+``` 
+
 ### Alias and indirect types
 
 ### Type extensions
