@@ -53,7 +53,9 @@
 - [Packages](#packages)
 - [Libraries](#libraries)
 - [Naming conventions](#naming-conventions)
-- [Lexicals](#lexicals)
+- [Lexical](#lexical)
+  - [List of keywords](#list-of-keywords)
+  - [List of reserved keywords](#list-of-reserved-keywords)
   - [`identifier` (lexer)](#identifier-lexer)
 
 [:top:](#stark-language-reference)
@@ -1144,9 +1146,17 @@ and `snake_case` for "value-level" constructs
 | Unit | `'snake_case`, prefixed by a `'`
 
 
-## Lexicals
+## Lexical
+
+### List of keywords
+
+Stark is an expression language with a very limited list of **26 keywords** that cannot be used as an identifier:
+
+`as`, `async`, `await`, `break`, `catch`, `const`, `continue`, `else`, `for`, `func`, `if`, `is`, `let`, `match`, `new`, `not`, `out`, `ref`, `return`, `then`, `this`, `throw`, `try`, `unsafe`, `var`, `while`
+
+### List of reserved keywords
+
+TBD (e.g `fork`? for process or multi-threading)
 
 ### `identifier` (lexer)
-
-
 
