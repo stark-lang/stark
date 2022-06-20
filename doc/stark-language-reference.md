@@ -228,6 +228,7 @@ Reserved lifetime identifiers:
 
 We will see in the [generic type parameterization](#generic-type-parameterization) how lifetime can be parameterized.
 
+[:top:](#stark-language-reference)
 #### Ownership
 
 The ownership defines the copy-ability of a reference when it is passed and used around in a program.
@@ -244,6 +245,7 @@ The ownership defines the copy-ability of a reference when it is passed and used
 
 > **Rule-1225**: A `rooted` ref can be casted to a `shared` ref. It can be temporarily casted to it and reverted back to `rooted` as long as the sub-object graph is known to respect the `rooted` ref subgraph rules (rule-1223 above). The previous `rooted` ref cannot be used if the cast to a `shared` ref is definitive.
 
+[:top:](#stark-language-reference)
 #### Permission
 
 The permission defines which interactions are allowed with an object.
@@ -254,6 +256,7 @@ The permission defines which interactions are allowed with an object.
 
 > **Rule-1242**: `mutable` is the permission tha allows to mutate the value referenced.
 
+[:top:](#stark-language-reference)
 ### Capabilities
 
 Stark is an [object-capability](https://en.wikipedia.org/wiki/Object-capability_model) based programming language.
@@ -268,6 +271,7 @@ async func main(console: ref #heap`shared`mutable IConsoleService) =
     await console.println("Hello World!")
 ```
 
+[:top:](#stark-language-reference)
 ### Asynchronous programming
 
 All interactions requiring an access to an I/O OS layer must be done through non-blocking asynchronous API.
@@ -293,6 +297,7 @@ All type declarations:
 | `v128`       | A SIMD 128 bits value
 | `v256`       | A SIMD 256 bits value
 
+[:top:](#stark-language-reference)
 ### Enum types
 
 An enumeration type (or enum type) is a value type defined by a set of named constants of the underlying integral numeric type.
@@ -342,7 +347,7 @@ An enum can be declared partial and can be further declared from another file (i
 ```stark
 partial enum Season
 ```
-
+[:top:](#stark-language-reference)
 ### Union types
 
 An union type is a value type defined by a set of names, parameterized named values or plain direct types.
@@ -384,7 +389,7 @@ An union can be declared partial and can be further declared from another file (
 ```stark
 partial union Season
 ```
-
+[:top:](#stark-language-reference)
 ### Struct types
 
 A structure type (or struct type) is a value type that can encapsulate data.
@@ -423,6 +428,7 @@ var coords_ro = Coords(1.0, 2.0)
 var coords = `mutable Coords(1.0, 2.0)
 coords.x = 2.0
 ```
+[:top:](#stark-language-reference)
 #### Struct with explicit field declaration
 
 There are 2 kinds of fields that can be declared:
@@ -457,6 +463,7 @@ public mutable struct Coords =
 var coords = Coords() { x = 1.0, y = 2.0 }
 coords.x = 2.0
 ```
+[:top:](#stark-language-reference)
 #### Managed Struct
 
 By default, a struct cannot be allocated directly on the heap. Only struct declared with the `managed` qualifier can:
@@ -489,6 +496,7 @@ coords.x = 2.0
 // Transfers the ownership to call_function_storing_coord
 call_function_storing_coord(coords, ...)
 ```
+[:top:](#stark-language-reference)
 #### Multiple constructors
 
 Regarding the default parameter less constructor:
@@ -526,6 +534,7 @@ var square = Rectangle.square(1.0)
 
 As for the default parameter less constructor, named constructors (and more generally all func, types) cannot be overloaded and they must have different names.
 
+[:top:](#stark-language-reference)
 ### Interface types
 
 An interface defines a contract that a `struct` must implement.
@@ -574,6 +583,7 @@ public extension for Coord =
 
 Notice in the example above that as the extension is declared in the same module, it has access to the private fields of Coord.
 
+[:top:](#stark-language-reference)
 ### Optional types
 
 An optional type `?T` is a value type that contains a optional value.
@@ -607,6 +617,7 @@ var direct = ?int(1)
 // Declare a none value
 var none = ?int.None
 ```
+[:top:](#stark-language-reference)
 ### Tuple types
 
 A tuple type is an immutable struct that groups multiple data elements in a lightweight data structure.
@@ -668,6 +679,7 @@ var (min1, max1) = result
 
 Notice that a tuple with named arguments has the same type as a tuple without any named arguments.
 
+[:top:](#stark-language-reference)
 ### Unit types
 
 ### Alias and indirect types
