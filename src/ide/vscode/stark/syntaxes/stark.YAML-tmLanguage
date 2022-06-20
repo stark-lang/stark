@@ -22,7 +22,7 @@ patterns:
 - include: '#macro-declaration'
 - include: '#invoke-declaration'
 - include: '#type-declaration'
-- include: '#inherit-declarations'
+- include: '#definition-modulators'
 - include: '#lifetime-identifier'
 - include: '#macros'
 - include: '#keywords'
@@ -125,20 +125,30 @@ repository:
       match: \b(enum)\b
     - name: keyword.other.attr.sk
       match: \b(attr)\b
-  inherit-declarations:
+  definition-modulators:
     patterns:
-    - match: \b(extends)\b\s*([_[:alpha:]][_[:alnum:]]*)
+    - match: (%%\s*extends)\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.extends.sk }      
         '2': { name: entity.name.type.class.sk }      
-    - match: \b(implements)\b\s*([_[:alpha:]][_[:alnum:]]*)
+    - match: (%%\s*implements)\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.implements.sk }      
         '2': { name: entity.name.type.interface.sk }      
-    - name: keyword.other.extends.sk
-      match: \b(extends)\b
-    - name: keyword.other.implements.sk
-      match: \b(implements)\b
+    - match: (%%\s*where)\s+([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.where.sk }      
+        '2': { name: entity.name.type.generic.sk }      
+    - match: (%%\s*throws)\s+([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.throws.sk }      
+        '2': { name: entity.name.type.generic.sk }      
+    - match: (%%\s*(?:extends|implements|where|throws|requires))\b
+      captures:
+        '1': { name: keyword.other.requires.sk }      
+    - match: (%%\s*-*)
+      captures:
+        '1': { name: keyword.other.modulator.sk }      
   func-declaration:
     patterns:
     - match: \b((?:(?:dispatch|override|extern|mutable|partial)\s+)*func(?:\s+mutable\s+this|\s+this)?)\s+([_[:alpha:]][_[:alnum:]]*)\b
@@ -217,7 +227,7 @@ repository:
         match: \bnull\b
   keywords:
     name: keyword.type.sk
-    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b
+    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|set|sizeof|this|typeof|value|var)\b
  
   comment:
     patterns:

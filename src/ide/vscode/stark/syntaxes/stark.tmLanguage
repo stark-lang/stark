@@ -84,7 +84,7 @@
       </dict>
       <dict>
         <key>include</key>
-        <string>#inherit-declarations</string>
+        <string>#definition-modulators</string>
       </dict>
       <dict>
         <key>include</key>
@@ -431,13 +431,13 @@
           </dict>
         </array>
       </dict>
-      <key>inherit-declarations</key>
+      <key>definition-modulators</key>
       <dict>
         <key>patterns</key>
         <array>
           <dict>
             <key>match</key>
-            <string>\b(extends)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <string>(%%\s*extends)\s+([_[:alpha:]][_[:alnum:]]*)</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -454,7 +454,7 @@
           </dict>
           <dict>
             <key>match</key>
-            <string>\b(implements)\b\s*([_[:alpha:]][_[:alnum:]]*)</string>
+            <string>(%%\s*implements)\s+([_[:alpha:]][_[:alnum:]]*)</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -470,16 +470,62 @@
             </dict>
           </dict>
           <dict>
-            <key>name</key>
-            <string>keyword.other.extends.sk</string>
             <key>match</key>
-            <string>\b(extends)\b</string>
+            <string>(%%\s*where)\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.where.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.generic.sk</string>
+              </dict>
+            </dict>
           </dict>
           <dict>
-            <key>name</key>
-            <string>keyword.other.implements.sk</string>
             <key>match</key>
-            <string>\b(implements)\b</string>
+            <string>(%%\s*throws)\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.throws.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.generic.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
+            <string>(%%\s*(?:extends|implements|where|throws|requires))\b</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.requires.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
+            <string>(%%\s*-*)</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.modulator.sk</string>
+              </dict>
+            </dict>
           </dict>
         </array>
       </dict>
@@ -731,7 +777,7 @@
         <key>name</key>
         <string>keyword.type.sk</string>
         <key>match</key>
-        <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|requires|set|sizeof|this|throws|typeof|value|var|where)\b</string>
+        <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|set|sizeof|this|typeof|value|var)\b</string>
       </dict>
       <key>comment</key>
       <dict>
