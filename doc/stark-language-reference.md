@@ -20,6 +20,7 @@
     - [Managed Struct](#managed-struct)
     - [Multiple constructors](#multiple-constructors)
   - [Interface types](#interface-types)
+  - [Definition modulator](#definition-modulator)
   - [Optional types](#optional-types)
   - [Tuple types](#tuple-types)
   - [Unit types](#unit-types)
@@ -230,6 +231,7 @@ Reserved lifetime identifiers:
 - `#heap` denotes a lifetime on the heap.
 - `#temp` denotes a lifetime on the temp heap.
 - `#this` denotes a lifetime of the parent declaration.
+- `#dynamic` used for the default value of a lifetime in a generic parameter, implies that if the lifetime of `#this` is a non `#stack` lifetime, it will be used, otherwise it will be the `#heap` lifetime.
 
 We will see in the [generic type parameterization](#generic-type-parameterization) how lifetime can be parameterized.
 
@@ -378,7 +380,10 @@ The presence of a `.` is necessary to distinguish a parameterized named values f
 // Any can be an error code or a result in the form of `i32`, `u32`, `f32` or `f64`
 union Any = 
     .Error(code: uint),
-    i32, u32, f32, f64
+    i32, 
+    u32,
+    f32,
+    f64
 
 func check_result(result: Result) -> uint =
     match result {
@@ -555,7 +560,7 @@ An a struct can implement this interface:
 
 ```stark
 public struct Coord =
-    | implements ICoord
+    %% implements ICoord
 
     let _x: f32
     let _y: f32
@@ -576,7 +581,7 @@ public struct Coord =
     let _y: f32
 
 public extension for Coord =
-    | implements ICoord
+    %% implements ICoord
     
     public constructor(x: f32, y: f32) =
         this._x = x
@@ -599,7 +604,7 @@ public interface IIdentifiable =
     func this id -> u32
 
 public interface IIdentifiablePoint =
-    | extends IPoint, IIdentifiable
+    %% extends IPoint, IIdentifiable
 ```
 
 An interface can provide a default implementation to some methods:
@@ -614,7 +619,7 @@ public interface IRectangle =
         this.width * this.height
 
 public struct Rectangle =
-    | implements IRectangle
+    %% implements IRectangle
 
     let _width: f32
     let _height: f32
@@ -631,13 +636,44 @@ But a struct can override this implementation:
 
 ```stark
 public struct WeirdRectangle =
-    | implements IRectangle
+    %% implements IRectangle
 
     // [...] implementation of IRectangle
 
     override func this surface() -> f32 =
         this.width * this.height * 3.0
 ```
+
+### Definition modulator
+
+You have noticed the presence of `%% implements ICoord` or `%% implements IRectangle` after the declaration of the struct and the equal `=` in the previous examples:
+
+```stark
+public struct Coord =
+    // A definition modulator
+    %% implements ICoord
+```    
+
+
+`%%` is used as **a definition modulator** and can only appear at the beginning of the definition's body after the `=`.
+
+It can be used by any types or functions that support [generic parameterization](#generic-parameterization):
+- [Union types](#union-types)
+- [Struct types](#struct-types)
+- [Type extensions](#type-extensions)
+- [Functions](#functions)
+
+There are different definition modulators:
+- `%% implements <Type>` to implement en interface
+  - Supported by union, struct and type extensions
+- `%% extends <Type>` to extend an interface
+  - Supported by interface
+- `%% where <WhereExpression>` to express a constraint on a [generic parameter](#generic-parameterization).
+  - Supported by union, struct, type extensions and functions
+- `%% requires <Expression>` to express a contract on the parameters of a [function](#functions).
+  - Supported only by functions.
+- `%% import <ImportPath>` is an import statement scoped to the body of the definition where it is used.
+  - Supported by union, struct, type extensions and functions
 
 [:top:](#stark-language-reference)
 ### Optional types
@@ -848,7 +884,7 @@ interface ISeason =
   func this get_month() -> int
 
 extension for Season =
-    | implements ISeason
+    %% implements ISeason
 
     func this get_month() -> int =
         match this {
@@ -907,9 +943,11 @@ var result = calc(1.0, 2.0)
 A generic parameterization allows to create a generalized type with type parameters that can be further specialized with type arguments.
 
 In Stark, generic parameterization can be applied to a:
-- Types: union, struct, interface, extension, indirect type.
-- Functions
-- Some qualifiers/expressions: async/await
+- [Union types](#union-types)
+- [Struct types](#struct-types)
+- [Type extensions](#type-extensions)
+- [Functions](#functions)
+- Some qualifiers/expressions: `async`/`await`
 
 A generic parameter/argument is easily identified in Stark as it is preceded by a backstick `` ` `` or it is a `#lifetime`.
 
@@ -957,7 +995,6 @@ A generic parameter is defined by either:
 The type of an identifier based generic parameter can be constrained to:
 - A type (e.g `i32`)
 - A const primitive literal (e.g `const bool`)
-- An ownership (e.g `unique` or `shared`)
 - A permission (e.g `mutable`)
 
 A default value can be assigned to a generic parameter.
@@ -994,26 +1031,25 @@ Generic parameters can be better constraints with the `where` constraint:
 interface IHelloGenerics
 
 struct HelloGenerics`t1`t2`T3 =
-    | where t1, t2: is const int 
-    | where T3: is IHelloGenerics
+    %% where t1, t2: is const int 
+    %% where T3: is IHelloGenerics
 ```
 
 The following `where` constraints are supported:
 - For generic parameter identifiers
-  - `where T: is <Type>`, where `<Type>` is either an `interface` type or a `const` primitive.
-  - `where T: <Kind>`, where `<Kind>`: `permission`, `struct`, `managed struct` (TBD define more clearly the list)
-  - `where T: has constructor <identifier>?(<arguments>?)`, specifies that the type `T` must have a specific constructor
+  - `%% where T (',' T1..Tn): is <Type>`, where `<Type>` is either an `interface` type or a `const` primitive.
+  - `%% where T (',' T1..Tn): <Kind>`, where `<Kind>`: `permission`, `struct`, `managed struct` (TBD define more clearly the list)
+  - `%% where T (',' T1..Tn): has constructor <identifier>?(<arguments>?)`, specifies that the type `T` must have a specific constructor
 - For generic parameter lifetime
-  - `where #l: new`, means that the can allocated into the passed lifetime. Some lifetimes cannot be dynamically allocated into (e.g `#stack` for example)
-
+  - `%% where #l (',' #l1..#ln): new`, means that the can allocated into the passed lifetime. Some lifetimes cannot be dynamically allocated into (e.g `#stack` for example)
 
 ```stark
 // Default lifetime #heap with an immutable ref to T
 struct ValueHolder`<T, #l = #heap, tP = immutable> =
-    | where #l: new // we can allocate into this lifetime
-    | where T: managed struct // the type is a managed struct (that can be allocated on the heap)
-    | where T: has constructor() // the type T has a default constructor
-    | where tP: permission
+    %% where #l: new // we can allocate into this lifetime
+    %% where T: managed struct // the type is a managed struct (that can be allocated on the heap)
+    %% where T: has constructor() // the type T has a default constructor
+    %% where tP: permission
 
     let value: ref #l`shared`tP T
 
