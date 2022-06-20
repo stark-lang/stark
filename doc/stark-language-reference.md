@@ -378,9 +378,9 @@ union Any =
 
 func check_result(result: Result) -> uint =
     match result {
-        case is u32 a => a as uint
-        case is f32 b => if b != 0.0 then 1 else 0
-        case is .Error c => c.code
+        case u32 a => a as uint
+        case f32 b => if b != 0.0 then 1 else 0
+        case .Error c => c.code
         case _ => 0
     }
 ```
@@ -761,6 +761,45 @@ qt += 1 // Quantity is an i64 so this compiles just fine
 ```
 ### Type extensions
 
+A type can be extended by a type extension that can augment the type with new constructors, functions, methods and implement interfaces.
+
+```stark
+enum Season = Sprint, Summer, Autumn, Winter
+
+extension for Season =
+    func this get_month() -> int =
+        match this {
+            case .Sprint => 3,
+            case .Summer => 6,
+            case .Autumn => 9,
+            case .Winter => 12,
+        }
+```
+
+Then the function can be used on the type:
+
+```stark
+var season = Season.Sprint
+var month = season.get_month()
+```
+
+An extension can implement an interface for a specific type:
+
+```stark
+interface ISeason =
+  func this get_month() -> int
+
+extension for Season =
+    | implements ISeason
+
+    func this get_month() -> int =
+        match this {
+            case .Sprint => 3,
+            case .Summer => 6,
+            case .Autumn => 9,
+            case .Winter => 12,
+        }
+```
 ### Reference types
 
 ### Pointer types
@@ -819,13 +858,13 @@ and `snake_case` for "value-level" constructs
 | Primitive types | concise `snake_case`, but should be mainly with no underscore `_`
 | Types: struct, interface, enum, union, extension, type | `UpperCamelCase`
 | Union cases | `UpperCamelCase`
+| Enum items | `UpperCamelCase`
 | Functions | `snake_case`
 | Methods   | `snake_case`
 | Named Constructors | `snake_case`
 | Local variables | `snake_case`
 | Static variables | `SCREAMING_SNAKE_CASE`
 | Constant variables | `SCREAMING_SNAKE_CASE`
-| Enum items | `SCREAMING_SNAKE_CASE`
 | Type parameters | concise `UpperCamelCase`, prefixed by single letter, uppercase `T` for types or lowercase `t` for literals
 | Type arguments | `` `snake_case`` or `` `UpperCamelCase``, prefixed by a backstick `` ` ``
 | Lifetime | `#snake_case`, prefixed by a `#`, concise for type parameters `#l`
