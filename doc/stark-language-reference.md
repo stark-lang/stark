@@ -23,7 +23,8 @@
   - [Optional types](#optional-types)
   - [Tuple types](#tuple-types)
   - [Unit types](#unit-types)
-  - [Alias and indirect types](#alias-and-indirect-types)
+  - [Indirect types](#indirect-types)
+  - [Alias types](#alias-types)
   - [Type extensions](#type-extensions)
   - [Reference types](#reference-types)
   - [Pointer types](#pointer-types)
@@ -719,9 +720,45 @@ The units can be also composed with their values:
 // The type of speed is f32'm/'s
 var speed = 15.0 'm/'s
 ``` 
+### Indirect types
 
-### Alias and indirect types
+An indirect type is a value type that wraps an underlying type. The indirect type can be casted to/from explicitly the underlying type, but no implicit conversions are allowed.
 
+An indirect type is useful to create indirect types wrapper around primitive types.
+
+For example:
+
+```stark
+public type ProductId = i64
+```
+
+Using an indirect type provides a safe typing of a primitive type:
+
+```stark
+// var product_id: ProductId
+var product_id = ProductId(15)
+
+product_id += 1 // compiler error, product_id is not an i64 but a ProductId
+
+// extract the i64 from the product id
+var id = product_id as i64
+// this works
+id += 1
+```
+### Alias types
+
+An alias type is a value type aliasing to another underlying type. The alias type is strictly equivalent to the underlying type.
+
+For example:
+
+```stark
+public alias type Quantity = i64
+```
+
+```stark
+var qt: Quantity = 15
+qt += 1 // Quantity is an i64 so this compiles just fine
+```
 ### Type extensions
 
 ### Reference types
