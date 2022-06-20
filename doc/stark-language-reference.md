@@ -29,7 +29,7 @@
   - [Reference types](#reference-types)
   - [Pointer types](#pointer-types)
   - [Function types](#function-types)
-  - [Generic type parameterization](#generic-type-parameterization)
+- [Generic parameterization](#generic-parameterization)
 - [Functions](#functions)
   - [Static functions](#static-functions)
   - [This functions](#this-functions)
@@ -720,6 +720,7 @@ The units can be also composed with their values:
 // The type of speed is f32'm/'s
 var speed = 15.0 'm/'s
 ``` 
+[:top:](#stark-language-reference)
 ### Indirect types
 
 An indirect type is a value type that wraps an underlying type. The indirect type can be casted to/from explicitly the underlying type, but no implicit conversions are allowed.
@@ -745,6 +746,7 @@ var id = product_id as i64
 // this works
 id += 1
 ```
+[:top:](#stark-language-reference)
 ### Alias types
 
 An alias type is a value type aliasing to another underlying type. The alias type is strictly equivalent to the underlying type.
@@ -759,6 +761,7 @@ public alias type Quantity = i64
 var qt: Quantity = 15
 qt += 1 // Quantity is an i64 so this compiles just fine
 ```
+[:top:](#stark-language-reference)
 ### Type extensions
 
 A type can be extended by a type extension that can augment the type with new constructors, functions, methods and implement interfaces.
@@ -800,13 +803,51 @@ extension for Season =
             case .Winter => 12,
         }
 ```
+[:top:](#stark-language-reference)
 ### Reference types
 
+A `ref` type is a value type that reference a value in memory.
+
+As described earlier by the [smart references](#smart-references) section, a `ref` type is defined by 3 kind of qualifiers (lifetime, ownership, permission) and a type.
+
+The most common usage of a `ref` type is by using its direct form:
+- ``ref #lifetime`ownership`permission Type``.
+
+The direct form is equivalent to the generic parameterized form:
+- ``ref`<#lifetime, ownership, permission, Type>``
+
+Notice that a `ref` is usually of the size of a native int/pointer but not always. 
+
+[:top:](#stark-language-reference)
 ### Pointer types
 
+A pointer type of the form ``*Type`` is a value type that reference a value in a memory. Unlike a reference type, a pointer type is unsafe. Also a pointer type cannot be used to point to a value on the managed heap but is mainly used for library that needs to interact with low level OS APIs and external APIs.
+
+For example, `*int` is a pointer to an integer.
+[:top:](#stark-language-reference)
 ### Function types
 
-### Generic type parameterization
+A function type is a value type that reference a function.
+
+Let's define a simple function:
+
+```stark
+func calculate(x: f32, y: f32) -> f32 = x + y
+```
+
+We can reference this function directly to a variable:
+
+```stark
+var calc = calculate
+// Explicit type
+var calc2: func(x: f32, y: f32) -> f32 = calculate
+
+// Result == 3.0
+var result = calc(1.0, 2.0)
+```
+
+[:top:](#stark-language-reference)
+## Generic parameterization
 
 ## Functions
 
