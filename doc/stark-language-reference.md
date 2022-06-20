@@ -15,6 +15,10 @@
   - [Enum types](#enum-types)
   - [Union types](#union-types)
   - [Struct types](#struct-types)
+    - [Struct with a fixed constructor](#struct-with-a-fixed-constructor)
+    - [Struct with explicit field declaration](#struct-with-explicit-field-declaration)
+    - [Managed Struct](#managed-struct)
+    - [Multiple constructors](#multiple-constructors)
   - [Interface types](#interface-types)
   - [Optional types](#optional-types)
   - [Tuple types](#tuple-types)
@@ -375,18 +379,200 @@ func check_result(result: Result) -> uint =
     }
 ```
 
-An union can be declared partial:
+An union can be declared partial and can be further declared from another file (in the same module).
 
 ```stark
 partial union Season
 ```
 
-and can be further declared from another file (in the same module).
-
-
 ### Struct types
 
+A structure type (or struct type) is a value type that can encapsulate data.
+
+#### Struct with a fixed constructor
+
+The fields of a struct can be declared easily with a fixed constructor:
+
+```stark
+// immutable struct by default
+public struct Coords(x: f32, y: f32)
+```
+
+All the fields declared in the fixed constructor are accessible (`Coords.x` and `Coords.y` here).
+
+// You can create a value on the stack by calling directly the struct constructor:
+```stark
+var coords = Coords(1.0, 2.0)
+// Uncommenting the following line would result in a compiler error
+// As the struct is immutable
+// coords.x = 2.0
+```
+
+Notice that by default, a struct is `immutable`. It can be changed to `mutable`:
+
+```stark
+public mutable struct Coords(x: f32, y: f32)
+```
+
+but when using the struct, you still need to specify that the struct can be mutated. If it is not specified, the default is to turn the mutable struct into an immutable struct.
+
+```stark
+// A readonly coords
+var coords_ro = Coords(1.0, 2.0)
+// A mutable coords
+var coords = `mutable Coords(1.0, 2.0)
+coords.x = 2.0
+```
+#### Struct with explicit field declaration
+
+There are 2 kinds of fields that can be declared:
+
+- A `let` field is a field that is assignable only once at initialization time.
+- A `var` field is a variable field that can be reassigned.
+
+The fields can be declared explicitly. The following is a strict equivalent of `public struct Coords(x: f32, y: f32)`:
+
+```stark
+public struct Coords =
+    public let x: f32
+    public let y: f32
+```
+
+If the struct doesn't define a constructor then a default constructor is created if all fields are zero initialize-able:
+
+```stark
+var coords_zero = Coords()
+var coords = Coords() { x = 1.0, y = 2.0 }
+```
+
+Similarly, the equivalent of a mutable struct with a fixed constructor is:
+
+```stark
+public mutable struct Coords =
+    public var x: f32
+    public var y: f32
+```
+
+```stark
+var coords = Coords() { x = 1.0, y = 2.0 }
+coords.x = 2.0
+```
+#### Managed Struct
+
+By default, a struct cannot be allocated directly on the heap. Only struct declared with the `managed` qualifier can:
+
+```stark
+public managed mutable struct Coords(x: f32, y: f32)
+```
+
+It allows this struct to be allocated on the heap with the new operator:
+
+```stark
+var coords = new `mutable Coords(1.0, 2.0)
+coords.x = 2.0
+call_function_storing_coord(coords, ...)
+```
+
+By default, the new operator is using the ownership `shared` and the compiler will choose where to allocate the value of the struct. In the example above, because we are calling a function that is tacking a reference to the newly created reference, the value will be allocated with the default `#heap` lifetime.
+
+```stark
+// Fully qualified type of the variable
+var coords: ref #heap`shared`mutable = new `mutable Coords(1.0, 2.0)
+```
+
+But you can also fully specified how the value should be instantiated:
+
+```stark
+// Create a unique mutable value with the #temp lifetime
+var coords = new #temp`unique`mutable Coords(1.0, 2.0)
+coords.x = 2.0
+// Transfers the ownership to call_function_storing_coord
+call_function_storing_coord(coords, ...)
+```
+#### Multiple constructors
+
+Regarding the default parameter less constructor:
+
+- You can declare only one parameter less constructor.
+- If a struct contains a constructor with explicit parameters, no default parameter less constructor will be generated.
+- If a struct does not have any constructors defined, a default parameter less constructor will be generated.
+
+Otherwise, you can add new named constructors to a struct declaration:
+
+```stark
+public struct Rectangle =
+    public var width: f32
+    public var height: f32
+  
+    // Declare a parameter less constructor
+    public constructor(width: f32, height: f32) =
+        this.width = width
+        this.height = height
+
+    // Declare the named constructor `square`
+    public constructor square(length: f32) =
+        this.width = length
+        this.height = length        
+```
+
+And a named constructor can be called explicitly:
+
+```stark
+// Call the parameter less constructor
+var rect = Rectangle(1.0, 2.0)
+// Call the named constructor
+var square = Rectangle.square(1.0)
+```
+
+As for the default parameter less constructor, named constructors (and more generally all func, types) cannot be overloaded and they must have different names.
+
 ### Interface types
+
+An interface defines a contract that a `struct` must implement.
+
+```stark
+public interface ICoord =
+    constructor(x: f32, y: f32)
+    func this x -> f32
+    func this y -> f32
+```
+
+An a struct can implement this interface:
+
+```stark
+public struct Coord =
+    | implements ICoord
+
+    let _x: f32
+    let _y: f32
+
+    public constructor(x: f32, y: f32) =
+        this._x = x
+        this._y = y
+
+    public func this x -> f32 => this._x
+    public func this y -> f32 => this._y
+```
+
+Or the implementation can be also delayed to an [extension](#type-extensions):
+
+```stark
+public struct Coord =
+    let _x: f32
+    let _y: f32
+
+public extension for Coord =
+    | implements ICoord
+    
+    public constructor(x: f32, y: f32) =
+        this._x = x
+        this._y = y
+
+    public func this x -> f32 => this._x
+    public func this y -> f32 => this._y
+```
+
+Notice in the example above that as the extension is declared in the same module, it has access to the private fields of Coord.
 
 ### Optional types
 
