@@ -19,6 +19,7 @@
     - [Struct with explicit field declaration](#struct-with-explicit-field-declaration)
     - [Managed Struct](#managed-struct)
     - [Multiple constructors](#multiple-constructors)
+    - [Struct of Array - SOA](#struct-of-array---soa)
   - [Interface types](#interface-types)
     - [Async interface](#async-interface)
   - [Definition modulator](#definition-modulator)
@@ -546,6 +547,37 @@ var square = Rectangle.square(1.0)
 ```
 
 As for the default parameter less constructor, named constructors (and more generally all func, types) cannot be overloaded and they must have different names.
+
+[:top:](#stark-language-reference)
+
+#### Struct of Array - SOA
+
+Stark allows to specify - and generic parameterized the layout of a struct when it is used in an array. It supports 3 kinds of layout:
+- `` `aos`` is the default layout "Array of Struct", when used in an array.
+  ```stark
+  // Struct with a regular AOS (Array of struct) layout 
+  // When used in an array: e.g new [Vector3]
+  // xyzxyzxyzxyzxyzxyz
+  mutable struct Vector3(x: f32, y: f32, z: f32)
+  ```
+- `` `soa`` is a "Struct of Array" layout
+  ```stark
+  // Struct with an SOA (Struct of Array) layout
+  // When used in an array: e.g new [SOAVector3] (1000)
+  // xxxxxxxxxxxxxxxxxx
+  // yyyyyyyyyyyyyyyyyy
+  // zzzzzzzzzzzzzzzzzz
+  mutable struct `soa SOAVector3(x: f32, y: f32, z: f32)
+  ```
+- `` `soa(integer)`` is a packed "Struct of Array" layout
+  ```stark
+  // Struct with a packed SOA (Struct of Array) layout
+  // When used in an array: e.g new [SOAPackedVector3] (1000)
+  // xxxxyyyyzzzxxxxyyyyzzz
+  mutable struct `soa(4) SOAPackedVector3(x: f32, y: f32, z: f32)
+  ```
+
+TBD Add how use generic parameterization with SOA.
 
 [:top:](#stark-language-reference)
 ### Interface types
