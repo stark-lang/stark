@@ -1166,7 +1166,80 @@ refToHelloValue.right = 2
 
 ### Static functions
 
+Functions can be declared at the module level:
+
+```stark
+func add_integers(left: int, right: int) -> int =
+    left + right
+```
+
+A function that does not return a value simply doesn't have a return type `-> <type>`.
+
+A function can be generic parameterized:
+
+```stark
+func add_integers`T(left: T, right: T) -> T =
+    %% where T: is IAdditionOperators`T
+    left + right
+```
+
+Notice that if a function calls another `mutable` function, it has to be marked as `mutable`:
+
+```stark
+mutable func process_data(array: ref #heap`mutable [u32]) -> u32 =
+    for i in 0..<array.size 
+        process_element(i, ref `mutable array[i])
+
+mutable func process_element(index: u32, elt: ref #heap`mutable u32) =
+    // Writing to a mutable reference implies that this function
+    // mutates some memory.
+    *elt = index 
+```
+
 ### This functions
+
+Methods can be attached to an existing type:
+
+```stark
+public mutable struct Coords(x: f32, y: f32)
+
+extension for Coords =
+    func this square() -> f32 = 
+        this.x * this.x + this.y * this.y
+
+func square_coords(coords: Coords) -> f32 =
+    coords.square()
+```
+
+When accessing the members of a struct, the reference to `this` has to be used explicitly (e.g `this.x`).
+
+Notice that a `this` method call is equivalent to a function call where the first argument is the receiver instance itself:
+
+```
+// A this function call is equivalent to
+func square_coords(coords: Coords) -> f32 =
+    Coords.square(coords)
+```
+
+If a method is going to mutate an instance, the `this` reference must be marked as `mutable`:
+
+```stark
+extension for Coords =
+    func mutable this modify(x: f32, y: f32) =
+        this.x = x
+        this.y = y
+```
+
+If a method mutates some memory (outside of `this`), the method itself has to be marked as `mutable` as well:
+
+```stark
+extension for Coords =
+    mutate func this transfer(coords: ref #heap`mutable Coords) =
+        transfer_from_to(this, coords)
+
+    mutate func transfer_from_to(from: ref Coords, to: ref #heap`mutable Coords) =
+        *to = *from
+```
 
 ### Property functions
 
