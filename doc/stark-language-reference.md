@@ -1,5 +1,13 @@
 # Stark Language Reference
 
+> Notice: 
+> 
+> This document serves currently as a design overview of the language, but should not be considered as a full
+> language reference.
+> Links to grammar are missing and the document is still missing lots of details.
+>
+> It's a work in progress!
+
 - [Modules](#modules)
   - [Module declaration](#module-declaration)
   - [Import statement](#import-statement)
