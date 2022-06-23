@@ -92,16 +92,19 @@ repository:
 
   type-attributes:
     patterns:
-    - match: `(immutable|mutable|transient|retainable|shared|rooted|unique|readable)\b
+    - match: `(immutable|mutable|transient|retainable|shared|rooted|unique|readable|soa|aos)\b
       captures:
-        '1': { name: keyword.other.type.sk }      
-
+        '1': { name: keyword.other.type.sk }
+    - match: `([_[:alpha:]][_[:alnum:]]*)\b
+      captures:
+        '1': { name: entity.name.type.class.sk }
   type-declaration:
     patterns:
-    - match: \b((?:(?:managed|mutable|transient)\s+)*struct|union|enum|interface|unit|type)\s+([_[:alpha:]][_[:alnum:]]*)
+    - match: \b((?:(?:managed|mutable|transient)\s+)*struct|union|enum|interface|unit|type)(\s*`(?:soa|aos)\s*)?(?:\s*`(?:\w+|<.*?>)\s*)?\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.type.sk }      
-        '2': { name: entity.name.type.class.sk }      
+        '2': { name: keyword.other.soa_aos.sk }      
+        '3': { name: entity.name.type.class.sk }      
     - match: \b(extension)(?:\s*`<.*?>)?\s*(for)\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.type.sk }      
@@ -127,23 +130,20 @@ repository:
       match: \b(attr)\b
   definition-modulators:
     patterns:
-    - match: (%%\s*extends)\s+([_[:alpha:]][_[:alnum:]]*)
+    - name: string.quoted.single.sk
+      begin: (%%\s*(?:where))\b
+      beginCaptures:
+        '0': {name: keyword.other.extends.sk}
+      end: \:
+      patterns:
+      - match: ([_[:alpha:]][_[:alnum:]]*)
+        captures:
+          '1': { name: entity.name.type.class.sk }      
+    - match: (%%\s*(?:extends|implements|throws))\b([_[:alpha:]][_[:alnum:]]*)?
       captures:
-        '1': { name: keyword.other.extends.sk }      
+        '1': { name: keyword.other.requires.sk }      
         '2': { name: entity.name.type.class.sk }      
-    - match: (%%\s*implements)\s+([_[:alpha:]][_[:alnum:]]*)
-      captures:
-        '1': { name: keyword.other.implements.sk }      
-        '2': { name: entity.name.type.interface.sk }      
-    - match: (%%\s*where)\s+([_[:alpha:]][_[:alnum:]]*)
-      captures:
-        '1': { name: keyword.other.where.sk }      
-        '2': { name: entity.name.type.generic.sk }      
-    - match: (%%\s*throws)\s+([_[:alpha:]][_[:alnum:]]*)
-      captures:
-        '1': { name: keyword.other.throws.sk }      
-        '2': { name: entity.name.type.generic.sk }      
-    - match: (%%\s*(?:extends|implements|where|throws|requires))\b
+    - match: (%%\s*(?:requires))\b
       captures:
         '1': { name: keyword.other.requires.sk }      
     - match: (%%\s*-*)

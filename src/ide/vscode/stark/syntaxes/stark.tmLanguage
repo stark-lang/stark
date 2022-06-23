@@ -315,13 +315,25 @@
         <array>
           <dict>
             <key>match</key>
-            <string>`(immutable|mutable|transient|retainable|shared|rooted|unique|readable)\b</string>
+            <string>`(immutable|mutable|transient|retainable|shared|rooted|unique|readable|soa|aos)\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
               <dict>
                 <key>name</key>
                 <string>keyword.other.type.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
+            <string>`([_[:alpha:]][_[:alnum:]]*)\b</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.class.sk</string>
               </dict>
             </dict>
           </dict>
@@ -333,7 +345,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>\b((?:(?:managed|mutable|transient)\s+)*struct|union|enum|interface|unit|type)\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <string>\b((?:(?:managed|mutable|transient)\s+)*struct|union|enum|interface|unit|type)(\s*`(?:soa|aos)\s*)?(?:\s*`(?:\w+|&lt;.*?&gt;)\s*)?\s+([_[:alpha:]][_[:alnum:]]*)</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -342,6 +354,11 @@
                 <string>keyword.other.type.sk</string>
               </dict>
               <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.soa_aos.sk</string>
+              </dict>
+              <key>3</key>
               <dict>
                 <key>name</key>
                 <string>entity.name.type.class.sk</string>
@@ -436,14 +453,45 @@
         <key>patterns</key>
         <array>
           <dict>
+            <key>name</key>
+            <string>string.quoted.single.sk</string>
+            <key>begin</key>
+            <string>(%%\s*(?:where))\b</string>
+            <key>beginCaptures</key>
+            <dict>
+              <key>0</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.extends.sk</string>
+              </dict>
+            </dict>
+            <key>end</key>
+            <string>\:</string>
+            <key>patterns</key>
+            <array>
+              <dict>
+                <key>match</key>
+                <string>([_[:alpha:]][_[:alnum:]]*)</string>
+                <key>captures</key>
+                <dict>
+                  <key>1</key>
+                  <dict>
+                    <key>name</key>
+                    <string>entity.name.type.class.sk</string>
+                  </dict>
+                </dict>
+              </dict>
+            </array>
+          </dict>
+          <dict>
             <key>match</key>
-            <string>(%%\s*extends)\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <string>(%%\s*(?:extends|implements|throws))\b([_[:alpha:]][_[:alnum:]]*)?</string>
             <key>captures</key>
             <dict>
               <key>1</key>
               <dict>
                 <key>name</key>
-                <string>keyword.other.extends.sk</string>
+                <string>keyword.other.requires.sk</string>
               </dict>
               <key>2</key>
               <dict>
@@ -454,58 +502,7 @@
           </dict>
           <dict>
             <key>match</key>
-            <string>(%%\s*implements)\s+([_[:alpha:]][_[:alnum:]]*)</string>
-            <key>captures</key>
-            <dict>
-              <key>1</key>
-              <dict>
-                <key>name</key>
-                <string>keyword.other.implements.sk</string>
-              </dict>
-              <key>2</key>
-              <dict>
-                <key>name</key>
-                <string>entity.name.type.interface.sk</string>
-              </dict>
-            </dict>
-          </dict>
-          <dict>
-            <key>match</key>
-            <string>(%%\s*where)\s+([_[:alpha:]][_[:alnum:]]*)</string>
-            <key>captures</key>
-            <dict>
-              <key>1</key>
-              <dict>
-                <key>name</key>
-                <string>keyword.other.where.sk</string>
-              </dict>
-              <key>2</key>
-              <dict>
-                <key>name</key>
-                <string>entity.name.type.generic.sk</string>
-              </dict>
-            </dict>
-          </dict>
-          <dict>
-            <key>match</key>
-            <string>(%%\s*throws)\s+([_[:alpha:]][_[:alnum:]]*)</string>
-            <key>captures</key>
-            <dict>
-              <key>1</key>
-              <dict>
-                <key>name</key>
-                <string>keyword.other.throws.sk</string>
-              </dict>
-              <key>2</key>
-              <dict>
-                <key>name</key>
-                <string>entity.name.type.generic.sk</string>
-              </dict>
-            </dict>
-          </dict>
-          <dict>
-            <key>match</key>
-            <string>(%%\s*(?:extends|implements|where|throws|requires))\b</string>
+            <string>(%%\s*(?:requires))\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>

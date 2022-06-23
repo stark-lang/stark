@@ -20,6 +20,7 @@
     - [Managed Struct](#managed-struct)
     - [Multiple constructors](#multiple-constructors)
   - [Interface types](#interface-types)
+    - [Async interface](#async-interface)
   - [Definition modulator](#definition-modulator)
   - [Optional types](#optional-types)
   - [Tuple types](#tuple-types)
@@ -644,6 +645,54 @@ public struct WeirdRectangle =
 
     override func this surface() -> f32 =
         this.width * this.height * 3.0
+```
+
+#### Async interface
+
+An interface can be declared asynchronous or an existing non-async interface can be turned into an async interface. An async interface implies that all its function calls are asynchronous calls.
+
+To declare an async interface, you can simply prefix the type declaration by `async`:
+
+```stark
+public async interface IRectangle =
+    func this width -> f32
+    func this height -> f32
+
+    // default implementation for surface()
+    func this surface() -> f32 =
+        this.width * this.height
+```
+
+it is the equivalent of writing:
+
+```stark
+public interface IRectangle =
+    async func this width -> f32
+    async func this height -> f32
+
+    // default implementation for surface()
+    async func this surface() -> f32 =
+        await this.width * await this.height
+```
+
+An existing non-async interface can also be used in the context of implements:
+
+```stark
+public struct Coord =
+    // Assuming that ICoord is a plain interface
+    %% implements async ICoord
+
+    let _x: f32
+    let _y: f32
+
+    public constructor(x: f32, y: f32) =
+        this._x = x
+        this._y = y
+
+    public async func this x -> f32 =
+        // here some await calls...
+    public async func this y -> f32 =
+        // here some await calls...
 ```
 
 ### Definition modulator
