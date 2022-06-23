@@ -1164,6 +1164,7 @@ refToHelloValue.right = 2
 ```
 ## Functions
 
+Stark support different kind of functions and methods. Note that Stark does not support method overloads: functions/methods must be named differently. Named constructors are part of the function names.
 ### Static functions
 
 Functions can be declared at the module level:
@@ -1241,11 +1242,98 @@ extension for Coords =
         *to = *from
 ```
 
+In all the example above, the visibility is `private` by default. Methods should be marked `public` to be visible outside the module/library.
+
 ### Property functions
+
+A property getter can be declared similarly to a `func this` but without the `()`:
+
+```stark
+public mutable struct Coords(x: f32, y: f32)
+
+extension for Coords =
+    func this square -> f32 => this.x * this.x + this.y * this.y
+```
+
+And can then be used like this
+
+```stark
+var coords = Coords(1.0, 2.0)
+var result = coords.square
+```
+
+If you need to implement a property getter and setter, this needs to be explicit with get/set:
+
+- a `get` is implicitly marking the this reference as `` `readable ``
+  - The implication is that you cannot mutate an object in a get
+- a `set` is implicitly marking the this reference as `` `mutable ``
+
+The property func cannot be marked also as mutate (so cannot mutate outside of this).
+
+```stark
+public mutable struct Coords(x: f32, y: f32) = 
+    var _z: f32
+    var _s: f32
+
+    // Creates automatically a field w
+    func this w -> f32 = get set
+
+extension for Coords =
+    func this z -> f32 =
+        get
+            this._z
+        set
+            this._z = value
+
+    func this s -> f32 =
+        get => this._s
+        set => this._s = value
+```
+
+Notice that a property can be made static without the `func this`.
+
+In the example above, the visibility is `private` by default. Methods should be marked `public` to be visible outside the module/library.
 
 ### Indexer functions
 
+An indexer function is necessarily a `func this` and allows an instance to act as a proxy to an array.
+
+```stark
+public mutable struct ArrayProxy#l = 
+    var array: ref #l `mutable [f32]
+
+    public constructor(capacity: uint) =
+        this.array = new #l`mutable [f32](capacity)
+
+    func this [index: uint] -> ref #l`mutable f32 =
+        %% requires index < this.array.size
+        ref #l`mutable this.array[index]
+```
+
+It can be used like this
+
+
+```stark
+var proxy = ArrayProxy#heap(10)
+*proxy[0] = 1.0
+var value_from_0 = *proxy[0]
+```
 ### Operator functions
+
+Stark allows to redefine unary and binary operators between types.
+
+Notice that by default, alls types provide a default implementation for `==` and `<>` operators.
+
+```stark
+public struct Tester(a: int, b: int) =
+    public operator unary - (left: Tester) -> Tester =
+        Tester(-left.a, -left.b)
+
+    public operator binary + (left: Tester, right: Tester) -> Tester =
+        Tester(left.a + right.a, left.b + right.b)
+```
+
+TBD: Add the list of supported operators
 
 ### Function contracts
 
