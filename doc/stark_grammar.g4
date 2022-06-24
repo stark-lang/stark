@@ -592,6 +592,7 @@ expression_statement
 
 expression
     : 'unsafe'? (expression_with_block | expression_without_block)
+    | expression bop='|>' expression
     ;
 
 expression_with_block
@@ -692,6 +693,7 @@ expression_unary
     // Note that if ownership / permission are present, the only expression_primary2 supported behind
     // is method call
     | expression_primary2 expression_member_path*
+    | '.'  // the dot expression is a place holder for the piped value
     | expression_new
     | 'throw' expression_unary_or_binary
     | 'catch'? 'try' expression_unary_or_binary
@@ -889,7 +891,7 @@ macro_command
 macro_tokens
     // All tokens except group tokens '('|')'|'['|']'|'{'|'}'
     // as they are parsed below to match balanced groups
-    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'immutable'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'isolated'|'kind'|'let'|'lifetime'|'literal'|'macro'|'managed'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'out'|'ownership'|'permission'|'partial'|'public'|'readable'|'ref'|'requires'|'return'|'rooted'|'set'|'shared'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'transient'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
+    :'_'|'-'|'-='|'->'|','|':'|':='|'!'|'!='|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'|>'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expression'|'extends'|'extension'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'immutable'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'isolated'|'kind'|'let'|'lifetime'|'literal'|'macro'|'managed'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'out'|'ownership'|'permission'|'partial'|'public'|'readable'|'ref'|'requires'|'return'|'rooted'|'set'|'shared'|'statement'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'transient'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
     | literal
     | IDENTIFIER
     | lifetime
@@ -1237,6 +1239,7 @@ BITWISE_OR: '|';
 BITWISE_XOR: '^';
 AND: '&&';
 OR: '||';
+PIPE: '|>';
 PLUS_EQUAL: '+=';
 MINUS_EQUAL: '-=';
 STAR_EQUAL: '*=';
