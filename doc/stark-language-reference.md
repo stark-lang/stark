@@ -998,6 +998,22 @@ The most common usage of a `ref` type is by using its direct form:
 The direct form is equivalent to the generic parameterized form:
 - ``ref`<#lifetime, ownership, permission, Type>``
 
+
+By default, when passing a `ref` to a function, a `ref` cannot be retained or stored by the method. It is considered by default as `` `transient ``.
+
+If a function or method is going to retain the reference, the ref must be marked as `` `retainable ``.
+
+```stark
+struct RefHolder#l =
+    var r: ref #l`shared`mutable int
+
+    constructor(r: `retainable ref #l`shared`mutable int) =
+        this.r = r
+
+    func this set_value(r: `retainable ref #l`shared`mutable int) =
+        this.r = r
+```
+
 Notice that a `ref` is usually of the size of a native int/pointer but not always. 
 
 [:top:](#stark-language-reference)
@@ -1272,9 +1288,10 @@ var result = coords.square
 
 If you need to implement a property getter and setter, this needs to be explicit with get/set:
 
-- a `get` is implicitly marking the this reference as `` `readable ``
+- a `get` is implicitly marking the this reference as `` `readable `` and `` `transient ``
   - The implication is that you cannot mutate an object in a get
-- a `set` is implicitly marking the this reference as `` `mutable ``
+- a `set` is implicitly marking the this reference and the `set` function as `` `mutable ``
+  - The input value is marked as `` `retainable ``
 
 The property func cannot be marked also as mutate (so cannot mutate outside of this).
 
