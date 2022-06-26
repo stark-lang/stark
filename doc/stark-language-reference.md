@@ -252,17 +252,40 @@ We will see in the [generic type parameterization](#generic-type-parameterizatio
 
 The ownership defines the copy-ability of a reference when it is passed and used around in a program.
 
-> **Rule-1220**: `transient` is the implicit default ownership for which a reference can only be used from the stack and cannot be stored outside of it. This reference can be copied around as long as it stays on the stack.
+> **Rule-1220**: `shared` is a reference that can be copied around. This is the default reference implied when omitted. Multiple objects can reference the same object with this kind of reference.
 
-> **Rule-1221**: `shared` is a reference that can be copied around. Multiple objects can reference the same object with this kind of reference.
+For example, the ``ref #heap`shared MyObject`` is a readable shared reference to a `#heap` allocated MyObject.
 
-> **Rule-1222**: `unique` is a unique reference to an object. When it is copied around, it invalidates the previous reference.
+> **Rule-1221**: `unique` is a unique reference to an object. When it is copied around, it invalidates the previous reference.
 
-> **Rule-1223**: `rooted` is a unique reference to a root object that can have a sub-object graph. No external references can be made to its internal objects. When it is copied around, it invalidates the previous reference.
+> **Rule-1222**: `rooted` is a unique reference to a root object that can have a sub-object graph. No external references can be made to its internal objects. When it is copied around, it invalidates the previous reference.
 
-> **Rule-1224**: A `shared` ref can be casted to a `transient` ref.
 
-> **Rule-1225**: A `rooted` ref can be casted to a `shared` ref. It can be temporarily casted to it and reverted back to `rooted` as long as the sub-object graph is known to respect the `rooted` ref subgraph rules (rule-1223 above). The previous `rooted` ref cannot be used if the cast to a `shared` ref is definitive.
+When passing a reference around via function arguments or returned value, a reference is marked as `transient` by default.
+
+```stark
+func process_data(data: ref #heap`shared`mutable MyObject) =
+    // ...
+``` 
+
+Is equivalent to declaring:
+
+```stark
+func process_data(data: `transient ref #heap`shared`mutable MyObject) =
+    // data cannot be stored outside of the stack (on a field)
+```
+
+Reference with ownership `` `unique `` and `` `rooted `` cannot be pass to a method. The ownership has to be moved explicitly.
+
+In that case, a method taking ownership of a reference must mark the reference `` `retainable ``:
+
+
+```stark
+func process_data(data: `retainable ref #heap`shared`mutable MyObject, ...) =
+    // The reference data will be retained by process_data (by storing it to another location in heap memory)
+``` 
+
+ > **Rule-1223**: A `rooted` ref can be casted to a `shared` ref. It can be temporarily casted to it and reverted back to `rooted` as long as the sub-object graph is known to respect the `rooted` ref subgraph rules (rule-1223 above). The previous `rooted` ref cannot be used if the cast to a `shared` ref is definitive.
 
 [:top:](#stark-language-reference)
 #### Permission
@@ -1001,15 +1024,17 @@ The direct form is equivalent to the generic parameterized form:
 
 By default, when passing a `ref` to a function, a `ref` cannot be retained or stored by the method. It is considered by default as `` `transient ``.
 
-If a function or method is going to retain the reference, the ref must be marked as `` `retainable ``.
+If a function or method is going to retain the reference, the ref must be marked as `` `retainable ``. Notice that by default, a reference passed to a constructor is `` `retainable` ``
 
 ```stark
 struct RefHolder#l =
     var r: ref #l`shared`mutable int
 
-    constructor(r: `retainable ref #l`shared`mutable int) =
+    // r is implicitly `retainable ref
+    constructor(r: ref #l`shared`mutable int) =
         this.r = r
 
+    // r is by default `transient ref. We need to explicitly say that we are retaining it.
     func this set_value(r: `retainable ref #l`shared`mutable int) =
         this.r = r
 ```
