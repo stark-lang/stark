@@ -14,7 +14,6 @@
 - [Concepts](#concepts)
   - [Smart references](#smart-references)
     - [Lifetime](#lifetime)
-    - [Ownership](#ownership)
     - [Permission](#permission)
   - [Capabilities](#capabilities)
   - [Asynchronous programming](#asynchronous-programming)
@@ -25,7 +24,9 @@
   - [Struct types](#struct-types)
     - [Struct with a fixed constructor](#struct-with-a-fixed-constructor)
     - [Struct with explicit field declaration](#struct-with-explicit-field-declaration)
-    - [Managed Struct](#managed-struct)
+    - [Linear Struct](#linear-struct)
+    - [Region Struct](#region-struct)
+    - [Ref Struct](#ref-struct)
     - [Multiple constructors](#multiple-constructors)
     - [Struct of Array - SOA](#struct-of-array---soa)
   - [Interface types](#interface-types)
@@ -104,7 +105,7 @@ partial module core::io::console
 
 ```stark
 // The module will be visible outside of the library
-public module core::io::console
+pub module core::io::console
 ```
 
 > **Rule-1005**: All private modules and types are visible/accessible from a same library.
@@ -173,121 +174,27 @@ Before diving into the other parts of this document we need to explain a few cor
 
 ### Smart references
 
-When a reference is made to a value in memory, it is composed of a type of the value referenced and 3 kind of qualifiers:
+When a reference is made to a value in memory, it is composed of a type of the value referenced and 2 kind of qualifiers:
 
 - A [lifetime](#lifetime).
-- A [ownership](#ownership).
 - A [permission](#permission).
 
 ```stark
-// A reference to a unique mutable MyObject with the #heap lifetime
-let obj: ref #heap`unique`mutable MyObject
+// A reference to a read-writeable MyObject with the #local lifetime
+let obj: &#local`rw MyObject
 ```
 #### Lifetime
 
-Stark is using the concept of lifetime to identify the kind of region of memory that is referenced. Lifetimes  have also a hierarchy of precedence.
+Stark is using the concept of region based lifetime to identify the kind of region of memory that is referenced.
 
 > **Rule-1201**: A lifetime is composed of an [identifier](#identifier-lexer) prefixed by `#`.
 
-For example, the lifetime `#heap` denotes a general lifetime allocated on the heap.
-
-> **Rule-1202**: A lifetime is defined relatively to a parent lifetime. The parent lifetime has a longer scope than the lifetime being defined.
-> 
-> **Rule-1203**: A global lifetime can only be declared at the module level.
-
-```stark
-lifetime #my_special_sub_heap < #heap
-```
-
-> **Rule-1204**: A lifetime can have multiple child lifetime but an object of one lifetime can only reference objects with a lifetime that are directly a child of their lifetime.
-
-```stark
-lifetime #my_special_sub_heap < #heap
-lifetime #my_special_sub_heap_1 < #my_special_sub_heap
-lifetime #my_special_sub_heap_2 < #my_special_sub_heap
-```
-
-In the example above the lifetime `#my_special_sub_heap` can only be referenced by an object on the heap `#heap`. The lifetime `#my_special_sub_heap1` and `2` can only be referenced by an object on the `#my_special_sub_heap`.
-
-It is recommended to define lifetimes at the application level and to use lifetime parameterization for all the object containers.
-
-> **Rule-1205**: The special lifetime `#stack` is the parent of any lifetime deriving from the `#heap`. This lifetime cannot be used directly by a `ref` as it is inferred from the code and it is scoped to the liveness of the value the reference is pointing to.
-
-Conceptually, it's like defining the following lifetime:
-
-```stark
-// Stack is a the only existing root lifetime
-lifetime #stack
-// Heap is deriving from the #stack lifetime
-lifetime #heap < #stack
-```
-
-An object with the `#heap` cannot reference an object with the `#stack` lifetime.
-
-> **Rule-1206**: The special lifetime `#temp` is a child of the `#heap` lifetime, but can only be used from within the `#stack` or the `#temp` lifetime.
-
-Conceptually, it's like defining the following lifetime:
-
-```stark
-// Temp is deriving from the #stack lifetime
-lifetime #temp < #stack
-```
-
-An object from the `#heap` cannot reference an object from `#temp` lifetime.
-
-> **Rule-1207**: The special lifetime `#this` is derived from the lifetime of the enclosing declaration object. This lifetime can only be used for type parameterization of input/output of a struct.
-
-Reserved lifetime identifiers:
-
-- `#stack` denotes a lifetime on the stack.
-- `#heap` denotes a lifetime on the heap.
-- `#temp` denotes a lifetime on the temp heap.
-- `#this` denotes a lifetime of the parent declaration.
-- `#dynamic` used for the default value of a lifetime in a generic parameter, implies that if the lifetime of `#this` is a non `#stack` lifetime, it will be used, otherwise it will be the `#heap` lifetime.
+> **Rule-1205**: The special lifetime `#this` is derived from the lifetime of the enclosing declaration object. This lifetime can only be used for type parameterization of input/output of a struct.
 
 We will see in the [generic type parameterization](#generic-type-parameterization) how lifetime can be parameterized.
 
 [:top:](#stark-language-reference)
-#### Ownership
 
-The ownership defines the copy-ability of a reference when it is passed and used around in a program.
-
-> **Rule-1220**: `shared` is a reference that can be copied around. This is the default reference implied when omitted. Multiple objects can reference the same object with this kind of reference.
-
-For example, the ``ref #heap`shared MyObject`` is a readable shared reference to a `#heap` allocated MyObject.
-
-> **Rule-1221**: `unique` is a unique reference to an object. When it is copied around, it invalidates the previous reference.
-
-> **Rule-1222**: `rooted` is a unique reference to a root object that can have a sub-object graph. No external references can be made to its internal objects. When it is copied around, it invalidates the previous reference.
-
-
-When passing a reference around via function arguments or returned value, a reference is marked as `transient` by default.
-
-```stark
-func process_data(data: ref #heap`shared`mutable MyObject) =
-    // ...
-``` 
-
-Is equivalent to declaring:
-
-```stark
-func process_data(data: `transient ref #heap`shared`mutable MyObject) =
-    // data cannot be stored outside of the stack (on a field)
-```
-
-Reference with ownership `` `unique `` and `` `rooted `` cannot be pass to a method. The ownership has to be moved explicitly.
-
-In that case, a method taking ownership of a reference must mark the reference `` `retainable ``:
-
-
-```stark
-func process_data(data: `retainable ref #heap`shared`mutable MyObject, ...) =
-    // The reference data will be retained by process_data (by storing it to another location in heap memory)
-``` 
-
- > **Rule-1223**: A `rooted` ref can be casted to a `shared` ref. It can be temporarily casted to it and reverted back to `rooted` as long as the sub-object graph is known to respect the `rooted` ref subgraph rules (rule-1223 above). The previous `rooted` ref cannot be used if the cast to a `shared` ref is definitive.
-
-[:top:](#stark-language-reference)
 #### Permission
 
 The permission defines which interactions are allowed with an object.
@@ -296,7 +203,7 @@ The permission defines which interactions are allowed with an object.
 
 > **Rule-1241**: `immutable` is the implicit default permission for struct declaration or when creating objects. The referenced object can be read from and will never mutate.
 
-> **Rule-1242**: `mutable` is the permission tha allows to mutate the value referenced.
+> **Rule-1242**: `rw` is the read-writeable permission that allows to mutate the value referenced.
 
 [:top:](#stark-language-reference)
 ### Capabilities
@@ -309,7 +216,7 @@ For example, a console program will need to request to a e.g `IConsoleService` c
 
 ```stark
 // This program is a console program asking for the `IConsoleService` capability
-async func main(console: ref #heap`shared`mutable IConsoleService) = 
+async func main(console: &`rw IConsoleService) = 
     await console.println("Hello World!")
 ```
 
@@ -321,23 +228,24 @@ All interactions requiring an access to an I/O OS layer must be done through non
 ## Types
 
 All type declarations:
-- Their visibility can be changed by prefixing `public`
+- Their visibility can be changed by prefixing `pub`
 - They can be declared partially by prefixing by `partial`
 
 ### Primitive types
 
-| Name         | Description
-|--------------|---------------------------------------------
-| `bool`       | `true` or `false`, occupies 1 byte in memory.
-| `i8`, `u8`   | A single 8 bits integer, signed and unsigned
-| `i16`, `u16` | A single 16 bits integer, signed and unsigned
-| `i32`, `u32` | A single 32 bits integer, signed and unsigned
-| `i64`, `u64` | A single 64 bits integer, signed and unsigned
-| `int`, `uint`| A single pointer size integer, signed and unsigned
-| `f32`        | An IEEE 754 32-bits single-precision floating point number.
-| `f64`        | An IEEE 754 64-bits double-precision floating point number.
-| `v128`       | A SIMD 128 bits value
-| `v256`       | A SIMD 256 bits value
+| Name          | Description
+|---------------|---------------------------------------------
+| `bool`        | `true` or `false`, occupies 1 byte in memory.
+| `i8`, `u8`    | A single 8 bits integer, signed and unsigned
+| `i16`, `u16`  | A single 16 bits integer, signed and unsigned
+| `i32`, `u32`  | A single 32 bits integer, signed and unsigned
+| `i64`, `u64`  | A single 64 bits integer, signed and unsigned
+| `i128`, `u128`| A single 128 bits integer, signed and unsigned
+| `int`, `uint` | A single pointer size integer, signed and unsigned
+| `f32`         | An IEEE 754 32-bits single-precision floating point number.
+| `f64`         | An IEEE 754 64-bits double-precision floating point number.
+| `v128`        | A SIMD 128 bits value
+| `v256`        | A SIMD 256 bits value
 
 [:top:](#stark-language-reference)
 ### Enum types
@@ -350,31 +258,30 @@ enum Season = Sprint, Summer, Autumn, Winter
 
 By default, the underlying type of an enum is an `u32`.
 
-You can specify the underlying type, notice the change of visibility to `public`:
+You can specify the underlying type, notice the change of visibility to `pub`:
 
 ```stark
-public enum ErrorCode: u8 = None, Unknown, ConnectionLost, BufferEmpty
+pub enum ErrorCode: u8 = Unknown, ConnectionLost, BufferEmpty
 ```
 
 You can assign integer values to each item:
 
 ```stark
 enum Season = 
-    None   = 0,
     Sprint = 3, 
     Summer = 6, 
     Autumn = 9, 
     Winter = 12
 ```
 
-Note that an enum is always required to provide a value that equals to `0`. If no values are specified, it is the first item in declared that will receive the `0` value.
+Note that an enum is always required to provide a value that is not equal to `0`. If no values are specified, it is the first item in declared that will receive the `1` value.
+This is to allow an optional enum e.g `?Season` to use the value `0` to efficiently encode an optional enum.
 
 An enum can be used as bit flags
 
 ```stark
 @flags
-public enum Days = 
-    None      = 0b_0000_0000,  // 0
+pub enum Days = 
     Monday    = 0b_0000_0001,  // 1
     Tuesday   = 0b_0000_0010,  // 2
     Wednesday = 0b_0000_0100,  // 4
@@ -437,7 +344,12 @@ partial union Season
 [:top:](#stark-language-reference)
 ### Struct types
 
-A structure type (or struct type) is a value type that can encapsulate data.
+A structure type (or struct type) is a value type that can encapsulate data. There are 4 kinds of struct:
+
+- `struct`: a regular struct
+- `region struct`: a linear typed struct used to allocate dynamic data inside
+- `linear struct`: a linear typed struct with linear capabilities
+- `ref struct`: a struct that can be only used through a reference and cannot be copied directly
 
 #### Struct with a fixed constructor
 
@@ -445,7 +357,7 @@ The fields of a struct can be declared easily with a fixed constructor:
 
 ```stark
 // immutable struct by default
-public struct Coords(x: f32, y: f32)
+pub struct Coords(x: f32, y: f32)
 ```
 
 All the fields declared in the fixed constructor are accessible (`Coords.x` and `Coords.y` here).
@@ -458,19 +370,19 @@ var coords = Coords(1.0, 2.0)
 // coords.x = 2.0
 ```
 
-Notice that by default, a struct is `immutable`. It can be changed to `mutable`:
+Notice that by default, a struct is `immutable`. It can be changed to `rw`:
 
 ```stark
-public mutable struct Coords(x: f32, y: f32)
+pub rw struct Coords(x: f32, y: f32)
 ```
 
-but when using the struct, you still need to specify that the struct can be mutated. If it is not specified, the default is to turn the mutable struct into an immutable struct.
+but when using the struct, you still need to specify that the struct can be mutated. If it is not specified, the default is to turn the read-writeable struct into an immutable struct.
 
 ```stark
 // A readonly coords
 var coords_ro = Coords(1.0, 2.0)
-// A mutable coords
-var coords = `mutable Coords(1.0, 2.0)
+// A rw coords
+var coords = `rw Coords(1.0, 2.0)
 coords.x = 2.0
 ```
 [:top:](#stark-language-reference)
@@ -481,12 +393,12 @@ There are 2 kinds of fields that can be declared:
 - A `let` field is a field that is assignable only once at initialization time.
 - A `var` field is a variable field that can be reassigned.
 
-The fields can be declared explicitly. The following is a strict equivalent of `public struct Coords(x: f32, y: f32)`:
+The fields can be declared explicitly. The following is a strict equivalent of `pub struct Coords(x: f32, y: f32)`:
 
 ```stark
-public struct Coords =
-    public let x: f32
-    public let y: f32
+pub struct Coords =
+    pub let x: f32
+    pub let y: f32
 ```
 
 If the struct doesn't define a constructor then a default constructor is created if all fields are zero initialize-able:
@@ -496,12 +408,12 @@ var coords_zero = Coords()
 var coords = Coords() { x = 1.0, y = 2.0 }
 ```
 
-Similarly, the equivalent of a mutable struct with a fixed constructor is:
+Similarly, the equivalent of a read-writeable struct with a fixed constructor is:
 
 ```stark
-public mutable struct Coords =
-    public var x: f32
-    public var y: f32
+pub rw struct Coords =
+    pub var x: f32
+    pub var y: f32
 ```
 
 ```stark
@@ -509,39 +421,132 @@ var coords = Coords() { x = 1.0, y = 2.0 }
 coords.x = 2.0
 ```
 [:top:](#stark-language-reference)
-#### Managed Struct
 
-By default, a struct cannot be allocated directly on the heap. Only struct declared with the `managed` qualifier can:
+#### Linear Struct
 
-```stark
-public managed mutable struct Coords(x: f32, y: f32)
-```
-
-It allows this struct to be allocated on the heap with the new operator:
+A linear struct allows to define a struct whose value needs to be used at most once.
 
 ```stark
-var coords = new `mutable Coords(1.0, 2.0)
-coords.x = 2.0
-call_function_storing_coord(coords, ...)
+pub rw linear struct Coords =
+    pub var x: f32
+    pub var y: f32
 ```
-
-By default, the new operator is using the ownership `shared` and the compiler will choose where to allocate the value of the struct. In the example above, because we are calling a function that is tacking a reference to the newly created reference, the value will be allocated with the default `#heap` lifetime.
 
 ```stark
-// Fully qualified type of the variable
-var coords: ref #heap`shared`mutable = new `mutable Coords(1.0, 2.0)
-```
+var coords = Coords() { x = 1.0, y = 2.0 }
+var coords1 = coords // makes coords not accessible anymore
+coords1.x = 2.0
+```    
 
-But you can also fully specified how the value should be instantiated:
+A linear struct can be used on the stack or in another linear struct or in a region.
+
+
+When the value of a linear struct is going out of scope and is no longer used. it is dropped.
 
 ```stark
-// Create a unique mutable value with the #temp lifetime
-var coords = new #temp`unique`mutable Coords(1.0, 2.0)
-coords.x = 2.0
-// Transfers the ownership to call_function_storing_coord
-call_function_storing_coord(coords, ...)
+pub linear struct RefCounter =
+    pub let data: &`rw uint
+
+    rw func this drop() =
+        data += 1
+
+var value: uint = 0
+{
+    var ref_counter = RefCounter { data = &value }
+} // ref_counter.drop() gets executed automatically
 ```
+
+No methods in a linear struct can capture the `this` pointer or create a reference to one of its field.
+#### Region Struct
+
+A region struct is a special linear typed struct that allows to allocate objects within the region.
+
+```stark
+pub rw region struct Region7 =
+    pub let data: &u32
+
+    pub constructor() =
+        this.data = new(this) u32
+```
+
+Unlike other structs (linear, or regular struct), having a reference to a region gives a capability to access it.
+The region needs to be opened to access it:
+
+```stark
+var region = rnew `rw Arena7
+var value: u32
+{
+    ropen region
+    value = region.data
+} // region is no longer accessible after here
+
+```
+
+Above you can see two special operators associated with arenas:
+- `rnew` to create a region
+- `ropen` to open a region.
+
+A region can contain linear struct value, struct value and reference to struct value.
+
+A region can only reference objects allocated within itself (with the same lifetime).
+
+A region has a single implicit lifetime associated with it.
+
+A region is automatically dropped after going out of scope
+- Consequently, a region will dispose automatically all linear struct or region stored in it.
+
+A region can be casted to an object `Region#l` which can be used as an argument to the new operator:
+
+
+```stark
+struct UIntAllocator#l =
+    let region: Region#l
+
+    pub constructor(region: Region#l) =
+        this.region = region
+
+    pub create_new_uint() -> &#l uint =
+        new(this.region) uint
+
+var region = rnew `rw Arena7
+{
+    ropen region
+    var int_allocator = UIntAllocator(region)
+    var int_ref = int_allocator.create_new_uint()
+    *int_ref = 1
+} // The region variable can be reused from here
+```
+
+You can create also an anonymous lexically scoped region to allocate dynamic temporary data on the heap:
+
+```stark
+{
+    var r = ropen #l // create and open an region with the specified lifetime
+    // r is of the type Region#l
+    var ref_val = new(r) uint
+    *ref_val = 1
+} // The region is destroyed here
+```
+
+![Region lifetime](stark-region-lifetime.drawio.svg)
+
 [:top:](#stark-language-reference)
+#### Ref Struct
+
+A ref struct is a struct that force its usage through a reference `&` and cannot be dereferenced. It means that its value cannot be copied.
+
+```stark
+rw ref struct ByRefOnly =
+    var x: u32
+
+var test = ByRefOnly
+var test2 = test // this will fail to compile
+var test3 = &test // this will work
+var test4 = *test3 // this will fail to compile
+```
+
+[:top:](#stark-language-reference)
+
 #### Multiple constructors
 
 Regarding the default parameter less constructor:
@@ -553,17 +558,17 @@ Regarding the default parameter less constructor:
 Otherwise, you can add new named constructors to a struct declaration:
 
 ```stark
-public struct Rectangle =
-    public var width: f32
-    public var height: f32
+pub struct Rectangle =
+    pub var width: f32
+    pub var height: f32
   
     // Declare a parameter less constructor
-    public constructor(width: f32, height: f32) =
+    pub constructor(width: f32, height: f32) =
         this.width = width
         this.height = height
 
     // Declare the named constructor `square`
-    public constructor square(length: f32) =
+    pub constructor square(length: f32) =
         this.width = length
         this.height = length        
 ```
@@ -589,7 +594,7 @@ Stark allows to specify - and generic parameterized the layout of a struct when 
   // Struct with a regular AOS (Array of struct) layout 
   // When used in an array: e.g new [Vector3]
   // xyzxyzxyzxyzxyzxyz
-  mutable struct Vector3(x: f32, y: f32, z: f32)
+  rw struct Vector3(x: f32, y: f32, z: f32)
   ```
 - `` `soa`` is a "Struct of Array" layout
   ```stark
@@ -598,14 +603,14 @@ Stark allows to specify - and generic parameterized the layout of a struct when 
   // xxxxxxxxxxxxxxxxxx
   // yyyyyyyyyyyyyyyyyy
   // zzzzzzzzzzzzzzzzzz
-  mutable struct `soa SOAVector3(x: f32, y: f32, z: f32)
+  rw struct `soa SOAVector3(x: f32, y: f32, z: f32)
   ```
 - `` `soa(integer)`` is a packed "Struct of Array" layout
   ```stark
   // Struct with a packed SOA (Struct of Array) layout
   // When used in an array: e.g new [SOAPackedVector3] (1000)
   // xxxxyyyyzzzxxxxyyyyzzz
-  mutable struct `soa(4) SOAPackedVector3(x: f32, y: f32, z: f32)
+  rw struct `soa(4) SOAPackedVector3(x: f32, y: f32, z: f32)
   ```
 
 TBD Add how use generic parameterization with SOA.
@@ -616,7 +621,7 @@ TBD Add how use generic parameterization with SOA.
 An interface defines a contract that a `struct` must implement.
 
 ```stark
-public interface ICoord =
+pub interface ICoord =
     constructor(x: f32, y: f32)
     func this x -> f32
     func this y -> f32
@@ -625,36 +630,36 @@ public interface ICoord =
 An a struct can implement this interface:
 
 ```stark
-public struct Coord =
-    %% implements ICoord
+pub struct Coord =
+    implements ICoord
 
     let _x: f32
     let _y: f32
 
-    public constructor(x: f32, y: f32) =
+    pub constructor(x: f32, y: f32) =
         this._x = x
         this._y = y
 
-    public func this x -> f32 => this._x
-    public func this y -> f32 => this._y
+    pub func this x -> f32 => this._x
+    pub func this y -> f32 => this._y
 ```
 
 Or the implementation can be also delayed to an [extension](#type-extensions):
 
 ```stark
-public struct Coord =
+pub struct Coord =
     let _x: f32
     let _y: f32
 
-public extension for Coord =
-    %% implements ICoord
+pub extend Coord =
+    implements ICoord
     
-    public constructor(x: f32, y: f32) =
+    pub constructor(x: f32, y: f32) =
         this._x = x
         this._y = y
 
-    public func this x -> f32 => this._x
-    public func this y -> f32 => this._y
+    pub func this x -> f32 => this._x
+    pub func this y -> f32 => this._y
 ```
 
 Notice in the example above that as the extension is declared in the same module, it has access to the private fields of Coord.
@@ -662,21 +667,21 @@ Notice in the example above that as the extension is declared in the same module
 An interface can extend another interface:
 
 ```stark
-public interface IPoint =
+pub interface IPoint =
     func this x -> f32
     func this y -> f32
 
-public interface IIdentifiable =
+pub interface IIdentifiable =
     func this id -> u32
 
-public interface IIdentifiablePoint =
-    %% extends IPoint, IIdentifiable
+pub interface IIdentifiablePoint =
+    inherits IPoint, IIdentifiable
 ```
 
 An interface can provide a default implementation to some methods:
 
 ```stark
-public interface IRectangle =
+pub interface IRectangle =
     func this width -> f32
     func this height -> f32
 
@@ -684,13 +689,13 @@ public interface IRectangle =
     func this surface() -> f32 =
         this.width * this.height
 
-public struct Rectangle =
-    %% implements IRectangle
+pub struct Rectangle =
+    implements IRectangle
 
     let _width: f32
     let _height: f32
 
-    public constructor(width: f32, height: f32) =
+    pub constructor(width: f32, height: f32) =
         this._width = width
         this._height = height
 
@@ -701,8 +706,8 @@ public struct Rectangle =
 But a struct can override this implementation:
 
 ```stark
-public struct WeirdRectangle =
-    %% implements IRectangle
+pub struct WeirdRectangle =
+    implements IRectangle
 
     // [...] implementation of IRectangle
 
@@ -717,7 +722,7 @@ An interface can be declared asynchronous or an existing non-async interface can
 To declare an async interface, you can simply prefix the type declaration by `async`:
 
 ```stark
-public async interface IRectangle =
+pub async interface IRectangle =
     func this width -> f32
     func this height -> f32
 
@@ -729,7 +734,7 @@ public async interface IRectangle =
 it is the equivalent of writing:
 
 ```stark
-public interface IRectangle =
+pub interface IRectangle =
     async func this width -> f32
     async func this height -> f32
 
@@ -741,35 +746,34 @@ public interface IRectangle =
 An existing non-async interface can also be used in the context of implements:
 
 ```stark
-public struct Coord =
+pub struct Coord =
     // Assuming that ICoord is a plain interface
-    %% implements async ICoord
+    implements async ICoord
 
     let _x: f32
     let _y: f32
 
-    public constructor(x: f32, y: f32) =
+    pub constructor(x: f32, y: f32) =
         this._x = x
         this._y = y
 
-    public async func this x -> f32 =
+    pub async func this x -> f32 =
         // here some await calls...
-    public async func this y -> f32 =
+    pub async func this y -> f32 =
         // here some await calls...
 ```
 
 ### Definition modulator
 
-You have noticed the presence of `%% implements ICoord` or `%% implements IRectangle` after the declaration of the struct and the equal `=` in the previous examples:
+You have noticed the presence of `implements ICoord` or `implements IRectangle` after the declaration of the struct and the equal `=` in the previous examples:
 
 ```stark
-public struct Coord =
+pub struct Coord =
     // A definition modulator
-    %% implements ICoord
+    implements ICoord
 ```    
 
-
-`%%` is used as **a definition modulator** and can only appear at the beginning of the definition's body after the `=`.
+A definition modulator can only appear at the beginning of the definition's body after the `=`.
 
 It can be used by any types or functions that support [generic parameterization](#generic-parameterization):
 - [Union types](#union-types)
@@ -778,15 +782,15 @@ It can be used by any types or functions that support [generic parameterization]
 - [Functions](#functions)
 
 There are different definition modulators:
-- `%% implements <Type>` to implement en interface
+- `implements <Type>` to implement en interface
   - Supported by union, struct and type extensions
-- `%% extends <Type>` to extend an interface
+- `inherits <Type>` to inherit from an interface
   - Supported by interface
-- `%% where <WhereExpression>` to express a constraint on a [generic parameter](#generic-parameterization).
+- `where <WhereExpression>` to express a constraint on a [generic parameter](#generic-parameterization).
   - Supported by union, struct, type extensions and functions
-- `%% requires <Expression>` to express a contract on the parameters of a [function](#functions).
+- `requires <Expression>` to express a contract on the parameters of a [function](#functions).
   - Supported only by functions.
-- `%% import <ImportPath>` is an import statement scoped to the body of the definition where it is used.
+- `import <ImportPath>` is an import statement scoped to the body of the definition where it is used.
   - Supported by union, struct, type extensions and functions
 
 [:top:](#stark-language-reference)
@@ -797,7 +801,7 @@ An optional type `?T` is a value type that contains a optional value.
 In practice, it is represented by an union declared as:
 
 ```stark
-public union Option`T = .None, T
+pub union Option`T = .None, T
 ```
 
 It can be used with a simple pattern matching to safely extract the value:
@@ -861,7 +865,7 @@ Let's define a function `find_min_max`:
 
 ```stark
 // A simple min-max function
-func find_min_max(input: ref [int]) -> (min: int, max: int) =
+func find_min_max(input: &[int]) -> (min: int, max: int) =
     var min = int.max_value
     var max = int.min_value
     for i in input
@@ -896,9 +900,9 @@ You can declare a unit
 
 ```stark
 // Declare a pixel unit
-public unit px
+pub unit px
 // Declare a kilo-pixel unit
-public unit kpx = 1000 'px
+pub unit kpx = 1000 'px
 ```
 
 The unit can then be used:
@@ -935,7 +939,7 @@ An indirect type is useful to create indirect types wrapper around primitive typ
 For example:
 
 ```stark
-public type ProductId = i64
+pub type ProductId = i64
 ```
 
 Using an indirect type provides a safe typing of a primitive type:
@@ -959,7 +963,7 @@ An alias type is a value type aliasing to another underlying type. The alias typ
 For example:
 
 ```stark
-public alias type Quantity = i64
+pub alias type Quantity = i64
 ```
 
 ```stark
@@ -974,7 +978,7 @@ A type can be extended by a type extension that can augment the type with new co
 ```stark
 enum Season = Sprint, Summer, Autumn, Winter
 
-extension for Season =
+extend Season =
     func this get_month() -> int =
         match this {
             case .Sprint => 3,
@@ -997,8 +1001,8 @@ An extension can implement an interface for a specific type:
 interface ISeason =
   func this get_month() -> int
 
-extension for Season =
-    %% implements ISeason
+extend Season =
+    implements ISeason
 
     func this get_month() -> int =
         match this {
@@ -1011,35 +1015,42 @@ extension for Season =
 [:top:](#stark-language-reference)
 ### Reference types
 
-A `ref` type is a value type that reference a value in memory.
+A ref `&` type is a value type that reference a value in memory.
 
-As described earlier by the [smart references](#smart-references) section, a `ref` type is defined by 3 kind of qualifiers (lifetime, ownership, permission) and a type.
+As described earlier by the [smart references](#smart-references) section, a ref `&` type is defined by 2 kind of qualifiers (lifetime, permission) and a type.
 
-The most common usage of a `ref` type is by using its direct form:
-- ``ref #lifetime`ownership`permission Type``.
+The most common usage of a ref `&` type is by using its direct form:
+- ``&#lifetime`permission Type ``.
 
 The direct form is equivalent to the generic parameterized form:
-- ``ref`<#lifetime, ownership, permission, Type>``
-
-
-By default, when passing a `ref` to a function, a `ref` cannot be retained or stored by the method. It is considered by default as `` `transient ``.
-
-If a function or method is going to retain the reference, the ref must be marked as `` `retainable ``. Notice that by default, a reference passed to a constructor is `` `retainable` ``
+- ``&`<#lifetime, permission,Type>``
 
 ```stark
-struct RefHolder#l =
-    var r: ref #l`shared`mutable int
+struct IntRefContainer =
+    var r: &`rw int
 
-    // r is implicitly `retainable ref
-    constructor(r: ref #l`shared`mutable int) =
+    constructor(r: &`rw int) =
         this.r = r
 
-    // r is by default `transient ref. We need to explicitly say that we are retaining it.
-    func this set_value(r: `retainable ref #l`shared`mutable int) =
+    func this set_value(r: &`rw int) =
         this.r = r
 ```
 
-Notice that a `ref` is usually of the size of a native int/pointer but not always. 
+Within a struct, when a reference is used, there is always an implicit lifetime attached to the struct. By default, all references share the same lifetime:
+The explicit declaration of the previous structure would be:
+
+```stark
+struct IntRefContainer#l =
+    var r: &#l`rw int
+
+    constructor(r: &#l`rw int) =
+        this.r = r
+
+    func this set_value(r: &#l`rw int) =
+        this.r = r
+```
+
+Notice that a ref `&` is usually of the size of a native int/pointer but not always. 
 
 [:top:](#stark-language-reference)
 ### Pointer types
@@ -1047,6 +1058,9 @@ Notice that a `ref` is usually of the size of a native int/pointer but not alway
 A pointer type of the form ``*Type`` is a value type that reference a value in a memory. Unlike a reference type, a pointer type is unsafe. Also a pointer type cannot be used to point to a value on the managed heap but is mainly used for library that needs to interact with low level OS APIs and external APIs.
 
 For example, `*int` is a pointer to an integer.
+
+> NOTE: Pointer types are not accessible outside the core library and cannot be used in user code.
+
 [:top:](#stark-language-reference)
 ### Function types
 
@@ -1061,9 +1075,9 @@ func calculate(x: f32, y: f32) -> f32 = x + y
 We can reference this function directly to a variable:
 
 ```stark
-var calc = calculate
+var calc = &calculate
 // Explicit type
-var calc2: func(x: f32, y: f32) -> f32 = calculate
+var calc2: func(x: f32, y: f32) -> f32 = &calculate
 
 // Result == 3.0
 var result = calc(1.0, 2.0)
@@ -1127,15 +1141,15 @@ A generic parameter is defined by either:
 The type of an identifier based generic parameter can be constrained to:
 - A type (e.g `i32`)
 - A const primitive literal (e.g `const bool`)
-- A permission (e.g `mutable`)
+- A permission (e.g read-write `rw`)
 
 A default value can be assigned to a generic parameter.
 
 ```stark
 struct MixedGenericValue`<t2: const int = 0, t3: const bool = false, T1, #l> =
-    let value: ref #l`shared T1
+    let value: &#l`shared T1
 
-    constructor(value: ref #l`shared T1) =
+    constructor(value: &#l`shared T1) =
         this.value = value
 
     func this calculate() -> i32 =
@@ -1150,7 +1164,7 @@ And can be used like this:
 ```stark
 var local = 1
 // Type of mixed is: MixedGenericValue`<1, true, int, #stack>
-var mixed = MixedGenericValue`<1, true>(ref local)
+var mixed = MixedGenericValue`<1, true>(&local)
 // result will be equal to 512
 var result = mixed.calculate()
 ```
@@ -1163,27 +1177,27 @@ Generic parameters can be better constraints with the `where` constraint:
 interface IHelloGenerics
 
 struct HelloGenerics`t1`t2`T3 =
-    %% where t1, t2: is const int 
-    %% where T3: is IHelloGenerics
+    where t1, t2: is const int 
+    where T3: is IHelloGenerics
 ```
 
 The following `where` constraints are supported:
 - For generic parameter identifiers
-  - `%% where T (',' T1..Tn): is <Type>`, where `<Type>` is either an `interface` type or a `const` primitive.
-  - `%% where T (',' T1..Tn): <Kind>`, where `<Kind>`: `permission`, `struct`, `managed struct` (TBD define more clearly the list)
-  - `%% where T (',' T1..Tn): has constructor <identifier>?(<arguments>?)`, specifies that the type `T` must have a specific constructor
+  - `where T (',' T1..Tn): is <Type>`, where `<Type>` is either an `interface` type or a `const` primitive.
+  - `where T (',' T1..Tn): <Kind>`, where `<Kind>`: `permission`, `struct`, `managed struct` (TBD define more clearly the list)
+  - `where T (',' T1..Tn): has constructor <identifier>?(<arguments>?)`, specifies that the type `T` must have a specific constructor
 - For generic parameter lifetime
-  - `%% where #l (',' #l1..#ln): new`, means that the can allocated into the passed lifetime. Some lifetimes cannot be dynamically allocated into (e.g `#stack` for example)
+  - `where #l (',' #l1..#ln): new`, means that the can allocated into the passed lifetime. Some lifetimes cannot be dynamically allocated into (e.g `#stack` for example)
 
 ```stark
 // Default lifetime #heap with an immutable ref to T
 struct ValueHolder`<T, #l = #heap, tP = immutable> =
-    %% where #l: new // we can allocate into this lifetime
-    %% where T: managed struct // the type is a managed struct (that can be allocated on the heap)
-    %% where T: has constructor() // the type T has a default constructor
-    %% where tP: permission
+    where #l: new // we can allocate into this lifetime
+    where T: managed struct // the type is a managed struct (that can be allocated on the heap)
+    where T: has constructor() // the type T has a default constructor
+    where tP: permission
 
-    let value: ref #l`shared`tP T
+    let value: & #l`shared`tP T
 
     constructor() =
         this.value = new #l`shared`tP T()
@@ -1205,9 +1219,9 @@ var zero = holder_default.value.left
 Or by specializing with other generic arguments:
 
 ```stark
-var holder = ValueHolder`<HelloValue, #temp, mutable>()
+var holder = ValueHolder`<HelloValue, #temp, rw>()
 var refToHelloValue = holder.value
-// refToHelloValue is: ref #temp`shared`mutable HelloValue
+// refToHelloValue is: &#temp`shared`rw HelloValue
 refToHelloValue.left = 1
 refToHelloValue.right = 2
 ```
@@ -1229,19 +1243,19 @@ A function can be generic parameterized:
 
 ```stark
 func add_integers`T(left: T, right: T) -> T =
-    %% where T: is IAdditionOperators`T
+    where T: is IAdditionOperators`T
     left + right
 ```
 
-Notice that if a function calls another `mutable` function, it has to be marked as `mutable`:
+Notice that if a function calls another rw function, it has to be marked as `rw`:
 
 ```stark
-mutable func process_data(array: ref #heap`mutable [u32]) -> u32 =
+rw func process_data(array: &#heap`rw [u32]) -> u32 =
     for i in 0..<array.size 
-        process_element(i, ref `mutable array[i])
+        process_element(i, &`rw array[i])
 
-mutable func process_element(index: u32, elt: ref #heap`mutable u32) =
-    // Writing to a mutable reference implies that this function
+rw func process_element(index: u32, elt: & #heap`rw u32) =
+    // Writing to a read-writeable reference implies that this function
     // mutates some memory.
     *elt = index 
 ```
@@ -1251,9 +1265,9 @@ mutable func process_element(index: u32, elt: ref #heap`mutable u32) =
 Methods can be attached to an existing type:
 
 ```stark
-public mutable struct Coords(x: f32, y: f32)
+pub rw struct Coords(x: f32, y: f32)
 
-extension for Coords =
+extend for Coords =
     func this square() -> f32 = 
         this.x * this.x + this.y * this.y
 
@@ -1271,36 +1285,36 @@ func square_coords(coords: Coords) -> f32 =
     Coords.square(coords)
 ```
 
-If a method is going to mutate an instance, the `this` reference must be marked as `mutable`:
+If a method is going to mutate an instance, the `this` reference must be marked as `rw`:
 
 ```stark
-extension for Coords =
-    func mutable this modify(x: f32, y: f32) =
+extend Coords =
+    func rw this modify(x: f32, y: f32) =
         this.x = x
         this.y = y
 ```
 
-If a method mutates some memory (outside of `this`), the method itself has to be marked as `mutable` as well:
+If a method mutates some memory (outside of `this`), the method itself has to be marked as `rw` as well:
 
 ```stark
-extension for Coords =
-    mutate func this transfer(coords: ref #heap`mutable Coords) =
+extend Coords =
+    rw func this transfer(coords: &#heap`rw Coords) =
         transfer_from_to(this, coords)
 
-    mutate func transfer_from_to(from: ref Coords, to: ref #heap`mutable Coords) =
+    rw func transfer_from_to(from: &Coords, to: &#heap`rw Coords) =
         *to = *from
 ```
 
-In all the example above, the visibility is `private` by default. Methods should be marked `public` to be visible outside the module/library.
+In all the example above, the visibility is `private` by default. Methods should be marked `pub` to be visible outside the module/library.
 
 ### Property functions
 
 A property getter can be declared similarly to a `func this` but without the `()`:
 
 ```stark
-public mutable struct Coords(x: f32, y: f32)
+pub rw struct Coords(x: f32, y: f32)
 
-extension for Coords =
+extend Coords =
     func this square -> f32 => this.x * this.x + this.y * this.y
 ```
 
@@ -1315,20 +1329,20 @@ If you need to implement a property getter and setter, this needs to be explicit
 
 - a `get` is implicitly marking the this reference as `` `readable `` and `` `transient ``
   - The implication is that you cannot mutate an object in a get
-- a `set` is implicitly marking the this reference and the `set` function as `` `mutable ``
+- a `set` is implicitly marking the this reference and the `set` function as `` `rw ``
   - The input value is marked as `` `retainable ``
 
 The property func cannot be marked also as mutate (so cannot mutate outside of this).
 
 ```stark
-public mutable struct Coords(x: f32, y: f32) = 
+pub rw struct Coords(x: f32, y: f32) = 
     var _z: f32
     var _s: f32
 
     // Creates automatically a field w
     func this w -> f32 = get set
 
-extension for Coords =
+extend Coords =
     func this z -> f32 =
         get
             this._z
@@ -1342,22 +1356,22 @@ extension for Coords =
 
 Notice that a property can be made static without the `func this`.
 
-In the example above, the visibility is `private` by default. Methods should be marked `public` to be visible outside the module/library.
+In the example above, the visibility is `private` by default. Methods should be marked `pub` to be visible outside the module/library.
 
 ### Indexer functions
 
 An indexer function is necessarily a `func this` and allows an instance to act as a proxy to an array.
 
 ```stark
-public mutable struct ArrayProxy#l = 
-    var array: ref #l `mutable [f32]
+pub rw struct ArrayProxy#l = 
+    var array: &#l`rw [f32]
 
-    public constructor(capacity: uint) =
-        this.array = new #l`mutable [f32](capacity)
+    pub constructor(capacity: uint) =
+        this.array = new #l`rw [f32](capacity)
 
-    func this [index: uint] -> ref #l`mutable f32 =
-        %% requires index < this.array.size
-        ref #l`mutable this.array[index]
+    func this [index: uint] -> &#l`rw f32 =
+        requires index < this.array.size
+        &#l`rw this.array[index]
 ```
 
 It can be used like this
@@ -1375,11 +1389,11 @@ Stark allows to redefine unary and binary operators between types.
 Notice that by default, alls types provide a default implementation for `==` and `<>` operators.
 
 ```stark
-public struct Tester(a: int, b: int) =
-    public operator unary - (left: Tester) -> Tester =
+pub struct Tester(a: int, b: int) =
+    pub operator unary - (left: Tester) -> Tester =
         Tester(-left.a, -left.b)
 
-    public operator binary + (left: Tester, right: Tester) -> Tester =
+    pub operator binary + (left: Tester, right: Tester) -> Tester =
         Tester(left.a + right.a, left.b + right.b)
 ```
 
@@ -1444,7 +1458,7 @@ and `snake_case` for "value-level" constructs
 
 Stark is an expression language with a very limited list of **26 keywords** that cannot be used as an identifier:
 
-`as`, `async`, `await`, `break`, `catch`, `const`, `continue`, `else`, `for`, `func`, `if`, `is`, `let`, `match`, `new`, `not`, `out`, `ref`, `return`, `then`, `this`, `throw`, `try`, `unsafe`, `var`, `while`
+`as`, `async`, `await`, `break`, `catch`, `const`, `continue`, `else`, `for`, `func`, `if`, `is`, `let`, `match`, `new`, `not`, `out`, `return`, `then`, `this`, `throw`, `try`, `unsafe`, `var`, `while`
 
 ### List of reserved keywords
 

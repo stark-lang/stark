@@ -28,6 +28,10 @@
       </dict>
       <dict>
         <key>include</key>
+        <string>#async-keywords</string>
+      </dict>
+      <dict>
+        <key>include</key>
         <string>#builtin-types</string>
       </dict>
       <dict>
@@ -147,7 +151,7 @@
         <key>name</key>
         <string>storage.modifier.sk</string>
         <key>match</key>
-        <string>(?&lt;!\.)\b(abstract|async|const|extern|internal|new|override|partial|public|dynamic|static|unsafe|virtual)\b</string>
+        <string>(?&lt;!\.)\b(abstract|const|extern|internal|new|rkey|rnew|ropen|override|partial|public|pub|dynamic|static|unsafe|virtual)\b</string>
       </dict>
       <key>module-declaration</key>
       <dict>
@@ -315,7 +319,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>`(immutable|mutable|transient|retainable|shared|rooted|unique|readable|soa|aos)\b</string>
+            <string>`(immutable|rw|transient|retainable|shared|rooted|unique|readable|soa|aos)\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -345,7 +349,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>\b((?:(?:managed|mutable|transient)\s+)*struct|union|enum|interface|unit|type)(\s*`(?:soa|aos)\s*)?(?:\s*`(?:\w+|&lt;.*?&gt;)\s*)?\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <string>\b((?:(?:rw|transient|linear|region|ref)\s+)*struct|process|union|enum|interface|unit|type)(\s*`(?:soa|aos)\s*)?(?:\s*`(?:\w+|&lt;.*?&gt;)\s*)?\s+([_[:alpha:]][_[:alnum:]]*)</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -367,7 +371,7 @@
           </dict>
           <dict>
             <key>match</key>
-            <string>\b(extension)(?:\s*`&lt;.*?&gt;)?\s*(for)\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <string>\b(extend)(?:\s*`&lt;.*?&gt;)?\s*([_[:alpha:]][_[:alnum:]]*)</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -376,11 +380,6 @@
                 <string>keyword.other.type.sk</string>
               </dict>
               <key>2</key>
-              <dict>
-                <key>name</key>
-                <string>keyword.other.for.sk</string>
-              </dict>
-              <key>3</key>
               <dict>
                 <key>name</key>
                 <string>entity.name.type.class.sk</string>
@@ -453,39 +452,37 @@
         <key>patterns</key>
         <array>
           <dict>
-            <key>name</key>
-            <string>string.quoted.single.sk</string>
-            <key>begin</key>
-            <string>(%%\s*(?:where))\b</string>
-            <key>beginCaptures</key>
+            <key>match</key>
+            <string>^\s*(where)\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <key>captures</key>
             <dict>
-              <key>0</key>
+              <key>1</key>
               <dict>
                 <key>name</key>
-                <string>keyword.other.extends.sk</string>
+                <string>keyword.other.where.sk</string>
+              </dict>
+              <key>2</key>
+              <dict>
+                <key>name</key>
+                <string>entity.name.type.class.sk</string>
               </dict>
             </dict>
-            <key>end</key>
-            <string>\:</string>
-            <key>patterns</key>
-            <array>
-              <dict>
-                <key>match</key>
-                <string>([_[:alpha:]][_[:alnum:]]*)</string>
-                <key>captures</key>
-                <dict>
-                  <key>1</key>
-                  <dict>
-                    <key>name</key>
-                    <string>entity.name.type.class.sk</string>
-                  </dict>
-                </dict>
-              </dict>
-            </array>
           </dict>
           <dict>
             <key>match</key>
-            <string>(%%\s*(?:extends|implements|throws))\b([_[:alpha:]][_[:alnum:]]*)?</string>
+            <string>^\s*(where)\s+</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.where.sk</string>
+              </dict>
+            </dict>
+          </dict>
+          <dict>
+            <key>match</key>
+            <string>(^\s*(?:inherits|implements|throws))\b([_[:alpha:]][_[:alnum:]]*)?</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -502,25 +499,13 @@
           </dict>
           <dict>
             <key>match</key>
-            <string>(%%\s*(?:requires))\b</string>
+            <string>(^\s*(?:requires))\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
               <dict>
                 <key>name</key>
                 <string>keyword.other.requires.sk</string>
-              </dict>
-            </dict>
-          </dict>
-          <dict>
-            <key>match</key>
-            <string>(%%\s*-*)</string>
-            <key>captures</key>
-            <dict>
-              <key>1</key>
-              <dict>
-                <key>name</key>
-                <string>keyword.other.modulator.sk</string>
               </dict>
             </dict>
           </dict>
@@ -532,7 +517,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>\b((?:(?:dispatch|override|extern|mutable|partial)\s+)*func(?:\s+mutable\s+this|\s+this)?)\s+([_[:alpha:]][_[:alnum:]]*)\b</string>
+            <string>\b((?:(?:dispatch|override|extern|rw|partial|async)\s+)*func(?:\s+rw\s+this|\s+this)?)\s+([_[:alpha:]][_[:alnum:]]*)\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -774,7 +759,14 @@
         <key>name</key>
         <string>keyword.type.sk</string>
         <key>match</key>
-        <string>\b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|set|sizeof|this|typeof|value|var)\b</string>
+        <string>\b(alias|as|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|set|sizeof|this|typeof|value|var)\b</string>
+      </dict>
+      <key>async-keywords</key>
+      <dict>
+        <key>name</key>
+        <string>keyword.type.sk</string>
+        <key>match</key>
+        <string>\b(async|await|spawn)\b</string>
       </dict>
       <key>comment</key>
       <dict>
@@ -995,7 +987,7 @@
         <key>name</key>
         <string>variable.storage.lifetime.sk</string>
         <key>match</key>
-        <string>#[A-Za-z_][A-Za-z_0-9]*</string>
+        <string>##+</string>
       </dict>
       <key>macros</key>
       <dict>

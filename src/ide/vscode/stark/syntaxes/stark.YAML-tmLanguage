@@ -8,6 +8,7 @@ patterns:
 - include: '#comment'
 - include: '#control-keywords'
 - include: '#keywords'
+- include: '#async-keywords'
 - include: '#builtin-types'
 - include: '#vector-types'
 - include: '#generic-modifiers'
@@ -43,7 +44,7 @@ repository:
     match: \b(lifetime|permission)\b
   visibility-modifiers:
     name: storage.modifier.sk
-    match: (?<!\.)\b(abstract|async|const|extern|internal|new|override|partial|public|dynamic|static|unsafe|virtual)\b
+    match: (?<!\.)\b(abstract|const|extern|internal|new|rkey|rnew|ropen|override|partial|public|pub|dynamic|static|unsafe|virtual)\b
   module-declaration:
     patterns:
     - match: \b(module)\b\s*([_[:alpha:]][_[:alnum:]]*)
@@ -92,7 +93,7 @@ repository:
 
   type-attributes:
     patterns:
-    - match: `(immutable|mutable|transient|retainable|shared|rooted|unique|readable|soa|aos)\b
+    - match: `(immutable|rw|transient|retainable|shared|rooted|unique|readable|soa|aos)\b
       captures:
         '1': { name: keyword.other.type.sk }
     - match: `([_[:alpha:]][_[:alnum:]]*)\b
@@ -100,16 +101,15 @@ repository:
         '1': { name: entity.name.type.class.sk }
   type-declaration:
     patterns:
-    - match: \b((?:(?:managed|mutable|transient)\s+)*struct|union|enum|interface|unit|type)(\s*`(?:soa|aos)\s*)?(?:\s*`(?:\w+|<.*?>)\s*)?\s+([_[:alpha:]][_[:alnum:]]*)
+    - match: \b((?:(?:rw|transient|linear|region|ref)\s+)*struct|process|union|enum|interface|unit|type)(\s*`(?:soa|aos)\s*)?(?:\s*`(?:\w+|<.*?>)\s*)?\s+([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.type.sk }      
         '2': { name: keyword.other.soa_aos.sk }      
         '3': { name: entity.name.type.class.sk }      
-    - match: \b(extension)(?:\s*`<.*?>)?\s*(for)\s+([_[:alpha:]][_[:alnum:]]*)
+    - match: \b(extend)(?:\s*`<.*?>)?\s*([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.type.sk }      
-        '2': { name: keyword.other.for.sk }      
-        '3': { name: entity.name.type.class.sk }      
+        '2': { name: entity.name.type.class.sk }      
     - match: \b(attr)\b\s*([_[:alpha:]][_[:alnum:]]*)
       captures:
         '1': { name: keyword.other.attr.sk }      
@@ -130,28 +130,23 @@ repository:
       match: \b(attr)\b
   definition-modulators:
     patterns:
-    - name: string.quoted.single.sk
-      begin: (%%\s*(?:where))\b
-      beginCaptures:
-        '0': {name: keyword.other.extends.sk}
-      end: \:
-      patterns:
-      - match: ([_[:alpha:]][_[:alnum:]]*)
-        captures:
-          '1': { name: entity.name.type.class.sk }      
-    - match: (%%\s*(?:extends|implements|throws))\b([_[:alpha:]][_[:alnum:]]*)?
+    - match: ^\s*(where)\s+([_[:alpha:]][_[:alnum:]]*)
+      captures:
+        '1': { name: keyword.other.where.sk }
+        '2': { name: entity.name.type.class.sk }      
+    - match: ^\s*(where)\s+
+      captures:
+        '1': { name: keyword.other.where.sk }
+    - match: (^\s*(?:inherits|implements|throws))\b([_[:alpha:]][_[:alnum:]]*)?
       captures:
         '1': { name: keyword.other.requires.sk }      
         '2': { name: entity.name.type.class.sk }      
-    - match: (%%\s*(?:requires))\b
+    - match: (^\s*(?:requires))\b
       captures:
         '1': { name: keyword.other.requires.sk }      
-    - match: (%%\s*-*)
-      captures:
-        '1': { name: keyword.other.modulator.sk }      
   func-declaration:
     patterns:
-    - match: \b((?:(?:dispatch|override|extern|mutable|partial)\s+)*func(?:\s+mutable\s+this|\s+this)?)\s+([_[:alpha:]][_[:alnum:]]*)\b
+    - match: \b((?:(?:dispatch|override|extern|rw|partial|async)\s+)*func(?:\s+rw\s+this|\s+this)?)\s+([_[:alpha:]][_[:alnum:]]*)\b
       captures:
         '1': { name: keyword.other.func.sk }      
         '2': { name: entity.name.function.sk  }      
@@ -227,8 +222,10 @@ repository:
         match: \bnull\b
   keywords:
     name: keyword.type.sk
-    match: \b(alias|as|await|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|set|sizeof|this|typeof|value|var)\b
- 
+    match: \b(alias|as|base|default|fatal|get|is|has|let|match|implicit|out|params|ref|in|set|sizeof|this|typeof|value|var)\b
+  async-keywords:
+    name: keyword.type.sk
+    match: \b(async|await|spawn)\b
   comment:
     patterns:
     - name: comment.block.sk
@@ -316,6 +313,8 @@ repository:
     match: '""'
 
   lifetime-identifier:
+    name: variable.storage.lifetime.sk
+    match: '##+'
     name: variable.storage.lifetime.sk
     match: '#[A-Za-z_][A-Za-z_0-9]*'
 
