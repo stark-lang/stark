@@ -52,20 +52,20 @@ public class Lexer
         _lio.ResetTempBuffer();
     }
 
-    private unsafe byte Peek(byte* ptr, int offset)
-    {
-        ptr += offset;
-        if (ptr < _originalPtr) return 0;
-        if (ptr >= (_originalPtr + _length)) return Eof;
-        return *ptr;
-    }
+    //private unsafe byte Peek(byte* ptr, int offset)
+    //{
+    //    ptr += offset;
+    //    if (ptr < _originalPtr) return 0;
+    //    if (ptr >= (_originalPtr + _length)) return Eof;
+    //    return *ptr;
+    //}
 
-    private unsafe Span<byte> GetSpan(byte* ptr)
-    {
-        int offset = (int)(ptr - _originalPtr);
-        int remainingLength = _length - offset;
-        return new Span<byte>(ptr, remainingLength);
-    }
+    //private unsafe Span<byte> GetSpan(byte* ptr)
+    //{
+    //    int offset = (int)(ptr - _originalPtr);
+    //    int remainingLength = _length - offset;
+    //    return new Span<byte>(ptr, remainingLength);
+    //}
 
     public void Run(Stream stream)
     {
@@ -161,12 +161,6 @@ public class Lexer
             {
                 // Parse multiline strings
             }
-        }
-
-        var pc = lexer.Peek(ptr, -1);
-        if (pc == (byte)'@' || (pc == (byte)'$' && lexer.Peek(ptr, -2) == (byte)'@'))
-        {
-            return ParseCSharpMultilineString(lexer, ptr, c);
         }
 
         // Use the temp buffer to create the string
@@ -336,50 +330,6 @@ public class Lexer
         var endLocation = new TextLocation((uint)(ptr - _originalPtr + length - 1), _line, column + (uint)length - 1);
         _lio.Diagnostics.Add(new Diagnostic(DiagnosticKind.Error, new DiagnosticSourceFileLocation("TODO_FILE", new TextSpan(startLocation, endLocation)), message));
     }
-
-    private static unsafe byte* ParseCSharpMultilineString(Lexer lexer, byte* ptr, byte c)
-    {
-        var startPtr = ptr;
-        var column = lexer._column;
-        while (true)
-        {
-            ptr++;
-            c = *ptr;
-            if (c == (byte)'"')
-            {
-                column++;
-
-                ptr++;
-                column++;
-                if (*ptr != '"')
-                {
-                    break;
-                }
-            }
-            else if (c >= StartUtf8 && TryParseUtf8(ref ptr, out var rune))
-            {
-                // If we have a multibyte UTF8, try to parse it correctly and correct the column
-                var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
-                column += width <= 0 ? 0 : (uint)width;
-            }
-            else if (c == Eof)
-            {
-                break;
-            }
-            else
-            {
-                column++;
-            }
-        }
-
-        var offset = (uint)(startPtr - lexer._originalPtr);
-        var length = (uint)(ptr - startPtr);
-        lexer.AddToken(TokenKind.String, new TokenSpan(offset, length, lexer._line, lexer._column));
-        lexer._column = column;
-
-        return ptr;
-    }
-
 
     private static unsafe byte* ParseWhitespace(Lexer lexer, byte* ptr, byte c)
     {
