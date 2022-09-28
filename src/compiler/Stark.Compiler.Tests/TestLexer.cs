@@ -18,7 +18,72 @@ public class TestLexer
     private readonly VirtualArenaManager _manager;
     private readonly LexerInputOutput _lio;
     private readonly Lexer _lexer;
-    
+
+    [Test]
+    public void TestNewLine()
+    {
+        Lexer(" \n", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.NewLine, new TokenSpan(1, 1, 0, 1), null),
+        });
+
+        Lexer("\n ", new()
+        {
+            (TokenKind.NewLine, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.WhiteSpace, new TokenSpan(1, 1, 1, 0), null),
+        });
+
+        Lexer("\r\n ", new()
+        {
+            (TokenKind.NewLine, new TokenSpan(0, 2, 0, 0), null),
+            (TokenKind.WhiteSpace, new TokenSpan(2, 1, 1, 0), null),
+        });
+
+        Lexer(" \r\n", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.NewLine, new TokenSpan(1, 2, 0, 1), null),
+        });
+
+        Lexer(" \r", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.NewLine, new TokenSpan(1, 1, 0, 1), null),
+        });
+
+        Lexer("\r ", new()
+        {
+            (TokenKind.NewLine, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.WhiteSpace, new TokenSpan(1, 1, 1, 0), null),
+        });
+    }
+
+    [Test]
+    public void TestWhitespace()
+    {
+        Lexer(" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+        });
+
+        Lexer("  ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 2, 0, 0), null),
+        });
+
+        Lexer("         ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 9, 0, 0), null),
+        });
+
+        Lexer("0         ", new()
+        {
+            (TokenKind.Integer, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.WhiteSpace, new TokenSpan(1, 9, 0, 1), null),
+        });
+    }
+
     [Test]
     public void TestInteger()
     {

@@ -148,7 +148,9 @@ public class Lexer
         var offset = (uint)(ptr - lexer._originalPtr);
         var length = (c == (byte)'\r' && ptr[1] == (byte)'\n') ? 2u : 1;
         lexer.AddToken(TokenKind.NewLine, new TokenSpan(offset, length, lexer._line, lexer._column));
+        lexer._line++;
         lexer._column = 0;
+        ptr += length;
         return ptr;
     }
 
