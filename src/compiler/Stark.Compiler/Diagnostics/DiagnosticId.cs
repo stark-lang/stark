@@ -21,4 +21,7 @@ public enum DiagnosticId
     ERR_UnexpectedCharacterAfterDot = 111, // (string c) => Unexpected character `{c}` found after a dot while parsing a float. Expecting a digit 0-9.
     ERR_UnexpectedCharacterForExponent = 112, // (string c) => Unexpected character `{c}` found while parsing the exponent of a float. Expecting a digit 0-9.
     ERR_NumberOverflow = 113, // The number is overflowing 64 bit.
+    ERR_InvalidHexNumberExpectingDigit = 114, // Invalid hexadecimal number. Expecting at least one [0-9a-fA-F] digit.
+    ERR_InvalidOctalNumberExpectingDigit = 115, // Invalid octal number. Expecting at least one [0-7] digit.
+    ERR_InvalidBinaryNumberExpectingDigit = 116, // Invalid binary number. Expecting at least one [0-1] digit.
 }

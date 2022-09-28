@@ -509,6 +509,7 @@ public class Lexer
         var ptrToFirstUnderscore = (byte*)null;
         int lengthOfUnderscore = 0;
         bool hasOverflow = false;
+        bool hasDigits = false;
         while (true)
         {
             ptr++;
@@ -539,8 +540,10 @@ public class Lexer
 
                 ptrToFirstUnderscore = null;
                 lengthOfUnderscore = 0;
+                hasDigits = true;
             }
         }
+        
 
         // We cannot end a number with an underscore
         if (lengthOfUnderscore > 0)
@@ -551,6 +554,11 @@ public class Lexer
         var offset = (uint)(startPtr - lexer._originalPtr);
         var length = (uint)(ptr - startPtr);
 
+        if (!hasDigits)
+        {
+            lexer.LogError(ERR_InvalidHexNumberExpectingDigit(), startPtr, (int)length, lexer._column);
+        }
+        
         if (hasOverflow)
         {
             // Generate an overflow error only once
@@ -567,10 +575,11 @@ public class Lexer
     {
         ulong number = 0;
         var startPtr = ptr;
-        ptr++; // Skip o
+        ptr++; // Skip 0, next is skipping o
         var ptrToFirstUnderscore = (byte*)null;
         int lengthOfUnderscore = 0;
         bool hasOverflow = false;
+        bool hasDigits = false;
         while (true)
         {
             ptr++;
@@ -601,6 +610,7 @@ public class Lexer
 
                 ptrToFirstUnderscore = null;
                 lengthOfUnderscore = 0;
+                hasDigits = true;
             }
         }
 
@@ -612,7 +622,12 @@ public class Lexer
 
         var offset = (uint)(startPtr - lexer._originalPtr);
         var length = (uint)(ptr - startPtr);
-        
+
+        if (!hasDigits)
+        {
+            lexer.LogError(ERR_InvalidOctalNumberExpectingDigit(), startPtr, (int)length, lexer._column);
+        }
+
         if (hasOverflow)
         {
             // Generate an overflow error only once
@@ -629,10 +644,11 @@ public class Lexer
     {
         ulong number = 0;
         var startPtr = ptr;
-        ptr++; // skip b
+        ptr++; // skip 0, next is skipping b
         var ptrToFirstUnderscore = (byte*)null;
         int lengthOfUnderscore = 0;
         bool hasOverflow = false;
+        bool hasDigits = false;
         while (true)
         {
             ptr++;
@@ -659,6 +675,7 @@ public class Lexer
                 
                 ptrToFirstUnderscore = null;
                 lengthOfUnderscore = 0;
+                hasDigits = true;
             }
             else
             {
@@ -675,6 +692,11 @@ public class Lexer
         var offset = (uint)(startPtr - lexer._originalPtr);
         var length = (uint)(ptr - startPtr);
         
+        if (!hasDigits)
+        {
+            lexer.LogError(ERR_InvalidHexNumberExpectingDigit(), startPtr, (int)length, lexer._column);
+        }
+
         if (hasOverflow)
         {
             // Generate an overflow error only once

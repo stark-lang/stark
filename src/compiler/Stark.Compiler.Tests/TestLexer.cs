@@ -142,6 +142,17 @@ public class TestLexer
         });
 
         // Errors
+        Lexer(" 0x ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.Integer, new TokenSpan(1, 2, 0, 1), 0),
+                (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_InvalidHexNumberExpectingDigit, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(2, 0, 2))),
+            }
+        );
+
         Lexer(" 0x1_ ", new()
             {
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
@@ -167,6 +178,52 @@ public class TestLexer
     }
 
     [Test]
+    public void TestIntegerOctal()
+    {
+        Lexer(" 0o01234567 ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Integer, new TokenSpan(1, 10, 0, 1), 0b_000_001_010_011_100_101_110_111),
+            (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
+        });
+
+        // Errors
+        Lexer(" 0o ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.Integer, new TokenSpan(1, 2, 0, 1), 0),
+                (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_InvalidOctalNumberExpectingDigit, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(2, 0, 2))),
+            }
+        );
+
+        Lexer(" 0o17_ ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.Integer, new TokenSpan(1, 5, 0, 1), 0b_001_111),
+                (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(5, 0, 5))),
+            }
+        );
+
+        // Overflow
+        Lexer(" 0o_7_00000000000_00000000000 ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.Integer, new TokenSpan(1, 28, 0, 1), 0),
+                (TokenKind.WhiteSpace, new TokenSpan(29, 1, 0, 29), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_NumberOverflow,  new TextSpan(new TextLocation(1, 0, 1), new TextLocation(28, 0, 28))),
+            }
+        );
+    }
+
+    [Test]
     public void TestIntegerBinary()
     {
         Lexer(" 0b1011_1101 ", new()
@@ -184,6 +241,17 @@ public class TestLexer
         });
 
         // Errors
+        Lexer(" 0b ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.Integer, new TokenSpan(1, 2, 0, 1), 0),
+                (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_InvalidHexNumberExpectingDigit, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(2, 0, 2))),
+            }
+        );
+
         Lexer(" 0b10_ ", new()
             {
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
@@ -207,7 +275,6 @@ public class TestLexer
             }
         );
     }
-
 
     [Test]
     public void TestFloat()
