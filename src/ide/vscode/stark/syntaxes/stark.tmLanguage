@@ -116,7 +116,7 @@
       <key>builtin-types</key>
       <dict>
         <key>match</key>
-        <string>\b(bool|f64|f32|i64|i32|i16|i8|u64|u32|u16|u8|int|uint|string)\b</string>
+        <string>\b(bool|f64|f32|i64|i32|i16|i8|u64|u32|u16|u8|int|uint|x8|x16|x32|x64|x128|xint|i128|u128|string)\b</string>
         <key>captures</key>
         <dict>
           <key>1</key>
@@ -151,7 +151,7 @@
         <key>name</key>
         <string>storage.modifier.sk</string>
         <key>match</key>
-        <string>(?&lt;!\.)\b(abstract|const|extern|internal|new|rkey|rnew|ropen|override|partial|public|pub|dynamic|static|unsafe|virtual)\b</string>
+        <string>(?&lt;!\.)\b(abstract|const|extern|internal|new|rnew|ropen|rtemp|rdelete|override|partial|public|pub|dynamic|static|unsafe|virtual)\b</string>
       </dict>
       <key>module-declaration</key>
       <dict>
@@ -319,7 +319,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>`(immutable|rw|transient|retainable|shared|rooted|unique|readable|soa|aos)\b</string>
+            <string>`(immutable|rw|ropen|transient|retainable|shared|rooted|unique|readable|soa|aos)\b</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -349,7 +349,7 @@
         <array>
           <dict>
             <key>match</key>
-            <string>\b((?:(?:rw|transient|linear|region|ref)\s+)*struct|process|union|enum|interface|unit|type)(\s*`(?:soa|aos)\s*)?(?:\s*`(?:\w+|&lt;.*?&gt;)\s*)?\s+([_[:alpha:]][_[:alnum:]]*)</string>
+            <string>\b((?:(?:rw|transient|\??linear|region|ref)\s+)*struct|process|union|enum|interface|unit|type)(\s*`(?:soa|aos)\s*)?(?:\s*`(?:\w+|&lt;.*?&gt;)\s*)?\s+([_[:alpha:]][_[:alnum:]]*)</string>
             <key>captures</key>
             <dict>
               <key>1</key>
@@ -451,6 +451,18 @@
       <dict>
         <key>patterns</key>
         <array>
+          <dict>
+            <key>match</key>
+            <string>^\s*(===)\s*$</string>
+            <key>captures</key>
+            <dict>
+              <key>1</key>
+              <dict>
+                <key>name</key>
+                <string>keyword.other.where.sk</string>
+              </dict>
+            </dict>
+          </dict>
           <dict>
             <key>match</key>
             <string>^\s*(where)\s+([_[:alpha:]][_[:alnum:]]*)</string>
@@ -566,6 +578,12 @@
             <string>keyword.other.constructor.sk</string>
             <key>match</key>
             <string>\bconstructor\b</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>keyword.other.destructor.sk</string>
+            <key>match</key>
+            <string>\bdestructor\b</string>
           </dict>
           <dict>
             <key>name</key>
@@ -984,10 +1002,21 @@
       </dict>
       <key>lifetime-identifier</key>
       <dict>
-        <key>name</key>
-        <string>variable.storage.lifetime.sk</string>
-        <key>match</key>
-        <string>##+</string>
+        <key>patterns</key>
+        <array>
+          <dict>
+            <key>name</key>
+            <string>variable.storage.lifetime1.sk</string>
+            <key>match</key>
+            <string>##+</string>
+          </dict>
+          <dict>
+            <key>name</key>
+            <string>variable.storage.lifetime2.sk</string>
+            <key>match</key>
+            <string>#[A-Za-z_][A-Za-z_0-9]*</string>
+          </dict>
+        </array>
       </dict>
       <key>macros</key>
       <dict>

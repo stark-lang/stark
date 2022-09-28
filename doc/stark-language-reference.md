@@ -233,19 +233,19 @@ All type declarations:
 
 ### Primitive types
 
-| Name          | Description
-|---------------|---------------------------------------------
-| `bool`        | `true` or `false`, occupies 1 byte in memory.
-| `i8`, `u8`    | A single 8 bits integer, signed and unsigned
-| `i16`, `u16`  | A single 16 bits integer, signed and unsigned
-| `i32`, `u32`  | A single 32 bits integer, signed and unsigned
-| `i64`, `u64`  | A single 64 bits integer, signed and unsigned
-| `i128`, `u128`| A single 128 bits integer, signed and unsigned
-| `int`, `uint` | A single pointer size integer, signed and unsigned
-| `f32`         | An IEEE 754 32-bits single-precision floating point number.
-| `f64`         | An IEEE 754 64-bits double-precision floating point number.
-| `v128`        | A SIMD 128 bits value
-| `v256`        | A SIMD 256 bits value
+| Name                   | Description
+|------------------------|---------------------------------------------
+| `bool`                 | `true` or `false`, occupies 1 byte in memory.
+| `i8`, `u8`             | A single 8 bits integer, signed, unsigned.
+| `i16`, `u16`           | A single 16 bits integer, signed and unsigned.
+| `i32`, `u32`           | A single 32 bits integer, signed and unsigned.
+| `i64`, `u64`           | A single 64 bits integer, signed and unsigned.
+| `i128`, `u128`         | A single 128 bits integer, signed and unsigned.
+| `int`, `uint`          | A single pointer size integer, signed and unsigned.
+| `f32`                  | An IEEE 754 32-bits single-precision floating point number.
+| `f64`                  | An IEEE 754 64-bits double-precision floating point number.
+| `v128`                 | A SIMD 128 bits value
+| `v256`                 | A SIMD 256 bits value
 
 [:top:](#stark-language-reference)
 ### Enum types
@@ -275,7 +275,7 @@ enum Season =
 ```
 
 Note that an enum is always required to provide a value that is not equal to `0`. If no values are specified, it is the first item in declared that will receive the `1` value.
-This is to allow an optional enum e.g `?Season` to use the value `0` to efficiently encode an optional enum.
+This is to allow an optional enum e.g `?Season` to use the value `0` to efficiently encode an optional enum. An optional enum is zero-able.
 
 An enum can be used as bit flags
 
@@ -329,18 +329,23 @@ union Any =
 
 func check_result(result: Result) -> uint =
     match result {
-        case u32 a => a as uint
-        case f32 b => if b != 0.0 then 1 else 0
-        case .Error c => c.code
-        case _ => 0
+        case u32 => result as uint,
+        case f32 => if result != 0.0 then 1 else 0,
+        case .Error => result.code,
+        else => 0
     }
 ```
+
+Notice that once matched in an if or match expression, the associated union can be accessed in as the matched type.
 
 An union can be declared partial and can be further declared from another file (in the same module).
 
 ```stark
 partial union Season
 ```
+
+Similar to an enum, a optional union (prefixed by `?`) will not take more space than the union itself. An optional union is zero-able.
+
 [:top:](#stark-language-reference)
 ### Struct types
 
@@ -459,7 +464,7 @@ var value: uint = 0
 No methods in a linear struct can capture the `this` pointer or create a reference to one of its field.
 #### Region Struct
 
-A region struct is a special linear typed struct that allows to allocate objects within the region.
+A region struct is a special linear typed struct that allows to allocate objects within the region (or arena).
 
 ```stark
 pub rw region struct Region7 =
@@ -482,21 +487,21 @@ var value: u32
 
 ```
 
-Above you can see two special operators associated with arenas:
+There are several operators associated with regions:
+
 - `rnew` to create a region
 - `ropen` to open a region.
+- `rtemp` to create and open a temporary region
+- `rdelete` to delete a region, without waiting for the end of the lexical scope
 
-A region can contain linear struct value, struct value and reference to struct value.
+Some additional rules and properties:
 
-A region can only reference objects allocated within itself (with the same lifetime).
-
-A region has a single implicit lifetime associated with it.
-
-A region is automatically dropped after going out of scope
-- Consequently, a region will dispose automatically all linear struct or region stored in it.
-
-A region can be casted to an object `Region#l` which can be used as an argument to the new operator:
-
+- A region can contain linear struct value, struct value and reference to struct value.
+- A region can only reference objects allocated within itself (with the same lifetime).
+- A region has a single implicit lifetime associated with it.
+- A region is automatically dropped after going out of scope
+  - Consequently, a region will dispose automatically all linear struct or region stored in it.
+- A region can be casted to an object `Region#l` which can be used as an argument to the new operator:
 
 ```stark
 struct UIntAllocator#l =
@@ -517,16 +522,27 @@ var region = rnew `rw Arena7
 } // The region variable can be reused from here
 ```
 
-You can create also an anonymous lexically scoped region to allocate dynamic temporary data on the heap:
+You can create also an anonymous lexically scoped region to allocate dynamic temporary data on the heap with the `rtemp` operator:
 
 ```stark
 {
-    var r = ropen #l // create and open an region with the specified lifetime
+    var r = rtemp #l // create and open an region with the specified lifetime
     // r is of the type Region#l
     var ref_val = new(r) uint
     *ref_val = 1
 } // The region is destroyed here
 ```
+
+In order to stay safe, the operator `ropen` imposes a few restrictions:
+
+- If an `ropen` is issued for a particular variable, you can call a method on the arena directly, unless another `ropen` has been issued for one field of the particular variable:
+  ```stark
+  ropen myArena
+  myArena.do_something() // it is ok to call it here
+  ropen myArena.subArena
+  // you cannot call myArena.do_something() anymore
+  ```
+- If an `ropen` is issued inside a `func this` on a particular member of `this`, a this func cannot be called until the ropen is closed
 
 ![Region lifetime](stark-region-lifetime.drawio.svg)
 
@@ -630,9 +646,9 @@ pub interface ICoord =
 An a struct can implement this interface:
 
 ```stark
-pub struct Coord =
+pub struct Coord
     implements ICoord
-
+    ===
     let _x: f32
     let _y: f32
 
@@ -651,9 +667,9 @@ pub struct Coord =
     let _x: f32
     let _y: f32
 
-pub extend Coord =
+pub extend Coord
     implements ICoord
-    
+    ===
     pub constructor(x: f32, y: f32) =
         this._x = x
         this._y = y
@@ -689,9 +705,9 @@ pub interface IRectangle =
     func this surface() -> f32 =
         this.width * this.height
 
-pub struct Rectangle =
+pub struct Rectangle
     implements IRectangle
-
+    ===
     let _width: f32
     let _height: f32
 
@@ -706,9 +722,9 @@ pub struct Rectangle =
 But a struct can override this implementation:
 
 ```stark
-pub struct WeirdRectangle =
+pub struct WeirdRectangle
     implements IRectangle
-
+    ===
     // [...] implementation of IRectangle
 
     override func this surface() -> f32 =
@@ -746,10 +762,10 @@ pub interface IRectangle =
 An existing non-async interface can also be used in the context of implements:
 
 ```stark
-pub struct Coord =
+pub struct Coord
     // Assuming that ICoord is a plain interface
     implements async ICoord
-
+    ===
     let _x: f32
     let _y: f32
 
@@ -765,12 +781,12 @@ pub struct Coord =
 
 ### Definition modulator
 
-You have noticed the presence of `implements ICoord` or `implements IRectangle` after the declaration of the struct and the equal `=` in the previous examples:
+You have noticed the presence of `implements ICoord` or `implements IRectangle` after the declaration of the struct and before the triple equal `===` in the previous examples:
 
 ```stark
-pub struct Coord =
-    // A definition modulator
+pub struct Coord
     implements ICoord
+    ===
 ```    
 
 A definition modulator can only appear at the beginning of the definition's body after the `=`.
@@ -1001,9 +1017,9 @@ An extension can implement an interface for a specific type:
 interface ISeason =
   func this get_month() -> int
 
-extend Season =
+extend Season
     implements ISeason
-
+    ===
     func this get_month() -> int =
         match this {
             case .Sprint => 3,
@@ -1369,8 +1385,9 @@ pub rw struct ArrayProxy#l =
     pub constructor(capacity: uint) =
         this.array = new #l`rw [f32](capacity)
 
-    func this [index: uint] -> &#l`rw f32 =
+    func this [index: uint] -> &#l`rw f32
         requires index < this.array.size
+        ===
         &#l`rw this.array[index]
 ```
 
