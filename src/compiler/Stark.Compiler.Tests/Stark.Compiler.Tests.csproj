@@ -17,13 +17,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Stark.Compiler\Stark.Compiler.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EditorConfigFiles Remove="C:\code\stark\stark\src\Stark.Compiler\.editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="C:\code\stark\stark\src\Stark.Compiler\.editorconfig" />
-  </ItemGroup>
-
 </Project>
