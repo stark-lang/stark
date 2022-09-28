@@ -10,6 +10,9 @@ using Varena;
 
 namespace Stark.Compiler.Tests;
 
+/// <summary>
+/// Class for testing Stark <see cref="Lexer"/>.
+/// </summary>
 public class TestLexer
 {
     private readonly VirtualArenaManager _manager;
@@ -138,8 +141,73 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(22, 1, 0, 22), null),
         });
 
-        // TODO: add errors
+        // Errors
+        Lexer(" 0x1_ ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.Integer, new TokenSpan(1, 4, 0, 1), 1),
+                (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(4, 0, 4))),
+            }
+        );
+
+        // Overflow
+        Lexer(" 0x1_0000_0000_0000_0000 ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.Integer, new TokenSpan(1, 23, 0, 1), 0),
+                (TokenKind.WhiteSpace, new TokenSpan(24, 1, 0, 24), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_NumberOverflow,  new TextSpan(new TextLocation(1, 0, 1), new TextLocation(23, 0, 23))),
+            }
+        );
     }
+
+    [Test]
+    public void TestIntegerBinary()
+    {
+        Lexer(" 0b1011_1101 ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Integer, new TokenSpan(1, 11, 0, 1), 0b1011_1101),
+            (TokenKind.WhiteSpace, new TokenSpan(12, 1, 0, 12), null),
+        });
+
+        Lexer(" 0b1111_1010_0101_0011_0111_1000_1001_1100_0011_1111_1010_0101_0011_0111_1000_1001 ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Integer, new TokenSpan(1, 81, 0, 1), 0b1111_1010_0101_0011_0111_1000_1001_1100_0011_1111_1010_0101_0011_0111_1000_1001),
+            (TokenKind.WhiteSpace, new TokenSpan(82, 1, 0, 82), null),
+        });
+
+        // Errors
+        Lexer(" 0b10_ ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.Integer, new TokenSpan(1, 5, 0, 1), 2),
+                (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(5, 0, 5))),
+            }
+        );
+
+        // Overflow
+        Lexer(" 0b1_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000 ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.Integer, new TokenSpan(1, 83, 0, 1), 0),
+                (TokenKind.WhiteSpace, new TokenSpan(84, 1, 0, 84), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_NumberOverflow,  new TextSpan(new TextLocation(1, 0, 1), new TextLocation(83, 0, 83))),
+            }
+        );
+    }
+
 
     [Test]
     public void TestFloat()

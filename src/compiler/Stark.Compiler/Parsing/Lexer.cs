@@ -567,6 +567,7 @@ public class Lexer
     {
         ulong number = 0;
         var startPtr = ptr;
+        ptr++; // Skip o
         var ptrToFirstUnderscore = (byte*)null;
         int lengthOfUnderscore = 0;
         bool hasOverflow = false;
@@ -626,10 +627,9 @@ public class Lexer
     
     private static unsafe byte* ParseNumberBinary(Lexer lexer, byte* ptr)
     {
-        int count = 0;
         ulong number = 0;
         var startPtr = ptr;
-
+        ptr++; // skip b
         var ptrToFirstUnderscore = (byte*)null;
         int lengthOfUnderscore = 0;
         bool hasOverflow = false;
@@ -649,14 +649,13 @@ public class Lexer
 
             if (c == (byte)'0' || c == (byte)'1')
             {
-                if ((long)count < 0)
+                if ((long)number < 0)
                 {
                     hasOverflow = true;
                 }
 
                 var hex = (ulong)(c - '0');
                 number = (number << 1) | hex;
-                count++;
                 
                 ptrToFirstUnderscore = null;
                 lengthOfUnderscore = 0;
