@@ -97,8 +97,17 @@ public class TestLexer
                 (DiagnosticId.ERR_UnexpectedEndOfFileForMultiLineComment, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(2, 0, 2))),
             }
         );
-    }
 
+        Lexer(" /*\n ", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.CommentMultiLine, new TokenSpan(1, 4, 0, 1), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_UnexpectedEndOfFileForMultiLineComment, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(4, 1, 0))),
+            }
+        );
+    }
 
     [Test]
     public void TestSingleLineComment()

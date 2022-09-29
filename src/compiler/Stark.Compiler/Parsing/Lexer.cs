@@ -333,6 +333,14 @@ public class Lexer
         _lio.Diagnostics.Add(new Diagnostic(DiagnosticKind.Error, new DiagnosticSourceFileLocation("TODO_FILE", new TextSpan(startLocation, endLocation)), message));
     }
 
+    private unsafe void LogError(DiagnosticMessage message, byte* ptr, int length, uint startOfLine, uint columnStart, uint endOfLine, uint columnEnd)
+    {
+        var startLocation = new TextLocation((uint)(ptr - _originalPtr), startOfLine, columnStart);
+        var endLocation = new TextLocation((uint)(ptr - _originalPtr + length - 1), endOfLine, columnEnd);
+        _lio.Diagnostics.Add(new Diagnostic(DiagnosticKind.Error, new DiagnosticSourceFileLocation("TODO_FILE", new TextSpan(startLocation, endLocation)), message));
+    }
+
+
     private static unsafe byte* ParseWhitespace(Lexer lexer, byte* ptr, byte c)
     {
         // We backtrack to optimize for leading spaces in a line that are usually a multiple of 4 bytes
@@ -926,7 +934,7 @@ public class Lexer
         // Eof without terminating the multi-line comment => this is an error
         if (commentDepth > 0)
         {
-            lexer.LogError(ERR_UnexpectedEndOfFileForMultiLineComment(commentDepth), startPtr, (int)length, lexer._column);
+            lexer.LogError(ERR_UnexpectedEndOfFileForMultiLineComment(commentDepth), startPtr, (int)length, lexer._line, lexer._column, line, (uint)(column - 1));
             column = 0;
         }
 
