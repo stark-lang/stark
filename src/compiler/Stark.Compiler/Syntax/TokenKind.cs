@@ -18,7 +18,6 @@ public enum TokenKind : byte
     CommentSingleLine,
     CommentDocumentationSingleLine,
     CommentMultiLine,
-    CommentMultiLineInvalid,
     String,
 
     // 1 byte symbols
@@ -55,7 +54,7 @@ public enum TokenKind : byte
     RightBrace,         // }
     Tilde,              // ~
 
-    // 2 byte symbols
+    // 2-3 byte symbols
     SlashEqual,         // /=
     PercentEqual,       // %=
     AmpersandEqual,     // &=
@@ -129,7 +128,7 @@ public enum TokenKind : byte
     OwnershipKeyword,
     PermissionKeyword,
     PartialKeyword,
-    PublicKeyword,
+    PubKeyword,
     ReadableKeyword,
     RequiresKeyword,
     RootedKeyword,

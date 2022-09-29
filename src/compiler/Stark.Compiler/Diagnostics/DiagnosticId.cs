@@ -24,4 +24,6 @@ public enum DiagnosticId
     ERR_InvalidHexNumberExpectingDigit = 114, // Invalid hexadecimal number. Expecting at least one [0-9a-fA-F] digit.
     ERR_InvalidOctalNumberExpectingDigit = 115, // Invalid octal number. Expecting at least one [0-7] digit.
     ERR_InvalidBinaryNumberExpectingDigit = 116, // Invalid binary number. Expecting at least one [0-1] digit.
+
+    ERR_UnexpectedEndOfFileForMultiLineComment = 120, // (int c) => Unexpected end of file found while parsing a multi-line comment. Expecting {c} `*/` to close the comment.
 }

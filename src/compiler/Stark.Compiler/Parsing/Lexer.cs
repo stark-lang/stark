@@ -175,6 +175,7 @@ public class Lexer
         while (true)
         {
             ptr++;
+            proceed_next_char:
             c = *ptr;
             if (c == (byte)'\\')
             {
@@ -297,11 +298,10 @@ public class Lexer
                 // If we have a multibyte UTF8, try to parse it correctly and correct the column
                 var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
                 column += width <= 0 ? 0 : (uint)width;
+                goto proceed_next_char;
             }
             else if (c == Eof || c == '\r' || c == '\n')
             {
-                // We keep the character to be parsed by the global loop
-                ptr--;
                 lexer.LogError(ERR_UnexpectedEndOfString(), ptr, column);
                 break;
             }
@@ -816,16 +816,18 @@ public class Lexer
         var offset = (uint)(ptr - lexer._originalPtr);
 
         var kind = ptr[2] == (byte)'/' ? TokenKind.CommentDocumentationSingleLine : TokenKind.CommentSingleLine;
-        var column = lexer._column;
+        var column = lexer._column + 1;
         while (true)
         {
             ptr++;
+            proceed_next_char:
             var c = *ptr;
             if (c >= StartUtf8 && TryParseUtf8(ref ptr, out var rune))
             {
                 // If we have a multibyte UTF8, try to parse it correctly and correct the column
                 var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
                 column += width <= 0 ? 0 : (uint)width;
+                goto proceed_next_char;
             }
             else if (c == Eof || c == '\r' || c == '\n')
             {
@@ -851,11 +853,12 @@ public class Lexer
         int commentDepth = 1;
 
         ptr++; // Skip /
-        uint column = lexer._column + 2;
+        int column = (int)lexer._column + 1;
         var line = lexer._line;
         while (true)
         {
             ptr++;
+            proceed_next_char:
             var c = *ptr;
             // Match pending */
             if (c == (byte)'*')
@@ -863,11 +866,13 @@ public class Lexer
                 column++;
                 if (ptr[1] == (byte)'/')
                 {
-                    ptr++;
+                    ptr++; // skip *
                     column++;
                     commentDepth--;
                     if (commentDepth == 0)
                     {
+                        ptr++; // skip /
+                        column++;
                         break;
                     }
                 }
@@ -877,21 +882,22 @@ public class Lexer
                 line++;
                 if (ptr[1] == (byte)'\n')
                 {
-                    ptr++;
+                    ptr++; // skip \r
                 }
-                column = 0;
+                column = -1;
             }
             else if (c == (byte)'\n')
             {
                 // Count line
                 line++;
-                column = 0;
+                column = -1;
             }
             else if (c == (byte)'/') // Match nesting /*
             {
+                column++;
                 if (ptr[1] == (byte)'*')
                 {
-                    ptr++;
+                    ptr++; // skip /
                     column++;
                     commentDepth++;
                 }
@@ -900,11 +906,13 @@ public class Lexer
             {
                 // If we have a multibyte UTF8, try to parse it correctly and correct the column
                 var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
-                column += width <= 0 ? 0 : (uint)width;
+                column += width <= 0 ? 0 : width;
+                goto proceed_next_char;
             }
             else if (c == Eof)
             {
                 // Break on Eof, this is an invalid multiline comment not terminating by a */
+                column++;
                 break;
             }
             else
@@ -914,9 +922,17 @@ public class Lexer
         }
 
         var length = (uint)(ptr - startPtr);
-        lexer.AddToken(commentDepth > 0 ? TokenKind.CommentMultiLineInvalid : TokenKind.CommentMultiLine, new TokenSpan(offset, length, lexer._line, lexer._column));
+
+        // Eof without terminating the multi-line comment => this is an error
+        if (commentDepth > 0)
+        {
+            lexer.LogError(ERR_UnexpectedEndOfFileForMultiLineComment(commentDepth), startPtr, (int)length, lexer._column);
+            column = 0;
+        }
+
+        lexer.AddToken(TokenKind.CommentMultiLine, new TokenSpan(offset, length, lexer._line, lexer._column));
         lexer._line = line;
-        lexer._column = column;
+        lexer._column = (uint)column;
         return ptr;
     }
 
@@ -940,10 +956,7 @@ public class Lexer
         // The underscore symbol generates an underscore symbol, not an identifier!
         if (underscoreCount == length)
         {
-            // Force the length to 1 Multiple consecutive underscore will generate multiple underscore symbols
-            lexer.AddToken(TokenKind.Underscore, new TokenSpan(offset, 1, lexer._line, lexer._column));
-            lexer._column++;
-            ptr = startPtr + 1;
+            lexer.AddToken(TokenKind.Underscore, new TokenSpan(offset, length, lexer._line, lexer._column));
         }
         else
         {
@@ -959,8 +972,8 @@ public class Lexer
                 // For keyword, we don't generate
                 lexer.AddToken(kind, new TokenSpan(offset, length, lexer._line, lexer._column));
             }
-            lexer._column += length;
         }
+        lexer._column += length;
 
         return ptr;
     }

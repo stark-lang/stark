@@ -93,7 +93,7 @@ internal static class KeywordHelper
             ("ownership", TokenKind.OwnershipKeyword),
             ("permission", TokenKind.PermissionKeyword),
             ("partial", TokenKind.PartialKeyword),
-            ("public", TokenKind.PublicKeyword),
+            ("pub", TokenKind.PubKeyword),
             ("readable", TokenKind.ReadableKeyword),
             ("requires", TokenKind.RequiresKeyword),
             ("rooted", TokenKind.RootedKeyword),

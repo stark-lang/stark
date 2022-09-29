@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +18,291 @@ public class TestLexer
     private readonly VirtualArenaManager _manager;
     private readonly LexerInputOutput _lio;
     private readonly Lexer _lexer;
+
+
+    [Test]
+    public void TestMultiLineComment()
+    {
+        Lexer(" /**/ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentMultiLine, new TokenSpan(1, 4, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+        });
+
+        Lexer(" /* */ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentMultiLine, new TokenSpan(1, 5, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+        });
+
+        Lexer(" /* a */ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentMultiLine, new TokenSpan(1, 7, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(8, 1, 0, 8), null),
+        });
+        
+        Lexer(" /*/**/*/ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentMultiLine, new TokenSpan(1, 8, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(9, 1, 0, 9), null),
+        });
+
+        Lexer(" /*\r*/ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentMultiLine, new TokenSpan(1, 5, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(6, 1, 1, 2), null),
+        });
+        
+        Lexer(" /*\n*/ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentMultiLine, new TokenSpan(1, 5, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(6, 1, 1, 2), null),
+        });
+
+        Lexer(" /*\r\n*/ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentMultiLine, new TokenSpan(1, 6, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(7, 1, 1, 2), null),
+        });
+
+        // 🎉 is 4 bytes in UTF8, takes 2 columns
+        Lexer(" /*🎉*/ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentMultiLine, new TokenSpan(1, 8, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(9, 1, 0, 7), null),
+        });
+
+        // é is 2 bytes in UTF8, takes 1 column
+        Lexer(" /*é*/ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentMultiLine, new TokenSpan(1, 6, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(7, 1, 0, 6), null),
+        });
+
+        Lexer(" /*", new()
+            {
+                (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+                (TokenKind.CommentMultiLine, new TokenSpan(1, 2, 0, 1), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_UnexpectedEndOfFileForMultiLineComment, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(2, 0, 2))),
+            }
+        );
+    }
+
+
+    [Test]
+    public void TestSingleLineComment()
+    {
+        Lexer(" //", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentSingleLine, new TokenSpan(1, 2, 0, 1), null),
+        });
+
+        Lexer(" // ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentSingleLine, new TokenSpan(1, 3, 0, 1), null),
+        });
+
+        Lexer(" //\r", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentSingleLine, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.NewLine, new TokenSpan(3, 1, 0, 3), null),
+        });
+
+        Lexer(" //\n", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentSingleLine, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.NewLine, new TokenSpan(3, 1, 0, 3), null),
+        });
+
+        Lexer(" //\r\n", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentSingleLine, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.NewLine, new TokenSpan(3, 2, 0, 3), null),
+        });
+
+        Lexer(" // abc\n  // def", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentSingleLine, new TokenSpan(1, 6, 0, 1), null),
+            (TokenKind.NewLine, new TokenSpan(7, 1, 0, 7), null),
+            (TokenKind.WhiteSpace, new TokenSpan(8, 2, 1, 0), null),
+            (TokenKind.CommentSingleLine, new TokenSpan(10, 6, 1, 2), null),
+        });
+ 
+        // 🎉 is 4 bytes in UTF8, takes 2 columns
+        Lexer(" // 🎉\n", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentSingleLine, new TokenSpan(1, 7, 0, 1), null),
+            (TokenKind.NewLine, new TokenSpan(8, 1, 0, 6), null),
+        });
+
+        // é is 2 bytes in UTF8, takes 1 column
+        Lexer(" // é\n", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.CommentSingleLine, new TokenSpan(1, 5, 0, 1), null),
+            (TokenKind.NewLine, new TokenSpan(6, 1, 0, 5), null),
+        });
+    }
+
+    [TestCase(TokenKind.Exclamation, "!")]
+    [TestCase(TokenKind.Number, "#")]
+    [TestCase(TokenKind.Dollar, "$")]
+    [TestCase(TokenKind.Percent, "%")]
+    [TestCase(TokenKind.Ampersand, "&")]
+    [TestCase(TokenKind.LeftParent, "(")]
+    [TestCase(TokenKind.RightParent, ")")]
+    [TestCase(TokenKind.Star, "*")]
+    [TestCase(TokenKind.Plus, "+")]
+    [TestCase(TokenKind.Comma, ",")]
+    [TestCase(TokenKind.Minus, "-")]
+    [TestCase(TokenKind.Dot, ".")]
+    [TestCase(TokenKind.Slash, "/")]
+    [TestCase(TokenKind.Colon, ":")]
+    [TestCase(TokenKind.SemiColon, ";")]
+    [TestCase(TokenKind.LessThan, "<")]
+    [TestCase(TokenKind.Equal, "=")]
+    [TestCase(TokenKind.GreaterThan, ">")]
+    [TestCase(TokenKind.Question, "?")]
+    [TestCase(TokenKind.CommercialAt, "@")]
+    [TestCase(TokenKind.LeftBracket, "[")]
+    [TestCase(TokenKind.Backslash, "\\")]
+    [TestCase(TokenKind.RightBracket, "]")]
+    [TestCase(TokenKind.Circumflex, "^")]
+    [TestCase(TokenKind.Underscore, "_")]
+    [TestCase(TokenKind.Backtick, "`")]
+    [TestCase(TokenKind.LeftBrace, "{")]
+    [TestCase(TokenKind.VerticalBar, "|")]
+    [TestCase(TokenKind.RightBrace, "}")]
+    [TestCase(TokenKind.Tilde, "~")]
+    [TestCase(TokenKind.SlashEqual, "/=")]
+    [TestCase(TokenKind.PercentEqual, "%=")]
+    [TestCase(TokenKind.AmpersandEqual, "&=")]
+    [TestCase(TokenKind.StarEqual, "*=")]
+    [TestCase(TokenKind.PlusEqual, "+=")]
+    [TestCase(TokenKind.MinusEqual, "-=")]
+    [TestCase(TokenKind.DoubleDot, "..")]
+    [TestCase(TokenKind.DoubleDotLessThan, "..<")]
+    [TestCase(TokenKind.DoubleColon, "::")]
+    [TestCase(TokenKind.DoubleEqual, "==")]
+    [TestCase(TokenKind.EqualGreaterThan, "=>")]
+    [TestCase(TokenKind.TripleEqual, "===")]
+    [TestCase(TokenKind.CircumflexEqual, "^=")]
+    [TestCase(TokenKind.VerticalBarEqual, "|=")]
+    [TestCase(TokenKind.VerticalBarGreaterThan, "|>")]
+    [TestCase(TokenKind.TildeEqual, "~=")]
+    public void TestSymbols(TokenKind kind, string expected)
+    {
+        var column = 1 + (uint)expected.Length;
+        Lexer($" {expected} ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (kind, new TokenSpan(1, (uint)expected.Length, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(column, 1, 0, column), null),
+        });
+    }
+
+    [Test]
+    public void TestIdentifier()
+    {
+        Lexer(" hello ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Identifier, new TokenSpan(1, 5, 0, 1), "hello"),
+            (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+        });
+
+        Lexer(" h ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Identifier, new TokenSpan(1, 1, 0, 1), "h"),
+            (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+        });
+
+        Lexer(" _h ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Identifier, new TokenSpan(1, 2, 0, 1), "_h"),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+        });
+
+        Lexer(" h_ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Identifier, new TokenSpan(1, 2, 0, 1), "h_"),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+        });
+
+        Lexer(" h1234567890 ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Identifier, new TokenSpan(1, 11, 0, 1), "h1234567890"),
+            (TokenKind.WhiteSpace, new TokenSpan(12, 1, 0, 12), null),
+        });
+
+        Lexer(" abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789 ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Identifier, new TokenSpan(1, 63, 0, 1), "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"),
+            (TokenKind.WhiteSpace, new TokenSpan(64, 1, 0, 64), null),
+        });
+
+        Lexer(" _ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Underscore, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+        });
+
+        Lexer(" __ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Underscore, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+        });
+    }
+
+    [Test]
+    public void TestKeywords()
+    {
+        Lexer(" pub ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.PubKeyword, new TokenSpan(1, 3, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+        });
+
+        Lexer(" as ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.AsKeyword, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+        });
+
+        Lexer(" async ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.AsyncKeyword, new TokenSpan(1, 5, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+        });
+    }
 
     [Test]
     public void TestNewLine()
@@ -633,8 +918,19 @@ public class TestLexer
         Console.WriteLine();
     }
 
-    private static TokenValue GetTokenValue(object? value)
+    private TokenValue GetTokenValue(object? value)
     {
-        return value is null ? new TokenValue(0) : value is double f64Value ? new TokenValue(f64Value) : new TokenValue(Convert.ToUInt64(value));
+        if (value is null)
+        {
+            return new TokenValue(0);
+        }
+        else if (value is string)
+        {
+            return new TokenValue(ulong.MaxValue);
+        }
+        else
+        {
+            return value is double f64Value ? new TokenValue(f64Value) : new TokenValue(Convert.ToUInt64(value));
+        }
     }
 }
