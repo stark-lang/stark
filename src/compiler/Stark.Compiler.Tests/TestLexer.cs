@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
@@ -19,6 +20,39 @@ public class TestLexer
     private readonly LexerInputOutput _lio;
     private readonly Lexer _lexer;
 
+    [Test]
+    public void TestInvalidCharacters()
+    {
+        Lexer(" \t ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.InvalidTab, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+        });
+
+        Lexer(" \x01 ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Invalid, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+        });
+
+        // \xC0 encoded as C3 80 in UTF8
+        Lexer(" \xC0 ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.InvalidUtf8, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 2), null),
+        });
+
+        // Encode an invalid character
+        Lexer(new byte[] { (byte)' ', 0xc0, (byte)' ' }, new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Invalid, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+        });
+    }
 
     [Test]
     public void TestMultiLineComment()
@@ -788,14 +822,26 @@ public class TestLexer
         _manager.Dispose();
     }
 
-    private void Lexer(string text, List<(TokenKind, TokenSpan, object?)> tokens, List<(DiagnosticId, TextSpan)>? diagnosticIds = null)
+    private void Lexer(object input, List<(TokenKind, TokenSpan, object?)> tokens, List<(DiagnosticId, TextSpan)>? diagnosticIds = null)
     {
         _lio.Reset();
-        _lexer.Run(text);
+        if (input is string inputAsString)
+        {
+            _lexer.Run(inputAsString);
+        }
+        else if (input is byte[] inputAsBytes)
+        {
+            _lexer.Run(new MemoryStream(inputAsBytes));
+        }
+        else
+        {
+            throw new ArgumentException($"Invalid input type {input.GetType().FullName}. Expecting a string or bytes", nameof(input));
+        }
+
 
         if (tokens.Count != _lio.Tokens.Count)
         {
-            Console.WriteLine($"Error while lexing: {text}");
+            Console.WriteLine($"Error while lexing: {input}");
             DumpTokens();
             DumpExpectedTokens(tokens);
         }
@@ -808,7 +854,7 @@ public class TestLexer
             // Check TokenKind
             if (_lio.Tokens[i] != expected.Item1)
             {
-                Console.WriteLine($"Error while lexing: {text}");
+                Console.WriteLine($"Error while lexing: {input}");
                 DumpTokens();
                 DumpExpectedTokens(tokens);
             }
@@ -817,7 +863,7 @@ public class TestLexer
             // Check TokenSpan
             if (_lio.TokenSpans[i] != expected.Item2)
             {
-                Console.WriteLine($"Error while lexing: {text}");
+                Console.WriteLine($"Error while lexing: {input}");
                 DumpTokens();
                 DumpExpectedTokens(tokens);
             }
@@ -829,7 +875,7 @@ public class TestLexer
             {
                 if (tokenValue.Data == 0)
                 {
-                    Console.WriteLine($"Error while lexing: {text} - No TokenValue string or identifier found while expecting `{str}`");
+                    Console.WriteLine($"Error while lexing: {input} - No TokenValue string or identifier found while expecting `{str}`");
                     DumpTokens();
                     DumpExpectedTokens(tokens);
                 }
@@ -841,7 +887,7 @@ public class TestLexer
                     var resultStr = utf8Found.ToString();
                     if (string.CompareOrdinal(str, resultStr) != 0)
                     {
-                        Console.WriteLine($"Error while lexing: {text}");
+                        Console.WriteLine($"Error while lexing: {input}");
                         DumpTokens();
                         DumpExpectedTokens(tokens);
                         Assert.AreEqual(str, resultStr, $"Invalid TokenValue string or identifier found at index {i}");
@@ -853,7 +899,7 @@ public class TestLexer
                 var expectedValue = GetTokenValue(expected.Item3);
                 if (tokenValue != expectedValue)
                 {
-                    Console.WriteLine($"Error while lexing: {text}");
+                    Console.WriteLine($"Error while lexing: {input}");
                     DumpTokens();
                     DumpExpectedTokens(tokens);
                 }
@@ -864,7 +910,7 @@ public class TestLexer
         if (!_lio.Diagnostics.Select(x => x.Message.Id).SequenceEqual(diagnosticIds is null ? new List<DiagnosticId>() : diagnosticIds.Select(x => x.Item1)) || 
             !_lio.Diagnostics.Select(GetSpanFromLocation).SequenceEqual(diagnosticIds is null ? new List<TextSpan>() : diagnosticIds.Select(x => x.Item2)))
         {
-            Console.WriteLine($"Diagnostic not matching while lexing: {text}");
+            Console.WriteLine($"Diagnostic not matching while lexing: {input}");
             Console.WriteLine("Result:");
             Console.WriteLine("----------------------------------");
             foreach (var diag in _lio.Diagnostics)

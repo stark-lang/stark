@@ -77,7 +77,7 @@ public class Lexer
         var inputBuffer = _lio.InputBuffer;
         var length = (int)stream.Length;
         var span = inputBuffer.AllocateRange(length + 1 + PaddingBytes);
-        stream.ReadExactly(span);
+        stream.ReadExactly(span.Slice(0, length));
         span[length] = Eof;
         span.Slice(length + 1).Fill(0);
         RunInternal(span);
@@ -1023,8 +1023,9 @@ public class Lexer
         }
         else
         {
-            ptr++;
             lexer.AddToken(TokenKind.Invalid, new TokenSpan(offset, 1, lexer._line, lexer._column));
+            ptr++;
+            lexer._column++;
         }
         return ptr;
     }
