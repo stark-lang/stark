@@ -12,9 +12,11 @@ namespace Stark.Compiler.Diagnostics;
 public enum DiagnosticId
 {
     ERR_UnexpectedHexNumberInString1 = 101, // (string c) => Unexpected hex number `{c}` following `\\u`. Expecting `\\u0000` to `\\uffff`.
-    ERR_UnexpectedHexNumberInString2 = 102, // (string c) => Unexpected hex number `{c}` following `\\x`. Expecting `\\x00` to `\\xff`.
-    ERR_UnexpectedEscapeCharacter = 103, // (string c) => Unsupported character `{c}` used as an escape sequence.
-    ERR_UnexpectedEndOfString = 104, // Unexpected end of string without a terminating \".
+    ERR_UnexpectedHexNumberInString2 = 102, // (string c) => Unexpected hex number `{c}` following `\\x`. Expecting `\\x0` to `\\xffff`.
+    ERR_InvalidHexNumberInString3 = 103, // (string c) => Invalid hex number `{c}` following `\\U00HHHHHH`. Expecting 8 hex numbers from `\\U00000000` to `\\U0010FFFF`.
+    ERR_UnexpectedEscapeCharacter = 104, // (string c) => Unsupported character `{c}` used as an escape sequence.
+    ERR_UnexpectedEndOfString = 105, // Unexpected end of string without a terminating \".
+    ERR_InvalidUtf8InString = 106, // (int c) => Invalid Unicode `\\U{c:x8}` must be between `\\U00000000` to `\\U0010FFFF`.
 
 
     ERR_UnexpectedUnderscoreAfterDigit = 110, // Unexpected underscore found after digit. They can only be enclosed by digits.

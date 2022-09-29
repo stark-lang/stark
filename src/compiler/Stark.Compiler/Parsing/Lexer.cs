@@ -179,76 +179,124 @@ public class Lexer
             c = *ptr;
             if (c == (byte)'\\')
             {
-                ptr++; // Skip \
                 column++;
+                ptr++; // Skip \
                 c = *ptr;
                 switch (c)
                 {
                     case (byte)'0':
                         tempBuffer.Append(0);
+                        column++;
                         continue;
                     case (byte)'\'':
                         tempBuffer.Append((byte)'\'');
+                        column++;
                         continue;
                     case (byte)'"':
                         tempBuffer.Append((byte)'"');
+                        column++;
                         continue;
                     case (byte)'\\':
                         tempBuffer.Append((byte)'\\');
+                        column++;
                         continue;
                     case (byte)'b':
                         tempBuffer.Append((byte)'\b');
+                        column++;
                         continue;
                     case (byte)'f':
                         tempBuffer.Append((byte)'\f');
+                        column++;
                         continue;
                     case (byte)'n':
                         tempBuffer.Append((byte)'\n');
+                        column++;
                         continue;
                     case (byte)'r':
                         tempBuffer.Append((byte)'\r');
+                        column++;
                         continue;
                     case (byte)'t':
                         tempBuffer.Append((byte)'\t');
+                        column++;
                         continue;
                     case (byte)'v':
                         tempBuffer.Append((byte)'\v');
-                        continue;
-                    case (byte)'u':
-                        ptr++;
                         column++;
+                        continue;
+                    case (byte)'U':
+                        column++;
+                        int valueUtf32 = 0;
+                        int countUtf32 = 0;
+                        // \U	Unicode escape sequence (UTF-32)	\U00HHHHHH (range: 000000 - 10FFFF; example: \U0001F47D = "👽")
+                        // Expecting 8 hex numbers
+                        for (int i = 0; i < 8; i++)
+                        {
+                            ptr++;
+                            c = *ptr;
+                            if (Utf8Helper.IsHex(c))
+                            {
+                                column++;
+                                valueUtf32 = (valueUtf32 << 4) | Utf8Helper.HexToValue(c);
+                                countUtf32++;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+
+                        if (countUtf32 == 8)
+                        {
+                            if (Rune.TryCreate(valueUtf32, out var rune))
+                            {
+                                var span = tempBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
+                                rune.EncodeToUtf8(span);
+                            }
+                            else
+                            {
+                                
+                                lexer.LogError(ERR_InvalidUtf8InString(valueUtf32), ptr, column);
+                            }
+                            continue;
+                        }
+
+                        lexer.LogError(ERR_InvalidHexNumberInString3(Utf8Helper.ByteToSafeString(c)), ptr, column + 1);
+                        goto proceed_next_char;
+                    
+                    case (byte)'u':
+                        column++;
+
+                        ptr++;
                         c = *ptr;
+                        // \u	Unicode escape sequence (UTF-16)	\uHHHH (range: 0000 - FFFF; example: \u00E7 = "ç")
+
                         // Must be followed 4 hex numbers (0000-FFFF)
                         if (Utf8Helper.IsHex(c)) // 1
                         {
-                            var value = Utf8Helper.HexToValue(c);
-                            ptr++;
                             column++;
+                            var valueUtf16 = Utf8Helper.HexToValue(c);
+                            ptr++;
                             c = *ptr;
                             if (Utf8Helper.IsHex(c)) // 2
                             {
-                                value = (value << 4) | Utf8Helper.HexToValue(c);
-                                ptr++;
                                 column++;
+                                valueUtf16 = (valueUtf16 << 4) | Utf8Helper.HexToValue(c);
+                                ptr++;
                                 c = *ptr;
                                 if (Utf8Helper.IsHex(c)) // 3
                                 {
-                                    value = (value << 4) | Utf8Helper.HexToValue(c);
-                                    ptr++;
                                     column++;
+                                    valueUtf16 = (valueUtf16 << 4) | Utf8Helper.HexToValue(c);
+                                    ptr++;
                                     c = *ptr;
                                     if (Utf8Helper.IsHex(c)) // 4
                                     {
-                                        value = (value << 4) | Utf8Helper.HexToValue(c);
-                                        if (Rune.TryCreate((char)value, out var rune))
-                                        {
-                                            var span = tempBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
-                                            rune.EncodeToUtf8(span);
-                                        }
-                                        else
-                                        {
-                                            // Log error
-                                        }
+                                        column++;
+                                        valueUtf16 = (valueUtf16 << 4) | Utf8Helper.HexToValue(c);
+                                        Rune.TryCreate((char)valueUtf16, out var rune);
+                                        var span = tempBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
+                                        rune.EncodeToUtf8(span);
                                         continue;
                                     }
                                 }
@@ -256,36 +304,62 @@ public class Lexer
                         }
 
                         lexer.LogError(ERR_UnexpectedHexNumberInString1(Utf8Helper.ByteToSafeString(c)), ptr, column);
-                        break;
+                        goto proceed_next_char;
+
                     case (byte)'x':
-                        ptr++;
                         column++;
+
+                        ptr++;
                         c = *ptr;
+                        // \x	Unicode escape sequence similar to "\u" except with variable length	\xH[H][H][H] (range: 0 - FFFF; example: \x00E7 or \x0E7 or \xE7 = "ç")
                         // Must be followed 2 hex numbers (00-FF)
                         if (Utf8Helper.IsHex(c))
                         {
-                            var value = Utf8Helper.HexToValue(c);
-                            ptr++;
                             column++;
-                            c = *ptr;
-                            if (Utf8Helper.IsHex(c))
+                            var valueUtf16 = Utf8Helper.HexToValue(c);
+                            bool proceedToNextChar = false;
+                            for (int i = 0; i < 3; i++)
                             {
-                                value = (value << 4) | Utf8Helper.HexToValue(c);
-                                tempBuffer.Append((byte)value);
+                                ptr++;
+                                c = *ptr;
+                                if (Utf8Helper.IsHex(c))
+                                {
+                                    column++;
+                                    valueUtf16 = (valueUtf16 << 4) | Utf8Helper.HexToValue(c);
+                                }
+                                else
+                                {
+                                    proceedToNextChar = true;
+                                    break;
+                                }
+                            }
+
+                            Rune.TryCreate((char)valueUtf16, out var rune);
+                            var span = tempBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
+                            rune.EncodeToUtf8(span);
+
+                            if (proceedToNextChar)
+                            {
+                                goto proceed_next_char;
+                            }
+                            else
+                            {
                                 continue;
                             }
                         }
+
                         lexer.LogError(ERR_UnexpectedHexNumberInString2(Utf8Helper.ByteToSafeString(c)), ptr, column);
-                        break;
+                        goto proceed_next_char;
+
                     default:
-                        ptr--; // revert if the character is not supported to allow to parse Eof and other invalid characters
                         lexer.LogError(ERR_UnexpectedEscapeCharacter(Utf8Helper.ByteToSafeString(c)), ptr, column);
-                        break;
+                        goto proceed_next_char;
                 }
             }
             else if (c == startChar)
             {
                 column++;
+
                 ptr++; // We can skip the last " or '
                 column++;
                 break;
@@ -314,7 +388,15 @@ public class Lexer
 
         var offset = (uint)(startPtr - lexer._originalPtr);
         var length = (uint)(ptr - startPtr);
-        lexer.AddToken(TokenKind.String, new TokenSpan(offset, length, lexer._line, lexer._column), tempBuffer.AsSpan());
+        if (tempBuffer.AllocatedBytes > 0)
+        {
+            lexer.AddToken(TokenKind.String, new TokenSpan(offset, length, lexer._line, lexer._column), tempBuffer.AsSpan());
+        }
+        else
+        {
+            // Empty string
+            lexer.AddToken(TokenKind.String, new TokenSpan(offset, length, lexer._line, lexer._column));
+        }
         lexer._column = column;
 
         return ptr;

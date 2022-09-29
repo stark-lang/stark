@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,73 @@ public class TestLexer
     private readonly VirtualArenaManager _manager;
     private readonly LexerInputOutput _lio;
     private readonly Lexer _lexer;
+
+
+    [Test]
+    public void TestSimpleString()
+    {
+        Lexer(@" """" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+        });
+
+        Lexer(@" ""hello world"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 13, 0, 1), "hello world"),
+            (TokenKind.WhiteSpace, new TokenSpan(14, 1, 0, 14), null),
+        });
+    }
+
+    [TestCase(@"\n", "\n")]
+    [TestCase(@"\r", "\r")]
+    [TestCase(@"\'", "\'")]
+    [TestCase(@"\""", "\"")]
+    [TestCase(@"\\", "\\")]
+    [TestCase(@"\b", "\b")]
+    [TestCase(@"\f", "\f")]
+    [TestCase(@"\t", "\t")]
+    [TestCase(@"\v", "\v")]
+    [TestCase(@"\0", "\0")]
+    [TestCase(@"\u0000", "\u0000")]
+    [TestCase(@"\u01aF", "\u01aF")]
+    [TestCase(@"\x0", "\x0")]
+    [TestCase(@"\x12", "\x12")]
+    [TestCase(@"\x12c", "\x12c")]
+    [TestCase(@"\x12cF", "\x12cF")]
+    [TestCase(@"\U00000000", "\U00000000")]
+    [TestCase(@"\U000012cF", "\U000012CF")]
+    public void TestStringEscapeSequences(string escaped, string real)
+    {
+        var length = 12 + escaped.Length;
+
+        //  0123456789abcdef
+        // ` "hello\nworld" `
+        Lexer($" \"hello{escaped}world\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, (uint)length, 0, 1), $"hello{real}world"),
+            (TokenKind.WhiteSpace, new TokenSpan((uint)length + 1, 1, 0, (uint)length + 1), null),
+        });
+    }
+    
+    [Test]
+    public void TestStringEscapeErrors()
+    {
+        //  0123456789ab
+        // ` "\U1hello" `
+        Lexer($" \"\\U1hello\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 10, 0, 1), "hello"),
+            (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
+        },new() 
+        {
+            (DiagnosticId.ERR_InvalidHexNumberInString3, new TextSpan(new TextLocation(5, 0, 5)))
+        });
+    }
 
     [Test]
     public void TestInvalidCharacters()
