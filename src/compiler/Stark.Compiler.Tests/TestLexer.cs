@@ -48,6 +48,100 @@ public class TestLexer
         });
     }
 
+    [Test]
+    public void TestSimpleInterpolatedString()
+    {
+        //  01234
+        // ` $"" `
+        Lexer(@" $"""" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(2, 2, 0, 2), null),
+            (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+        });
+
+        //  0123456789
+        // ` $"hello" `
+        Lexer(@" $""hello"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(2, 7, 0, 2), "hello"),
+            (TokenKind.WhiteSpace, new TokenSpan(9, 1, 0, 9), null),
+        });
+
+        //  01234567
+        // ` $"{ }" `
+        Lexer(@" $""{ }"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(2, 1, 0, 2), null),
+            (TokenKind.StringInterpolatedBegin, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+            (TokenKind.StringInterpolatedEnd, new TokenSpan(5, 1, 0, 5), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(6, 1, 0, 6), null),
+            (TokenKind.WhiteSpace, new TokenSpan(7, 1, 0, 7), null),
+        });
+
+        //  0123456789abc
+        // ` $"hel{ }lo" `
+        Lexer(@" $""hel{ }lo"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(2, 4, 0, 2), "hel"),
+            (TokenKind.StringInterpolatedBegin, new TokenSpan(6, 1, 0, 6), null),
+            (TokenKind.WhiteSpace, new TokenSpan(7, 1, 0, 7), null),
+            (TokenKind.StringInterpolatedEnd, new TokenSpan(8, 1, 0, 8), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(9, 3, 0, 9), "lo"),
+            (TokenKind.WhiteSpace, new TokenSpan(12, 1, 0, 12), null),
+        });
+
+        //  01234567
+        // ` $"{1}" `
+        Lexer(@" $""{1}"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(2, 1, 0, 2), null),
+            (TokenKind.StringInterpolatedBegin, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Integer, new TokenSpan(4, 1, 0, 4), 1),
+            (TokenKind.StringInterpolatedEnd, new TokenSpan(5, 1, 0, 5), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(6, 1, 0, 6), null),
+            (TokenKind.WhiteSpace, new TokenSpan(7, 1, 0, 7), null),
+        });
+
+        //  0123456789a
+        // ` $$"{{1}}" `
+        Lexer(@" $$""{{1}}"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.StringInterpolatedBegin, new TokenSpan(4, 2, 0, 4), null),
+            (TokenKind.Integer, new TokenSpan(6, 1, 0, 6), 1),
+            (TokenKind.StringInterpolatedEnd, new TokenSpan(7, 2, 0, 7), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(9, 1, 0, 9), null),
+            (TokenKind.WhiteSpace, new TokenSpan(10, 1, 0, 10), null),
+        });
+
+        //  0123456789abcdef
+        // ` $$"hel{{1}}lo" `
+        Lexer(@" $$""hel{{1}}lo"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(3, 4, 0, 3), "hel"),
+            (TokenKind.StringInterpolatedBegin, new TokenSpan(7, 2, 0, 7), null),
+            (TokenKind.Integer, new TokenSpan(9, 1, 0, 9), 1),
+            (TokenKind.StringInterpolatedEnd, new TokenSpan(10, 2, 0, 10), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(12, 3, 0, 12), "lo"),
+            (TokenKind.WhiteSpace, new TokenSpan(15, 1, 0, 15), null),
+        });
+    }
+
     [TestCase(@"\n", "\n")]
     [TestCase(@"\r", "\r")]
     [TestCase(@"\'", "\'")]

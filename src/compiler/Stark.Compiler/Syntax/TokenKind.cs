@@ -19,6 +19,10 @@ public enum TokenKind : byte
     CommentDocumentationSingleLine,
     CommentMultiLine,
     String,
+    StringInterpolatedMacro,
+    StringInterpolatedPart,
+    StringInterpolatedBegin,
+    StringInterpolatedEnd,
 
     // 1 byte symbols
     Exclamation,        // !

@@ -156,34 +156,46 @@ public class Lexer
 
     private static unsafe byte* ParseString(Lexer lexer, byte* ptr, byte c)
     {
-        return ParseInterpolatedString(lexer, ptr, c, 0);
+        return ParseInterpolatedString(lexer, ptr, ptr, c, 0);
     }
 
-    private static unsafe byte* ParseInterpolatedString(Lexer lexer, byte* ptr, byte c, int interpolatedCount)
+    private static unsafe byte* ParseInterpolatedString(Lexer lexer, byte* startPtr, byte* ptr, byte c, int interpolatedCount)
     {
         // """
         if (c == (byte)'"' && *(short*)(ptr + 1) == 0x2222)
         {
-            return ParseMultiLineString(lexer, ptr, c, interpolatedCount);
+            return ParseMultiLineString(lexer, startPtr, ptr, c, interpolatedCount);
         }
-        return ParseSingleLineString(lexer, ptr, c, interpolatedCount);
+        return ParseSingleLineString(lexer, startPtr, ptr, c, interpolatedCount);
     }
 
-    private static unsafe byte* ParseMultiLineString(Lexer lexer, byte* ptr, byte c, int interpolatedCount)
+    private static unsafe byte* ParseMultiLineString(Lexer lexer, byte* startPtr, byte* ptr, byte c, int interpolatedCount)
     {
 
         return ptr;
     }
     
-    private static unsafe byte* ParseSingleLineString(Lexer lexer, byte* ptr, byte c, int interpolatedCount)
+    private static unsafe byte* ParseSingleLineString(Lexer lexer, byte* startPtr, byte* ptr, byte c, int interpolatedCount)
     {
+        var startChar = c;
+
+        // Token for string starting with macro $
+        if (interpolatedCount > 0)
+        {
+            var localOffset = (uint)(startPtr - lexer._originalPtr);
+            var localLength = (uint)(ptr - startPtr);
+            lexer.AddToken(TokenKind.StringInterpolatedMacro, new TokenSpan(localOffset, localLength, lexer._line, lexer._column));
+            lexer._column += (uint)interpolatedCount;
+            startPtr = ptr;
+        }
+        var column = lexer._column;
+
+    continue_interpolated_string:
         // Use the temp buffer to create the string
         var tempBuffer = lexer.TempBuffer;
         lexer.ResetTempBuffer();
-        
-        var startPtr = ptr;
-        var startChar = c;
-        var column = lexer._column;
+
+        bool processInterpolated = false;
         while (true)
         {
             ptr++;
@@ -396,6 +408,25 @@ public class Lexer
             }
             else
             {
+                if (c == '{' && interpolatedCount > 0)
+                {
+                    processInterpolated = true;
+                    for (int i = 1; i < interpolatedCount; i++)
+                    {
+                        if (ptr[i] != '{')
+                        {
+                            processInterpolated = false;
+                            break;
+                        }
+                    }
+
+                    if (processInterpolated)
+                    {
+                        column++;
+                        break;
+                    }
+                }
+
                 tempBuffer.Append(c); // append value
                 column++;
             }
@@ -403,16 +434,95 @@ public class Lexer
 
         var offset = (uint)(startPtr - lexer._originalPtr);
         var length = (uint)(ptr - startPtr);
+        var kind = interpolatedCount > 0 ? TokenKind.StringInterpolatedPart : TokenKind.String;
         if (tempBuffer.AllocatedBytes > 0)
         {
-            lexer.AddToken(TokenKind.String, new TokenSpan(offset, length, lexer._line, lexer._column), tempBuffer.AsSpan());
+            lexer.AddToken(kind, new TokenSpan(offset, length, lexer._line, lexer._column), tempBuffer.AsSpan());
         }
         else
         {
             // Empty string
-            lexer.AddToken(TokenKind.String, new TokenSpan(offset, length, lexer._line, lexer._column));
+            lexer.AddToken(kind, new TokenSpan(offset, length, lexer._line, lexer._column));
         }
         lexer._column = column;
+
+        // Parse interpolated string
+        if (processInterpolated)
+        {
+            ptr = ParseInterpolatedContent(lexer, ptr, interpolatedCount);
+            if (ptr is not null)
+            {
+                startPtr = ptr;
+                column = lexer._column - 1;
+                ptr--;
+                goto continue_interpolated_string;
+            }
+        }
+
+        return ptr;
+    }
+
+
+    private static unsafe byte* ParseInterpolatedContent(Lexer lexer, byte* ptr, int interpolatedCount)
+    {
+        // Start of interpolated
+        var offset = (uint)(ptr - lexer._originalPtr);
+        lexer.AddToken(TokenKind.StringInterpolatedBegin, new TokenSpan(offset, (uint)interpolatedCount, lexer._line, lexer._column));
+        ptr += interpolatedCount;
+        lexer._column += (uint)interpolatedCount;
+
+        // Iterate on teh interpolated content
+        var innerBrace = 0;
+        while (ptr != null)
+        {
+            var c = *ptr;
+            if (c == '{')
+            {
+                innerBrace++;
+            }
+            else if (c == '}')
+            {
+                if (innerBrace == 0)
+                {
+                    bool processInterpolated = true;
+                    for (int i = 1; i < interpolatedCount; i++)
+                    {
+                        if (ptr[i] != '}')
+                        {
+                            processInterpolated = false;
+                            break;
+                        }
+                    }
+
+                    if (processInterpolated)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    innerBrace--;
+                }
+            }
+
+            var startPtr = ptr;
+            ptr = ByteToParser[c](lexer, ptr, c);
+            Debug.Assert(ptr != startPtr, $"Invalid state of current pointer after processing `{Utf8Helper.ByteToSafeString(c)}`");
+        }
+
+        // Unexpected end of file
+        if (ptr == null)
+        {
+            // log an error
+        }
+        else
+        {
+            // End of interpolated
+            offset = (uint)(ptr - lexer._originalPtr);
+            lexer.AddToken(TokenKind.StringInterpolatedEnd, new TokenSpan(offset, (uint)interpolatedCount, lexer._line, lexer._column));
+            ptr += interpolatedCount;
+            lexer._column += (uint)interpolatedCount;
+        }
 
         return ptr;
     }
@@ -1126,6 +1236,28 @@ public class Lexer
         }
         return ptr;
     }
+    
+    private static unsafe byte* ParseDollar(Lexer lexer, byte* ptr, byte c)
+    {
+        // Probe for interpolated string
+        var probePtr = ptr;
+        while (c == (byte)'$')
+        {
+            probePtr++;
+            c = *probePtr;
+        }
+
+        if (c == (byte)'"')
+        {
+            return ParseInterpolatedString(lexer, ptr, probePtr, c, (int)(probePtr - ptr));
+        }
+
+        var offset = (uint)(ptr - lexer._originalPtr);
+        lexer.AddToken(TokenKind.Dollar, new TokenSpan(offset, 1, lexer._line, lexer._column));
+        lexer._column++;
+        ptr++;
+        return ptr;
+    }
 
     private static unsafe byte* ParseSymbol1Byte(Lexer lexer, byte* ptr, byte c)
     {
@@ -1339,7 +1471,7 @@ public class Lexer
         &ParseSymbol1Byte, // ExclamationMark,       // !
         &ParseString, // DoubleQuote,           // "
         &ParseSymbol1Byte, // NumberSign,            // #
-        &ParseSymbol1Byte, // DollarSign,            // $
+        &ParseDollar, // DollarSign,            // $
         &ParseSymbolMultiBytes, // PercentSign,           // %
         &ParseSymbolMultiBytes, // Ampersand,             // &
         &ParseNop, // SingleQuote,           // '
@@ -1388,7 +1520,7 @@ public class Lexer
         TokenKind.Exclamation, // ExclamationMark,       // !                          ExclamationMark,       // !
         TokenKind.Invalid, // DoubleQuote,           // "                                        DoubleQuote,           // "
         TokenKind.Number, // NumberSign,            // #                               NumberSign,            // #
-        TokenKind.Dollar, // DollarSign,            // $                               DollarSign,            // $
+        TokenKind.Invalid, // DollarSign,            // $                               DollarSign,            // $
         TokenKind.Invalid, // PercentSign,           // %                                        PercentSign,           // %
         TokenKind.Invalid, // Ampersand,             // &                                        Ampersand,             // &
         TokenKind.Invalid, // SingleQuote,           // '                                        SingleQuote,           // '
