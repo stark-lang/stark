@@ -38,6 +38,14 @@ public class TestLexer
             (TokenKind.String, new TokenSpan(1, 13, 0, 1), "hello world"),
             (TokenKind.WhiteSpace, new TokenSpan(14, 1, 0, 14), null),
         });
+
+
+        Lexer(@" ""hello é world"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 16, 0, 1), "hello é world"),
+            (TokenKind.WhiteSpace, new TokenSpan(17, 1, 0, 16), null),
+        });
     }
 
     [TestCase(@"\n", "\n")]
@@ -76,6 +84,18 @@ public class TestLexer
     public void TestStringEscapeErrors()
     {
         //  0123456789ab
+        // ` "\Zhello" `
+        Lexer($" \"\\Zhello\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 9, 0, 1), "Zhello"),
+            (TokenKind.WhiteSpace, new TokenSpan(10, 1, 0, 10), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_UnexpectedEscapeCharacter, new TextSpan(new TextLocation(3, 0, 3)))
+        });
+
+        //  0123456789ab
         // ` "\U1hello" `
         Lexer($" \"\\U1hello\" ", new()
         {
@@ -85,6 +105,98 @@ public class TestLexer
         },new() 
         {
             (DiagnosticId.ERR_InvalidHexNumberInString3, new TextSpan(new TextLocation(5, 0, 5)))
+        });
+
+        //  0123456789ab
+        // ` "\xhello" `
+        Lexer($" \"\\xhello\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 9, 0, 1), "hello"),
+            (TokenKind.WhiteSpace, new TokenSpan(10, 1, 0, 10), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidHexNumberInString2, new TextSpan(new TextLocation(4, 0, 4)))
+        });
+
+        //  0123456789ab
+        // ` "\uhello" `
+        Lexer($" \"\\uhello\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 9, 0, 1), "hello"),
+            (TokenKind.WhiteSpace, new TokenSpan(10, 1, 0, 10), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidHexNumberInString1, new TextSpan(new TextLocation(4, 0, 4)))
+        });
+
+        //  0123456789ab
+        // ` "\u0hello" `
+        Lexer($" \"\\u0hello\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 10, 0, 1), "hello"),
+            (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidHexNumberInString1, new TextSpan(new TextLocation(5, 0, 5)))
+        });
+
+        //  0123456789ab
+        // ` "\u00hello" `
+        Lexer($" \"\\u00hello\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 11, 0, 1), "hello"),
+            (TokenKind.WhiteSpace, new TokenSpan(12, 1, 0, 12), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidHexNumberInString1, new TextSpan(new TextLocation(6, 0, 6)))
+        });
+
+        //  0123456789abcde
+        // ` "\u000hello" `
+        Lexer($" \"\\u000hello\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 12, 0, 1), "hello"),
+            (TokenKind.WhiteSpace, new TokenSpan(13, 1, 0, 13), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidHexNumberInString1, new TextSpan(new TextLocation(7, 0, 7)))
+        });
+
+        //  0123456789abcdef012
+        // ` "\Uffffffffhello" `
+        Lexer($" \"\\Uffffffffhello\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 17, 0, 1), "hello"),
+            (TokenKind.WhiteSpace, new TokenSpan(18, 1, 0, 18), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidUtf8InString, new TextSpan(new TextLocation(2, 0, 2)))
+        });
+
+        Lexer($" \"\n ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.NewLine, new TokenSpan(2, 1, 0, 2), null),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 1, 0), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_UnexpectedEndOfString, new TextSpan(new TextLocation(2, 0, 2)))
+        });
+
+        Lexer($" \"", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.String, new TokenSpan(1, 1, 0, 1), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_UnexpectedEndOfString, new TextSpan(new TextLocation(2, 0, 2)))
         });
     }
 

@@ -156,15 +156,27 @@ public class Lexer
 
     private static unsafe byte* ParseString(Lexer lexer, byte* ptr, byte c)
     {
-        if (c == (byte)'"')
-        {
-            // """
-            if (*(short*)(ptr+1) == 0x2222)
-            {
-                // Parse multiline strings
-            }
-        }
+        return ParseInterpolatedString(lexer, ptr, c, 0);
+    }
 
+    private static unsafe byte* ParseInterpolatedString(Lexer lexer, byte* ptr, byte c, int interpolatedCount)
+    {
+        // """
+        if (c == (byte)'"' && *(short*)(ptr + 1) == 0x2222)
+        {
+            return ParseMultiLineString(lexer, ptr, c, interpolatedCount);
+        }
+        return ParseSingleLineString(lexer, ptr, c, interpolatedCount);
+    }
+
+    private static unsafe byte* ParseMultiLineString(Lexer lexer, byte* ptr, byte c, int interpolatedCount)
+    {
+
+        return ptr;
+    }
+    
+    private static unsafe byte* ParseSingleLineString(Lexer lexer, byte* ptr, byte c, int interpolatedCount)
+    {
         // Use the temp buffer to create the string
         var tempBuffer = lexer.TempBuffer;
         lexer.ResetTempBuffer();
@@ -225,6 +237,8 @@ public class Lexer
                         column++;
                         continue;
                     case (byte)'U':
+                        var startColumnUtf32 = column;
+                        var startPtrUtf8 = ptr - 1;
                         column++;
                         int valueUtf32 = 0;
                         int countUtf32 = 0;
@@ -256,7 +270,7 @@ public class Lexer
                             else
                             {
                                 
-                                lexer.LogError(ERR_InvalidUtf8InString(valueUtf32), ptr, column);
+                                lexer.LogError(ERR_InvalidUtf8InString(valueUtf32), startPtrUtf8, startColumnUtf32);
                             }
                             continue;
                         }
@@ -303,7 +317,7 @@ public class Lexer
                             }
                         }
 
-                        lexer.LogError(ERR_UnexpectedHexNumberInString1(Utf8Helper.ByteToSafeString(c)), ptr, column);
+                        lexer.LogError(ERR_InvalidHexNumberInString1(Utf8Helper.ByteToSafeString(c)), ptr, column + 1);
                         goto proceed_next_char;
 
                     case (byte)'x':
@@ -348,11 +362,11 @@ public class Lexer
                             }
                         }
 
-                        lexer.LogError(ERR_UnexpectedHexNumberInString2(Utf8Helper.ByteToSafeString(c)), ptr, column);
+                        lexer.LogError(ERR_InvalidHexNumberInString2(Utf8Helper.ByteToSafeString(c)), ptr, column + 1);
                         goto proceed_next_char;
 
                     default:
-                        lexer.LogError(ERR_UnexpectedEscapeCharacter(Utf8Helper.ByteToSafeString(c)), ptr, column);
+                        lexer.LogError(ERR_UnexpectedEscapeCharacter(Utf8Helper.ByteToSafeString(c)), ptr, column + 1);
                         goto proceed_next_char;
                 }
             }
@@ -376,6 +390,7 @@ public class Lexer
             }
             else if (c == Eof || c == '\r' || c == '\n')
             {
+                column++;
                 lexer.LogError(ERR_UnexpectedEndOfString(), ptr, column);
                 break;
             }
