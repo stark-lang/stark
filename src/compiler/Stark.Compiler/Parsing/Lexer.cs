@@ -410,20 +410,41 @@ public class Lexer
             {
                 if (c == '{' && interpolatedCount > 0)
                 {
-                    processInterpolated = true;
-                    for (int i = 1; i < interpolatedCount; i++)
+                    int countOpenBrace = 0;
+                    while(true)
                     {
-                        if (ptr[i] != '{')
+                        if (ptr[countOpenBrace] != '{')
                         {
-                            processInterpolated = false;
                             break;
                         }
+                        countOpenBrace++;
                     }
 
-                    if (processInterpolated)
+                    // We take the last interpolatedCount:
+                    // {{{{{
+                    //    ^^ 
+                    //    interpolatedCount
+                    if (countOpenBrace >= interpolatedCount)
                     {
-                        column++;
+                        var advance = countOpenBrace - interpolatedCount;
+                        for (int i = 0; i < advance; i++)
+                        {
+                            tempBuffer.Append(c);
+                        }
+                        ptr += advance;
+                        column += (uint)advance + 1;
+                        processInterpolated = true;
                         break;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < countOpenBrace; i++)
+                        {
+                            tempBuffer.Append(c);
+                        }
+                        ptr += countOpenBrace;
+                        column += (uint)countOpenBrace;
+                        goto proceed_next_char;
                     }
                 }
 
@@ -465,6 +486,9 @@ public class Lexer
 
     private static unsafe byte* ParseInterpolatedContent(Lexer lexer, byte* ptr, int interpolatedCount)
     {
+        var startPtr = ptr;
+        var startLine = lexer._line;
+        var startColumn = lexer._column;
         // Start of interpolated
         var offset = (uint)(ptr - lexer._originalPtr);
         lexer.AddToken(TokenKind.StringInterpolatedBegin, new TokenSpan(offset, (uint)interpolatedCount, lexer._line, lexer._column));
@@ -473,6 +497,7 @@ public class Lexer
 
         // Iterate on teh interpolated content
         var innerBrace = 0;
+        byte* previousPtr = ptr;
         while (ptr != null)
         {
             var c = *ptr;
@@ -505,15 +530,15 @@ public class Lexer
                 }
             }
 
-            var startPtr = ptr;
+            previousPtr = ptr;
             ptr = ByteToParser[c](lexer, ptr, c);
-            Debug.Assert(ptr != startPtr, $"Invalid state of current pointer after processing `{Utf8Helper.ByteToSafeString(c)}`");
+            Debug.Assert(ptr != previousPtr, $"Invalid state of current pointer after processing `{Utf8Helper.ByteToSafeString(c)}`");
         }
 
         // Unexpected end of file
         if (ptr == null)
         {
-            // log an error
+            lexer.LogError(ERR_UnexpectedEndOfFileForInterpolatedString(new string('}', interpolatedCount)), previousPtr, lexer._column);
         }
         else
         {

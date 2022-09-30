@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -139,6 +138,46 @@ public class TestLexer
             (TokenKind.StringInterpolatedEnd, new TokenSpan(10, 2, 0, 10), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(12, 3, 0, 12), "lo"),
             (TokenKind.WhiteSpace, new TokenSpan(15, 1, 0, 15), null),
+        });
+
+        //  0123456789abcdef01
+        // ` $$"hel{{{1}}}lo" `
+        Lexer(@" $$""hel{{{1}}}lo"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(3, 5, 0, 3), "hel{"),
+            (TokenKind.StringInterpolatedBegin, new TokenSpan(8, 2, 0, 8), null),
+            (TokenKind.Integer, new TokenSpan(10, 1, 0, 10), 1),
+            (TokenKind.StringInterpolatedEnd, new TokenSpan(11, 2, 0, 11), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(13, 4, 0, 13), "}lo"),
+            (TokenKind.WhiteSpace, new TokenSpan(17, 1, 0, 17), null),
+        });
+        
+        //  0123456789abcd
+        // ` $$"hel{0}lo" `
+        Lexer(@" $$""hel{0}lo"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(3, 10, 0, 3), "hel{0}lo"),
+            (TokenKind.WhiteSpace, new TokenSpan(13, 1, 0, 13), null),
+        });
+
+        // Errors
+
+        //  0123456789abcd
+        // ` $"hello{ `
+        Lexer(@" $""hello{ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(2, 6, 0, 2), "hello"),
+            (TokenKind.StringInterpolatedBegin, new TokenSpan(8, 1, 0, 8), null),
+            (TokenKind.WhiteSpace, new TokenSpan(9, 1, 0, 9), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_UnexpectedEndOfFileForInterpolatedString, new TextSpan(new TextLocation(10, 0, 10)))
         });
     }
 
