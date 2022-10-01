@@ -10,6 +10,8 @@ public enum TokenKind : byte
     InvalidUtf8,
     InvalidTab,
 
+    Eof,
+
     WhiteSpace,
     NewLine,
     Identifier,

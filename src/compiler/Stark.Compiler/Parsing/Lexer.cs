@@ -133,6 +133,8 @@ public class Lexer
 
     private static unsafe byte* ParseEof(Lexer lexer, byte* ptr, byte c)
     {
+        var offset = (uint)(ptr - lexer._originalPtr);
+        lexer.AddToken(TokenKind.Eof, new TokenSpan(offset, 0, lexer._line, lexer._column));
         return null;
     }
 
@@ -486,9 +488,6 @@ public class Lexer
 
     private static unsafe byte* ParseInterpolatedContent(Lexer lexer, byte* ptr, int interpolatedCount)
     {
-        var startPtr = ptr;
-        var startLine = lexer._line;
-        var startColumn = lexer._column;
         // Start of interpolated
         var offset = (uint)(ptr - lexer._originalPtr);
         lexer.AddToken(TokenKind.StringInterpolatedBegin, new TokenSpan(offset, (uint)interpolatedCount, lexer._line, lexer._column));
@@ -1167,7 +1166,6 @@ public class Lexer
         if (commentDepth > 0)
         {
             lexer.LogError(ERR_UnexpectedEndOfFileForMultiLineComment(commentDepth), startPtr, (int)length, lexer._line, lexer._column, line, (uint)(column - 1));
-            column = 0;
         }
 
         lexer.AddToken(TokenKind.CommentMultiLine, new TokenSpan(offset, length, lexer._line, lexer._column));

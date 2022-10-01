@@ -20,7 +20,6 @@ public class TestLexer
     private readonly LexerInputOutput _lio;
     private readonly Lexer _lexer;
 
-
     [Test]
     public void TestSimpleString()
     {
@@ -29,6 +28,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 2, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
         });
 
         Lexer(@" ""hello world"" ", new()
@@ -36,6 +36,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 13, 0, 1), "hello world"),
             (TokenKind.WhiteSpace, new TokenSpan(14, 1, 0, 14), null),
+            (TokenKind.Eof, new TokenSpan(15, 0, 0, 15), null),
         });
 
 
@@ -44,6 +45,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 16, 0, 1), "hello é world"),
             (TokenKind.WhiteSpace, new TokenSpan(17, 1, 0, 16), null),
+            (TokenKind.Eof, new TokenSpan(18, 0, 0, 17), null),
         });
     }
 
@@ -58,6 +60,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 1, 0, 1), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(2, 2, 0, 2), null),
             (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+            (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
         });
 
         //  0123456789
@@ -68,6 +71,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 1, 0, 1), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(2, 7, 0, 2), "hello"),
             (TokenKind.WhiteSpace, new TokenSpan(9, 1, 0, 9), null),
+            (TokenKind.Eof, new TokenSpan(10, 0, 0, 10), null),
         });
 
         //  01234567
@@ -82,6 +86,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedEnd, new TokenSpan(5, 1, 0, 5), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(6, 1, 0, 6), null),
             (TokenKind.WhiteSpace, new TokenSpan(7, 1, 0, 7), null),
+            (TokenKind.Eof, new TokenSpan(8, 0, 0, 8), null),
         });
 
         //  0123456789abc
@@ -96,6 +101,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedEnd, new TokenSpan(8, 1, 0, 8), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(9, 3, 0, 9), "lo"),
             (TokenKind.WhiteSpace, new TokenSpan(12, 1, 0, 12), null),
+            (TokenKind.Eof, new TokenSpan(13, 0, 0, 13), null),
         });
 
         //  01234567
@@ -110,6 +116,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedEnd, new TokenSpan(5, 1, 0, 5), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(6, 1, 0, 6), null),
             (TokenKind.WhiteSpace, new TokenSpan(7, 1, 0, 7), null),
+            (TokenKind.Eof, new TokenSpan(8, 0, 0, 8), null),
         });
 
         //  0123456789a
@@ -124,6 +131,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedEnd, new TokenSpan(7, 2, 0, 7), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(9, 1, 0, 9), null),
             (TokenKind.WhiteSpace, new TokenSpan(10, 1, 0, 10), null),
+            (TokenKind.Eof, new TokenSpan(11, 0, 0, 11), null),
         });
 
         //  0123456789abcdef
@@ -138,6 +146,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedEnd, new TokenSpan(10, 2, 0, 10), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(12, 3, 0, 12), "lo"),
             (TokenKind.WhiteSpace, new TokenSpan(15, 1, 0, 15), null),
+            (TokenKind.Eof, new TokenSpan(16, 0, 0, 16), null),
         });
 
         //  0123456789abcdef01
@@ -152,6 +161,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedEnd, new TokenSpan(11, 2, 0, 11), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(13, 4, 0, 13), "}lo"),
             (TokenKind.WhiteSpace, new TokenSpan(17, 1, 0, 17), null),
+            (TokenKind.Eof, new TokenSpan(18, 0, 0, 18), null),
         });
         
         //  0123456789abcd
@@ -162,6 +172,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 2, 0, 1), null),
             (TokenKind.StringInterpolatedPart, new TokenSpan(3, 10, 0, 3), "hel{0}lo"),
             (TokenKind.WhiteSpace, new TokenSpan(13, 1, 0, 13), null),
+            (TokenKind.Eof, new TokenSpan(14, 0, 0, 14), null),
         });
 
         // Errors
@@ -175,6 +186,7 @@ public class TestLexer
             (TokenKind.StringInterpolatedPart, new TokenSpan(2, 6, 0, 2), "hello"),
             (TokenKind.StringInterpolatedBegin, new TokenSpan(8, 1, 0, 8), null),
             (TokenKind.WhiteSpace, new TokenSpan(9, 1, 0, 9), null),
+            (TokenKind.Eof, new TokenSpan(10, 0, 0, 10), null),
         }, new()
         {
             (DiagnosticId.ERR_UnexpectedEndOfFileForInterpolatedString, new TextSpan(new TextLocation(10, 0, 10)))
@@ -210,6 +222,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, (uint)length, 0, 1), $"hello{real}world"),
             (TokenKind.WhiteSpace, new TokenSpan((uint)length + 1, 1, 0, (uint)length + 1), null),
+            (TokenKind.Eof, new TokenSpan((uint)length + 2, 0, 0, (uint)length + 2), null),
         });
     }
     
@@ -223,6 +236,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 9, 0, 1), "Zhello"),
             (TokenKind.WhiteSpace, new TokenSpan(10, 1, 0, 10), null),
+            (TokenKind.Eof, new TokenSpan(11, 0, 0, 11), null),
         }, new()
         {
             (DiagnosticId.ERR_UnexpectedEscapeCharacter, new TextSpan(new TextLocation(3, 0, 3)))
@@ -235,7 +249,8 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 10, 0, 1), "hello"),
             (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
-        },new() 
+            (TokenKind.Eof, new TokenSpan(12, 0, 0, 12), null),
+        }, new() 
         {
             (DiagnosticId.ERR_InvalidHexNumberInString3, new TextSpan(new TextLocation(5, 0, 5)))
         });
@@ -247,6 +262,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 9, 0, 1), "hello"),
             (TokenKind.WhiteSpace, new TokenSpan(10, 1, 0, 10), null),
+            (TokenKind.Eof, new TokenSpan(11, 0, 0, 11), null),
         }, new()
         {
             (DiagnosticId.ERR_InvalidHexNumberInString2, new TextSpan(new TextLocation(4, 0, 4)))
@@ -259,6 +275,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 9, 0, 1), "hello"),
             (TokenKind.WhiteSpace, new TokenSpan(10, 1, 0, 10), null),
+            (TokenKind.Eof, new TokenSpan(11, 0, 0, 11), null),
         }, new()
         {
             (DiagnosticId.ERR_InvalidHexNumberInString1, new TextSpan(new TextLocation(4, 0, 4)))
@@ -271,6 +288,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 10, 0, 1), "hello"),
             (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
+            (TokenKind.Eof, new TokenSpan(12, 0, 0, 12), null),
         }, new()
         {
             (DiagnosticId.ERR_InvalidHexNumberInString1, new TextSpan(new TextLocation(5, 0, 5)))
@@ -283,6 +301,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 11, 0, 1), "hello"),
             (TokenKind.WhiteSpace, new TokenSpan(12, 1, 0, 12), null),
+            (TokenKind.Eof, new TokenSpan(13, 0, 0, 13), null),
         }, new()
         {
             (DiagnosticId.ERR_InvalidHexNumberInString1, new TextSpan(new TextLocation(6, 0, 6)))
@@ -295,6 +314,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 12, 0, 1), "hello"),
             (TokenKind.WhiteSpace, new TokenSpan(13, 1, 0, 13), null),
+            (TokenKind.Eof, new TokenSpan(14, 0, 0, 14), null),
         }, new()
         {
             (DiagnosticId.ERR_InvalidHexNumberInString1, new TextSpan(new TextLocation(7, 0, 7)))
@@ -307,6 +327,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 17, 0, 1), "hello"),
             (TokenKind.WhiteSpace, new TokenSpan(18, 1, 0, 18), null),
+            (TokenKind.Eof, new TokenSpan(19, 0, 0, 19), null),
         }, new()
         {
             (DiagnosticId.ERR_InvalidUtf8InString, new TextSpan(new TextLocation(2, 0, 2)))
@@ -318,6 +339,7 @@ public class TestLexer
             (TokenKind.String, new TokenSpan(1, 1, 0, 1), null),
             (TokenKind.NewLine, new TokenSpan(2, 1, 0, 2), null),
             (TokenKind.WhiteSpace, new TokenSpan(3, 1, 1, 0), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 1, 1), null),
         }, new()
         {
             (DiagnosticId.ERR_UnexpectedEndOfString, new TextSpan(new TextLocation(2, 0, 2)))
@@ -327,6 +349,7 @@ public class TestLexer
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.String, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.Eof, new TokenSpan(2, 0, 0, 2), null),
         }, new()
         {
             (DiagnosticId.ERR_UnexpectedEndOfString, new TextSpan(new TextLocation(2, 0, 2)))
@@ -341,6 +364,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.InvalidTab, new TokenSpan(1, 1, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+            (TokenKind.Eof, new TokenSpan(3, 0, 0, 3), null),
         });
 
         Lexer(" \x01 ", new()
@@ -348,6 +372,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Invalid, new TokenSpan(1, 1, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+            (TokenKind.Eof, new TokenSpan(3, 0, 0, 3), null),
         });
 
         // \xC0 encoded as C3 80 in UTF8
@@ -356,6 +381,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.InvalidUtf8, new TokenSpan(1, 2, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 2), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 3), null),
         });
 
         // Encode an invalid character
@@ -364,6 +390,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Invalid, new TokenSpan(1, 1, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+            (TokenKind.Eof, new TokenSpan(3, 0, 0, 3), null),
         });
     }
 
@@ -375,6 +402,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentMultiLine, new TokenSpan(1, 4, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+            (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
         });
 
         Lexer(" /* */ ", new()
@@ -382,6 +410,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentMultiLine, new TokenSpan(1, 5, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+            (TokenKind.Eof, new TokenSpan(7, 0, 0, 7), null),
         });
 
         Lexer(" /* a */ ", new()
@@ -389,6 +418,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentMultiLine, new TokenSpan(1, 7, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(8, 1, 0, 8), null),
+            (TokenKind.Eof, new TokenSpan(9, 0, 0, 9), null),
         });
         
         Lexer(" /*/**/*/ ", new()
@@ -396,6 +426,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentMultiLine, new TokenSpan(1, 8, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(9, 1, 0, 9), null),
+            (TokenKind.Eof, new TokenSpan(10, 0, 0, 10), null),
         });
 
         Lexer(" /*\r*/ ", new()
@@ -403,6 +434,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentMultiLine, new TokenSpan(1, 5, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(6, 1, 1, 2), null),
+            (TokenKind.Eof, new TokenSpan(7, 0, 1, 3), null),
         });
         
         Lexer(" /*\n*/ ", new()
@@ -410,6 +442,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentMultiLine, new TokenSpan(1, 5, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(6, 1, 1, 2), null),
+            (TokenKind.Eof, new TokenSpan(7, 0, 1, 3), null),
         });
 
         Lexer(" /*\r\n*/ ", new()
@@ -417,6 +450,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentMultiLine, new TokenSpan(1, 6, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(7, 1, 1, 2), null),
+            (TokenKind.Eof, new TokenSpan(8, 0, 1, 3), null),
         });
 
         // 🎉 is 4 bytes in UTF8, takes 2 columns
@@ -425,6 +459,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentMultiLine, new TokenSpan(1, 8, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(9, 1, 0, 7), null),
+            (TokenKind.Eof, new TokenSpan(10, 0, 0, 8), null),
         });
 
         // é is 2 bytes in UTF8, takes 1 column
@@ -433,12 +468,14 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentMultiLine, new TokenSpan(1, 6, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(7, 1, 0, 6), null),
+            (TokenKind.Eof, new TokenSpan(8, 0, 0, 7), null),
         });
 
         Lexer(" /*", new()
             {
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.CommentMultiLine, new TokenSpan(1, 2, 0, 1), null),
+                (TokenKind.Eof, new TokenSpan(3, 0, 0, 3), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedEndOfFileForMultiLineComment, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(2, 0, 2))),
@@ -449,6 +486,7 @@ public class TestLexer
             {
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.CommentMultiLine, new TokenSpan(1, 4, 0, 1), null),
+                (TokenKind.Eof, new TokenSpan(5, 0, 1, 1), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedEndOfFileForMultiLineComment, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(4, 1, 0))),
@@ -463,12 +501,14 @@ public class TestLexer
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentSingleLine, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.Eof, new TokenSpan(3, 0, 0, 3), null),
         });
 
         Lexer(" // ", new()
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentSingleLine, new TokenSpan(1, 3, 0, 1), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
         });
 
         Lexer(" //\r", new()
@@ -476,6 +516,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentSingleLine, new TokenSpan(1, 2, 0, 1), null),
             (TokenKind.NewLine, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 1, 0), null),
         });
 
         Lexer(" //\n", new()
@@ -483,6 +524,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentSingleLine, new TokenSpan(1, 2, 0, 1), null),
             (TokenKind.NewLine, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 1, 0), null),
         });
 
         Lexer(" //\r\n", new()
@@ -490,6 +532,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentSingleLine, new TokenSpan(1, 2, 0, 1), null),
             (TokenKind.NewLine, new TokenSpan(3, 2, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(5, 0, 1, 0), null),
         });
 
         Lexer(" // abc\n  // def", new()
@@ -499,6 +542,7 @@ public class TestLexer
             (TokenKind.NewLine, new TokenSpan(7, 1, 0, 7), null),
             (TokenKind.WhiteSpace, new TokenSpan(8, 2, 1, 0), null),
             (TokenKind.CommentSingleLine, new TokenSpan(10, 6, 1, 2), null),
+            (TokenKind.Eof, new TokenSpan(16, 0, 1, 8), null),
         });
  
         // 🎉 is 4 bytes in UTF8, takes 2 columns
@@ -507,6 +551,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentSingleLine, new TokenSpan(1, 7, 0, 1), null),
             (TokenKind.NewLine, new TokenSpan(8, 1, 0, 6), null),
+            (TokenKind.Eof, new TokenSpan(9, 0, 1, 0), null),
         });
 
         // é is 2 bytes in UTF8, takes 1 column
@@ -515,6 +560,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.CommentSingleLine, new TokenSpan(1, 5, 0, 1), null),
             (TokenKind.NewLine, new TokenSpan(6, 1, 0, 5), null),
+            (TokenKind.Eof, new TokenSpan(7, 0, 1, 0), null),
         });
     }
 
@@ -572,6 +618,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (kind, new TokenSpan(1, (uint)expected.Length, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(column, 1, 0, column), null),
+            (TokenKind.Eof, new TokenSpan(column + 1, 0, 0, column + 1), null),
         });
     }
 
@@ -583,6 +630,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Identifier, new TokenSpan(1, 5, 0, 1), "hello"),
             (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+            (TokenKind.Eof, new TokenSpan(7, 0, 0, 7), null),
         });
 
         Lexer(" h ", new()
@@ -590,6 +638,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Identifier, new TokenSpan(1, 1, 0, 1), "h"),
             (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+            (TokenKind.Eof, new TokenSpan(3, 0, 0, 3), null),
         });
 
         Lexer(" _h ", new()
@@ -597,6 +646,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Identifier, new TokenSpan(1, 2, 0, 1), "_h"),
             (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
         });
 
         Lexer(" h_ ", new()
@@ -604,6 +654,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Identifier, new TokenSpan(1, 2, 0, 1), "h_"),
             (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
         });
 
         Lexer(" h1234567890 ", new()
@@ -611,6 +662,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Identifier, new TokenSpan(1, 11, 0, 1), "h1234567890"),
             (TokenKind.WhiteSpace, new TokenSpan(12, 1, 0, 12), null),
+            (TokenKind.Eof, new TokenSpan(13, 0, 0, 13), null),
         });
 
         Lexer(" abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789 ", new()
@@ -618,6 +670,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Identifier, new TokenSpan(1, 63, 0, 1), "abcdefghjiklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789"),
             (TokenKind.WhiteSpace, new TokenSpan(64, 1, 0, 64), null),
+            (TokenKind.Eof, new TokenSpan(65, 0, 0, 65), null),
         });
 
         Lexer(" _ ", new()
@@ -625,6 +678,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Underscore, new TokenSpan(1, 1, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(2, 1, 0, 2), null),
+            (TokenKind.Eof, new TokenSpan(3, 0, 0, 3), null),
         });
 
         Lexer(" __ ", new()
@@ -632,6 +686,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Underscore, new TokenSpan(1, 2, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
         });
     }
 
@@ -643,6 +698,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.PubKeyword, new TokenSpan(1, 3, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+            (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
         });
 
         Lexer(" as ", new()
@@ -650,6 +706,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.AsKeyword, new TokenSpan(1, 2, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
         });
 
         Lexer(" async ", new()
@@ -657,6 +714,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.AsyncKeyword, new TokenSpan(1, 5, 0, 1), null),
             (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+            (TokenKind.Eof, new TokenSpan(7, 0, 0, 7), null),
         });
     }
 
@@ -667,36 +725,42 @@ public class TestLexer
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.NewLine, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.Eof, new TokenSpan(2, 0, 1, 0), null),
         });
 
         Lexer("\n ", new()
         {
             (TokenKind.NewLine, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.WhiteSpace, new TokenSpan(1, 1, 1, 0), null),
+            (TokenKind.Eof, new TokenSpan(2, 0, 1, 1), null),
         });
 
         Lexer("\r\n ", new()
         {
             (TokenKind.NewLine, new TokenSpan(0, 2, 0, 0), null),
             (TokenKind.WhiteSpace, new TokenSpan(2, 1, 1, 0), null),
+            (TokenKind.Eof, new TokenSpan(3, 0, 1, 1), null),
         });
 
         Lexer(" \r\n", new()
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.NewLine, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.Eof, new TokenSpan(3, 0, 1, 0), null),
         });
 
         Lexer(" \r", new()
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.NewLine, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.Eof, new TokenSpan(2, 0, 1, 0), null),
         });
 
         Lexer("\r ", new()
         {
             (TokenKind.NewLine, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.WhiteSpace, new TokenSpan(1, 1, 1, 0), null),
+            (TokenKind.Eof, new TokenSpan(2, 0, 1, 1), null),
         });
     }
 
@@ -706,22 +770,26 @@ public class TestLexer
         Lexer(" ", new()
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Eof, new TokenSpan(1, 0, 0, 1), null),
         });
 
         Lexer("  ", new()
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 2, 0, 0), null),
+            (TokenKind.Eof, new TokenSpan(2, 0, 0, 2), null),
         });
 
         Lexer("         ", new()
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 9, 0, 0), null),
+            (TokenKind.Eof, new TokenSpan(9, 0, 0, 9), null),
         });
 
         Lexer("0         ", new()
         {
             (TokenKind.Integer, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.WhiteSpace, new TokenSpan(1, 9, 0, 1), null),
+            (TokenKind.Eof, new TokenSpan(10, 0, 0, 10), null),
         });
     }
 
@@ -731,37 +799,44 @@ public class TestLexer
         Lexer("1234567890", new()
         {
             (TokenKind.Integer, new TokenSpan(0, 10, 0, 0), 1234567890),
+            (TokenKind.Eof, new TokenSpan(10, 0, 0, 10), null),
         });
 
         Lexer("41", new()
         {
             (TokenKind.Integer, new TokenSpan(0, 2, 0, 0), 41),
+            (TokenKind.Eof, new TokenSpan(2, 0, 0, 2), null),
         });
 
         Lexer("9876543210", new()
         {
             (TokenKind.Integer, new TokenSpan(0, 10, 0, 0), 9876543210),
+            (TokenKind.Eof, new TokenSpan(10, 0, 0, 10), null),
         });
 
         Lexer("-125", new ()
         {
             (TokenKind.Minus, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Integer, new TokenSpan(1, 3, 0, 1), 125),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
         });
 
         Lexer("0", new()
         {
             (TokenKind.Integer, new TokenSpan(0, 1, 0, 0), 0),
+            (TokenKind.Eof, new TokenSpan(1, 0, 0, 1), null),
         });
 
         Lexer("12_1", new()
         {
             (TokenKind.Integer, new TokenSpan(0, 4, 0, 0), 121),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
         });
 
         Lexer("12__1", new()
         {
             (TokenKind.Integer, new TokenSpan(0, 5, 0, 0), 121),
+            (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
         });
 
         // Errors
@@ -769,6 +844,7 @@ public class TestLexer
         Lexer("1_", new()
             {
                 (TokenKind.Integer, new TokenSpan(0, 2, 0, 0), 1),
+                (TokenKind.Eof, new TokenSpan(2, 0, 0, 2), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(1, 0, 1))),
@@ -780,6 +856,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 3, 0, 1), 1),
                 (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+                (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(2, 0, 2), new TextLocation(3, 0, 3))),
@@ -792,6 +869,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 26, 0, 1), 0),
                 (TokenKind.WhiteSpace, new TokenSpan(27, 1, 0, 27), null),
+                (TokenKind.Eof, new TokenSpan(28, 0, 0, 28), null),
             }, new()
             {
                 (DiagnosticId.ERR_NumberOverflow, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(26, 0, 26))),
@@ -807,6 +885,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Integer, new TokenSpan(1, 10, 0, 1), 0x12345678),
             (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
+            (TokenKind.Eof, new TokenSpan(12, 0, 0, 12), null),
         });
 
         for (int i = 0; i < 9; i++)
@@ -816,6 +895,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 3, 0, 1), i),
                 (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+                (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
             });
         }
 
@@ -824,6 +904,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Integer, new TokenSpan(1, 10, 0, 1), 0xABCDEF01),
             (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
+            (TokenKind.Eof, new TokenSpan(12, 0, 0, 12), null),
         });
 
         Lexer(" 0xabcdef01 ", new()
@@ -831,6 +912,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Integer, new TokenSpan(1, 10, 0, 1), 0xABCDEF01),
             (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
+            (TokenKind.Eof, new TokenSpan(12, 0, 0, 12), null),
         });
 
         Lexer(" 0x1234_abcd ", new()
@@ -838,6 +920,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Integer, new TokenSpan(1, 11, 0, 1), 0x1234ABCD),
             (TokenKind.WhiteSpace, new TokenSpan(12, 1, 0, 12), null),
+            (TokenKind.Eof, new TokenSpan(13, 0, 0, 13), null),
         });
 
         Lexer(" 0x1234_abcd_5678_9abc ", new()
@@ -845,6 +928,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Integer, new TokenSpan(1, 21, 0, 1), 0x1234_abcd_5678_9abc),
             (TokenKind.WhiteSpace, new TokenSpan(22, 1, 0, 22), null),
+            (TokenKind.Eof, new TokenSpan(23, 0, 0, 23), null),
         });
 
         // Errors
@@ -853,6 +937,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 2, 0, 1), 0),
                 (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+                (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
             }, new()
             {
                 (DiagnosticId.ERR_InvalidHexNumberExpectingDigit, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(2, 0, 2))),
@@ -864,6 +949,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 4, 0, 1), 1),
                 (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+                (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(4, 0, 4))),
@@ -876,6 +962,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 23, 0, 1), 0),
                 (TokenKind.WhiteSpace, new TokenSpan(24, 1, 0, 24), null),
+                (TokenKind.Eof, new TokenSpan(25, 0, 0, 25), null),
             }, new()
             {
                 (DiagnosticId.ERR_NumberOverflow,  new TextSpan(new TextLocation(1, 0, 1), new TextLocation(23, 0, 23))),
@@ -891,6 +978,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Integer, new TokenSpan(1, 10, 0, 1), 0b_000_001_010_011_100_101_110_111),
             (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
+            (TokenKind.Eof, new TokenSpan(12, 0, 0, 12), null),
         });
 
         // Errors
@@ -899,6 +987,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 2, 0, 1), 0),
                 (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+                (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
             }, new()
             {
                 (DiagnosticId.ERR_InvalidOctalNumberExpectingDigit, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(2, 0, 2))),
@@ -910,6 +999,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 5, 0, 1), 0b_001_111),
                 (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+                (TokenKind.Eof, new TokenSpan(7, 0, 0, 7), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(5, 0, 5))),
@@ -922,6 +1012,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 28, 0, 1), 0),
                 (TokenKind.WhiteSpace, new TokenSpan(29, 1, 0, 29), null),
+                (TokenKind.Eof, new TokenSpan(30, 0, 0, 30), null),
             }, new()
             {
                 (DiagnosticId.ERR_NumberOverflow,  new TextSpan(new TextLocation(1, 0, 1), new TextLocation(28, 0, 28))),
@@ -937,6 +1028,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Integer, new TokenSpan(1, 11, 0, 1), 0b1011_1101),
             (TokenKind.WhiteSpace, new TokenSpan(12, 1, 0, 12), null),
+            (TokenKind.Eof, new TokenSpan(13, 0, 0, 13), null),
         });
 
         Lexer(" 0b1111_1010_0101_0011_0111_1000_1001_1100_0011_1111_1010_0101_0011_0111_1000_1001 ", new()
@@ -944,6 +1036,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Integer, new TokenSpan(1, 81, 0, 1), 0b1111_1010_0101_0011_0111_1000_1001_1100_0011_1111_1010_0101_0011_0111_1000_1001),
             (TokenKind.WhiteSpace, new TokenSpan(82, 1, 0, 82), null),
+            (TokenKind.Eof, new TokenSpan(83, 0, 0, 83), null),
         });
 
         // Errors
@@ -952,6 +1045,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 2, 0, 1), 0),
                 (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+                (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
             }, new()
             {
                 (DiagnosticId.ERR_InvalidHexNumberExpectingDigit, new TextSpan(new TextLocation(1, 0, 1), new TextLocation(2, 0, 2))),
@@ -963,6 +1057,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 5, 0, 1), 2),
                 (TokenKind.WhiteSpace, new TokenSpan(6, 1, 0, 6), null),
+                (TokenKind.Eof, new TokenSpan(7, 0, 0, 7), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(5, 0, 5))),
@@ -975,6 +1070,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Integer, new TokenSpan(1, 83, 0, 1), 0),
                 (TokenKind.WhiteSpace, new TokenSpan(84, 1, 0, 84), null),
+                (TokenKind.Eof, new TokenSpan(85, 0, 0, 85), null),
             }, new()
             {
                 (DiagnosticId.ERR_NumberOverflow,  new TextSpan(new TextLocation(1, 0, 1), new TextLocation(83, 0, 83))),
@@ -990,6 +1086,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Float, new TokenSpan(1, 3, 0, 1), 1.5),
             (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+            (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
         });
 
         Lexer(" 0.5 ", new()
@@ -997,6 +1094,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Float, new TokenSpan(1, 3, 0, 1), 0.5),
             (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+            (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
         });
 
         Lexer(" 1_1.2_5 ", new()
@@ -1004,6 +1102,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Float, new TokenSpan(1, 7, 0, 1), 1_1.2_5),
             (TokenKind.WhiteSpace, new TokenSpan(8, 1, 0, 8), null),
+            (TokenKind.Eof, new TokenSpan(9, 0, 0, 9), null),
         });
 
         Lexer(" 2.1e10 ", new()
@@ -1011,6 +1110,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Float, new TokenSpan(1, 6, 0, 1), 2.1e10),
             (TokenKind.WhiteSpace, new TokenSpan(7, 1, 0, 7), null),
+            (TokenKind.Eof, new TokenSpan(8, 0, 0, 8), null),
         });
 
         Lexer(" 2.1e+10 ", new()
@@ -1018,6 +1118,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Float, new TokenSpan(1, 7, 0, 1), 2.1e+10),
             (TokenKind.WhiteSpace, new TokenSpan(8, 1, 0, 8), null),
+            (TokenKind.Eof, new TokenSpan(9, 0, 0, 9), null),
         });
 
         Lexer(" 2.1e-10 ", new()
@@ -1025,6 +1126,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Float, new TokenSpan(1, 7, 0, 1), 2.1e-10),
             (TokenKind.WhiteSpace, new TokenSpan(8, 1, 0, 8), null),
+            (TokenKind.Eof, new TokenSpan(9, 0, 0, 9), null),
         });
 
         Lexer(" 3e5 ", new()
@@ -1032,6 +1134,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Float, new TokenSpan(1, 3, 0, 1), 3e5),
             (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+            (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
         });
 
         Lexer(" 3E5 ", new()
@@ -1039,6 +1142,7 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
             (TokenKind.Float, new TokenSpan(1, 3, 0, 1), 3E5),
             (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+            (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
         });
         
         Lexer(" 1. ", new()
@@ -1047,6 +1151,7 @@ public class TestLexer
             (TokenKind.Integer, new TokenSpan(1, 1, 0, 1), 1),
             (TokenKind.Dot, new TokenSpan(2, 1, 0, 2), null),
             (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
         });
 
         Lexer(" 1e2. ", new()
@@ -1055,6 +1160,7 @@ public class TestLexer
             (TokenKind.Float, new TokenSpan(1, 3, 0, 1), 1e2),
             (TokenKind.Dot, new TokenSpan(4, 1, 0, 4), null),
             (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+            (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
         });
 
         Lexer(" 1e1000 ", new()
@@ -1062,6 +1168,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Float, new TokenSpan(1, 6, 0, 1), double.PositiveInfinity),
                 (TokenKind.WhiteSpace, new TokenSpan(7, 1, 0, 7), null),
+                (TokenKind.Eof, new TokenSpan(8, 0, 0, 8), null),
             }
         );
 
@@ -1072,6 +1179,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Float, new TokenSpan(1, 4, 0, 1), 1.5),
                 (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+                (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(2, 0, 2)))
@@ -1083,6 +1191,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Float, new TokenSpan(1, 4, 0, 1), 1.5),
                 (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+                (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(4, 0, 4)))
@@ -1095,6 +1204,7 @@ public class TestLexer
                 (TokenKind.Float, new TokenSpan(1, 2, 0, 1), 1.0),
                 (TokenKind.Identifier, new TokenSpan(3, 1, 0, 3), "x"),
                 (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+                (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedCharacterForExponent, new TextSpan(new TextLocation(3, 0, 3)))
@@ -1106,6 +1216,7 @@ public class TestLexer
                 (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
                 (TokenKind.Float, new TokenSpan(1, 4, 0, 1), 1e2),
                 (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+                (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
             }, new()
             {
                 (DiagnosticId.ERR_UnexpectedUnderscoreAfterDigit, new TextSpan(new TextLocation(4, 0, 4)))
