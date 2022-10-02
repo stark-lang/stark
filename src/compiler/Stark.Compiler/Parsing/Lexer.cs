@@ -267,6 +267,11 @@ public class Lexer
                                 }
                             }
 
+                            if (lineStateCount == lineStates.Count)
+                            {
+                                var delta = (uint)closingDoubleQuoteCount;
+                                lexer.LogError(ERR_InvalidRawStringExpectingAtLeastOneLine(), ptr - delta, 1, line, column - delta, line, column - delta);
+                            }
                         }
                     }
 

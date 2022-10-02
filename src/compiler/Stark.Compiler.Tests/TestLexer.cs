@@ -647,7 +647,6 @@ public class TestLexer
         });
     }
 
-
     [Test]
     public void TestRawStringInvalid()
     {
@@ -726,6 +725,22 @@ public class TestLexer
         }, new()
         {
             (DiagnosticId.ERR_UnexpectedEndOfFileForInterpolatedString, new TextSpan(new TextLocation(6, 0, 6))),
+        });
+
+        //            1         2         3
+        //  0123456789012345678901234567890123
+        // ` """␤    """ `
+        Lexer(" \"\"\"\n    \"\"\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.MultiLineStringBegin, new TokenSpan(1, 3, 0, 1), null),
+            (TokenKind.MultiLineStringPart, new TokenSpan(4, 5, 0, 4), null),
+            (TokenKind.MultiLineStringEnd, new TokenSpan(9, 3, 1, 4), null),
+            (TokenKind.WhiteSpace, new TokenSpan(12, 1, 1, 7), null),
+            (TokenKind.Eof, new TokenSpan(13, 0, 1, 8), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidRawStringExpectingAtLeastOneLine, new TextSpan(new TextLocation(9, 1, 4))),
         });
     }
 
