@@ -5,6 +5,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Text;
+using Stark.Compiler.Collections;
 using Stark.Compiler.Diagnostics;
 using Stark.Compiler.Helpers;
 using Stark.Compiler.Syntax;
@@ -24,11 +25,17 @@ public class Lexer
     public const byte Eof = 0x03;
     private const int PaddingBytes = 8;
     private readonly LexerInputOutput _lio;
+    private InlineList<int> _stringMultiLineTokenIndices;
+    private InlineList<StringMultiLineState> _stringMultilineStates;
 
     public Lexer(LexerInputOutput lio)
     {
         _lio = lio;
+        _stringMultiLineTokenIndices = new InlineList<int>(4);
+        _stringMultilineStates = new InlineList<StringMultiLineState>(4);
     }
+
+    private int TokenCount => _lio.Tokens.Count;
 
     private void AddToken(TokenKind kind, TokenSpan span)
     {
@@ -66,6 +73,11 @@ public class Lexer
     //    int remainingLength = _length - offset;
     //    return new Span<byte>(ptr, remainingLength);
     //}
+
+    private unsafe Span<byte> GetSpan(int offset, int length)
+    {
+        return new Span<byte>(_originalPtr + (int)offset, length);
+    }
 
     public void Run(Stream stream)
     {
@@ -173,8 +185,339 @@ public class Lexer
 
     private static unsafe byte* ParseMultiLineString(Lexer lexer, byte* startPtr, byte* ptr, byte c, int interpolatedCount)
     {
+        if (interpolatedCount > 0)
+        {
+            var localOffset = (uint)(startPtr - lexer._originalPtr);
+            var localLength = (uint)(ptr - startPtr);
+            lexer.AddToken(TokenKind.StringInterpolatedMacro, new TokenSpan(localOffset, localLength, lexer._line, lexer._column));
+            lexer._column += (uint)interpolatedCount;
+            startPtr = ptr;
+        }
+
+        var line = lexer._line;
+        var column = lexer._column;
+        while (c == (byte)'"')
+        {
+            ptr++;
+            column++;
+            c = *ptr;
+        }
+
+        int startingDoubleQuoteCount = (int)(ptr - startPtr);
+        lexer.AddToken(TokenKind.MultiLineStringBegin, new TokenSpan((uint)(startPtr - lexer._originalPtr), (uint)startingDoubleQuoteCount, lexer._line, lexer._column));
+        lexer._column = column;
+
+        startPtr = ptr;
+        var startLine = line;
+        var startColumn = column;
+
+        ref var tokenPartIndices = ref lexer._stringMultiLineTokenIndices;
+        var tokenPartIndicesCount = tokenPartIndices.Count;
+
+        ref var lineStates = ref lexer._stringMultilineStates;
+        var lineStateCount = lineStates.Count;
+
+        // We start with a negative spaceCount
+        uint lineCount = 0;
+        uint leadingSpaceCountCurrentLine = 0;
+        bool isCurrentLineSpaceOnly = true;
+        bool hasErrors = false;
+        byte* startPtrCurrentLine = null;
+        bool isFirstLine = true;
+        var closingDoubleQuoteCount = 0;
+
+    continue_interpolated_string:
+
+        bool processInterpolated = false;
+        while (true)
+        {
+            c = *ptr;
+            if (c == (byte)'"')
+            {
+                while (c == (byte)'"')
+                {
+                    closingDoubleQuoteCount++;
+                    ptr++;
+                    column++;
+                    c = *ptr;
+                }
+
+                // Check if we need to close the multiline string
+                if (closingDoubleQuoteCount >= startingDoubleQuoteCount)
+                {
+                    // In case of a multiline
+                    if (lineCount > 0)
+                    {
+                        // If the last line is not empty, this is an error
+                        if (!isCurrentLineSpaceOnly)
+                        {
+                            lexer.LogError(ERR_InvalidRawStringExpectingEmptyLastLine(), startPtrCurrentLine + leadingSpaceCountCurrentLine, 1, line, leadingSpaceCountCurrentLine, line, leadingSpaceCountCurrentLine);
+                            hasErrors = true;
+                        }
+                        else
+                        {
+                            // Verify that each line start with the correct number of leading spaces
+                            for (var i = lineStateCount; i < lineStates.Count; i++)
+                            {
+                                ref var previousLineState = ref lineStates.Items[i];
+                                if (previousLineState.LeadingSpaceCount < leadingSpaceCountCurrentLine)
+                                {
+                                    lexer.LogError(ERR_InvalidRawStringExpectingSpaceToMatchClosing(), lexer._originalPtr + previousLineState.Offset + previousLineState.LeadingSpaceCount, 1, previousLineState.Line, previousLineState.LeadingSpaceCount, previousLineState.Line, previousLineState.LeadingSpaceCount);
+                                    hasErrors = true;
+                                }
+                            }
+
+                        }
+                    }
+
+                    // We must match the exact number starting/ending quotes, if not this is an error
+                    if (closingDoubleQuoteCount > startingDoubleQuoteCount)
+                    {
+                        var delta = (uint)(closingDoubleQuoteCount - startingDoubleQuoteCount);
+                        lexer.LogError(ERR_InvalidRawStringExpectingEnoughQuotes(), ptr - delta, 1, line, column - delta, line, column - delta);
+                        hasErrors = true;
+                    }
+                    break;
+                }
+
+                // Reset if not matched
+                isCurrentLineSpaceOnly = false;
+                closingDoubleQuoteCount = 0;
+            }
+            else if (c == (byte)'\r' || c == (byte)'\n')
+            {
+                ptr++;
+                line++;
+                if (c == (byte)'\r' && *ptr == '\n')
+                {
+                    ptr++;
+                }
+
+                if (isFirstLine)
+                {
+                    if (!isCurrentLineSpaceOnly)
+                    {
+                        var errorColumn = startColumn + leadingSpaceCountCurrentLine;
+                        lexer.LogError(ERR_InvalidRawStringExpectingEmptyFirstLine(), startPtr + leadingSpaceCountCurrentLine, 1, startLine, errorColumn, startLine, errorColumn);
+                        hasErrors = true;
+                    }
+                    isFirstLine = false;
+                }
+                else
+                {
+                    // We record the beginning of the previous line (but not the first line that must be empty)
+                    lineStates.Add(new StringMultiLineState((uint)(startPtrCurrentLine - lexer._originalPtr), (uint)leadingSpaceCountCurrentLine, line - 1));
+                }
+
+                column = 0;
+                startPtrCurrentLine = ptr;
+                leadingSpaceCountCurrentLine = 0;
+                isCurrentLineSpaceOnly = true;
+                lineCount++;
+            }
+            else if (c >= StartUtf8 && TryParseUtf8(ref ptr, out var rune))
+            {
+                // If we have a multibyte UTF8, try to parse it correctly and correct the column
+                var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
+                var delta = width <= 0 ? 0 : (uint)width;
+                column += delta;
+                isCurrentLineSpaceOnly = false;
+            }
+            else if (c == Eof)
+            {
+                lexer.LogError(ERR_InvalidRawStringUnexpectedEndOfString(new string('"', startingDoubleQuoteCount)), ptr, 1, line, column, line, column);
+                hasErrors = true;
+                break;
+            }
+            else
+            {
+                if (c == (byte)'{' && interpolatedCount > 0)
+                {
+                    isCurrentLineSpaceOnly = false;
+
+                    int countOpenBrace = 0;
+                    while (true)
+                    {
+                        if (ptr[countOpenBrace] != (byte)'{')
+                        {
+                            break;
+                        }
+                        countOpenBrace++;
+                    }
+
+                    // We take the last interpolatedCount:
+                    // {{{{{
+                    //    ^^ 
+                    //    interpolatedCount
+                    if (countOpenBrace >= interpolatedCount)
+                    {
+                        var advance = countOpenBrace - interpolatedCount;
+                        ptr += advance;
+                        column += (uint)advance;
+                        processInterpolated = true;
+                        break;
+                    }
+
+                    ptr += countOpenBrace;
+                    column += (uint)countOpenBrace;
+                    continue;
+                }
+
+                if (isCurrentLineSpaceOnly)
+                {
+                    if (c == (byte)' ')
+                    {
+                        leadingSpaceCountCurrentLine++;
+                    }
+                    else
+                    {
+                        isCurrentLineSpaceOnly = false;
+                    }
+                }
+
+                ptr++;
+                column++;
+            }
+        }
+
+        var offset = (uint)(startPtr - lexer._originalPtr);
+        var length = (uint)(ptr - startPtr - closingDoubleQuoteCount);
+        // Only emit a token if we have really some content for the token
+        if (length > 0)
+        {
+            // Store the index of this token
+            tokenPartIndices.Add(lexer.TokenCount);
+            var kind = interpolatedCount > 0 ? TokenKind.MultiLineStringInterpolatedPart : TokenKind.MultiLineStringPart;
+            // Empty string
+            lexer.AddToken(kind, new TokenSpan(offset, length, lexer._line, lexer._column));
+            lexer._line = line;
+            lexer._column = (uint)(column - closingDoubleQuoteCount);
+        }
+
+        if (closingDoubleQuoteCount > 0)
+        {
+            offset = (uint)(ptr - lexer._originalPtr - closingDoubleQuoteCount);
+            lexer.AddToken(TokenKind.MultiLineStringEnd, new TokenSpan(offset, (uint)closingDoubleQuoteCount, lexer._line, lexer._column));
+            lexer._column += (uint)closingDoubleQuoteCount;
+
+            // Generates the string content if we didn't have any errors
+            if (!hasErrors)
+            {
+                ParseMultiLineStringContent(lexer, (int)tokenPartIndicesCount, leadingSpaceCountCurrentLine, lineCount);
+            }
+        }
+        else if (processInterpolated)
+        {
+            ptr = ParseInterpolatedContent(lexer, ptr, interpolatedCount);
+            if (ptr is not null)
+            {
+                startPtr = ptr;
+                line = lexer._line;
+                column = lexer._column;
+                goto continue_interpolated_string;
+            }
+        }
+
+        // Restore the count when entering this method
+        tokenPartIndices.Count = tokenPartIndicesCount;
+        lineStates.Count = lineStateCount;
 
         return ptr;
+    }
+
+    private static void ParseMultiLineStringContent(Lexer lexer, int startStringTokenIndex, uint trailingSpaceCount, uint expectedLineCount)
+    {
+        // First line
+        var stringTokens = lexer._stringMultiLineTokenIndices;
+        var lio = lexer._lio;
+        var tokenSpan = lio.TokenSpans[stringTokens[(uint)startStringTokenIndex]];
+        var span = lexer.GetSpan((int)tokenSpan.Offset, (int)tokenSpan.Length);
+
+        var tempBuffer = lexer.TempBuffer;
+
+        // Skip leading \r\n
+        if (expectedLineCount > 0 && span.Length > 0)
+        {
+            for (int i = 0; i < span.Length; i++)
+            {
+                var c = span[i];
+                if (c == (byte)'\r' || c == (byte)'\n')
+                {
+                    int length = 1;
+                    if (c == (byte)'\r' && i + 1 < span.Length && span[i + 1] == (byte)'\n')
+                    {
+                        length++;
+                    }
+                    span = span.Slice(i + length);
+                    break;
+                }
+            }
+        }
+        
+        int tokenSpanIndirectIndex = startStringTokenIndex;
+        bool startOfLine = expectedLineCount > 0;
+        int currentLineIndex = 1;
+        int leadingSpaceCount = 0;
+        tempBuffer.Reset(VirtualArenaResetKind.KeepAllCommitted);
+
+        // Proceed spans
+        while (true)
+        {
+            // optimize this loop by appending ranges instead of character 1 by 1
+            for (int i = 0; i < span.Length; i++)
+            {
+                var c = span[i];
+                if (c == (byte)'\r' || c == (byte)'\n')
+                {
+                    if (c == (byte)'\r' && i + 1 < span.Length && span[i + 1] == '\n')
+                    {
+                        i++;
+                    }
+
+                    startOfLine = true;
+                    leadingSpaceCount = 0;
+                    currentLineIndex++;
+
+                    if (currentLineIndex < expectedLineCount)
+                    {
+                        tempBuffer.Append((byte)'\n');
+                    }
+                }
+                else
+                {
+                    if (c == (byte)' ')
+                    {
+                        if (startOfLine)
+                        {
+                            leadingSpaceCount++;
+                            if (leadingSpaceCount <= trailingSpaceCount)
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                    startOfLine = false;
+                    tempBuffer.Append(c);
+                }
+            }
+
+            if (tempBuffer.AllocatedBytes > 0)
+            {
+                var strHandle = lio.GetStringHandle(tempBuffer.AsSpan());
+                var tokenSpanIndex = stringTokens[(uint)tokenSpanIndirectIndex];
+                lio.TokenValues[tokenSpanIndex] = new TokenValue(strHandle);
+                tempBuffer.Reset(VirtualArenaResetKind.KeepAllCommitted);
+            }
+
+            tokenSpanIndirectIndex++;
+            if (tokenSpanIndirectIndex >= stringTokens.Count)
+            {
+                break;
+            }
+            
+            tokenSpan = lexer._lio.TokenSpans[stringTokens[(uint)tokenSpanIndirectIndex]];
+            span = lexer.GetSpan((int)tokenSpan.Offset, (int)tokenSpan.Length);
+        }
     }
     
     private static unsafe byte* ParseSingleLineString(Lexer lexer, byte* startPtr, byte* ptr, byte c, int interpolatedCount)
@@ -484,7 +827,6 @@ public class Lexer
 
         return ptr;
     }
-
 
     private static unsafe byte* ParseInterpolatedContent(Lexer lexer, byte* ptr, int interpolatedCount)
     {
@@ -1592,4 +1934,6 @@ public class Lexer
             }
         }
     }
+
+    private record struct StringMultiLineState(uint Offset, uint LeadingSpaceCount, uint Line);
 }

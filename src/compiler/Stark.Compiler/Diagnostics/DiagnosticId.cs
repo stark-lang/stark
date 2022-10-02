@@ -18,14 +18,19 @@ public enum DiagnosticId
     ERR_UnexpectedEndOfString = 105, // Unexpected end of string without a terminating \".
     ERR_InvalidUtf8InString = 106, // (int c) => Invalid Unicode `\\U{c:x8}` must be between `\\U00000000` to `\\U0010FFFF`.
     ERR_UnexpectedEndOfFileForInterpolatedString = 107, // (string c) => Unexpected end of file while parsing interpolated string. Missing a closing `{c}`.
-    
-    ERR_UnexpectedUnderscoreAfterDigit = 110, // Unexpected underscore found after digit. They can only be enclosed by digits.
-    ERR_UnexpectedCharacterAfterDot = 111, // (string c) => Unexpected character `{c}` found after a dot while parsing a float. Expecting a digit 0-9.
-    ERR_UnexpectedCharacterForExponent = 112, // (string c) => Unexpected character `{c}` found while parsing the exponent of a float. Expecting a digit 0-9.
-    ERR_NumberOverflow = 113, // The number is overflowing 64 bit.
-    ERR_InvalidHexNumberExpectingDigit = 114, // Invalid hexadecimal number. Expecting at least one [0-9a-fA-F] digit.
-    ERR_InvalidOctalNumberExpectingDigit = 115, // Invalid octal number. Expecting at least one [0-7] digit.
-    ERR_InvalidBinaryNumberExpectingDigit = 116, // Invalid binary number. Expecting at least one [0-1] digit.
+    ERR_InvalidRawStringExpectingEmptyFirstLine = 108, // Invalid raw string literal. The first line of a multiline raw string literal must be empty.
+    ERR_InvalidRawStringExpectingEmptyLastLine = 109, // Invalid raw string literal. The last line of a multiline raw string literal must be empty.
+    ERR_InvalidRawStringExpectingSpaceToMatchClosing = 110, // Invalid raw string literal. Line does not start with the same whitespace as the closing line of the raw string literal
+    ERR_InvalidRawStringExpectingEnoughQuotes = 111, // Invalid raw string literal. The raw string literal does not start with enough quote characters to allow this many consecutive quote characters as content
+    ERR_InvalidRawStringUnexpectedEndOfString = 112, // (string c) => Invalid raw string literal. Expecting the terminating quotes `{c}`.
 
-    ERR_UnexpectedEndOfFileForMultiLineComment = 120, // (int c) => Unexpected end of file found while parsing a multi-line comment. Expecting {c} `*/` to close the comment.
+    ERR_UnexpectedUnderscoreAfterDigit = 120, // Unexpected underscore found after digit. They can only be enclosed by digits.
+    ERR_UnexpectedCharacterAfterDot = 121, // (string c) => Unexpected character `{c}` found after a dot while parsing a float. Expecting a digit 0-9.
+    ERR_UnexpectedCharacterForExponent = 122, // (string c) => Unexpected character `{c}` found while parsing the exponent of a float. Expecting a digit 0-9.
+    ERR_NumberOverflow = 123, // The number is overflowing 64 bit.
+    ERR_InvalidHexNumberExpectingDigit = 124, // Invalid hexadecimal number. Expecting at least one [0-9a-fA-F] digit.
+    ERR_InvalidOctalNumberExpectingDigit = 125, // Invalid octal number. Expecting at least one [0-7] digit.
+    ERR_InvalidBinaryNumberExpectingDigit = 126, // Invalid binary number. Expecting at least one [0-1] digit.
+
+    ERR_UnexpectedEndOfFileForMultiLineComment = 130, // (int c) => Unexpected end of file found while parsing a multi-line comment. Expecting {c} `*/` to close the comment.
 }

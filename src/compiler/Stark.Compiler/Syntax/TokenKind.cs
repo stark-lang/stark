@@ -25,6 +25,10 @@ public enum TokenKind : byte
     StringInterpolatedPart,
     StringInterpolatedBegin,
     StringInterpolatedEnd,
+    MultiLineStringBegin,
+    MultiLineStringPart,
+    MultiLineStringInterpolatedPart,
+    MultiLineStringEnd,
 
     // 1 byte symbols
     Exclamation,        // !
