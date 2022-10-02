@@ -24,6 +24,7 @@ public enum DiagnosticId
     ERR_InvalidRawStringExpectingEnoughQuotes = 111, // Invalid raw string literal. The raw string literal does not start with enough quote characters to allow this many consecutive quote characters as content
     ERR_InvalidRawStringUnexpectedEndOfString = 112, // (string c) => Invalid raw string literal. Expecting the terminating quotes `{c}`.
     ERR_InvalidRawStringExpectingAtLeastOneLine = 113, // Multi-line raw string literals must contain at least one line of content.
+    ERR_InvalidRawStringUnexpectedMixSpaces = 114, // (string c, string d) => Invalid raw string literal. Line contains different whitespace `{c}` than previous lines (`{d}`).
 
     ERR_UnexpectedUnderscoreAfterDigit = 120, // Unexpected underscore found after digit. They can only be enclosed by digits.
     ERR_UnexpectedCharacterAfterDot = 121, // (string c) => Unexpected character `{c}` found after a dot while parsing a float. Expecting a digit 0-9.

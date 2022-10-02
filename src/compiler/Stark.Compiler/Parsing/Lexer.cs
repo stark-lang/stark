@@ -217,8 +217,9 @@ public class Lexer
         ref var lineStates = ref lexer._stringMultilineStates;
         var lineStateCount = lineStates.Count;
 
-        // We start with a negative spaceCount
+        // All states used in the following loop
         uint lineCount = 0;
+        byte? firstSpace = null;
         uint leadingSpaceCountCurrentLine = 0;
         bool isCurrentLineSpaceOnly = true;
         bool hasErrors = false;
@@ -260,7 +261,7 @@ public class Lexer
                             for (var i = lineStateCount; i < lineStates.Count; i++)
                             {
                                 ref var previousLineState = ref lineStates.Items[i];
-                                if (previousLineState.LeadingSpaceCount < leadingSpaceCountCurrentLine)
+                                if (previousLineState.LeadingSpaceCount < leadingSpaceCountCurrentLine && !previousLineState.HasOnlySpace)
                                 {
                                     lexer.LogError(ERR_InvalidRawStringExpectingSpaceToMatchClosing(), lexer._originalPtr + previousLineState.Offset + previousLineState.LeadingSpaceCount, 1, previousLineState.Line, previousLineState.LeadingSpaceCount, previousLineState.Line, previousLineState.LeadingSpaceCount);
                                     hasErrors = true;
@@ -311,7 +312,7 @@ public class Lexer
                 else
                 {
                     // We record the beginning of the previous line (but not the first line that must be empty)
-                    lineStates.Add(new StringMultiLineState((uint)(startPtrCurrentLine - lexer._originalPtr), (uint)leadingSpaceCountCurrentLine, line - 1));
+                    lineStates.Add(new StringMultiLineState((uint)(startPtrCurrentLine - lexer._originalPtr), (uint)leadingSpaceCountCurrentLine, line - 1, isCurrentLineSpaceOnly));
                 }
 
                 column = 0;
@@ -370,8 +371,20 @@ public class Lexer
 
                 if (isCurrentLineSpaceOnly)
                 {
-                    if (c == (byte)' ')
+                    if (c == (byte)' ' || c == (byte)'\t')
                     {
+                        if (firstSpace.HasValue)
+                        {
+                            if (firstSpace.Value != c)
+                            {
+                                lexer.LogError(ERR_InvalidRawStringUnexpectedMixSpaces(Utf8Helper.ByteToSafeString(c), Utf8Helper.ByteToSafeString(firstSpace.Value)), ptr, 1, line, column, line, column);
+                                hasErrors = true;
+                            }
+                        }
+                        else
+                        {
+                            firstSpace = c;
+                        }
                         leadingSpaceCountCurrentLine++;
                     }
                     else
@@ -490,7 +503,7 @@ public class Lexer
                 }
                 else
                 {
-                    if (c == (byte)' ')
+                    if (c == (byte)' ' || c == (byte)'\t')
                     {
                         if (startOfLine)
                         {
@@ -1940,5 +1953,5 @@ public class Lexer
         }
     }
 
-    private record struct StringMultiLineState(uint Offset, uint LeadingSpaceCount, uint Line);
+    private record struct StringMultiLineState(uint Offset, uint LeadingSpaceCount, uint Line, bool HasOnlySpace);
 }

@@ -609,6 +609,19 @@ public class TestLexer
 
         //            1         2         3
         //  0123456789012345678901234567890123456
+        // ` """␤␉Hello␤␉World␤␉""" `
+        Lexer(" \"\"\"\n\tHello\n\tWorld\n\t\"\"\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.MultiLineStringBegin, new TokenSpan(1, 3, 0, 1), null),
+            (TokenKind.MultiLineStringPart, new TokenSpan(4, 16, 0, 4), "Hello\nWorld"),
+            (TokenKind.MultiLineStringEnd, new TokenSpan(20, 3, 3, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(23, 1, 3, 4), null),
+            (TokenKind.Eof, new TokenSpan(24, 0, 3, 5), null),
+        });
+
+        //            1         2         3
+        //  0123456789012345678901234567890123456
         // ` """␤      Hello␤     World␤    """ `
         Lexer(" \"\"\"\n      Hello\n     World\n    \"\"\" ", new()
         {
@@ -644,6 +657,32 @@ public class TestLexer
             (TokenKind.MultiLineStringEnd, new TokenSpan(32, 3, 3, 4), null),
             (TokenKind.WhiteSpace, new TokenSpan(35, 1, 3, 7), null),
             (TokenKind.Eof, new TokenSpan(36, 0, 3, 8), null),
+        });
+
+        //            1         2         3
+        //  0123456789012345678901234567890123456
+        // ` """␤    Start␤  ␤    End␤    """ `
+        Lexer(" \"\"\"\n    Start\n  \n    End\n    \"\"\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.MultiLineStringBegin, new TokenSpan(1, 3, 0, 1), null),
+            (TokenKind.MultiLineStringPart, new TokenSpan(4, 26, 0, 4), "Start\n\nEnd"),
+            (TokenKind.MultiLineStringEnd, new TokenSpan(30, 3, 4, 4), null),
+            (TokenKind.WhiteSpace, new TokenSpan(33, 1, 4, 7), null),
+            (TokenKind.Eof, new TokenSpan(34, 0, 4, 8), null),
+        });
+
+        //            1         2         3
+        //  01234567890123456789012345678901234567
+        // ` """␤    Start␤     ␤    End␤    """ `
+        Lexer(" \"\"\"\n    Start\n     \n    End\n    \"\"\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.MultiLineStringBegin, new TokenSpan(1, 3, 0, 1), null),
+            (TokenKind.MultiLineStringPart, new TokenSpan(4, 29, 0, 4), "Start\n \nEnd"),
+            (TokenKind.MultiLineStringEnd, new TokenSpan(33, 3, 4, 4), null),
+            (TokenKind.WhiteSpace, new TokenSpan(36, 1, 4, 7), null),
+            (TokenKind.Eof, new TokenSpan(37, 0, 4, 8), null),
         });
     }
 
@@ -742,6 +781,24 @@ public class TestLexer
         {
             (DiagnosticId.ERR_InvalidRawStringExpectingAtLeastOneLine, new TextSpan(new TextLocation(9, 1, 4))),
         });
+
+
+        //            1         2         3
+        //  0123456789012345678901234567890123
+        // ` """␤    Hello World␤␉""" `
+        Lexer(" \"\"\"\n    Hello World\n\t\"\"\" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.MultiLineStringBegin, new TokenSpan(1, 3, 0, 1), null),
+            (TokenKind.MultiLineStringPart, new TokenSpan(4, 18, 0, 4), null),
+            (TokenKind.MultiLineStringEnd, new TokenSpan(22, 3, 2, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(25, 1, 2, 4), null),
+            (TokenKind.Eof, new TokenSpan(26, 0, 2, 5), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidRawStringUnexpectedMixSpaces, new TextSpan(new TextLocation(21, 2, 0))),
+        });
+
     }
 
     [Test]
