@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stark.Compiler.SourceGen", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stark.Compiler.Tests", "Stark.Compiler.Tests\Stark.Compiler.Tests.csproj", "{D12ADA97-DD5A-46C6-85DF-7EB8FB031C35}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stark.Compiler.BenchApp", "Stark.Compiler.BenchApp\Stark.Compiler.BenchApp.csproj", "{CC731DB5-8E5C-439C-80B8-3086346269FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{D12ADA97-DD5A-46C6-85DF-7EB8FB031C35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D12ADA97-DD5A-46C6-85DF-7EB8FB031C35}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D12ADA97-DD5A-46C6-85DF-7EB8FB031C35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC731DB5-8E5C-439C-80B8-3086346269FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC731DB5-8E5C-439C-80B8-3086346269FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC731DB5-8E5C-439C-80B8-3086346269FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC731DB5-8E5C-439C-80B8-3086346269FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
