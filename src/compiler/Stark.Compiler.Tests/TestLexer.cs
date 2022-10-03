@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,8 +24,26 @@ public class TestLexer
     private readonly Lexer _lexer;
 
     [Test]
+    public void TestEmpty()
+    {
+        Lexer("", new()
+        {
+            (TokenKind.Eof, new TokenSpan(0, 0, 0, 0), null),
+        });
+
+        Lexer(new byte[] { 0xEF, 0xBB, 0xBF, (byte)' ' }, new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 0), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 1), null),
+        });
+    }
+
+
+    [Test]
     public void TestSimpleString()
     {
+        //  01234
+        // ` "" `
         Lexer(@" """" ", new()
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
@@ -175,6 +196,39 @@ public class TestLexer
             (TokenKind.Eof, new TokenSpan(14, 0, 0, 14), null),
         });
 
+        //  0         1         2         
+        //  01234567890123456789012345678901234
+        // ` $$$"hel{{{ } }} {{{}}} {} }}}lo" `
+        Lexer(@" $$$""hel{{{ } }} {{{}}} {} }}}lo"" ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.StringInterpolatedMacro, new TokenSpan(1, 3, 0, 1), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(4, 4, 0, 4), "hel"),
+            (TokenKind.StringInterpolatedBegin, new TokenSpan(8, 3, 0, 8), null),
+            
+            (TokenKind.WhiteSpace, new TokenSpan(11, 1, 0, 11), null),
+            (TokenKind.RightBrace, new TokenSpan(12, 1, 0, 12), null),
+            (TokenKind.WhiteSpace, new TokenSpan(13, 1, 0, 13), null),
+            (TokenKind.RightBrace, new TokenSpan(14, 1, 0, 14), null),
+            (TokenKind.RightBrace, new TokenSpan(15, 1, 0, 15), null),
+            (TokenKind.WhiteSpace, new TokenSpan(16, 1, 0, 16), null),
+            (TokenKind.LeftBrace,  new TokenSpan(17, 1, 0, 17), null),
+            (TokenKind.LeftBrace,  new TokenSpan(18, 1, 0, 18), null),
+            (TokenKind.LeftBrace,  new TokenSpan(19, 1, 0, 19), null),
+            (TokenKind.RightBrace, new TokenSpan(20, 1, 0, 20), null),
+            (TokenKind.RightBrace, new TokenSpan(21, 1, 0, 21), null),
+            (TokenKind.RightBrace, new TokenSpan(22, 1, 0, 22), null),
+            (TokenKind.WhiteSpace, new TokenSpan(23, 1, 0, 23), null),
+            (TokenKind.LeftBrace,  new TokenSpan(24, 1, 0, 24), null),
+            (TokenKind.RightBrace, new TokenSpan(25, 1, 0, 25), null),
+            (TokenKind.WhiteSpace, new TokenSpan(26, 1, 0, 26), null),
+            
+            (TokenKind.StringInterpolatedEnd, new TokenSpan(27, 3, 0, 27), null),
+            (TokenKind.StringInterpolatedPart, new TokenSpan(30, 3, 0, 30), "lo"),
+            (TokenKind.WhiteSpace, new TokenSpan(33, 1, 0, 33), null),
+            (TokenKind.Eof, new TokenSpan(34, 0, 0, 34), null),
+        });
+
         // Errors
 
         //  0123456789abcd
@@ -211,6 +265,7 @@ public class TestLexer
     [TestCase(@"\x12cF", "\x12cF")]
     [TestCase(@"\U00000000", "\U00000000")]
     [TestCase(@"\U000012cF", "\U000012CF")]
+    [TestCase(@"\{", "{")]
     public void TestStringEscapeSequences(string escaped, string real)
     {
         var length = 12 + escaped.Length;
@@ -225,7 +280,92 @@ public class TestLexer
             (TokenKind.Eof, new TokenSpan((uint)length + 2, 0, 0, (uint)length + 2), null),
         });
     }
-    
+
+    [TestCase(@"\n", "\n")]
+    [TestCase(@"\r", "\r")]
+    [TestCase(@"\'", "\'")]
+    [TestCase(@"\""", "\"")]
+    [TestCase(@"\\", "\\")]
+    [TestCase(@"\b", "\b")]
+    [TestCase(@"\f", "\f")]
+    [TestCase(@"\t", "\t")]
+    [TestCase(@"\v", "\v")]
+    [TestCase(@"\0", "\0")]
+    [TestCase(@"\u0000", "\u0000")]
+    [TestCase(@"\u01aF", "\u01aF")]
+    [TestCase(@"\x0", "\x0")]
+    [TestCase(@"\x12", "\x12")]
+    [TestCase(@"\x12c", "\x12c")]
+    [TestCase(@"\x12cF", "\x12cF")]
+    [TestCase(@"\U00000000", "\U00000000")]
+    [TestCase(@"\U000012cF", "\U000012CF")]
+    [TestCase(@"\{", "{")]
+    [TestCase(@"a", "a")]
+    [TestCase(@"é", "é")]
+    [TestCase(@"🎉", "🎉")]
+    public void TestRuneEscapeSequences(string escaped, string real)
+    {
+        var length = 2 + Encoding.UTF8.GetByteCount(escaped);
+        var span = escaped.AsSpan();
+        var column = 0;
+        while (span.Length > 0 && Rune.DecodeFromUtf16(span, out var inputRune, out var consumed) == OperationStatus.Done)
+        {
+            column += Wcwidth.UnicodeCalculator.GetWidth(inputRune);
+            span = span.Slice(consumed);
+        }
+
+        var result = Rune.TryGetRuneAt(real, 0, out var rune);
+        Assert.True(result, "Invalid rune");
+
+
+        Lexer($" '{escaped}' ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Rune, new TokenSpan(1, (uint)length, 0, 1), rune.Value),
+            (TokenKind.WhiteSpace, new TokenSpan((uint)length + 1, 1, 0, (uint)(3 + column)), null),
+            (TokenKind.Eof, new TokenSpan((uint)length + 2, 0, 0, (uint)(3 + column + 1)), null),
+        });
+    }
+
+    [Test]
+    public void TestRuneInvalid()
+    {
+        //           01234
+        Lexer($" '' ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Rune, new TokenSpan(1, 2, 0, 1), null),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidRuneCannotBeEmpty, new TextSpan(new TextLocation(1, 0, 1)))
+        });
+
+        //           0123456
+        Lexer($" 'ab' ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Rune, new TokenSpan(1, 4, 0, 1), (int)'a'),
+            (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+            (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidRuneTooManyCharacters, new TextSpan(new TextLocation(1, 0, 1)))
+        });
+
+        Lexer(new byte[] { (byte)' ', (byte)'\'', 0x82, (byte)'\'', (byte)' '}, new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Rune, new TokenSpan(1, 3, 0, 1), 65533),
+            (TokenKind.WhiteSpace, new TokenSpan(4, 1, 0, 4), null),
+            (TokenKind.Eof, new TokenSpan(5, 0, 0, 5), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_InvalidUtf8InRune, new TextSpan(new TextLocation(1, 0, 1)))
+        });
+    }
+
     [Test]
     public void TestStringEscapeErrors()
     {
@@ -1531,6 +1671,12 @@ public class TestLexer
         );
     }
 
+    [Test]
+    public void TestInvalidStream()
+    {
+        Assert.Throws<InvalidOperationException>(() => _lexer.Run(new StreamTooBig()));
+    }
+
     // Internals
 
     public TestLexer()
@@ -1718,5 +1864,40 @@ public class TestLexer
         {
             return value is double f64Value ? new TokenValue(f64Value) : new TokenValue(Convert.ToUInt64(value));
         }
+    }
+
+
+    private class StreamTooBig : Stream
+    {
+        public override void Flush()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool CanRead { get; }
+        public override bool CanSeek { get; }
+        public override bool CanWrite { get; }
+        public override long Length => long.MaxValue;
+        public override long Position { get; set; }
     }
 }

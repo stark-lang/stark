@@ -16,7 +16,7 @@ public enum DiagnosticId
     ERR_InvalidHexNumberInString3 = 103, // (string c) => Invalid hex number `{c}` following `\\U00HHHHHH`. Expecting 8 hex numbers from `\\U00000000` to `\\U0010FFFF`.
     ERR_UnexpectedEscapeCharacter = 104, // (string c) => Unsupported character `{c}` used as an escape sequence.
     ERR_UnexpectedEndOfString = 105, // Unexpected end of string without a terminating \".
-    ERR_InvalidUtf8InString = 106, // (int c) => Invalid Unicode `\\U{c:x8}` must be between `\\U00000000` to `\\U0010FFFF`.
+    ERR_InvalidUtf8InString = 106, // (int c) => Invalid Unicode found in string `\\U{c:x8}` must be between `\\U00000000` to `\\U0010FFFF`.
     ERR_UnexpectedEndOfFileForInterpolatedString = 107, // (string c) => Unexpected end of file while parsing interpolated string. Missing a closing `{c}`.
     ERR_InvalidRawStringExpectingEmptyFirstLine = 108, // Invalid raw string literal. The first line of a multiline raw string literal must be empty.
     ERR_InvalidRawStringExpectingEmptyLastLine = 109, // Invalid raw string literal. The last line of a multiline raw string literal must be empty.
@@ -25,6 +25,9 @@ public enum DiagnosticId
     ERR_InvalidRawStringUnexpectedEndOfString = 112, // (string c) => Invalid raw string literal. Expecting the terminating quotes `{c}`.
     ERR_InvalidRawStringExpectingAtLeastOneLine = 113, // Multi-line raw string literals must contain at least one line of content.
     ERR_InvalidRawStringUnexpectedMixSpaces = 114, // (string c, string d) => Invalid raw string literal. Line contains different whitespace `{c}` than previous lines (`{d}`).
+    ERR_InvalidUtf8InRune = 115, // (int c) => Invalid Unicode found in rune `\\U{c:x8}` must be between `\\U00000000` to `\\U0010FFFF`.
+    ERR_InvalidRuneTooManyCharacters = 116, // Invalid rune. Too many characters. Expecting a single rune.
+    ERR_InvalidRuneCannotBeEmpty = 117, // Invalid rune. A rune cannot be empty.
 
     ERR_UnexpectedUnderscoreAfterDigit = 120, // Unexpected underscore found after digit. They can only be enclosed by digits.
     ERR_UnexpectedCharacterAfterDot = 121, // (string c) => Unexpected character `{c}` found after a dot while parsing a float. Expecting a digit 0-9.

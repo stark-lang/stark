@@ -20,6 +20,7 @@ public enum TokenKind : byte
     CommentSingleLine,
     CommentDocumentationSingleLine,
     CommentMultiLine,
+    Rune,
     String,
     StringInterpolatedMacro,
     StringInterpolatedPart,

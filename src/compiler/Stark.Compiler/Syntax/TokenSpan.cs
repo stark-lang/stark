@@ -18,12 +18,13 @@ public record struct TokenSpan(uint Offset, uint Length, uint Line, uint Column)
     public uint Column = Column;
 }
 
-
-
-
 public record struct TokenValue(ulong Data)
 {
     public TokenValue(Utf8StringHandle utf8StringHandle) : this((ulong)utf8StringHandle.Offset << 32 | utf8StringHandle.Length)
+    {
+    }
+
+    public TokenValue(int value) : this((ulong)(value))
     {
     }
 
