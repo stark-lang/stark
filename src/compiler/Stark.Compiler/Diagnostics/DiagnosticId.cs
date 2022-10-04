@@ -30,6 +30,7 @@ public enum DiagnosticId
     ERR_InvalidUtf8InRune = 115, // (int c) => Invalid Unicode found in rune `\\U{c:x8}` must be between `\\U00000000` to `\\U0010FFFF`.
     ERR_InvalidRuneTooManyCharacters = 116, // Invalid rune. Too many characters. Expecting a single rune.
     ERR_InvalidRuneCannotBeEmpty = 117, // Invalid rune. A rune cannot be empty.
+    ERR_UnexpectedEndOfRune = 118, // Unexpected end of rune without a terminating \'.
 
     ERR_UnexpectedUnderscoreAfterDigit = 120, // Unexpected underscore found after digit. They can only be enclosed by digits.
     ERR_UnexpectedCharacterAfterDot = 121, // (string c) => Unexpected character `{c}` found after a dot while parsing a float. Expecting a digit 0-9.

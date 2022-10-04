@@ -4,10 +4,24 @@
 
 namespace Stark.Compiler.Syntax;
 
+/// <summary>
+/// The kind of a token.
+/// </summary>
 public enum TokenKind : byte
 {
+    /// <summary>
+    /// An invalid character.
+    /// </summary>
     Invalid = 0,
+
+    /// <summary>
+    /// An invalid UTF8 character.
+    /// </summary>
     InvalidUtf8,
+
+    /// <summary>
+    /// An invalid TAB character.
+    /// </summary>
     InvalidTab,
 
     Eof,
@@ -33,12 +47,12 @@ public enum TokenKind : byte
 
     // 1 byte symbols
     Exclamation,        // !
-    DoubleQuote,        // "
+    // DoubleQuote,        // " not used alone, only used through string
     Number,             // #
     Dollar,             // $
     Percent,            // %
     Ampersand,          // &
-    SingleQuote,        // '
+    SingleQuote,        // ' used for unit
     LeftParent,         // (
     RightParent,        // )
     Star,               // *

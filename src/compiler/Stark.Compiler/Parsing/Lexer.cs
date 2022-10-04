@@ -524,8 +524,15 @@ public class Lexer
         }
     }
 
-    private static unsafe byte* ParseRune(Lexer lexer, byte* ptr, byte c)
+    private static unsafe byte* ParseSingleQuote(Lexer lexer, byte* ptr, byte c)
     {
+        // This is a single quote followed by an identifier
+        if (Utf8Helper.IsLetterOrUnderscore(ptr[1]) && ptr[2] != '\'')
+        {
+            return ParseSymbol1Byte(lexer, ptr, c);
+        }
+
+        // This must be a rune character
         return ParseSingleLineString(lexer, ptr, ptr, c, 0);
     }
 
@@ -759,7 +766,7 @@ public class Lexer
             }
             else if (c == Eof || c == '\r' || c == '\n')
             {
-                lexer.LogError(ERR_UnexpectedEndOfString(), ptr, column);
+                lexer.LogError(startChar == '\'' ? ERR_UnexpectedEndOfRune() : ERR_UnexpectedEndOfString(), ptr, column);
                 break;
             }
             else
@@ -1665,11 +1672,10 @@ public class Lexer
     private static unsafe byte* ParseSymbol1Byte(Lexer lexer, byte* ptr, byte c)
     {
         var offset = (uint)(ptr - lexer._originalPtr);
-        ptr++;
         var kind = Symbol1ByteToTokenKind[(byte)Utf8Helper.GetClassFromByte(c)];
         Debug.Assert(kind != TokenKind.Invalid);
         lexer.AddToken(kind, new TokenSpan(offset, 1, lexer._line, lexer._column));
-
+        ptr++;
         lexer._column++;
         return ptr;
     }
@@ -1907,7 +1913,7 @@ public class Lexer
         &ParseDollar, // DollarSign,            // $
         &ParseSymbolMultiBytes, // PercentSign,           // %
         &ParseSymbolMultiBytes, // Ampersand,             // &
-        &ParseRune, // SingleQuote,           // '
+        &ParseSingleQuote, // SingleQuote,           // '
         &ParseSymbol1Byte, // LeftParenthesis,       // (
         &ParseSymbol1Byte, // RightParenthesis,      // )
         &ParseSymbolMultiBytes, // Asterisk,              // *
@@ -1956,7 +1962,7 @@ public class Lexer
         TokenKind.Invalid, // DollarSign,            // $                               DollarSign,            // $
         TokenKind.Invalid, // PercentSign,           // %                                        PercentSign,           // %
         TokenKind.Invalid, // Ampersand,             // &                                        Ampersand,             // &
-        TokenKind.Invalid, // SingleQuote,           // '                                        SingleQuote,           // '
+        TokenKind.SingleQuote, // SingleQuote,           // '                                        SingleQuote,           // '
         TokenKind.LeftParent, // LeftParenthesis,       // (                          LeftParenthesis,       // (
         TokenKind.RightParent, // RightParenthesis,      // )                         RightParenthesis,      // )
         TokenKind.Invalid, // Asterisk,              // *                                        Asterisk,              // *

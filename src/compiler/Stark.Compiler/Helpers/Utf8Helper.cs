@@ -19,6 +19,9 @@ internal static class Utf8Helper
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsLetter(byte b) => b >= (byte)'A' && b <= (byte)'Z' || b >= (byte)'a' && b <= (byte)'z';
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsLetterOrUnderscore(byte b) => IsLetter(b) || b == (byte)'_';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsLetterContinuationForIdentifier(byte b) => IsDigit(b) || IsLetter(b) || b == (byte)'_';

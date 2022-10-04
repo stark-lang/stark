@@ -335,6 +335,40 @@ public class TestLexer
     }
 
     [Test]
+    public void TestSingleQuoteWithIdentifier()
+    {
+        //           01234
+        Lexer($" 'a ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.SingleQuote, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.Identifier, new TokenSpan(2, 1, 0, 2), "a"),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
+        });
+        
+        //           0123456
+        Lexer($" 'AbC ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.SingleQuote, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.Identifier, new TokenSpan(2, 3, 0, 2), "AbC"),
+            (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+            (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
+        });
+
+        //           0123456
+        Lexer($" '_ ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.SingleQuote, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.Underscore, new TokenSpan(2, 1, 0, 2), null),
+            (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 3), null),
+            (TokenKind.Eof, new TokenSpan(4, 0, 0, 4), null),
+        });
+    }
+
+    [Test]
     public void TestRuneInvalid()
     {
         //           01234
@@ -353,8 +387,21 @@ public class TestLexer
         Lexer($" 'ab' ", new()
         {
             (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
-            (TokenKind.Rune, new TokenSpan(1, 4, 0, 1), (int)'a'),
-            (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), null),
+            (TokenKind.SingleQuote, new TokenSpan(1, 1, 0, 1), null),
+            (TokenKind.Identifier, new TokenSpan(2, 2, 0, 2), "ab"),
+            (TokenKind.Rune, new TokenSpan(4, 2, 0, 4), (int)' '),
+            (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
+        }, new()
+        {
+            (DiagnosticId.ERR_UnexpectedEndOfRune, new TextSpan(new TextLocation(6, 0, 6)))
+        });
+
+        //           0123456
+        Lexer($" '12' ", new()
+        {
+            (TokenKind.WhiteSpace, new TokenSpan(0, 1, 0, 0), null),
+            (TokenKind.Rune, new TokenSpan(1, 4, 0, 1), (int)'1'),
+            (TokenKind.WhiteSpace, new TokenSpan(5, 1, 0, 5), "ab"),
             (TokenKind.Eof, new TokenSpan(6, 0, 0, 6), null),
         }, new()
         {
