@@ -44,14 +44,14 @@ public class LexerInputOutput
 
     public VirtualBuffer StringBuffer { get; }
 
-    public Utf8StringHandle GetStringHandle(ReadOnlySpan<byte> data)
+    public Utf8StringHandle GetStringHandle(ReadOnlySpan<byte> data, int hash)
     {
         unsafe
         {
             fixed (byte* ptr = data)
             {
                 // Use the input temporarily
-                var key = new Utf8InternalString((IntPtr)ptr, (uint)data.Length);
+                var key = new Utf8InternalString((IntPtr)ptr, hash, (uint)data.Length);
                 if (_stringHandles.TryGetValue(key, out var handle))
                 {
                     return handle;
@@ -60,7 +60,7 @@ public class LexerInputOutput
                 var offset = (uint)StringBuffer.AllocatedBytes;
                 var pointer = (byte*)StringBuffer.BaseAddress + offset;
                 data.CopyTo(StringBuffer.AllocateRange(data.Length));
-                key = new Utf8InternalString((IntPtr)pointer, (uint)data.Length);
+                key = new Utf8InternalString((IntPtr)pointer, hash, (uint)data.Length);
                 handle = new Utf8StringHandle(offset, (uint)data.Length);
                 _stringHandles.Add(key, handle);
                 return handle;
@@ -105,9 +105,14 @@ public class LexerInputOutput
 
     public void AddToken(TokenKind kind, TokenSpan span, ReadOnlySpan<byte> value)
     {
+        AddToken(kind, span, value, HashHelper.Hash(value));
+    }
+
+    public void AddToken(TokenKind kind, TokenSpan span, ReadOnlySpan<byte> value, int hash)
+    {
         Tokens.Allocate() = kind;
         TokenSpans.Allocate() = span;
-        TokenValues.Allocate() = new TokenValue(GetStringHandle(value));
+        TokenValues.Allocate() = new TokenValue(GetStringHandle(value, hash));
     }
 
     public void ResetInputBuffer()
@@ -122,13 +127,16 @@ public class LexerInputOutput
 
     readonly struct Utf8InternalString : IEquatable<Utf8InternalString>
     {
-        public Utf8InternalString(IntPtr pointer, uint length)
+        public Utf8InternalString(IntPtr pointer, int hashCode, uint length)
         {
             Pointer = pointer;
+            HashCode = hashCode;
             Length = length;
         }
 
         public IntPtr Pointer { get; }
+
+        public int HashCode { get; }
 
         public uint Length { get; }
 
@@ -141,17 +149,7 @@ public class LexerInputOutput
             return AsSpan().SequenceEqual(str.AsSpan());
         }
 
-        public override int GetHashCode()
-        {
-            if (Pointer == IntPtr.Zero) return 0;
-            unsafe
-            {
-                var hashCode = new HashCode();
-                var span = new Span<byte>((byte*)Pointer, (int)Length);
-                hashCode.AddBytes(span);
-                return hashCode.ToHashCode();
-            }
-        }
+        public override int GetHashCode() => HashCode;
 
         public ReadOnlySpan<byte> AsSpan()
         {

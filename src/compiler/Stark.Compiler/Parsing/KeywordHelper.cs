@@ -2,7 +2,9 @@
 // Licensed under the BSD-Clause 2 license.
 // See license.txt file in the project root for full license information.
 
+using System.Runtime.CompilerServices;
 using System.Text;
+using Stark.Compiler.Helpers;
 using Stark.Compiler.Syntax;
 
 namespace Stark.Compiler.Parsing;
@@ -26,13 +28,6 @@ internal static class KeywordHelper
         }
 
         return TokenKind.Identifier;
-    }
-
-    public static int HashKeyword(byte[] keyword)
-    {
-        var hashCode = new HashCode();
-        hashCode.AddBytes(keyword);
-        return hashCode.ToHashCode();
     }
 
     static KeywordHelper()
@@ -136,7 +131,7 @@ internal static class KeywordHelper
         foreach (var pair in keywords)
         {
             var bytes = Encoding.UTF8.GetBytes(pair.Item1);
-            var hash = HashKeyword(bytes);
+            var hash = HashHelper.Hash(bytes);
             KeywordHashToTokenKind.Add(hash, (bytes, pair.Item2));
         }
     }

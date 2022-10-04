@@ -464,6 +464,8 @@ public class Lexer
         int leadingSpaceCount = 0;
         tempBuffer.Reset(VirtualArenaResetKind.KeepAllCommitted);
 
+        var hash = HashHelper.Init();
+
         // Proceed spans
         while (true)
         {
@@ -485,6 +487,7 @@ public class Lexer
                     if (currentLineIndex < expectedLineCount)
                     {
                         tempBuffer.Append((byte)'\n');
+                        HashHelper.Hash((byte)'\n', ref hash);
                     }
                 }
                 else
@@ -502,12 +505,13 @@ public class Lexer
                     }
                     startOfLine = false;
                     tempBuffer.Append(c);
+                    HashHelper.Hash(c, ref hash);
                 }
             }
 
             if (tempBuffer.AllocatedBytes > 0)
             {
-                var strHandle = lio.GetStringHandle(tempBuffer.AsSpan());
+                var strHandle = lio.GetStringHandle(tempBuffer.AsSpan(), hash);
                 var tokenSpanIndex = stringTokens[(uint)tokenSpanIndirectIndex];
                 lio.TokenValues[tokenSpanIndex] = new TokenValue(strHandle);
                 tempBuffer.Reset(VirtualArenaResetKind.KeepAllCommitted);
@@ -1565,6 +1569,8 @@ public class Lexer
     {
         var startPtr = ptr;
         var underscoreCount = c == (byte)'_' ? 1 : 0;
+        int hash = HashHelper.Init();
+        HashHelper.Hash(c, ref hash);
         while (true)
         {
             ptr++;
@@ -1573,6 +1579,7 @@ public class Lexer
             {
                 break;
             }
+            HashHelper.Hash(c, ref hash);
             underscoreCount += (c == (byte)'_') ? 1 : 0;
         }
         var offset = (uint)(startPtr - lexer._originalPtr);
@@ -1586,11 +1593,10 @@ public class Lexer
         else
         {
             var span = new ReadOnlySpan<byte>(startPtr, (int)length);
-            var hash = lexer.GetHashCode(span);
             var kind = KeywordHelper.GetKeywordTokenKind(span, hash);
             if (kind == TokenKind.Identifier)
             {
-                lexer.AddToken(kind, new TokenSpan(offset, length, lexer._line, lexer._column), span);
+                lexer.AddToken(kind, new TokenSpan(offset, length, lexer._line, lexer._column), span, hash);
             }
             else
             {
@@ -1877,6 +1883,11 @@ public class Lexer
         _lio.AddToken(kind, span, value);
     }
 
+    private void AddToken(TokenKind kind, TokenSpan span, ReadOnlySpan<byte> value, int hash)
+    {
+        _lio.AddToken(kind, span, value, hash);
+    }
+
 
     private void ResetTempBuffer()
     {
@@ -1886,13 +1897,6 @@ public class Lexer
     private unsafe Span<byte> GetSpan(int offset, int length)
     {
         return new Span<byte>(_originalPtr + (int)offset, length);
-    }
-
-    private int GetHashCode(ReadOnlySpan<byte> data)
-    {
-        _hasher = new HashCode();
-        _hasher.AddBytes(data);
-        return _hasher.ToHashCode();
     }
 
     private static readonly unsafe delegate*<Lexer, byte*, byte, byte*>[] ByteToParser;
