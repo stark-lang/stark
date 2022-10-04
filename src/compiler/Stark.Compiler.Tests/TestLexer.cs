@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,7 +35,6 @@ public class TestLexer
             (TokenKind.Eof, new TokenSpan(4, 0, 0, 1), null),
         });
     }
-
 
     [Test]
     public void TestSimpleString()
@@ -1677,8 +1674,17 @@ public class TestLexer
         Assert.Throws<InvalidOperationException>(() => _lexer.Run(new StreamTooBig()));
     }
 
-    // Internals
+    [Test]
+    public void TestLexerWithSpan()
+    {
+        _lio.Reset();
+        _lexer.Run(new byte[] { (byte)' ' });
+        Assert.AreEqual(2, _lio.Tokens.Count);
+        Assert.AreEqual(TokenKind.WhiteSpace, _lio.Tokens[0]);
+        Assert.AreEqual(TokenKind.Eof, _lio.Tokens[1]);
+    }
 
+    // Internals
     public TestLexer()
     {
         _manager = new VirtualArenaManager();
@@ -1865,7 +1871,6 @@ public class TestLexer
             return value is double f64Value ? new TokenValue(f64Value) : new TokenValue(Convert.ToUInt64(value));
         }
     }
-
 
     private class StreamTooBig : Stream
     {

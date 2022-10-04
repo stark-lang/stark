@@ -19,116 +19,156 @@ namespace Stark.Compiler.BenchApp;
 /// </summary>
 public class BenchLexer
 {
-    private readonly Random _random;
-    private readonly StringBuilder _builder;
-    private readonly string _csharpText;
-    private readonly List<(Microsoft.CodeAnalysis.CSharp.SyntaxKind, Microsoft.CodeAnalysis.Text.TextSpan, object?)> _roslynTokens;
-    private readonly Stark.Compiler.Parsing.LexerInputOutput _lio;
-    private readonly Lexer _lexer;
-    private readonly MemoryStream _starkText;
-
-    public BenchLexer()
-    {
-        _random = new Random(1);
-        // 10MB
-        _builder = new StringBuilder(10 << 20);
-        _csharpText = PrepareCode(true);
-        _roslynTokens = new List<(Microsoft.CodeAnalysis.CSharp.SyntaxKind, Microsoft.CodeAnalysis.Text.TextSpan, object?)>();
-        var vm = new VirtualArenaManager();
-        _lio = new LexerInputOutput(vm);
-        _lexer = new Lexer(_lio);
-
-        _starkText = new MemoryStream(Encoding.UTF8.GetBytes(_csharpText));
-    }
+    private static RoslynRunner? _roslynRunner;
+    private static StarkRunner? _starkRunner;
 
     [Benchmark]
     public void Roslyn()
     {
-        _roslynTokens.Clear();
-
-        foreach (var token in Microsoft.CodeAnalysis.CSharp.SyntaxFactory.ParseTokens(_csharpText))
-        {
-            _roslynTokens.Add((token.Kind(), token.Span, token.Value));
-
-            if (token.HasLeadingTrivia)
-            {
-                foreach (var trivia in token.LeadingTrivia)
-                {
-                    _roslynTokens.Add((trivia.Kind(), trivia.Span, null));
-                }
-            }
-
-            if (token.HasTrailingTrivia)
-            {
-                foreach (var trivia in token.TrailingTrivia)
-                {
-                    _roslynTokens.Add((trivia.Kind(), trivia.Span, null));
-                }
-            }
-        }
-        // Console.WriteLine($"Roslyn {_roslynTokens.Count} tokens");
+        _roslynRunner ??= new RoslynRunner();
+        _roslynRunner.Run();
     }
 
     [Benchmark]
     public void Stark()
     {
-        _lio.Reset();
-        _starkText.Position = 0;
-        _lexer.Run(_starkText);
-        // Console.WriteLine($"Stark {_lio.Tokens.Count} tokens");
+        _starkRunner ??= new StarkRunner();
+        _starkRunner.Run();
     }
-
-    private string PrepareCode(bool isCsharp)
+    
+    private class RoslynRunner
     {
-        var totalCount = SyntaxStats.Select(x => x.Item3).Sum();
-        var tokenList = SyntaxStats.OrderByDescending(x => x.Item3).Select(x => (x.Item1, (double)x.Item2 / x.Item3, (double)x.Item3 / totalCount, 0.0)).ToList();
-        for (var i = 0; i < tokenList.Count; i++)
+        private readonly List<Microsoft.CodeAnalysis.SyntaxToken> _roslynTokens = new();
+        private readonly string _csharpText;
+
+        public RoslynRunner()
         {
-            var tokenPair = tokenList[i];
-            for (var j = 0; j <= i; j++)
-            {
-                tokenPair.Item4 += tokenList[j].Item3;
-            }
-            tokenList[i] = tokenPair;
-            //totalPercent += tokenPair.Item3;
-            ////if (SyntaxFacts.GetText(tokenPair.Item1) != string.Empty) continue;
-            //Console.WriteLine($"{tokenPair.Item1} {tokenPair.Item2} {tokenPair.Item4 * 100}%");
+            _csharpText = new CodeBuilder().GenerateCode();
         }
 
-        _builder.Length = 0;
-
-        var percents = tokenList.Select(x => x.Item4).ToList();
-
-        //Console.WriteLine($"{totalPercent * 100}%");
-
-        bool isPreviousKeywordOrIdentifier = false;
-        while (true)
+        public void Run()
         {
-            var percentage = _random.NextDouble();
-            var index = percents.BinarySearch(percentage);
-            if (index < 0)
+            _roslynTokens.Clear();
+            var tokenCount = 0;
+            foreach (var token in Microsoft.CodeAnalysis.CSharp.SyntaxFactory.ParseTokens(_csharpText))
             {
-                index = ~index;
-            }
-            var kind = tokenList[index].Item1;
-            var text = GetText(kind, isCsharp);
-            if (_builder.Length + text.Length + 1> _builder.Capacity)
-            {
-                break;
-            }
+                if (token.HasLeadingTrivia)
+                {
+                    foreach (var trivia in token.LeadingTrivia)
+                    {
+                        tokenCount++;
+                    }
+                }
 
-            var nextIsKeywordOrIdentifier = IsKeywordOrIdentifier(kind);
-            if (nextIsKeywordOrIdentifier && isPreviousKeywordOrIdentifier)
-            {
-                _builder.Append(' ');
-            }
-            isPreviousKeywordOrIdentifier = nextIsKeywordOrIdentifier;
+                if (token.HasTrailingTrivia)
+                {
+                    foreach (var trivia in token.TrailingTrivia)
+                    {
+                        tokenCount++;
+                    }
+                }
 
-            _builder.Append(text);
+                _roslynTokens.Add(token);
+                tokenCount++;
+            }
         }
-
-        return _builder.ToString();
     }
+
+    private class StarkRunner
+    {
+        private readonly byte[] _starkText;
+        private readonly Stark.Compiler.Parsing.LexerInputOutput _lio;
+        private readonly Lexer _lexer;
+
+        public StarkRunner()
+        {
+            _starkText = Encoding.UTF8.GetBytes(new CodeBuilder().GenerateCode());
+            var vm = new VirtualArenaManager();
+            _lio = new LexerInputOutput(vm);
+            _lexer = new Lexer(_lio);
+        }
+
+        public void Run()
+        {
+            _lio.Reset(VirtualArenaResetKind.KeepAllCommitted);
+            _lexer.Run(_starkText);
+        }
+    }
+
+    private class CodeBuilder
+    {
+        private Random _random;
+        private readonly StringBuilder _builder;
+
+        public CodeBuilder()
+        {
+            _random = new Random(1);
+            // 10MB
+            _builder = new StringBuilder(10 << 20);
+        }
+
+        public string GenerateCode()
+        {
+            _random = new Random(1);
+            _builder.Length = 0;
+            return PrepareCode(true);
+        }
+
+        private string PrepareCode(bool isCsharp)
+        {
+            var totalCount = SyntaxStats.Select(x => x.Item3).Sum();
+            var tokenList = SyntaxStats.OrderByDescending(x => x.Item3).Select(x => (x.Item1, (double)x.Item2 / x.Item3, (double)x.Item3 / totalCount, 0.0)).ToList();
+            for (var i = 0; i < tokenList.Count; i++)
+            {
+                var tokenPair = tokenList[i];
+                for (var j = 0; j <= i; j++)
+                {
+                    tokenPair.Item4 += tokenList[j].Item3;
+                }
+                tokenList[i] = tokenPair;
+                //totalPercent += tokenPair.Item3;
+                ////if (SyntaxFacts.GetText(tokenPair.Item1) != string.Empty) continue;
+                //Console.WriteLine($"{tokenPair.Item1} {tokenPair.Item2} {tokenPair.Item4 * 100}%");
+            }
+
+            _builder.Length = 0;
+
+            var percents = tokenList.Select(x => x.Item4).ToList();
+
+            //Console.WriteLine($"{totalPercent * 100}%");
+
+            bool isPreviousKeywordOrIdentifier = false;
+            while (true)
+            {
+                var percentage = _random.NextDouble();
+                var index = percents.BinarySearch(percentage);
+                if (index < 0)
+                {
+                    index = ~index;
+                }
+                var kind = tokenList[index].Item1;
+                var text = GetText(kind, isCsharp);
+                if (_builder.Length + text.Length + 1 > _builder.Capacity)
+                {
+                    break;
+                }
+
+                var nextIsKeywordOrIdentifier = IsKeywordOrIdentifier(kind);
+                if (nextIsKeywordOrIdentifier && isPreviousKeywordOrIdentifier)
+                {
+                    _builder.Append(' ');
+                }
+                isPreviousKeywordOrIdentifier = nextIsKeywordOrIdentifier;
+
+                _builder.Append(text);
+            }
+
+            return _builder.ToString();
+        }
+    }
+
+
+
 
     /// <summary>
     /// <c>true</c> if the kind is a keyword or an identifier.

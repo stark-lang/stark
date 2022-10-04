@@ -74,12 +74,17 @@ public class LexerInputOutput
 
     public void Reset()
     {
+        Reset(VirtualArenaResetKind.KeepMinimalCommitted);
+    }
+
+    public void Reset(VirtualArenaResetKind kind)
+    {
         Diagnostics.Clear();
-        Tokens.Reset(VirtualArenaResetKind.KeepMinimalCommitted);
-        TokenSpans.Reset(VirtualArenaResetKind.KeepMinimalCommitted);
-        TokenValues.Reset(VirtualArenaResetKind.KeepMinimalCommitted);
-        InputBuffer.Reset(VirtualArenaResetKind.KeepMinimalCommitted);
-        TempBuffer.Reset(VirtualArenaResetKind.KeepMinimalCommitted);
+        Tokens.Reset(kind);
+        TokenSpans.Reset(kind);
+        TokenValues.Reset(kind);
+        InputBuffer.Reset(kind);
+        TempBuffer.Reset(kind);
     }
 
     public void AddToken(TokenKind kind, TokenSpan span)

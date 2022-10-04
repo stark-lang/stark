@@ -94,7 +94,19 @@ public class Lexer
         span.Slice(length + 1).Fill(0);
         RunInternal(span);
     }
-
+    
+    public void Run(ReadOnlySpan<byte> utf8Input)
+    {
+        _lio.ResetInputBuffer();
+        var inputBuffer = _lio.InputBuffer;
+        var length = utf8Input.Length;
+        var span = inputBuffer.AllocateRange(length + 1 + PaddingBytes);
+        utf8Input.CopyTo(span);
+        span[length] = Eof;
+        span.Slice(length + 1).Fill(0);
+        RunInternal(span);
+    }
+    
     public void Run(string text)
     {
         _lio.ResetInputBuffer();
