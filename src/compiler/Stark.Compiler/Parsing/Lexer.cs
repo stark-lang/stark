@@ -35,50 +35,6 @@ public class Lexer
         _stringMultilineStates = new InlineList<StringMultiLineState>(4);
     }
 
-    private int TokenCount => _lio.Tokens.Count;
-
-    private void AddToken(TokenKind kind, TokenSpan span)
-    {
-        _lio.AddToken(kind, span);
-    }
-
-    private void AddToken(TokenKind kind, TokenSpan span, TokenValue value)
-    {
-        _lio.AddToken(kind, span, value);
-    }
-
-    private void AddToken(TokenKind kind, TokenSpan span, ReadOnlySpan<byte> value)
-    {
-        _lio.AddToken(kind, span, value);
-    }
-
-    private VirtualBuffer TempBuffer => _lio.TempBuffer;
-
-    private void ResetTempBuffer()
-    {
-        _lio.ResetTempBuffer();
-    }
-
-    //private unsafe byte Peek(byte* ptr, int offset)
-    //{
-    //    ptr += offset;
-    //    if (ptr < _originalPtr) return 0;
-    //    if (ptr >= (_originalPtr + _length)) return Eof;
-    //    return *ptr;
-    //}
-
-    //private unsafe Span<byte> GetSpan(byte* ptr)
-    //{
-    //    int offset = (int)(ptr - _originalPtr);
-    //    int remainingLength = _length - offset;
-    //    return new Span<byte>(ptr, remainingLength);
-    //}
-
-    private unsafe Span<byte> GetSpan(int offset, int length)
-    {
-        return new Span<byte>(_originalPtr + (int)offset, length);
-    }
-
     public void Run(Stream stream)
     {
         if (stream.Length > int.MaxValue)
@@ -87,11 +43,11 @@ public class Lexer
         }
         _lio.ResetInputBuffer();
         var inputBuffer = _lio.InputBuffer;
-        var length = (int)stream.Length;
-        var span = inputBuffer.AllocateRange(length + 1 + PaddingBytes);
-        stream.ReadExactly(span.Slice(0, length));
-        span[length] = Eof;
-        span.Slice(length + 1).Fill(0);
+        _length = (int)stream.Length;
+        var span = inputBuffer.AllocateRange(_length + 1 + PaddingBytes);
+        stream.ReadExactly(span.Slice(0, _length));
+        span[_length] = Eof;
+        span.Slice(_length + 1).Fill(0);
         RunInternal(span);
     }
     
@@ -99,11 +55,11 @@ public class Lexer
     {
         _lio.ResetInputBuffer();
         var inputBuffer = _lio.InputBuffer;
-        var length = utf8Input.Length;
-        var span = inputBuffer.AllocateRange(length + 1 + PaddingBytes);
+        _length = utf8Input.Length;
+        var span = inputBuffer.AllocateRange(_length + 1 + PaddingBytes);
         utf8Input.CopyTo(span);
-        span[length] = Eof;
-        span.Slice(length + 1).Fill(0);
+        span[_length] = Eof;
+        span.Slice(_length + 1).Fill(0);
         RunInternal(span);
     }
     
@@ -111,11 +67,11 @@ public class Lexer
     {
         _lio.ResetInputBuffer();
         var inputBuffer = _lio.InputBuffer;
-        var length = Encoding.UTF8.GetByteCount(text);
-        var span = inputBuffer.AllocateRange(length + 1 + PaddingBytes);
+        _length = Encoding.UTF8.GetByteCount(text);
+        var span = inputBuffer.AllocateRange(_length + 1 + PaddingBytes);
         Encoding.UTF8.GetBytes(text, span);
-        span[length] = Eof;
-        span.Slice(length + 1).Fill(0);
+        span[_length] = Eof;
+        span.Slice(_length + 1).Fill(0);
         RunInternal(span);
     }
 
@@ -129,7 +85,6 @@ public class Lexer
             fixed (byte* ptr = buffer)
             {
                 _originalPtr = ptr;
-                _length = buffer.Length;
                 var startPtr = ptr;
                 // Skip UTF8 BOM
                 // 0xEF,0xBB,0xBF
@@ -158,7 +113,13 @@ public class Lexer
     private static unsafe byte* ParseEof(Lexer lexer, byte* ptr, byte c)
     {
         var offset = (uint)(ptr - lexer._originalPtr);
+        // Make sure that an EOF character (\0x03) was not in the input.
+        if ((int)offset != lexer._length)
+        {
+            lexer.LogError(ERR_InvalidInputExpectedEof(), ptr, 1, lexer._column);
+        }
         lexer.AddToken(TokenKind.Eof, new TokenSpan(offset, 0, lexer._line, lexer._column));
+
         return null;
     }
     
@@ -1869,6 +1830,36 @@ public class Lexer
         lexer._column += length;
         ptr += length;
         return ptr;
+    }
+
+    private int TokenCount => _lio.Tokens.Count;
+
+    private VirtualBuffer TempBuffer => _lio.TempBuffer;
+
+    private void AddToken(TokenKind kind, TokenSpan span)
+    {
+        _lio.AddToken(kind, span);
+    }
+
+    private void AddToken(TokenKind kind, TokenSpan span, TokenValue value)
+    {
+        _lio.AddToken(kind, span, value);
+    }
+
+    private void AddToken(TokenKind kind, TokenSpan span, ReadOnlySpan<byte> value)
+    {
+        _lio.AddToken(kind, span, value);
+    }
+
+
+    private void ResetTempBuffer()
+    {
+        _lio.ResetTempBuffer();
+    }
+
+    private unsafe Span<byte> GetSpan(int offset, int length)
+    {
+        return new Span<byte>(_originalPtr + (int)offset, length);
     }
 
     private int GetHashCode(ReadOnlySpan<byte> data)

@@ -34,6 +34,16 @@ public class TestLexer
             (TokenKind.WhiteSpace, new TokenSpan(3, 1, 0, 0), null),
             (TokenKind.Eof, new TokenSpan(4, 0, 0, 1), null),
         });
+
+        // Check invalid usage of EOF
+        Lexer(new byte[] { 0x03, (byte)' ' }, new()
+            {
+                (TokenKind.Eof, new TokenSpan(0, 0, 0, 0), null),
+            }, new()
+            {
+                (DiagnosticId.ERR_InvalidInputExpectedEof, new TextSpan())
+            }
+        );
     }
 
     [Test]

@@ -11,6 +11,8 @@ namespace Stark.Compiler.Diagnostics;
 
 public enum DiagnosticId
 {
+    ERR_InvalidInputExpectedEof = 90, // Invalid input. Unexpected EOF character (\x03) found before the end of the source code.
+
     ERR_InvalidHexNumberInString1 = 101, // (string c) => Unexpected hex number `{c}` following `\\u`. Expecting `\\u0000` to `\\uffff`.
     ERR_InvalidHexNumberInString2 = 102, // (string c) => Unexpected hex number `{c}` following `\\x`. Expecting `\\x0` to `\\xffff`.
     ERR_InvalidHexNumberInString3 = 103, // (string c) => Invalid hex number `{c}` following `\\U00HHHHHH`. Expecting 8 hex numbers from `\\U00000000` to `\\U0010FFFF`.
