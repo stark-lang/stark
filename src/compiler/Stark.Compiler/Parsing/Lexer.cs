@@ -4,6 +4,7 @@
 
 using System.Buffers;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Stark.Compiler.Collections;
 using Stark.Compiler.Diagnostics;
@@ -560,10 +561,11 @@ public class Lexer
 
     continue_interpolated_string:
         // Use the temp buffer to create the string
-        var tempBuffer = lexer.TempBuffer;
+        var hashedBuffer = new HashedVirtualBuffer(lexer.TempBuffer);
         lexer.ResetTempBuffer();
 
         bool processInterpolated = false;
+        var hash = HashHelper.Init();
         while (true)
         {
             c = *ptr;
@@ -575,57 +577,57 @@ public class Lexer
                 switch (c)
                 {
                     case (byte)'0':
-                        tempBuffer.Append(0);
+                        hashedBuffer.Append(0);
                         ptr++;
                         column++;
                         break;
                     case (byte)'\'':
-                        tempBuffer.Append((byte)'\'');
+                        hashedBuffer.Append((byte)'\'');
                         ptr++;
                         column++;
                         break;
                     case (byte)'"':
-                        tempBuffer.Append((byte)'"');
+                        hashedBuffer.Append((byte)'"');
                         ptr++;
                         column++;
                         break;
                     case (byte)'\\':
-                        tempBuffer.Append((byte)'\\');
+                        hashedBuffer.Append((byte)'\\');
                         ptr++;
                         column++;
                         break;
                     case (byte)'b':
-                        tempBuffer.Append((byte)'\b');
+                        hashedBuffer.Append((byte)'\b');
                         ptr++;
                         column++;
                         break;
                     case (byte)'f':
-                        tempBuffer.Append((byte)'\f');
+                        hashedBuffer.Append((byte)'\f');
                         ptr++;
                         column++;
                         break;
                     case (byte)'n':
-                        tempBuffer.Append((byte)'\n');
+                        hashedBuffer.Append((byte)'\n');
                         ptr++;
                         column++;
                         break;
                     case (byte)'r':
-                        tempBuffer.Append((byte)'\r');
+                        hashedBuffer.Append((byte)'\r');
                         ptr++;
                         column++;
                         break;
                     case (byte)'t':
-                        tempBuffer.Append((byte)'\t');
+                        hashedBuffer.Append((byte)'\t');
                         ptr++;
                         column++;
                         break;
                     case (byte)'v':
-                        tempBuffer.Append((byte)'\v');
+                        hashedBuffer.Append((byte)'\v');
                         ptr++;
                         column++;
                         break;
                     case (byte)'{':
-                        tempBuffer.Append((byte)'{');
+                        hashedBuffer.Append((byte)'{');
                         ptr++;
                         column++;
                         break;
@@ -661,8 +663,9 @@ public class Lexer
                         {
                             if (Rune.TryCreate(valueUtf32, out var rune))
                             {
-                                var span = tempBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
+                                var span = hashedBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
                                 rune.EncodeToUtf8(span);
+                                hashedBuffer.Hash(span);
                             }
                             else
                             {
@@ -706,8 +709,9 @@ public class Lexer
                                         column++;
                                         valueUtf16 = (valueUtf16 << 4) | Utf8Helper.HexToValue(c);
                                         Rune.TryCreate((char)valueUtf16, out var rune);
-                                        var span = tempBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
+                                        var span = hashedBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
                                         rune.EncodeToUtf8(span);
+                                        hashedBuffer.Hash(span);
                                         continue;
                                     }
                                 }
@@ -740,8 +744,10 @@ public class Lexer
                             }
 
                             Rune.TryCreate((char)valueUtf16, out var rune);
-                            var span = tempBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
+                            var span = hashedBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
                             rune.EncodeToUtf8(span);
+                            hashedBuffer.Hash(span);
+
                             continue;
                         }
 
@@ -761,8 +767,9 @@ public class Lexer
             }
             else if (c >= StartUtf8 && TryParseUtf8(ref ptr, out var rune))
             {
-                var span = tempBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
+                var span = hashedBuffer.AllocateRange(rune.Utf8SequenceLength); // append value
                 rune.EncodeToUtf8(span);
+                hashedBuffer.Hash(span);
 
                 // If we have a multibyte UTF8, try to parse it correctly and correct the column
                 var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
@@ -796,7 +803,7 @@ public class Lexer
                         var advance = countOpenBrace - interpolatedCount;
                         for (int i = 0; i < advance; i++)
                         {
-                            tempBuffer.Append(c);
+                            hashedBuffer.Append(c);
                         }
                         ptr += advance;
                         column += (uint)advance;
@@ -807,7 +814,7 @@ public class Lexer
                     {
                         for (int i = 0; i < countOpenBrace; i++)
                         {
-                            tempBuffer.Append(c);
+                            hashedBuffer.Append(c);
                         }
                         ptr += countOpenBrace;
                         column += (uint)countOpenBrace;
@@ -815,7 +822,7 @@ public class Lexer
                     }
                 }
 
-                tempBuffer.Append(c); // append value
+                hashedBuffer.Append(c); // append value
                 ptr++;
                 column++;
             }
@@ -825,9 +832,9 @@ public class Lexer
         var length = (uint)(ptr - startPtr);
         var isRune = startChar == '\'';
         var kind = isRune ? TokenKind.Rune : interpolatedCount > 0 ? TokenKind.StringInterpolatedPart : TokenKind.String;
-        if (tempBuffer.AllocatedBytes > 0)
+        if (hashedBuffer.AllocatedBytes > 0)
         {
-            var span = tempBuffer.AsSpan();
+            var span = hashedBuffer.AsSpan();
             if (isRune)
             {
                 var succeed = Rune.DecodeFromUtf8(span, out var rune, out var numberBytes) == OperationStatus.Done;
@@ -847,7 +854,7 @@ public class Lexer
             }
             else
             {
-                lexer.AddToken(kind, new TokenSpan(offset, length, lexer._line, lexer._column), span);
+                lexer.AddToken(kind, new TokenSpan(offset, length, lexer._line, lexer._column), span, hashedBuffer.ToHashCode());
             }
         }
         else
@@ -2028,5 +2035,50 @@ public class Lexer
         public readonly uint LeadingSpaceCount;
         public readonly uint Line;
         public readonly bool HasOnlySpace;
+    }
+
+    /// <summary>
+    /// A Small wrapper around <see cref="VirtualBuffer"/> to compute a hash
+    /// on the go we append data to it.
+    /// </summary>
+    private struct HashedVirtualBuffer
+    {
+        private readonly VirtualBuffer _buffer;
+        private int _hash;
+
+        public HashedVirtualBuffer(VirtualBuffer buffer)
+        {
+            _buffer = buffer;
+            _hash = HashHelper.Init();
+        }
+
+        public int ToHashCode() => _hash;
+
+        public nuint AllocatedBytes => _buffer.AllocatedBytes;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Append(byte b)
+        {
+            _buffer.Append(b);
+            HashHelper.Hash(b, ref _hash);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Span<byte> AsSpan() => _buffer.AsSpan();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Span<byte> AllocateRange(int count)
+        {
+            return _buffer.AllocateRange(count);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Hash(ReadOnlySpan<byte> span)
+        {
+            foreach (var b in span)
+            {
+                HashHelper.Hash(b, ref _hash);
+            }
+        }
     }
 }
