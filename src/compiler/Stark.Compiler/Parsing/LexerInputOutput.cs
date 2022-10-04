@@ -89,6 +89,7 @@ public class LexerInputOutput
         TempBuffer.Reset(kind);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AddToken(TokenKind kind, TokenSpan span)
     {
         Tokens.Allocate() = kind;
@@ -96,6 +97,7 @@ public class LexerInputOutput
         TokenValues.Allocate() = default;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AddToken(TokenKind kind, TokenSpan span, TokenValue value)
     {
         Tokens.Allocate() = kind;
@@ -103,11 +105,13 @@ public class LexerInputOutput
         TokenValues.Allocate() = value;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AddToken(TokenKind kind, TokenSpan span, ReadOnlySpan<byte> value)
     {
         AddToken(kind, span, value, HashHelper.Hash(value));
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void AddToken(TokenKind kind, TokenSpan span, ReadOnlySpan<byte> value, int hash)
     {
         Tokens.Allocate() = kind;
