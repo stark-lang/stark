@@ -14,6 +14,9 @@ using static Stark.Compiler.Diagnostics.DiagnosticMessages;
 
 namespace Stark.Compiler.Parsing;
 
+/// <summary>
+/// The main lexer class. Generates tokens into <see cref="LexerInputOutput"/>.
+/// </summary>
 public class Lexer
 {
     private uint _line;
@@ -28,6 +31,10 @@ public class Lexer
     private InlineList<int> _stringMultiLineTokenIndices;
     private InlineList<StringMultiLineState> _stringMultilineStates;
 
+    /// <summary>
+    /// Creates an instances of this lexer with the specified <see cref="LexerInputOutput"/>.
+    /// </summary>
+    /// <param name="lio">The lexer input output used by this lexer.</param>
     public Lexer(LexerInputOutput lio)
     {
         _lio = lio;
@@ -35,6 +42,11 @@ public class Lexer
         _stringMultilineStates = new InlineList<StringMultiLineState>(4);
     }
 
+    /// <summary>
+    /// Run the lexer from the specified input stream of UTF8 bytes.
+    /// </summary>
+    /// <param name="stream">The input stream of UTF8 bytes.</param>
+    /// <exception cref="InvalidOperationException">If the stream has a length longer than <see cref="int.MaxValue"/></exception>
     public void Run(Stream stream)
     {
         if (stream.Length > int.MaxValue)
@@ -50,7 +62,11 @@ public class Lexer
         span.Slice(_length + 1).Fill(0);
         RunInternal(span);
     }
-    
+
+    /// <summary>
+    /// Run the lexer from the specified UTF8 span input.
+    /// </summary>
+    /// <param name="utf8Input">A UTF8 span input.</param>
     public void Run(ReadOnlySpan<byte> utf8Input)
     {
         _lio.ResetInputBuffer();
@@ -63,6 +79,10 @@ public class Lexer
         RunInternal(span);
     }
     
+    /// <summary>
+    /// Run the lexer from the specified input string.
+    /// </summary>
+    /// <param name="text">The input string.</param>
     public void Run(string text)
     {
         _lio.ResetInputBuffer();

@@ -3,7 +3,6 @@
 // See license.txt file in the project root for full license information.
 
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using Stark.Compiler.Diagnostics;
 using Stark.Compiler.Helpers;
@@ -12,6 +11,9 @@ using Varena;
 
 namespace Stark.Compiler.Parsing;
 
+/// <summary>
+/// The Lexer Input/Output. Contains all generates tokens, spans and values as well as temporary buffer used by the lexer.
+/// </summary>
 public class LexerInputOutput
 {
     private readonly Dictionary<Utf8InternalString, Utf8StringHandle> _stringHandles;
@@ -130,10 +132,7 @@ public class LexerInputOutput
 
         public uint Length { get; }
 
-        public override bool Equals(object? obj)
-        {
-            return false;
-        }
+        public override bool Equals(object? obj) => obj is Utf8InternalString str && Equals(str);
 
         public bool Equals(Utf8InternalString str)
         {
@@ -169,16 +168,6 @@ public class LexerInputOutput
                 if (Pointer == IntPtr.Zero) return null;
                 return Encoding.UTF8.GetString((byte*)Pointer, (int)Length);
             }
-        }
-
-        public static bool operator ==(Utf8InternalString left, Utf8InternalString right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(Utf8InternalString left, Utf8InternalString right)
-        {
-            return !left.Equals(right);
         }
     }
 }

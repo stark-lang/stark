@@ -7,10 +7,12 @@ using Stark.Compiler.Syntax;
 
 namespace Stark.Compiler.Parsing;
 
+/// <summary>
+/// Helper class to categorize keywords from identifiers.
+/// </summary>
 internal static class KeywordHelper
 {
     private static readonly Dictionary<int, (byte[], TokenKind)> KeywordHashToTokenKind = new();
-
 
     public static TokenKind GetKeywordTokenKind(ReadOnlySpan<byte> identifier, int hash)
     {
