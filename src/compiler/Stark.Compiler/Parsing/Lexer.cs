@@ -311,7 +311,7 @@ public class Lexer
             else if (c >= StartUtf8 && TryParseUtf8(ref ptr, out var rune))
             {
                 // If we have a multibyte UTF8, try to parse it correctly and correct the column
-                var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
+                var width = Utf8Helper.GetWidth(rune);
                 var delta = width <= 0 ? 0 : (uint)width;
                 column += delta;
                 isCurrentLineSpaceOnly = false;
@@ -772,7 +772,7 @@ public class Lexer
                 hashedBuffer.Hash(span);
 
                 // If we have a multibyte UTF8, try to parse it correctly and correct the column
-                var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
+                var width = Utf8Helper.GetWidth(rune);
                 column += width <= 0 ? 0 : (uint)width;
             }
             else if (c == Eof || c == '\r' || c == '\n')
@@ -1462,7 +1462,7 @@ public class Lexer
             if (c >= StartUtf8 && TryParseUtf8(ref ptr, out var rune))
             {
                 // If we have a multibyte UTF8, try to parse it correctly and correct the column
-                var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
+                var width = Utf8Helper.GetWidth(rune);
                 column += width <= 0 ? 0 : (uint)width;
                 goto proceed_next_char;
             }
@@ -1542,7 +1542,7 @@ public class Lexer
             else if (c >= StartUtf8 && TryParseUtf8(ref ptr, out var rune))
             {
                 // If we have a multibyte UTF8, try to parse it correctly and correct the column
-                var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
+                var width = Utf8Helper.GetWidth(rune);
                 column += width <= 0 ? 0 : width;
                 goto proceed_next_char;
             }
@@ -1607,7 +1607,7 @@ public class Lexer
             }
             else
             {
-                // For keyword, we don't generate
+                // For keyword, we don't generate a string
                 lexer.AddToken(kind, new TokenSpan(offset, length, lexer._line, lexer._column));
             }
         }
@@ -1648,7 +1648,7 @@ public class Lexer
         if (TryParseUtf8(ref ptr, out var rune))
         {
             lexer.AddToken(TokenKind.InvalidUtf8, new TokenSpan(offset,(uint)(ptr - startPtr) , lexer._line, lexer._column));
-            var width = Wcwidth.UnicodeCalculator.GetWidth(rune);
+            var width = Utf8Helper.GetWidth(rune);
             lexer._column += width <= 0 ? 0 : (uint)width;
         }
         else

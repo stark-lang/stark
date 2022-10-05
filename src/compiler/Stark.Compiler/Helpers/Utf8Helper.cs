@@ -15,33 +15,22 @@ internal static class Utf8Helper
     public static int GetWidth(Rune rune) => Wcwidth.UnicodeCalculator.GetWidth(rune);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsDigit(byte b) => b >= (byte)'0' && b <= (byte)'9';
+    public static bool IsDigit(byte b) => (uint)(b - '0') <= ('9' - '0');
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsLetter(byte b) => b >= (byte)'A' && b <= (byte)'Z' || b >= (byte)'a' && b <= (byte)'z';
+    public static bool IsLetter(byte b) => (uint)((b - 'A') & ~0x20) <= ('Z' - 'A');
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsLetterOrUnderscore(byte b) => IsLetter(b) || b == (byte)'_';
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsLetterContinuationForIdentifier(byte b) => IsDigit(b) || IsLetter(b) || b == (byte)'_';
+    public static bool IsLetterContinuationForIdentifier(byte b) => IsLetter(b) || b == (byte)'_' || IsDigit(b);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsHex(byte b) => IsDigit(b) || b >= (byte)'a' && b <= (byte)'f' || b >= (byte)'A' && b <= (byte)'F';
+    public static bool IsHex(byte b) => IsDigit(b) || (uint)((b - 'A') & ~0x20) <= ('F' - 'A');
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int HexToValue(byte b) => IsDigit(b) ? b - (byte)'0' : b >= (byte)'a' && b <= (byte)'f' ? b - (byte)'a' + 10 : b - (byte)'A' + 10;
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUtf8ValueByte(byte b) => b >= 0x80 && b < 0xC0;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUtf8Start2Bytes(byte b) => b >= 0xC0 && b < 0xE0;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUtf8Start3Bytes(byte b) => b >= 0xE0 && b < 0xF0;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUtf8Start4Bytes(byte b) => b >= 0xF0 && b <= 0xF7;
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsUtf8StartMultiBytes(byte b) => b >= 0xC0 && b <= 0xF7;
 
     public static string ByteToSafeString(byte b) => b < ' ' || b >= 127 ? $"\\x{b:x2}" : ((char)b).ToString(CultureInfo.InvariantCulture);
 
