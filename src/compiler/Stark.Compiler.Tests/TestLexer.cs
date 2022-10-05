@@ -27,12 +27,19 @@ public class TestLexer
         _lio.Reset();
         _lexer.Run(" test1 ", "file_a.sk");
         _lexer.Run(" test21 ", "file_b.sk");
-        Assert.AreEqual(2, _lio.FileLexerEntries.Count);
+        Assert.AreEqual(2, _lio.FileLexerEntries.Count, "Invalid number of file entries");
         Assert.AreEqual(new List<LexerFileEntry>()
         {
             new ("file_a.sk", 7, 0, 3),
             new ("file_b.sk", 8, 4, 7),
         }, _lio.FileLexerEntries);
+
+
+        _lexer.Run(" \"", "file_c.sk");
+        Assert.AreEqual(1, _lio.Diagnostics.Count, "Invalid number of diagnostics");
+
+        var text = _lio.Diagnostics.First().ToString();
+        Assert.AreEqual("file_c.sk(1, 3, 1, 3): error SK0105: Unexpected end of string without a terminating \".", text);
     }
 
     [Test]

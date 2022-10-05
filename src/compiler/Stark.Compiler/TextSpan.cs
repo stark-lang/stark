@@ -17,5 +17,5 @@ public record struct TextSpan(TextLocation Start, TextLocation End)
 
 public record struct TextLocation(uint Offset, uint Line, uint Column)
 {
-    public string ToText() => $"{Line}, {Column}";
+    public string ToText() => $"{Line + 1}, {Column + 1}";
 }
