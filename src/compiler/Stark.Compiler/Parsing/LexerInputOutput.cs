@@ -20,6 +20,7 @@ public class LexerInputOutput
 
     public LexerInputOutput(VirtualArenaManager manager)
     {
+        Diagnostics = new DiagnosticBag();
         Tokens = manager.CreateArray<TokenKind>("Tokens", 1 << 30);
         TokenSpans = manager.CreateArray<TokenSpan>("TokenSpans", 1 << 30);
         TokenValues = manager.CreateArray<TokenValue>("TokenValues", 1 << 30);
@@ -27,7 +28,7 @@ public class LexerInputOutput
         TempBuffer = manager.CreateBuffer("LexerTempBuffer", 1 << 30);
         StringBuffer = manager.CreateBuffer("StringBuffer", 1 << 30);
         _stringHandles = new Dictionary<Utf8InternalString, Utf8StringHandle>(4096);
-        Diagnostics = new DiagnosticBag();
+        FileLexerEntries = new List<LexerFileEntry>();
     }
 
     public DiagnosticBag Diagnostics { get; }
@@ -43,6 +44,8 @@ public class LexerInputOutput
     public VirtualBuffer TempBuffer { get; }
 
     public VirtualBuffer StringBuffer { get; }
+
+    public List<LexerFileEntry> FileLexerEntries { get; }
 
     public Utf8StringHandle GetStringHandle(ReadOnlySpan<byte> data, int hash)
     {
@@ -81,6 +84,7 @@ public class LexerInputOutput
 
     public void Reset(VirtualArenaResetKind kind)
     {
+        FileLexerEntries.Clear();
         Diagnostics.Clear();
         Tokens.Reset(kind);
         TokenSpans.Reset(kind);

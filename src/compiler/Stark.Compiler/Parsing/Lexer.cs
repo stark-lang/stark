@@ -25,6 +25,7 @@ public class Lexer
     private unsafe byte* _originalPtr;
     private int _length;
     private HashCode _hasher;
+    private string _currentFilePath;
     private const byte StartUtf8 = 0xc0;
     public const byte Eof = 0x03;
     private const int PaddingBytes = 8;
@@ -41,14 +42,16 @@ public class Lexer
         _lio = lio;
         _stringMultiLineTokenIndices = new InlineList<int>(4);
         _stringMultilineStates = new InlineList<StringMultiLineState>(4);
+        _currentFilePath = string.Empty;
     }
 
     /// <summary>
     /// Run the lexer from the specified input stream of UTF8 bytes.
     /// </summary>
     /// <param name="stream">The input stream of UTF8 bytes.</param>
+    /// <param name="filePath">The path to the file.</param>
     /// <exception cref="InvalidOperationException">If the stream has a length longer than <see cref="int.MaxValue"/></exception>
-    public void Run(Stream stream)
+    public void Run(Stream stream, string? filePath = null)
     {
         if (stream.Length > int.MaxValue)
         {
@@ -61,14 +64,15 @@ public class Lexer
         stream.ReadExactly(span.Slice(0, _length));
         span[_length] = Eof;
         span.Slice(_length + 1).Fill(0);
-        RunInternal(span);
+        RunInternal(span, filePath ?? string.Empty);
     }
 
     /// <summary>
     /// Run the lexer from the specified UTF8 span input.
     /// </summary>
     /// <param name="utf8Input">A UTF8 span input.</param>
-    public void Run(ReadOnlySpan<byte> utf8Input)
+    /// <param name="filePath">The path to the file.</param>
+    public void Run(ReadOnlySpan<byte> utf8Input, string? filePath = null)
     {
         _lio.ResetInputBuffer();
         var inputBuffer = _lio.InputBuffer;
@@ -77,14 +81,15 @@ public class Lexer
         utf8Input.CopyTo(span);
         span[_length] = Eof;
         span.Slice(_length + 1).Fill(0);
-        RunInternal(span);
+        RunInternal(span, filePath ?? string.Empty);
     }
-    
+
     /// <summary>
     /// Run the lexer from the specified input string.
     /// </summary>
     /// <param name="text">The input string.</param>
-    public void Run(string text)
+    /// <param name="filePath">The path to the file.</param>
+    public void Run(string text, string? filePath = null)
     {
         _lio.ResetInputBuffer();
         var inputBuffer = _lio.InputBuffer;
@@ -93,14 +98,14 @@ public class Lexer
         Encoding.UTF8.GetBytes(text, span);
         span[_length] = Eof;
         span.Slice(_length + 1).Fill(0);
-        RunInternal(span);
+        RunInternal(span, filePath ?? string.Empty);
     }
 
-    private void RunInternal(ReadOnlySpan<byte> buffer)
+    private void RunInternal(ReadOnlySpan<byte> buffer, string filePath)
     {
         _line = 0;
         _column = 0;
-
+        _currentFilePath = filePath;
         unsafe
         {
             fixed (byte* ptr = buffer)
@@ -113,10 +118,17 @@ public class Lexer
                 {
                     startPtr += 3;
                 }
+
+                var startTokenIndex = (uint)_lio.Tokens.Count;
                 RunImpl(startPtr);
+                var endTokenIndex = (uint)(_lio.Tokens.Count - 1);
+                _lio.FileLexerEntries.Add(new LexerFileEntry(filePath, (uint)_length, startTokenIndex, endTokenIndex));
             }
             _originalPtr = null;
+            _currentFilePath = string.Empty;
             _length = 0;
+            _line = 0;
+            _column = 0;
         }
     }
 
@@ -948,27 +960,6 @@ public class Lexer
 
         return ptr;
     }
-
-    private unsafe void LogError(DiagnosticMessage message, byte* ptr, uint column)
-    {
-        var textLocation = new TextLocation((uint)(ptr - _originalPtr), _line, column);
-        _lio.Diagnostics.Add(new Diagnostic(DiagnosticKind.Error, new DiagnosticSourceFileLocation("TODO_FILE", new TextSpan(textLocation)), message));
-    }
-
-    private unsafe void LogError(DiagnosticMessage message, byte* ptr, int length, uint column)
-    {
-        var startLocation = new TextLocation((uint)(ptr - _originalPtr), _line, column);
-        var endLocation = new TextLocation((uint)(ptr - _originalPtr + length - 1), _line, column + (uint)length - 1);
-        _lio.Diagnostics.Add(new Diagnostic(DiagnosticKind.Error, new DiagnosticSourceFileLocation("TODO_FILE", new TextSpan(startLocation, endLocation)), message));
-    }
-
-    private unsafe void LogError(DiagnosticMessage message, byte* ptr, int length, uint startOfLine, uint columnStart, uint endOfLine, uint columnEnd)
-    {
-        var startLocation = new TextLocation((uint)(ptr - _originalPtr), startOfLine, columnStart);
-        var endLocation = new TextLocation((uint)(ptr - _originalPtr + length - 1), endOfLine, columnEnd);
-        _lio.Diagnostics.Add(new Diagnostic(DiagnosticKind.Error, new DiagnosticSourceFileLocation("TODO_FILE", new TextSpan(startLocation, endLocation)), message));
-    }
-
 
     private static unsafe byte* ParseWhitespace(Lexer lexer, byte* ptr, byte c)
     {
@@ -1869,6 +1860,26 @@ public class Lexer
         lexer._column += length;
         ptr += length;
         return ptr;
+    }
+
+    private unsafe void LogError(DiagnosticMessage message, byte* ptr, uint column)
+    {
+        var textLocation = new TextLocation((uint)(ptr - _originalPtr), _line, column);
+        _lio.Diagnostics.Add(new Diagnostic(DiagnosticKind.Error, new DiagnosticSourceFileLocation(_currentFilePath, new TextSpan(textLocation)), message));
+    }
+
+    private unsafe void LogError(DiagnosticMessage message, byte* ptr, int length, uint column)
+    {
+        var startLocation = new TextLocation((uint)(ptr - _originalPtr), _line, column);
+        var endLocation = new TextLocation((uint)(ptr - _originalPtr + length - 1), _line, column + (uint)length - 1);
+        _lio.Diagnostics.Add(new Diagnostic(DiagnosticKind.Error, new DiagnosticSourceFileLocation(_currentFilePath, new TextSpan(startLocation, endLocation)), message));
+    }
+
+    private unsafe void LogError(DiagnosticMessage message, byte* ptr, int length, uint startOfLine, uint columnStart, uint endOfLine, uint columnEnd)
+    {
+        var startLocation = new TextLocation((uint)(ptr - _originalPtr), startOfLine, columnStart);
+        var endLocation = new TextLocation((uint)(ptr - _originalPtr + length - 1), endOfLine, columnEnd);
+        _lio.Diagnostics.Add(new Diagnostic(DiagnosticKind.Error, new DiagnosticSourceFileLocation(_currentFilePath, new TextSpan(startLocation, endLocation)), message));
     }
 
     private int TokenCount => _lio.Tokens.Count;

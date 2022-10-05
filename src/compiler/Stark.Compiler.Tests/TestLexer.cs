@@ -22,6 +22,20 @@ public class TestLexer
     private readonly Lexer _lexer;
 
     [Test]
+    public void TestLexerEntries()
+    {
+        _lio.Reset();
+        _lexer.Run(" test1 ", "file_a.sk");
+        _lexer.Run(" test21 ", "file_b.sk");
+        Assert.AreEqual(2, _lio.FileLexerEntries.Count);
+        Assert.AreEqual(new List<LexerFileEntry>()
+        {
+            new ("file_a.sk", 7, 0, 3),
+            new ("file_b.sk", 8, 4, 7),
+        }, _lio.FileLexerEntries);
+    }
+
+    [Test]
     public void TestEmpty()
     {
         Lexer("", new()
