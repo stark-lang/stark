@@ -1087,12 +1087,12 @@ public class TestLexer
     }
 
     [TestCase(TokenKind.Exclamation, "!")]
-    [TestCase(TokenKind.Number, "#")]
+    [TestCase(TokenKind.Hash, "#")]
     [TestCase(TokenKind.Dollar, "$")]
     [TestCase(TokenKind.Percent, "%")]
     [TestCase(TokenKind.Ampersand, "&")]
-    [TestCase(TokenKind.LeftParent, "(")]
-    [TestCase(TokenKind.RightParent, ")")]
+    [TestCase(TokenKind.LeftParen, "(")]
+    [TestCase(TokenKind.RightParen, ")")]
     [TestCase(TokenKind.Star, "*")]
     [TestCase(TokenKind.Plus, "+")]
     [TestCase(TokenKind.Comma, ",")]
@@ -1105,7 +1105,7 @@ public class TestLexer
     [TestCase(TokenKind.Equal, "=")]
     [TestCase(TokenKind.GreaterThan, ">")]
     [TestCase(TokenKind.Question, "?")]
-    [TestCase(TokenKind.CommercialAt, "@")]
+    [TestCase(TokenKind.At, "@")]
     [TestCase(TokenKind.LeftBracket, "[")]
     [TestCase(TokenKind.Backslash, "\\")]
     [TestCase(TokenKind.RightBracket, "]")]
@@ -1132,6 +1132,11 @@ public class TestLexer
     [TestCase(TokenKind.VerticalBarEqual, "|=")]
     [TestCase(TokenKind.VerticalBarGreaterThan, "|>")]
     [TestCase(TokenKind.TildeEqual, "~=")]
+    [TestCase(TokenKind.DoubleAmpersand, "&&")]
+    [TestCase(TokenKind.DoubleVerticalBar, "||")]
+    [TestCase(TokenKind.MinusGreaterThan, "->")]
+    [TestCase(TokenKind.LessThanEqual, "<=")]
+    [TestCase(TokenKind.GreaterThanEqual, ">=")]
     public void TestSymbols(TokenKind kind, string expected)
     {
         var column = 1 + (uint)expected.Length;

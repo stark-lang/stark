@@ -1721,6 +1721,11 @@ public class Lexer
                     kind = TokenKind.AmpersandEqual;
                     length = 2;
                 }
+                else if (nc == (byte)'&')
+                {
+                    kind = TokenKind.DoubleAmpersand;
+                    length = 2;
+                }
                 else
                 {
                     kind = TokenKind.Ampersand;
@@ -1752,6 +1757,11 @@ public class Lexer
                 if (nc == (byte)'=')
                 {
                     kind = TokenKind.MinusEqual;
+                    length = 2;
+                }
+                else if (nc == (byte)'>')
+                {
+                    kind = TokenKind.MinusGreaterThan;
                     length = 2;
                 }
                 else
@@ -1825,7 +1835,12 @@ public class Lexer
                 }
                 break;
             case (byte)'|':
-                if (nc == (byte)'=')
+                if (nc == (byte)'|')
+                {
+                    kind = TokenKind.DoubleVerticalBar;
+                    length = 2;
+                }
+                else if (nc == (byte)'=')
                 {
                     kind = TokenKind.VerticalBarEqual;
                     length = 2;
@@ -1851,6 +1866,31 @@ public class Lexer
                     kind = TokenKind.Tilde;
                 }
                 break;
+
+            case (byte)'<':
+                if (nc == (byte)'=')
+                {
+                    kind = TokenKind.LessThanEqual;
+                    length = 2;
+                }
+                else
+                {
+                    kind = TokenKind.LessThan;
+                }
+                break;
+            case (byte)'>':
+                if (nc == (byte)'=')
+                {
+                    kind = TokenKind.GreaterThanEqual;
+                    length = 2;
+                }
+                else
+                {
+                    kind = TokenKind.GreaterThan;
+                }
+                break;
+
+
             default:
                 System.Diagnostics.Debug.Assert(false, "We should not be here");
                 break;
@@ -1946,9 +1986,9 @@ public class Lexer
         &ParseCommentOrSlash, // Slash,                 // /
         &ParseSymbolMultiBytes, // Colon,                 // :
         &ParseSymbol1Byte, // SemiColon,             // ;
-        &ParseSymbol1Byte, // LessThanSign,          // <
+        &ParseSymbolMultiBytes, // LessThanSign,          // <
         &ParseSymbolMultiBytes, // EqualSign,             // =
-        &ParseSymbol1Byte, // GreaterThanSign,       // >
+        &ParseSymbolMultiBytes, // GreaterThanSign,       // >
         &ParseSymbol1Byte, // QuestionMark,          // ?
         &ParseSymbol1Byte, // CommercialAtSign,      // @
         &ParseSymbol1Byte, // LeftSquareBracket,     // [
@@ -1980,13 +2020,13 @@ public class Lexer
         TokenKind.Invalid, // Letter,     // Letter                                              Letter,     // Letter
         TokenKind.Exclamation, // ExclamationMark,       // !                          ExclamationMark,       // !
         TokenKind.Invalid, // DoubleQuote,           // "                                        DoubleQuote,           // "
-        TokenKind.Number, // NumberSign,            // #                               NumberSign,            // #
+        TokenKind.Hash, // NumberSign,            // #                               NumberSign,            // #
         TokenKind.Invalid, // DollarSign,            // $                               DollarSign,            // $
         TokenKind.Invalid, // PercentSign,           // %                                        PercentSign,           // %
         TokenKind.Invalid, // Ampersand,             // &                                        Ampersand,             // &
         TokenKind.SingleQuote, // SingleQuote,           // '                                        SingleQuote,           // '
-        TokenKind.LeftParent, // LeftParenthesis,       // (                          LeftParenthesis,       // (
-        TokenKind.RightParent, // RightParenthesis,      // )                         RightParenthesis,      // )
+        TokenKind.LeftParen, // LeftParenthesis,       // (                          LeftParenthesis,       // (
+        TokenKind.RightParen, // RightParenthesis,      // )                         RightParenthesis,      // )
         TokenKind.Invalid, // Asterisk,              // *                                        Asterisk,              // *
         TokenKind.Invalid, // PlusSign,              // +                                        PlusSign,              // +
         TokenKind.Comma, // Comma,                 // ,                                    Comma,                 // ,
@@ -1995,11 +2035,11 @@ public class Lexer
         TokenKind.Invalid, // Slash,                 // /                                        Slash,                 // /
         TokenKind.Invalid, // Colon,                 // :                                        Colon,                 // :
         TokenKind.SemiColon, // SemiColon,             // ;                                SemiColon,             // ;
-        TokenKind.LessThan, // LessThanSign,          // <                             LessThanSign,          // <
+        TokenKind.Invalid, // LessThanSign,          // <                             LessThanSign,          // <
         TokenKind.Invalid, // EqualSign,             // =                                        EqualSign,             // =
-        TokenKind.GreaterThan, // GreaterThanSign,       // >                          GreaterThanSign,       // >
+        TokenKind.Invalid, // GreaterThanSign,       // >                          GreaterThanSign,       // >
         TokenKind.Question, // QuestionMark,          // ?                             QuestionMark,          // ?
-        TokenKind.CommercialAt, // CommercialAtSign,      // @                         CommercialAtSign,      // @
+        TokenKind.At,       // At,      // @                         At,      // @
         TokenKind.LeftBracket, // LeftSquareBracket,     // [                        LeftSquareBracket,     // [
         TokenKind.Backslash, // Backslash,             // \                                Backslash,             // \
         TokenKind.RightBracket, // RightSquareBracket,    // ]                       RightSquareBracket,    // ]

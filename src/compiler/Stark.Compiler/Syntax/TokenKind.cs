@@ -48,13 +48,13 @@ public enum TokenKind : byte
     // 1 byte symbols
     Exclamation,        // !
     // DoubleQuote,        // " not used alone, only used through string
-    Number,             // #
+    Hash,               // #
     Dollar,             // $
     Percent,            // %
     Ampersand,          // &
     SingleQuote,        // ' used for unit
-    LeftParent,         // (
-    RightParent,        // )
+    LeftParen,         // (
+    RightParen,        // )
     Star,               // *
     Plus,               // +
     Comma,              // ,
@@ -67,7 +67,7 @@ public enum TokenKind : byte
     Equal,              // =
     GreaterThan,        // >
     Question,           // ?
-    CommercialAt,       // @
+    At,                 // @
     LeftBracket,        // [
     Backslash,          // \
     RightBracket,       // ]
@@ -80,22 +80,27 @@ public enum TokenKind : byte
     Tilde,              // ~
 
     // 2-3 byte symbols
+    DoubleAmpersand,    // &&
+    DoubleVerticalBar,  // ||
+    DoubleEqual,        // ==
     SlashEqual,         // /=
     PercentEqual,       // %=
     AmpersandEqual,     // &=
     StarEqual,          // *=
     PlusEqual,          // +=
     MinusEqual,         // -=
-    DoubleDot,          // ..
-    DoubleDotLessThan,  // ..<
-    DoubleColon,        // ::
-    DoubleEqual,        // ==
-    EqualGreaterThan,   // =>
-    TripleEqual,        // ===
+    TildeEqual,         // ~=
     CircumflexEqual,    // ^=
     VerticalBarEqual,   // |=
+    LessThanEqual,      // <=
+    GreaterThanEqual,   // >=
+    EqualGreaterThan,   // =>
+    MinusGreaterThan,   // ->
     VerticalBarGreaterThan,  // |>
-    TildeEqual,         // ~=
+    DoubleColon,        // ::
+    DoubleDot,          // ..
+    DoubleDotLessThan,  // ..<
+    TripleEqual,        // ===
 
     AsKeyword,
     AsyncKeyword,
