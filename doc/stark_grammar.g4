@@ -294,11 +294,11 @@ func_pre_modifier
     : 'partial'  #func_pre_modifier_regular
     | 'unsafe'   #func_pre_modifier_regular
     | async      #func_pre_modifier_async
-    | 'mutable'  #func_pre_modifier_regular
+    | 'rw'  #func_pre_modifier_regular
     ;
 
 func_this
-    :  ('this' | 'mutable' 'this')
+    :  ('this' | 'rw' 'this')
     ;
 
 func_constraint
@@ -417,21 +417,21 @@ operator_pre_modifier
     ;
 
 operator_binary
-    : token1='+' 
-    | token1='-' 
-    | token1='*' 
-    | token1='/' 
-    | token1='%' 
-    | token1='&'
-    | token1='|' 
-    | token1='^' 
-    | token1='<' token2='<' 
-    | token1='>' token2='>' 
-    | token1='==' 
-    | token1='<' 
-    | token1='>' 
-    | token1='<=' 
-    | token1='>='
+    : token1='+'  #operator_binary_1  
+    | token1='-'  #operator_binary_1 
+    | token1='*'  #operator_binary_1 
+    | token1='/'  #operator_binary_1 
+    | token1='%'  #operator_binary_1 
+    | token1='&'  #operator_binary_1
+    | token1='|'  #operator_binary_1 
+    | token1='^'  #operator_binary_1 
+    | token1='<' token2='<' #operator_binary_1
+    | token1='>' token2='>' #operator_binary_1
+    | token1='==' #operator_binary_1 
+    | token1='<'  #operator_binary_1
+    | token1='>'  #operator_binary_1
+    | token1='<=' #operator_binary_1 
+    | token1='>=' #operator_binary_1
     ;
 
 operator_unary
@@ -539,7 +539,6 @@ identifier
     | 'lifetime'
     | 'module'
     | 'macro'
-    | 'mutable'
     | 'operator'
     | 'ownership'
     | 'permission'
@@ -641,202 +640,116 @@ stmt_break
     : 'break' eos
     ;
 
+stmt_unsafe
+    : 'unsafe' expr_block
+    ;
+
 stmt_expr
-    : expr_stmt eos
+    : 'unsafe'? expr eos
+    ;
+
+stmt_assignment
+    : expr operator_assignment 'unsafe'? expr eos
+    ;
+
+operator_assignment
+    : '=' | '+=' | '~=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '<<=' |  '>>=' | '%='
     ;
 
 // ------------------------------------------------------------------
 // Expressions
 // ------------------------------------------------------------------
 
-expr_stmt
-    : expr
-    | expr_assignment
-    ;
-
-expr_assignment
-    : expr_assignable ('=' | '+=' | '~=' | '-=' | '*=' | '/=' | '&=' | '|=' | '^=' | '<' '<' '=' |  '>' '>' '=' | '%=' ) expr
-    ;
-
 expr
-    : 'unsafe'? (expr_with_block | expr_without_block)
-    | expr bop='|>' expr
+    : expr_primary              #expr_unary_primary
+    | type_permission_explicit expr #expr_with_permission
+    | 'new' lifetime? type_ownership_explicit? type_permission_explicit? expr_new_constructor #expr_new
+    | expr_block                            #expr_with_block1
+    | 'throw' expr              #expr_unary_throw
+    | 'catch'? 'try' expr       #expr_unary_catch_try
+    | operator_async_await expr #expr_unary_async_await
+    | 'if' expr 'then' expr ('else' expr)*  #expr_if
+    | 'match' expr '{' expr_case (',' expr_case)* ','? '}' #expr_match
+    | expr_anonymous_func #expr_func
+    | expr arguments            #expr_unary_func_call
+    | expr list_initializer     #expr_struct_constructor
+    | expr '.' method_call      #expr_unary_member_method_call
+    | expr '.' identifier       #expr_unary_member_field_or_property
+    | expr '[' expr ']'         #expr_unary_array_indexer
+    | '*' expr                  #expr_unary_deref
+    | '&' lifetime? type_ownership_explicit? type_permission_explicit? expr #expr_unary_ref
+    | prefix=('+'|'-') expr     #expr_unary_plus_or_minus
+    | prefix=('~'|'not') expr   #expr_unary_not    
+    | expr operator_range expr? #expr_unary_range
+    | operator_range expr       #expr_unary_range
+    | operator_range            #expr_unary_range
+    | expr type_measure  #expr_binary_measure // implicitly convert to *, so same precedence
+    | expr bop=('*'|'/'|'%') expr   #expr_binary
+    | expr (bop='<' bop2='<' | bop='>' bop2='>') expr #expr_binary // we are departing from the classical C precedence here
+    | expr bop=('+'|'-') expr #expr_binary
+    | expr bop='as' type #expr_binary_as
+    | expr bop='is' (identifier ':')? type #expr_binary_is
+    | expr bop='is' 'not' type #expr_binary_is
+    | expr bop=('<=' | '>=' | '<' | '>') expr #expr_binary
+    | expr bop=('==' | '<>') expr #expr_binary
+    | expr bop='&' expr #expr_binary
+    | expr bop='^' expr #expr_binary
+    | expr bop='|' expr #expr_binary
+    | expr bop='&&' expr #expr_binary
+    | expr bop='||' expr #expr_binary
+    | expr bop='|>' expr #expr_binary_pipe
     ;
 
-expr_with_block
-    : expr_block
-    | expr_if_with_block
+expr_primary
+    // These exprs cannot be assigned directly
+    : 'this'                    #expr_primary_this
+    | literal                   #expr_primary_literal
+    | '.'                       #expr_primary_dot // the dot expr is a place holder for the piped value
+    | '.' identifier  #expr_primary_enum_or_union  // An enum or union constructor
+    | '.' method_call #expr_primary_enum_or_union  // An enum or union constructor
+    // These exprs can be assigned directly
+    // A local variable: e.g x
+    // A local func call: e.g f(x)
+    // A module variable: e.g core::sub::x
+    // A module func call: e.g core::sub::f(x)
+    // A constructor by value (MyStruct): e.g var x = MyStruct
+    // A constructor by value (MyStruct): e.g var x = MyStruct(1,2,3)
+    | qualified_name  #expr_primary_qualified_name
+    // Group and Tuple/List expr
+    | '(' expr (',' expr)* ')'  #expr_primary_expr_list
+    | expr_discard  #expr_primary_discard // Discard '_' 
     ;
 
-// If an if expr starts to use expr_block, it should use them all along
-expr_if_with_block
-    : 'if' expr_unary_or_binary 'then' expr_block ('else' expr_with_block)?
-    ;
-
-expr_without_block
-    : expr_unary_or_binary
-    | expr_ref
-    | expr_out
-    | expr_address_of
-    | expr_if
-    | expr_match
-    | expr_range
-    | expr_anonymous_func
-    // struct constructor
-    | expr_struct_constructor
-    // Here the permission is mandatory otherwise the expr_unary_or_binary will a default constructor (with default permission)
-    | type_permission_explicit expr_identifier_or_method_call_with_optional_generics
-    // Here the permission is optional
-    | type_permission_explicit? expr_constructor_array
-    ;
-
-expr_struct_constructor
-    : module_path* (identifier | method_call) list_initializer
-    ;
-
-expr_out
-    // out only supports a path (because that's the parameter declaration that says what is the lifetime/ownership/permission)
-    : 'out' expr_unary_or_binary
-    // return a ref
-    | 'out' expr_ref
-    ;
-
-expr_ref
-    : 'ref' lifetime? type_ownership_explicit? type_permission_explicit? expr_unary_or_binary
-    ;
-
-expr_address_of
-    : '&' expr_unary_or_binary
-    ;
-
-expr_range
-    : expr_unary_or_binary? '.' '.' expr_unary_or_binary?
-    ;
-
-// If an if expr starts to use expr_without_block, it should use them all along
-expr_if
-    : 'if' expr_unary_or_binary 'then' expr_without_block ('else' expr_without_block)+
-    ;
-
-expr_match
-    : 'match' expr_unary_or_binary '{' expr_case (',' expr_case)* ','? '}'
-    ;
-
-expr_case
-    : 'case' expr_pattern func_expr_body
-    ;
-
-expr_pattern
-    // case _ => ...
-    : expr_discard
-    // case int x => ...
-    | type identifier?
-    // case 0, 1, 2 => ...
-    | literal (',' literal)*
-    // case .ENUM_VALUE1, .ENUM_VALUE2 => ...
-    | '.' identifier (',' '.' identifier)*
-    // TODO add more patterns (range, ...etc.)
+operator_range
+    : '..'
+    | '..<'
     ;
 
 expr_block
     : '{' stmt* '}'
-    ;
-
-expr_unary_or_binary
-    : expr_unary
-    | expr_unary_or_binary type_measure // implicitly convert to *, so same precedence
-    | expr_unary_or_binary bop=('*'|'/'|'%') expr_unary_or_binary
-    | expr_unary_or_binary (bop='<' bop2='<' | bop='>' bop2='>') expr_unary_or_binary // we are departing from the classical C precedence here
-    | expr_unary_or_binary bop=('+'|'-') expr_unary_or_binary
-    | expr_unary_or_binary bop='as' type
-    | expr_unary_or_binary bop='is' (identifier ':')? type 
-    | expr_unary_or_binary bop='is' 'not' type 
-    | expr_unary_or_binary bop=('<=' | '>=' | '<' | '>') expr_unary_or_binary
-    | expr_unary_or_binary (bop='==' | bop='<' bop2='>') expr_unary_or_binary
-    | expr_unary_or_binary bop='&' expr_unary_or_binary
-    | expr_unary_or_binary bop='^' expr_unary_or_binary
-    | expr_unary_or_binary bop='|' expr_unary_or_binary
-    | expr_unary_or_binary bop='&&' expr_unary_or_binary
-    | expr_unary_or_binary bop='||' expr_unary_or_binary
-    ;
-
-expr_unary
-    : expr_primary1 expr_member_path*
-    // Note that if ownership / permission are present, the only expr_primary2 supported behind
-    // is method call
-    | expr_primary2 expr_member_path*
-    | '.'  // the dot expr is a place holder for the piped value
-    | expr_new
-    | 'throw' expr_unary_or_binary
-    | 'catch'? 'try' expr_unary_or_binary
-    | async expr_unary_or_binary
-    | await expr_unary_or_binary    
-    | prefix=('+'|'-') expr_unary_or_binary
-    | prefix=('~'|'not') expr_unary_or_binary
-    ;
-
+    ;    
+   
 expr_anonymous_func
-    : (async | await)? 'func' generic_arguments? arguments? type_func_return? func_expr_body
-    | (async | await)? identifier func_expr_body
-    | (async | await)? '(' identifier (',' identifier)* ')' func_expr_body
+    : operator_async_await? 'func' generic_arguments? arguments? type_func_return? func_expr_body #expr_anonymous_func_explicit
+    | operator_async_await? identifier func_expr_body                                             #expr_anonymous_func_single_parameter
+    | operator_async_await? '(' identifier (',' identifier)* ')' func_expr_body                   #expr_anonymous_func_multi_parameters
     ;
 
-expr_assignable
-    : expr_primary1 expr_member_path+ // assignable exprs that requires at least one member path
-    | expr_primary2 expr_member_path* // assignable exprs that can be assigned directly
+operator_async_await
+    : async
+    | await
     ;
 
-// These exprs cannot be assigned directly
-expr_primary1
-    : 'this'                    #expr_this
-    | literal                   #expr_literal
-    // An enum or union constructor
-    | '.' (identifier | method_call) #expr_enum_or_union
+expr_case
+    : 'case' expr_pattern func_expr_body
+    | 'else' func_expr_body
     ;
 
-// These exprs can be assigned directly
-expr_primary2
-    // A local variable: e.g x
-    // A local func call: e.g f(x)
-    // A module variable: e.g core::sub::x
-    // A module func call: e.g core::sub::f(x)
-    // A constructor by value (MyStruct): e.g var x = MyStruct
-    // A constructor by value (MyStruct): e.g var x = MyStruct(1,2,3)
-    : expr_identifier_or_method_call_with_optional_generics
-    // Group and Tuple/List expr
-    | '(' expr (',' expr)* ')'
-    // Dereferencing
-    | '*' expr_unary_or_binary
-    // Discard '_'
-    | expr_discard
-    ;
-
-expr_identifier_or_method_call_with_optional_generics
-    // A local variable: e.g x
-    // A local func call: e.g f(x)
-    // A module variable: e.g core::sub::x
-    // A module func call: e.g core::sub::f(x)
-    // A constructor by value (MyStruct): e.g var x = MyStruct
-    // A constructor by value (MyStruct): e.g var x = MyStruct(1,2,3)
-    : module_path* (identifier | method_call)
-    // A field of a generic type, e.g:
-    // - MyStruct`<int>.x / MyStruct`<int>.f(x)
-    // - core::sub::MyStruct`<int>.x / core::sub::MyStruct`<int>.f(x)
-    | module_path* identifier generic_arguments expr_dot_path
-    ;
-
-expr_member_path
-    : expr_dot_path
-    | expr_indexer_path
-    ;
-
-expr_dot_path
-    : '.' identifier
-    | '.' method_call
-    ;
-
-expr_indexer_path
-    : '[' expr ']'
+expr_pattern
+    : type identifier?         #expr_pattern_type // case int x => ...    
+    | literal (',' literal)*   #expr_pattern_literal // case 0, 1, 2 => ...    
+    | '.' identifier (',' '.' identifier)* #expr_pattern_enum // case .ENUM_VALUE1, .ENUM_VALUE2 => ...
+    // TODO add more patterns (range, ...etc.)
     ;
 
 // A const expr path is an identifier, or a path to a const
@@ -844,10 +757,6 @@ expr_indexer_path
 const_path
     : qualified_name_no_generic_arguments #const_path_simple // path for a const declared in a module: e.g core::module::const_field
     | qualified_name '.' identifier       #const_path_member // generic instance const field: core::module::MyType<true>.const_field
-    ;
-
-expr_new
-    : 'new' lifetime? type_ownership_explicit? type_permission_explicit? expr_new_constructor
     ;
 
 expr_new_constructor
@@ -861,10 +770,10 @@ expr_constructor_struct
     ;
 
 expr_constructor_array
-    : '[' type ']' list_initializer?                    // with list initializer
-    | '[' type ']' '(' expr ')' list_initializer? // with list initializer
-    | '[' type ']' '(' expr ',' expr ')'    // with func initializer
-    | '[' 'u8' ']' literal_string                       // with list initializer
+    : '[' type ']' list_initializer?                    #expr_constructor_array_with_list // with list initializer
+    | '[' type ']' '(' expr ')' list_initializer?       #expr_constructor_array_with_ctor_and_list // with list initializer
+    | '[' type ']' '(' expr ',' expr ')'                #expr_constructor_array_with_ctor_and_func // with func initializer
+    | '[' 'u8' ']' literal_string                       #expr_constructor_array_literal_string // with list initializer
     ;
 
 expr_constructor_string
@@ -883,12 +792,17 @@ method_call
     : identifier_with_generic_arguments arguments
     ;
 
-expr_list
-    : expr (',' expr)*
+expr_argument_list
+    : expr_argument (',' expr_argument)*
+    ;
+
+expr_argument
+    : expr
+    | 'out' expr
     ;
 
 arguments
-    : '(' expr_list? ')'
+    : '(' expr_argument_list? ')'
     ;
 
 // ------------------------------------------------------------------
@@ -974,8 +888,9 @@ macro_tokens
     | '{' macro_tokens* '}'                      #macro_tokens_with_braces
     ;
 
+// TODO: this list should be updated automatically
 macro_tokens_all
-    : '_'|'-'|'-='|'->'|','|':'|'!'|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'|>'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expr'|'inherits'|'extend'|'extern'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'immutable'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'isolated'|'kind'|'layout'|'let'|'lifetime'|'literal'|'macro'|'rw'|'match'|'module'|'mutable'|'new'|'not'|'operator'|'out'|'ownership'|'permission'|'partial'|'pub'|'readable'|'ref'|'requires'|'return'|'rooted'|'set'|'shared'|'stmt'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'transient'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
+    : '_'|'-'|'-='|'->'|','|':'|'!'|'.'|'@'|'*'|'*='|'/'|'/='|'&'|'&&'|'&='|'#'|'%'|'%='|'`'|'^'|'^='|'+'|'+='|'<'|'<='|'='|'=='|'=>'|'>'|'>='|'|'|'|='|'||'|'|>'|'~'|'alias'|'are'|'as'|'async'|'attr'|'await'|'binary'|'bool'|'break'|'can'|'case'|'catch'|'const'|'constructor'|'continue'|'else'|'enum'|'exclusive'|'expr'|'inherits'|'extend'|'extern'|'f32'|'f64'|'for'|'func'|'get'|'has'|'i16'|'i32'|'i64'|'i8'|'identifier'|'if'|'immutable'|'implements'|'import'|'in'|'indirect'|'int'|'interface'|'is'|'isolated'|'kind'|'layout'|'let'|'lifetime'|'literal'|'macro'|'rw'|'match'|'module'|'new'|'not'|'operator'|'out'|'ownership'|'permission'|'partial'|'pub'|'readable'|'ref'|'requires'|'return'|'rooted'|'set'|'shared'|'stmt'|'static'|'struct'|'then'|'this'|'throw'|'throws'|'token'|'transient'|'try'|'type'|'u16'|'u32'|'u64'|'u8'|'uint'|'unary'|'union'|'unique'|'unit'|'unsafe'|'v128'|'v256'|'var'|'where'|'while'
     ;
 
 macro_expr
@@ -1131,7 +1046,7 @@ type_permission_identifier_or_generic
     ;
 
 type_permission_identifier
-    : 'mutable'
+    : 'rw'
     | 'immutable'
     | 'readable'
     | 'const'
@@ -1273,7 +1188,6 @@ LAYOUT: 'layout';
 LIFETIME: 'lifetime';
 MODULE: 'module';
 MACRO: 'macro';
-MUTABLE: 'mutable';
 OPERATOR: 'operator';
 OWNERSHIP: 'ownership';
 PERMISSION: 'permission';
@@ -1362,7 +1276,7 @@ IDENTIFIER: Identifier;
 
 // This is not fully correct, that should not be hidden, 
 // but we don't want to handle correctly NEW_LINE in this grammar
-NEW_LINE: [\r\n] -> channel(HIDDEN);
+NEW_LINE: ([\r][\n]|[\n]|[\r])  -> channel(HIDDEN);
 
 // 1 byte symbols
 EXCLAMATION: '!';
@@ -1411,11 +1325,14 @@ MINUS_EQUAL: '-=';
 TILDE_EQUAL: '~=';
 CIRCUMFLEX_EQUAL: '^=';
 VERTICAL_BAR_EQUAL: '|=';
-LESS_THAN_OR_EQUAL: '<=';
-GREATER_THAN_OR_EQUAL: '>=';
+LESS_THAN_EQUAL: '<=';
+GREATER_THAN_EQUAL: '>=';
+LESS_THAN_GREATER_THAN: '<>';
 EQUAL_GREATER_THAN: '=>';
 MINUS_GREATER_THAN: '->';
 VERTICAL_BAR_GREATER_THAN: '|>';
+DOUBLE_LESS_THAN_EQUAL: '<<=';
+DOUBLE_GREATER_THAN_EQUAL: '>>=';
 
 DOUBLE_COLON: '::';
 
