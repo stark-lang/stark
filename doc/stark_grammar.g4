@@ -13,17 +13,13 @@ grammar stark_grammar;
 Compilation Unit
 */
 compilation_unit
-    : decl_compilation_unit_member* 
-    ;
-
-decl_compilation_unit_member
-    : decl_module
-    | stmt_import
-    | decl_module_member
+    : decl_module_member* 
     ;
 
 decl_module_member
-    : decl_struct
+    : decl_module
+    | decl_import
+    | decl_struct
     | decl_union
     | decl_enum
     | decl_interface
@@ -37,6 +33,7 @@ decl_module_member
     | decl_alias_type
     | decl_alias_func
     | decl_macro
+    | decl_empty
     // | macro_inline_call
     ;    
 
@@ -44,11 +41,15 @@ decl_module_member
 // Top level Declaration
 // ------------------------------------------------------------------    
 
+decl_empty
+    : eos
+    ;
+
 decl_module
     : pre_decl 'partial'? 'module' module_path* identifier eos
     ;
 
-stmt_import
+decl_import
     : 'import' module_path* import_identifier eos
     ;
 
@@ -71,7 +72,7 @@ decl_const
     ;
 
 decl_static
-    : pre_decl 'static' identifier (':' type)? '=' expr eos
+    : 'static' identifier (':' type)? '=' expr eos
     ;
 
 decl_struct
@@ -165,7 +166,7 @@ enum_body
 // members are indented
 struct_member
     // Expected to be in this order, we will warning otherwise
-    : stmt_import
+    : decl_import
     | decl_const
     | decl_field
     | constructor_decl_with_visibility
@@ -205,7 +206,7 @@ interface_member_without_attr
 
 extend_member
     // Expected to be in this order, we will warning otherwise
-    : stmt_import
+    : decl_import
     | decl_const
     | constructor_decl_with_visibility
     | func_member_decl_with_visibility
@@ -298,7 +299,8 @@ func_pre_modifier
     ;
 
 func_this
-    :  ('this' | 'rw' 'this')
+    : 'this'        #func_this1
+    | 'rw' 'this'   #func_this2
     ;
 
 func_constraint
@@ -664,25 +666,25 @@ expr
     : expr_primary              #expr_unary_primary
     | type_permission_explicit expr #expr_with_permission
     | 'new' lifetime? type_ownership_explicit? type_permission_explicit? expr_new_constructor #expr_new
-    | expr_block                            #expr_with_block1
+    | expr_block                #expr_with_block1
     | 'throw' expr              #expr_unary_throw
     | 'catch'? 'try' expr       #expr_unary_catch_try
     | operator_async_await expr #expr_unary_async_await
     | 'if' expr 'then' expr ('else' expr)*  #expr_if
-    | 'match' expr '{' expr_case (',' expr_case)* ','? '}' #expr_match
-    | expr_anonymous_func #expr_func
-    | expr arguments            #expr_unary_func_call
+    | 'match' expr match_block  #expr_match
+    | expr_anonymous_func       #expr_func
+    | expr arguments            #expr_func_call
     | expr list_initializer     #expr_struct_constructor
-    | expr '.' method_call      #expr_unary_member_method_call
-    | expr '.' identifier       #expr_unary_member_field_or_property
-    | expr '[' expr ']'         #expr_unary_array_indexer
+    | expr '.' method_call      #expr_member_method_call
+    | expr '.' identifier       #expr_member_field_or_property
+    | expr '[' expr ']'         #expr_member_array_indexer
     | '*' expr                  #expr_unary_deref
     | '&' lifetime? type_ownership_explicit? type_permission_explicit? expr #expr_unary_ref
     | prefix=('+'|'-') expr     #expr_unary_plus_or_minus
     | prefix=('~'|'not') expr   #expr_unary_not    
-    | expr operator_range expr? #expr_unary_range
-    | operator_range expr       #expr_unary_range
-    | operator_range            #expr_unary_range
+    | expr bop=operator_range expr? #expr_binary_range
+    | bop=operator_range expr       #expr_binary_range
+    | bop=operator_range            #expr_binary_range
     | expr type_measure  #expr_binary_measure // implicitly convert to *, so same precedence
     | expr bop=('*'|'/'|'%') expr   #expr_binary
     | expr (bop='<' bop2='<' | bop='>' bop2='>') expr #expr_binary // we are departing from the classical C precedence here
@@ -717,7 +719,8 @@ expr_primary
     | qualified_name  #expr_primary_qualified_name
     // Group and Tuple/List expr
     | '(' expr (',' expr)* ')'  #expr_primary_expr_list
-    | expr_discard  #expr_primary_discard // Discard '_' 
+    | expr_discard  #expr_primary_discard // Discard '_'
+    | type_primitive #expr_primary_type_primitive
     ;
 
 operator_range
@@ -738,17 +741,26 @@ expr_anonymous_func
 operator_async_await
     : async
     | await
+
     ;
 
-expr_case
-    : 'case' expr_pattern func_expr_body
-    | 'else' func_expr_body
+match_block
+    : '{' match_case_list? '}'
     ;
 
-expr_pattern
-    : type identifier?         #expr_pattern_type // case int x => ...    
-    | literal (',' literal)*   #expr_pattern_literal // case 0, 1, 2 => ...    
-    | '.' identifier (',' '.' identifier)* #expr_pattern_enum // case .ENUM_VALUE1, .ENUM_VALUE2 => ...
+match_case_list
+    : match_case (',' match_case)* ','?
+    ;
+
+match_case
+    : 'case' match_case_pattern func_expr_body  #expr_case_regular
+    | 'else' func_expr_body               #expr_case_else
+    ;
+
+match_case_pattern
+    : type identifier?         #match_case_pattern_type // case int x => ...    
+    | literal (',' literal)*   #match_case_pattern_literal // case 0, 1, 2 => ...    
+    | '.' identifier (',' '.' identifier)* #match_case_pattern_enum // case .ENUM_VALUE1, .ENUM_VALUE2 => ...
     // TODO add more patterns (range, ...etc.)
     ;
 
@@ -797,8 +809,7 @@ expr_argument_list
     ;
 
 expr_argument
-    : expr
-    | 'out' expr
+    : 'out'? expr
     ;
 
 arguments
