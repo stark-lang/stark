@@ -690,8 +690,7 @@ expr
     | expr (bop='<' bop2='<' | bop='>' bop2='>') expr #expr_binary // we are departing from the classical C precedence here
     | expr bop=('+'|'-') expr #expr_binary
     | expr bop='as' type #expr_binary_as
-    | expr bop='is' (identifier ':')? type #expr_binary_is
-    | expr bop='is' 'not' type #expr_binary_is
+    | expr bop='is' 'not'? type #expr_binary_is
     | expr bop=('<=' | '>=' | '<' | '>') expr #expr_binary
     | expr bop=('==' | '<>') expr #expr_binary
     | expr bop='&' expr #expr_binary
@@ -1253,7 +1252,7 @@ TYPE_V256: 'v256';
 
 DECIMAL_LITERAL:    ('0' | [1-9] (Digits? | '_'+ Digits));
 HEX_LITERAL:        '0' [x] [0-9a-fA-F] ([0-9a-fA-F_]* [0-9a-fA-F])?;
-OCT_LITERAL:        '0' '_'* [0-7] ([0-7_]* [0-7])?;
+OCT_LITERAL:        '0' [o] '_'* [0-7] ([0-7_]* [0-7])?;
 BINARY_LITERAL:     '0' [b] [01] ([01_]* [01])?;
 
 FLOAT_LITERAL:      (Digits '.' Digits? | '.' Digits) ExponentPart?
@@ -1283,7 +1282,10 @@ COMMENT:            '/*' .*? '*/'    -> channel(HIDDEN);
 LINE_COMMENT:       '//' ~[\r\n]*    -> channel(HIDDEN);
 
 UNDERSCORE: '_'+;
-IDENTIFIER: Identifier;
+IDENTIFIER
+    : '_'+ [A-Za-z0-9] [A-Za-z0-9_]*
+    | [A-Za-z] [A-Za-z0-9_]*
+    ;
 
 // This is not fully correct, that should not be hidden, 
 // but we don't want to handle correctly NEW_LINE in this grammar
@@ -1352,7 +1354,6 @@ DOUBLE_DOT_LESS_THAN: '..<';
 
 TRIPLE_EQUAL: '===';
 
-
 // Fragment rules
 fragment ExponentPart
     : [eE] [+-]? Digits
@@ -1371,22 +1372,4 @@ fragment HexDigit
     ;
 fragment Digits
     : [0-9] ([0-9_]* [0-9])?
-    ;
-fragment LetterOrDigitOrUnderscore
-    : LetterOrDigit
-    | '_'
-    ;
-
-fragment LetterOrDigit
-    : Letter
-    | [0-9]
-    ;    
-
-fragment Letter
-    : [a-zA-Z]
-    ;
-
-fragment Identifier
-    : [_]+ LetterOrDigit LetterOrDigitOrUnderscore*
-    | Letter LetterOrDigitOrUnderscore*
     ;
