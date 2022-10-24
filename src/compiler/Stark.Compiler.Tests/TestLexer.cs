@@ -1136,7 +1136,10 @@ public class TestLexer
     [TestCase(TokenKind.DoubleVerticalBar, "||")]
     [TestCase(TokenKind.MinusGreaterThan, "->")]
     [TestCase(TokenKind.LessThanEqual, "<=")]
+    [TestCase(TokenKind.LessThanGreaterThan, "<>")]
     [TestCase(TokenKind.GreaterThanEqual, ">=")]
+    [TestCase(TokenKind.DoubleLessThanEqual, "<<=")]
+    [TestCase(TokenKind.DoubleGreaterThanEqual, ">>=")]
     public void TestSymbols(TokenKind kind, string expected)
     {
         var column = 1 + (uint)expected.Length;

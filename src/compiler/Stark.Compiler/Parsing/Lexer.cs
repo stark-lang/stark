@@ -1873,6 +1873,16 @@ public class Lexer
                     kind = TokenKind.LessThanEqual;
                     length = 2;
                 }
+                else if (nc == (byte)'>')
+                {
+                    kind = TokenKind.LessThanGreaterThan;
+                    length = 2;
+                }
+                else if (nc == (byte)'<' && ptr[2] == (byte)'=')
+                {
+                    kind = TokenKind.DoubleLessThanEqual;
+                    length = 3;
+                }
                 else
                 {
                     kind = TokenKind.LessThan;
@@ -1883,6 +1893,11 @@ public class Lexer
                 {
                     kind = TokenKind.GreaterThanEqual;
                     length = 2;
+                }
+                else if (nc == (byte)'>' && ptr[2] == (byte)'=')
+                {
+                    kind = TokenKind.DoubleGreaterThanEqual;
+                    length = 3;
                 }
                 else
                 {

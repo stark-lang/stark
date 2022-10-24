@@ -96,6 +96,9 @@ public enum TokenKind : byte
     GreaterThanEqual,   // >=
     EqualGreaterThan,   // =>
     MinusGreaterThan,   // ->
+    LessThanGreaterThan,// <>
+    DoubleLessThanEqual,// <<=
+    DoubleGreaterThanEqual,// >>=
     VerticalBarGreaterThan,  // |>
     DoubleColon,        // ::
     DoubleDot,          // ..
