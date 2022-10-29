@@ -1,4 +1,6 @@
-﻿namespace Stark.Compiler.BenchApp;
+﻿using BenchmarkDotNet.Running;
+
+namespace Stark.Compiler.BenchApp;
 
 internal class Program
 {
@@ -10,6 +12,7 @@ internal class Program
         //    //benchLexer.Roslyn();
         //    benchLexer.Stark();
         //}
-        BenchmarkDotNet.Running.BenchmarkRunner.Run<BenchLexer>();
+        BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+        //BenchmarkDotNet.Running.BenchmarkRunner.Run<BenchLexer>();
     }
 }

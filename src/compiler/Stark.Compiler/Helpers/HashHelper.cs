@@ -9,7 +9,7 @@ namespace Stark.Compiler.Helpers;
 /// <summary>
 /// FNV-1a hash for identifiers/strings. Might be not fast enough for large strings.
 /// </summary>
-internal static class HashHelper
+public static class HashHelper
 {
     public static int Init() => unchecked((int)2166136261);
     
