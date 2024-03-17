@@ -14,8 +14,8 @@ This is the main repository of the stark programming language.
 
 You can find more details about this project in the following blog post series:
 
-- [The Odyssey of Stark and Melody](https://xoofx.com/blog/2020/03/05/stark-melody-dotnet-sel4/)
-- [Stark - Language And Frontend Compiler - Prototype 2019](https://xoofx.com/blog/2020/03/06/stark-language-frontend-compiler/)
+- [The Odyssey of Stark and Melody](https://xoofx.github.io/blog/2020/03/05/stark-melody-dotnet-sel4/)
+- [Stark - Language And Frontend Compiler - Prototype 2019](https://xoofx.github.io/blog/2020/03/06/stark-language-frontend-compiler/)
 
 ## IDE Syntax Highlighting
 
